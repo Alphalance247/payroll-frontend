@@ -59,7 +59,11 @@ const Sidebar: React.FC = () => {
     {
       heading: "COMPANY",
       subHeadings: [
-        { text: "Analytics", icons: <BsBarChartLine size={20} /> },
+        {
+          text: "Analytics",
+          link: "/analytics",
+          icons: <BsBarChartLine size={20} />,
+        },
         { text: "Time Tracking", icons: <IoMdTime size={20} /> },
         { text: "Integrations", icons: <IoGitPullRequestOutline size={20} /> },
         { text: "Settings", icons: <TbSettings2 size={20} /> },
