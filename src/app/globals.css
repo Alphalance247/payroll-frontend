@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: #ffffff !important;
+  --foreground: #171717 !important;
+}
+
 @font-face {
   font-family: "Graphik";
   font-display: fallback;
@@ -70,8 +75,6 @@ body {
   font-family: Arial, Helvetica, sans-serif, "Graphik";
 }
 
-
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -127,8 +130,6 @@ body {
     --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   * {
