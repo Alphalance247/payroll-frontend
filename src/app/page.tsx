@@ -44,7 +44,7 @@ export default function Home() {
         </div>
       </TopBar>
 
-      <div className="p-10 min-h-screen">
+      <main className="p-10 overflow-auto">
         <div className="grid grid-cols-5 gap-6">
           {/* Left Section */}
           <div className="col-span-3 space-y-6">
@@ -330,7 +330,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </DashboardLayout>
   );
 }

@@ -1,5 +1,4 @@
 "use client";
-import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { HiOutlineHome } from "react-icons/hi2";
@@ -15,6 +14,7 @@ import { BsBarChartLine } from "react-icons/bs";
 import { IoMdTime } from "react-icons/io";
 import { TbSettings2 } from "react-icons/tb";
 import { HiOutlineChevronUpDown } from "react-icons/hi2";
+import { usePathname } from "next/navigation";
 
 interface SubHeading {
   text: string;
@@ -28,6 +28,8 @@ interface sideBarData {
 }
 
 const Sidebar: React.FC = () => {
+  const pathname = usePathname();
+
   const sideBarData: sideBarData[] = [
     {
       subHeadings: [
@@ -71,10 +73,6 @@ const Sidebar: React.FC = () => {
     },
   ];
 
-  const [activePage, setActivePage] = useState<string>(
-    sideBarData[0]?.subHeadings[0].text || ""
-  );
-
   return (
     <aside className="w-96 bg-white border-r border-gray-200 overflow-y-auto">
       {/* Logo / Brand Name */}
@@ -114,11 +112,10 @@ const Sidebar: React.FC = () => {
                           <Link href={items?.link || "/"} passHref key={i}>
                             <div
                               className={`flex gap-x-3 items-center  rounded-lg py-[10px] pl-3 ${
-                                activePage === items?.text
+                                pathname === items?.link
                                   ? "bg-[#FCF2E8] text-[#E37915]"
                                   : "bg-transparent text-[#2F2F33]"
                               }`}
-                              onClick={() => setActivePage(items?.text)}
                             >
                               <span>{items?.icons}</span>
                               <li className="text-sm  font-medium font-Graphik">

@@ -3,6 +3,7 @@ import React from "react";
 import { FaCaretDown } from "react-icons/fa";
 import { DoughnutChart1 } from "../charts/chart-pie-donut-text";
 import { ChartConfig } from "@/components/ui/chart";
+import PayrollCard from "@/app/common/payrollCard";
 
 const Payroll: React.FC = () => {
   const chartData1 = [
@@ -101,21 +102,7 @@ const Payroll: React.FC = () => {
       <div className="grid grid-cols-3 gap-x-4 mb-6">
         {data.map((el, i) => {
           return (
-            <div
-              className="p-4 bg-[#F7F7F7] rounded-xl border border-[#E3E3E5]"
-              key={i}
-            >
-              <p
-                className={`font-Graphik font-semibold text-[#71717A]  text-[13px] mb-4`}
-              >
-                {el?.heading}
-              </p>
-              <h5
-                className={` font-Graphik font-semibold text-[#2F2F33] text-lg`}
-              >
-                {el?.subhead}
-              </h5>
-            </div>
+            <PayrollCard key={i} heading={el?.heading} subhead={el?.subhead} />
           );
         })}
       </div>

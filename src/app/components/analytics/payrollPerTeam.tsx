@@ -15,7 +15,7 @@ const PayrollPerTeam = () => {
           />
         </div>
 
-        <div className="text-center mt-14 mb-8">
+        <div className="text-center">
           <TeamPayrollChart />
         </div>
       </div>

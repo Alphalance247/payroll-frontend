@@ -98,6 +98,7 @@ export function DoughnutChart1({ chartConfig, chartData }: DoughnutChartProps) {
               cursor={false}
               content={
                 <ChartTooltipContent
+                  className="bg-white"
                   nameKey="visitors"
                   formatter={(value, name) => {
                     const item = dataWithPercentages.find(

@@ -120,7 +120,7 @@
 "use client";
 import { Cell, Label, Pie, PieChart } from "recharts";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent, CardFooter } from "@/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
@@ -129,7 +129,7 @@ import {
 } from "@/components/ui/chart";
 
 const chartData = [
-  { department: "Design & Development", amount: 50000, fill: "#8b5cf6" },
+  { department: "Design & Development", amount: 1500000, fill: "#8b5cf6" },
   { department: "DEVOPS", amount: 200000, fill: "#0ea5e9" },
   { department: "Advocate", amount: 1500000, fill: "#1e293b" },
   { department: "Cloud", amount: 1000000, fill: "#fcd34d" },
@@ -309,17 +309,18 @@ export function TeamPayrollChart() {
   const COLORS = chartData.map((item) => item.fill);
 
   return (
-    <div className="w-full">
+    <div className="w-full grid md:grid-cols-2 items-center gap-x-[35rem]">
       <CardContent className="p-6">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto w-full" // Increased height for better spacing
+          className="mx-auto w-[800px] h-[550px] " // Increased height for better spacing
         >
           <PieChart>
             <ChartTooltip
               cursor={false}
               content={
                 <ChartTooltipContent
+                  className="bg-white"
                   formatter={(value, name) => {
                     return [formatNaira(Number(value)), name];
                   }}
@@ -377,6 +378,16 @@ export function TeamPayrollChart() {
           </PieChart>
         </ChartContainer>
       </CardContent>
+      <CardFooter className="flex flex-col gap-4 items-start">
+        {chartData.map((el, i) => (
+          <div key={i} className="flex gap-x-2 items-center">
+            <p className={`w-3 h-3 rounded-full bg-[${el?.fill}]`}></p>{" "}
+            <p className="text-[13px] font-Graphik text-[#2F2F33]">
+              {el?.department}
+            </p>
+          </div>
+        ))}{" "}
+      </CardFooter>
     </div>
   );
 }
