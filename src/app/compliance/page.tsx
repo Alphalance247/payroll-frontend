@@ -1,18 +1,16 @@
 "use client";
-import { useState } from "react";
 import DashboardLayout from "../common/DashBoardLayout";
-import TopBar from "../common/topBar";
-import Image from "next/image";
-import UpdateHeading from "../common/updatesHeading";
-import Button from "../common/Button";
 import LawsAndPolicies from "../components/compliance/lawsandpolicies";
+import Heading from "../common/heading";
+import LatestUpdate from "../components/compliance/latestUpdate";
+import EmployeeDetailsTable from "../components/payroll/employeeData";
 
 const Compliance = () => {
-  const tabs = ["Regulatory Polices", "Documents", "Audit logs"];
-  const [activeTab, setActiveTab] = useState<string>(tabs[0]);
+  // const tabs = ["Regulatory Polices", "Documents", "Audit logs"];
+  // const [activeTab, setActiveTab] = useState<string>(tabs[0]);
   return (
     <DashboardLayout>
-      <TopBar>
+      {/* <TopBar>
         <div className="pt-6 pl-10">
           <h2 className="text-xl font-Graphik font-semibold text-[#2F2F33] mb-4">
             Compliance
@@ -33,32 +31,20 @@ const Compliance = () => {
             ))}
           </div>
         </div>
-      </TopBar>
-      <main className="py-8 px-10 overflow-auto">
-        <div className="grid grid-cols-2 gap-6 mb-6">
+      </TopBar> */}
+      <main className="p-4 md:p-6 lg:p-10 overflow-y-scroll">
+        <Heading
+          heading="Compliance"
+          flexDirection="column"
+          subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+        />
+
+        <LatestUpdate />
+
+        {/* <div className="grid grid-cols-2 gap-6 mb-6 mt-10">
           <div className="border border-[#E3E3E5] rounded-xl">
             <UpdateHeading />
-            <div className="py-[17px] px-6 flex gap-x-4 border-b border-[#E3E3E5]">
-              <Image
-                src="/assets/compliance/uphold.png"
-                width={175}
-                height={102}
-                alt="uphold"
-              />
-
-              <div>
-                <p className="text-base font-Graphik text-[#2F2F33] font-semibold mb-1">
-                  FIRS Update
-                </p>
-                <p className="text-[#71717A] text-[15px] font-Graphik">
-                  PAYE tax must be remitted by the 10th of every month. Late
-                  payments attract..
-                </p>
-                <button className="py-[6px] text-[#E37915] font-semibold">
-                  Learn More
-                </button>
-              </div>
-            </div>
+           
 
             <div className="py-[17px] px-6 flex gap-x-4 border-b border-[#E3E3E5]">
               <Image
@@ -234,7 +220,7 @@ const Compliance = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <LawsAndPolicies />
       </main>

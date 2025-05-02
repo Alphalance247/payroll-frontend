@@ -1,18 +1,16 @@
 "use client";
 import React, { ReactNode } from "react";
 import Sidebar from "./sideBar";
+import TopBar from "./topBar";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex h-screen max-w-[1800px] mx-auto">
-      {/* Sidebar */}
-      <Sidebar />
+    <div className="max-w-[1800px] h-screen mx-auto flex flex-col">
+      <TopBar />
 
-      <div className="flex flex-col w-full">
-        {children}
-        {/* <TopBar />
-
-        <main className="p-4 overflow-auto">{children}</main> */}
+      <div className="grid grid-cols-[20%auto] overflow-hidden w-full">
+        <Sidebar />
+        <>{children}</>
       </div>
     </div>
   );
