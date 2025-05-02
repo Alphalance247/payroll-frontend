@@ -3,10 +3,10 @@ import { usePathname } from "next/navigation";
 import { IoCheckmarkOutline } from "react-icons/io5";
 
 const steps = [
-  { label: 'Run Payroll', path: '/run-payroll' },
-  { label: 'Review & Approve', path: '/run-payroll/review-approve' },
-  { label: 'Process Payment', path: '/run-payroll/process-payment' },
-  { label: 'Confirmation', path: '/run-payroll/confirmation' },
+  { label: "Run Payroll", path: "/run-payroll" },
+  { label: "Review & Approve", path: "/run-payroll/review-approve" },
+  { label: "Process Payment", path: "/run-payroll/process-payment" },
+  { label: "Confirmation", path: "/run-payroll/payment-confirmation" },
 ];
 
 export default function PayrollStepper() {
@@ -28,19 +28,23 @@ export default function PayrollStepper() {
                   <div
                     className={`
                       w-6 h-6 rounded-full flex items-center justify-center
-                      ${isCompleted ? 'border-orange-500 border bg-white' : ''}
-                      ${isActive ? ' bg-orange-500' : ''}
-                      ${!isActive && !isCompleted ? 'border border-gray-300' : ''}
+                      ${isCompleted ? "border-orange-500 border bg-white" : ""}
+                      ${isActive ? " bg-orange-500" : ""}
+                      ${
+                        !isActive && !isCompleted
+                          ? "border border-gray-300"
+                          : ""
+                      }
                     `}
                   >
                     {isCompleted ? (
                       <IoCheckmarkOutline color="#E37915" />
-
-                  
                     ) : (
-                      <span className={`text-xs font-medium
-                        ${isActive ? 'text-orange-500' : 'text-gray-400'}
-                      `}>
+                      <span
+                        className={`text-xs font-medium
+                        ${isActive ? "text-orange-500" : "text-gray-400"}
+                      `}
+                      >
                         {index + 1}
                       </span>
                     )}
@@ -53,9 +57,9 @@ export default function PayrollStepper() {
                     <div
                       className={`
                         h-full bg-orange-500 transition-all duration-300
-                        ${isCompleted ? 'w-full' : ''}
-                        ${isActive ? 'w-full' : ''}
-                        ${!isActive && !isCompleted ? 'w-0' : ''}
+                        ${isCompleted ? "w-full" : ""}
+                        ${isActive ? "w-full" : ""}
+                        ${!isActive && !isCompleted ? "w-0" : ""}
                       `}
                     />
                   </div>
@@ -64,10 +68,16 @@ export default function PayrollStepper() {
 
               {/* Step Label */}
               <div className="absolute -bottom-6 left-[-2rem] right-0">
-                <span className={`
+                <span
+                  className={`
                   text-base font-medium
-                  ${isCompleted || isActive ? 'text-[#E37915]' : 'text-[#71717A]'}
-                `}>
+                  ${
+                    isCompleted || isActive
+                      ? "text-[#E37915]"
+                      : "text-[#71717A]"
+                  }
+                `}
+                >
                   {step.label}
                 </span>
               </div>

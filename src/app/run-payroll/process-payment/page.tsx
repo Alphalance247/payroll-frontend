@@ -1,7 +1,6 @@
 "use client";
 import PayrollStepper from "@/app/components/payroll/payrollStepper";
 import DashboardLayout from "../../common/DashBoardLayout";
-import Link from "next/link";
 import ProcessPayment from "@/app/components/payroll/processPayment";
 import EmployeeBankDetails from "@/app/components/payroll/EmployeeBankDetails";
 
