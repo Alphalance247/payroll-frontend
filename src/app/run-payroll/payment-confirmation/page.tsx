@@ -124,9 +124,20 @@ export default function PaymentConfirmationPage() {
             <p className="text-base font-medium text-left text-[#71717A] mt-4">
               Want a reminder when the next payroll is due?{" "}
             </p>
+            <div className="flex justify-between mt-8 pt-4 border-t border-[#E3E3E5]">
+              <div className="flex gap-2">
+                <button className="px-4 py-2 text-sm font-semibold text-[#2F2F33] border border-[#E3E3E5] rounded-lg">
+                  Download Summary
+                </button>
+                <button className="px-4 py-2 text-sm text-[#2F2F33] font-semibold border border-[#E3E3E5] rounded-lg">
+                  View Payroll Report
+                </button>
+              </div>
+              <button className="px-4 py-2 text-sm bg-[#E37915] font-semibold text-[white] border border-[#E3E3E5] rounded-lg">
+                Done
+              </button>
+            </div>
           </div>
-
-          <div></div>
         </div>
       </main>
     </DashboardLayout>

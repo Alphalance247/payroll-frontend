@@ -1,17 +1,29 @@
 import Image from "next/image";
-const ProcessPayment: React.FC = ({}) => {
+const ProcessPayment = ({
+  cashRequired,
+  dollarsAccountBalance,
+  nairaAccountBalance,
+  approvedBy,
+  approvalTimestamp,
+}: {
+  cashRequired: string;
+  dollarsAccountBalance: string;
+  nairaAccountBalance: string;
+  approvedBy: string;
+  approvalTimestamp: string;
+}) => {
   const cardData = [
     {
       label: "Cash Required",
-      value: "₦ 1,000,000",
+      value: `₦ ${cashRequired}`,
     },
     {
       label: "Dollars Account Balance",
-      value: "$ 500,000",
+      value: `$${dollarsAccountBalance}`,
     },
     {
       label: "Naira Account Balance",
-      value: "₦ 10,000,000",
+      value: `₦ ${nairaAccountBalance}`,
       status: "insufficient funds",
     },
   ];
@@ -34,12 +46,12 @@ const ProcessPayment: React.FC = ({}) => {
   const approval = [
     {
       label: "Approved By",
-      approveBy: "David Essien",
+      approveBy: approvedBy,
       icon: "/assets/payroll/note.svg",
     },
     {
       label: "Approval Timestamp",
-      approveBy: "Jan 12, 2025, 4:52 PM",
+      approveBy: approvalTimestamp,
       icon: "/assets/payroll/note.svg",
     },
   ];

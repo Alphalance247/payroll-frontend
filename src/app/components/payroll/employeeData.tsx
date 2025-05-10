@@ -4,64 +4,13 @@ import EmployeeSearch, {
   type SortOption,
   type FilterOption,
 } from "../../components/payroll/employeeSearch";
+import { PayrollData } from "../../utils/type";
 
-interface Employee {
-  id: number;
-  name: string;
-  team: string;
-  regularHours: number;
-  overtimeHours: number;
-  salary: number;
-  tax: number;
-  deductions: number;
-  miscAmount: number;
+interface PayrollSummaryProps {
+  payroll: PayrollData;
 }
 
-const TEAM_COLORS: Record<
-  string,
-  { backgroundColor: string; textColor: string }
-> = {
-  "Design & Development": { backgroundColor: "#E7E9EA", textColor: "#0C1720" },
-  Advocate: { backgroundColor: "#DFF4F2", textColor: "#0C1720" },
-  Cloud: { backgroundColor: "#F6D5B6", textColor: "#5F3309" },
-  Legal: { backgroundColor: "#E9FAFF", textColor: "#0ECDFF" },
-  Domestic: { backgroundColor: "#E7E9EA", textColor: "#0C1720" },
-  ITSM: { backgroundColor: "#E7E9EA", textColor: "#0C1720" },
-  "Product Office": { backgroundColor: "#E7E9EA", textColor: "#0C1720" },
-  "Artificial Intelligence": {
-    backgroundColor: "#E7E9EA",
-    textColor: "#0C1720",
-  },
-  "Quality Assurance": { backgroundColor: "#E7E9EA", textColor: "#0C1720" },
-  DEVOPS: { backgroundColor: "#E7E9EA", textColor: "#0C1720" },
-};
-
-const DUMMY_EMPLOYEES: Employee[] = Array.from({ length: 10 }).map(
-  (_, idx) => ({
-    id: idx + 1,
-    name: "Lanre Ademoye",
-    team: [
-      "Design & Development",
-      "Advocate",
-      "Cloud",
-      "Legal",
-      "Domestic",
-      "ITSM",
-      "Product Office",
-      "Artificial Intelligence",
-      "Quality Assurance",
-      "DEVOPS",
-    ][idx],
-    regularHours: 100,
-    overtimeHours: 100,
-    salary: 500_000,
-    tax: 500_000,
-    deductions: 100,
-    miscAmount: 100,
-  })
-);
-
-export default function EmployeeDetailsTable() {
+const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
 
@@ -72,53 +21,36 @@ export default function EmployeeDetailsTable() {
 
   // Filtered and sorted employees
   const filteredEmployees = useMemo(() => {
-    return DUMMY_EMPLOYEES.filter((emp) => {
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch =
-        emp.name.toLowerCase().includes(searchLower) ||
-        emp.team.toLowerCase().includes(searchLower);
+    return payroll?.payslips
+      .filter((emp) => {
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch =
+          emp.employee.fullname.toLowerCase().includes(searchLower) ||
+          emp.employee.team.toLowerCase().includes(searchLower);
 
-      if (filterBy === "all") return matchesSearch;
-      // Add more filter conditions as needed
+        if (filterBy === "all") return matchesSearch;
+        // Add more filter conditions as needed
 
-      return matchesSearch;
-    }).sort((a, b) => {
-      switch (sortBy) {
-        case "firstName":
-          return a.name.split(" ")[0].localeCompare(b.name.split(" ")[0]);
-        case "lastName":
-          return a.name
-            .split(" ")
-            .slice(-1)[0]
-            .localeCompare(b.name.split(" ").slice(-1)[0]);
-        case "team":
-          return a.team.localeCompare(b.team);
-        default:
-          return 0;
-      }
-    });
-  }, [DUMMY_EMPLOYEES, searchQuery, sortBy, filterBy]);
-
-  // Calculate totals
-  const totals = DUMMY_EMPLOYEES.reduce(
-    (acc, e) => {
-      acc.regularHours += e.regularHours;
-      acc.overtimeHours += e.overtimeHours;
-      acc.salary += e.salary;
-      acc.tax += e.tax;
-      acc.deductions += e.deductions;
-      acc.miscAmount += e.miscAmount;
-      return acc;
-    },
-    {
-      regularHours: 0,
-      overtimeHours: 0,
-      salary: 0,
-      tax: 0,
-      deductions: 0,
-      miscAmount: 0,
-    }
-  );
+        return matchesSearch;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case "firstName":
+            return a.employee.fullname
+              .split(" ")[0]
+              .localeCompare(b.employee.fullname.split(" ")[0]);
+          case "lastName":
+            return a.employee.fullname
+              .split(" ")
+              .slice(-1)[0]
+              .localeCompare(b.employee.fullname.split(" ").slice(-1)[0]);
+          case "team":
+            return a.employee.team.localeCompare(b.employee.team);
+          default:
+            return 0;
+        }
+      });
+  }, [payroll?.payslips, searchQuery, sortBy, filterBy]);
 
   return (
     <section className="px-12">
@@ -158,14 +90,11 @@ export default function EmployeeDetailsTable() {
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
                   Salary
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                   Tax
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
                   Deductions
-                </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
-                  Misc. Amount
                 </th>
               </tr>
             </thead>
@@ -184,45 +113,35 @@ export default function EmployeeDetailsTable() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                        {emp.name
+                        {emp.employee.fullname
                           .split(" ")
                           .map((n) => n[0])
                           .join("")}
                       </div>
                       <span className="text-[#2F2F33] text-sm font-medium">
-                        {emp.name}
+                        {emp.employee.fullname}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span
-                      className="inline-block px-3 py-1 rounded-full text-xs font-medium"
-                      style={{
-                        backgroundColor:
-                          TEAM_COLORS[emp.team]?.backgroundColor || "#F9FAFB",
-                        color: TEAM_COLORS[emp.team]?.textColor || "#000000",
-                      }}
-                    >
-                      {emp.team}
+                    <span className="inline-block px-3 py-1 rounded-full text-xs border border-[#414D57] bg-[#E7E9EA] text-[#000000] font-medium">
+                      {emp.employee.team}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {emp.regularHours.toFixed(2)}
+                    {/* {emp.regularHours.toFixed(2)} */} 6
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {emp.overtimeHours.toFixed(2)}
+                    {/* {emp.overtimeHours.toFixed(2)} */} 7
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    ₦{emp.salary.toLocaleString()}
+                    ₦ {emp.net_pay}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    ₦{emp.tax.toLocaleString()}
+                    ₦ {emp?.tax}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    ₦{emp.deductions.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    ₦{emp.miscAmount.toLocaleString()}
+                    ₦ {emp?.debt}
                   </td>
                 </tr>
               ))}
@@ -236,22 +155,19 @@ export default function EmployeeDetailsTable() {
                   Total
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  {totals.regularHours.toFixed(2)}
+                  {payroll?.total_hours}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  {totals.overtimeHours.toFixed(2)}
+                  {payroll?.total_bonus}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{totals.salary.toLocaleString()}
+                  ₦{payroll?.total_payout}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{totals.tax.toLocaleString()}
+                  ₦{payroll?.rate}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{totals.deductions.toLocaleString()}
-                </td>
-                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{totals.miscAmount.toLocaleString()}
+                  ₦{payroll?.total_payout}
                 </td>
               </tr>
             </tfoot>
@@ -294,4 +210,6 @@ export default function EmployeeDetailsTable() {
       </div>
     </section>
   );
-}
+};
+
+export default EmployeeDetailsTable;
