@@ -1,8 +1,12 @@
-'use client'
+"use client";
 import { FaEdit } from "react-icons/fa";
 import Image from "next/image";
-import { useState } from 'react';
-import EditExchange from './editExchange';
+import { useState } from "react";
+import EditExchange from "./editExchange";
+import { PayrollData } from "../../utils/type";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import useBoolean from "@/app/hooks/useBoolean";
 
 interface OverviewItem {
   id: string;
@@ -14,45 +18,82 @@ interface OverviewItem {
   onEdit?: () => void;
 }
 
-export default function RunPayrollHeading() {
-  const [isExchangeModalOpen, setIsExchangeModalOpen] = useState(false);
-  const [currentRate, setCurrentRate] = useState({ usd: 1, ngn: 1500 });
+interface PayrollSummaryProps {
+  payroll: PayrollData;
+}
 
-  const handleSaveExchangeRate = (rate: { usd: number; ngn: number }) => {
-    setCurrentRate(rate);
-    // Here you would typically also save this to your backend
+const RunPayrollHeading: React.FC<PayrollSummaryProps> = ({ payroll }) => {
+  const [isExchangeModalOpen, setIsExchangeModalOpen] = useState(false);
+  const [isLoading, setIsLoading, closeLoading] = useBoolean(false);
+
+  const [currentRate, setCurrentRate] = useState({
+    usd: 1,
+    ngn: payroll?.rate || 1500,
+  });
+
+  const handleSaveExchangeRate = async (rate: { usd: number; ngn: number }) => {
+    setIsLoading();
+    try {
+      const res = await axios.patch(
+        `https://real.ec2.alluvium.net/api/employee/set-rate/9`,
+        {
+          payroll_id: payroll?.id,
+          rate: rate?.ngn,
+        }
+      );
+
+      if (res.status === 200) {
+        toast.success("Payroll message sent successfully");
+        setCurrentRate(rate);
+      } else {
+        toast.error(
+          res?.data?.message ||
+            "Failed to update exchange rate please try again or contact admin"
+        );
+      }
+      closeLoading();
+    } catch (err: any) {
+      toast.error(
+        "Submission failed:",
+        err?.response?.data?.message || err.message
+      );
+    } finally {
+      closeLoading();
+    }
   };
+
+  console.log(payroll);
 
   const overviewItems: OverviewItem[] = [
     {
-      id: 'exchange-rate',
-      icon: '/assets/payroll/1.svg',
-      label: 'Exchange Rate',
+      id: "exchange-rate",
+      icon: "/assets/payroll/1.svg",
+      label: "Exchange Rate",
       value: `₦ ${currentRate.ngn}`,
       hasEdit: true,
-      onEdit: () => setIsExchangeModalOpen(true)
+      onEdit: () => setIsExchangeModalOpen(true),
     },
     {
-      id: 'hours-booked',
-      icon: '/assets/payroll/2.svg',
-      label: 'Total Hours Booked',
-      value: '1500.00',
-      unit: 'hrs'
+      id: "hours-booked",
+      icon: "/assets/payroll/2.svg",
+      label: "Total Hours Booked",
+      value: payroll?.total_hours || "Not set",
+      unit: "hrs",
     },
     {
-      id: 'payday',
-      icon: '/assets/payroll/3.svg',
-      label: 'Payday',
-      value: '15th January, 2025',
+      id: "payday",
+      icon: "/assets/payroll/3.svg",
+      label: "Payday",
+      value: payroll?.payday || "Not set",
       hasEdit: true,
-      onEdit: () => console.log('Edit payday')
+      onEdit: () => console.log("Edit payday"),
     },
     {
-      id: 'payment-method',
-      icon: '/assets/payroll/4.svg',
-      label: 'Payment Method',
-      value: 'Bank Transfer'
-    }
+      id: "payment-method",
+      icon: "/assets/payroll/4.svg",
+      label: "Payment Method",
+      value: payroll?.payment_method || "Not set",
+    },
   ];
 
   return (
@@ -60,14 +101,17 @@ export default function RunPayrollHeading() {
       {/* Heading and Status */}
       <div className="flex items-center gap-3 mb-4">
         <h2 className="text-xl font-semibold text-[#2F2F33]">Run Payroll</h2>
-        <span className="bg-[#E7E9EA] text-[#0C1720] text-sm px-3 py-1 rounded-full font-medium border border-[#414D57]">
-          Not Approved
+        <span className="bg-[#E7E9EA] text-[#0C1720] capitalize text-sm px-3 py-1 rounded-full font-medium border border-[#414D57]">
+          {payroll?.approved_state}
         </span>
       </div>
 
       {/* Description */}
       <p className="mb-6 text-base text-[#71717A] w-[80%]">
-        Lorem ipsum dolor sit amet consectetur. Feugiat lacus amet justo tincidunt faucibus nunc est et hendrerit.. Id tortor convallis sed sem tristique accumsan.. Senectus tempor vitae faucibus pulvinar luctus.. Mollis tempus mauris risus est donec mattis maecenas elit..
+        Lorem ipsum dolor sit amet consectetur. Feugiat lacus amet justo
+        tincidunt faucibus nunc est et hendrerit.. Id tortor convallis sed sem
+        tristique accumsan.. Senectus tempor vitae faucibus pulvinar luctus..
+        Mollis tempus mauris risus est donec mattis maecenas elit..
       </p>
 
       {/* Overview Items */}
@@ -76,12 +120,16 @@ export default function RunPayrollHeading() {
           <div key={item.id} className="flex gap-4 items-start border-r">
             <Image src={item.icon} alt={item.label} width={40} height={40} />
             <div className="">
-              <p className="text-sm text-[#71717A] font-medium mb-2">{item.label}</p>
+              <p className="text-sm text-[#71717A] font-medium mb-2">
+                {item.label}
+              </p>
               <p className="text-lg font-medium text-[#2F2F33] tracking-[-0.5px] mb-2">
                 {item.value}
-                {item.unit && <span className="font-normal text-base"> {item.unit}</span>}
+                {item.unit && (
+                  <span className="font-normal text-base"> {item.unit}</span>
+                )}
               </p>
-              
+
               {item.hasEdit && (
                 <button
                   onClick={item.onEdit}
@@ -101,7 +149,10 @@ export default function RunPayrollHeading() {
         onClose={() => setIsExchangeModalOpen(false)}
         onSave={handleSaveExchangeRate}
         currentRate={currentRate}
+        isLoading={isLoading}
       />
     </div>
   );
-}
+};
+
+export default RunPayrollHeading;

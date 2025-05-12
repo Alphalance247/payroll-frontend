@@ -1,39 +1,85 @@
-import { useState } from 'react';
-import { Search } from 'lucide-react';
+"use client";
+import { useState, useEffect } from "react";
+import { Loader2, Search } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { usePayrollContext } from "@/app/context/payrollContext";
+import useBoolean from "@/app/hooks/useBoolean";
 
-interface Admin {
-  id: string;
-  name: string;
-  role: 'super admin' | 'admin';
+interface Employee {
+  id: number;
+  role: "super admin" | "admin";
+  fullname: string;
+}
+
+interface PayrollAdmin {
+  employees: Employee[];
+  statusmessage: string;
 }
 
 interface SendPayrollToProps {
   isOpen: boolean;
   onClose: () => void;
-  onSend: (selectedAdmins: string[]) => void;
+  onSend: (selectedAdmins: number[]) => void;
 }
 
-const mockAdmins: Admin[] = [
-  { id: '1', name: 'Wale Olojo', role: 'super admin' },
-  { id: '2', name: 'Taiwo Ojo', role: 'super admin' },
-  { id: '3', name: 'Temilade Adelabu', role: 'super admin' },
-  { id: '4', name: 'Chinedu Chuwukere', role: 'admin' },
-  { id: '5', name: 'Adesina Oluwapelu', role: 'admin' },
-  { id: '6', name: 'Adesina Oluwapelu', role: 'admin' },
-  { id: '7', name: 'Adesina Oluwapelu', role: 'admin' },
-  { id: '8', name: 'Adesina Oluwapelu', role: 'admin' },
-  { id: '9', name: 'Adesina Oluwapelu', role: 'admin' },
-];
+//   { id: "1", name: "Wale Olojo", role: "super admin" },
+//   { id: "2", name: "Taiwo Ojo", role: "super admin" },
+//   { id: "3", name: "Temilade Adelabu", role: "super admin" },
+//   { id: "4", name: "Chinedu Chuwukere", role: "admin" },
+//   { id: "5", name: "Adesina Oluwapelu", role: "admin" },
+//   { id: "6", name: "Adesina Oluwapelu", role: "admin" },
+//   { id: "7", name: "Adesina Oluwapelu", role: "admin" },
+//   { id: "8", name: "Adesina Oluwapelu", role: "admin" },
+//   { id: "9", name: "Adesina Oluwapelu", role: "admin" },
+// ];
 
-export default function SendPayrollTo({ isOpen, onClose, onSend }: SendPayrollToProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedAdmins, setSelectedAdmins] = useState<string[]>([]);
+export default function SendPayrollTo({
+  isOpen,
+  onClose,
+  onSend,
+}: SendPayrollToProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedAdmins, setSelectedAdmins] = useState<number[]>([]);
+  const [payrollAdmin, setPayrollAdmin] = useState<PayrollAdmin | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [isNoteModalOpen, openNoteModal, closeNoteModal] = useBoolean(false);
+  const { payroll } = usePayrollContext();
 
-  const filteredAdmins = mockAdmins.filter((admin) =>
-    admin.name.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    const fetchPayrollAdmin = async () => {
+      openNoteModal();
+      try {
+        const res = await axios.get(
+          `https://real.ec2.alluvium.net/api/employees`
+        );
+        console.log("data from the backend", res?.data);
+        if (res.status === 200) {
+          setPayrollAdmin(res?.data);
+          toast.success(payrollAdmin?.statusmessage || "Payroll Admin fetched");
+        } else {
+          toast.error(res?.data?.message || "Failed to fetch payroll");
+        }
+      } catch (err) {
+        // console.error("Failed to fetch payroll:", err);
+        toast.error("Error fetching payroll admin");
+      } finally {
+        closeNoteModal();
+      }
+    };
+
+    if (isOpen) {
+      fetchPayrollAdmin();
+    }
+  }, [isOpen]);
+
+  console.log(selectedAdmins);
+
+  const filteredAdmins = payrollAdmin?.employees?.filter((admin) =>
+    admin.fullname.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleToggleAdmin = (adminId: string) => {
+  const handleToggleAdmin = (adminId: number) => {
     setSelectedAdmins((prev) =>
       prev.includes(adminId)
         ? prev.filter((id) => id !== adminId)
@@ -41,39 +87,57 @@ export default function SendPayrollTo({ isOpen, onClose, onSend }: SendPayrollTo
     );
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     onSend(selectedAdmins);
-    onClose();
-  };
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        `https://real.ec2.alluvium.net/api/employees/send-payroll-reviews`,
+        {
+          payroll_id: payroll?.id,
+          employee_ids: selectedAdmins,
+        }
+      );
 
- 
+      if (res.status === 200) {
+        toast.success("Payroll message sent successfully");
+        onClose();
+      } else {
+        toast.error(
+          res?.data?.message || "Failed to send payroll confirmation message"
+        );
+      }
+      setLoading(false);
+    } catch (err: any) {
+      toast.error(
+        "Submission failed:",
+        err?.response?.data?.message || err.message
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 overflow-y-auto"
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
     >
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-30"
-        onClick={onClose}
-      >
+      <div className="fixed inset-0 bg-black bg-opacity-30" onClick={onClose}>
         {/* Modal Container */}
         <div className="flex min-h-screen items-center justify-center p-4">
           {/* Modal Content */}
-          <div 
+          <div
             className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <h2 
-              id="modal-title"
-              className="text-xl font-semibold mb-4"
-            >
+            <h2 id="modal-title" className="text-xl font-semibold mb-4">
               Send Payroll to
             </h2>
 
@@ -90,30 +154,39 @@ export default function SendPayrollTo({ isOpen, onClose, onSend }: SendPayrollTo
             </div>
 
             {/* Admin List */}
-            <div className="space-y-3 max-h-[300px] overflow-y-auto mb-4">
-              {filteredAdmins.map((admin) => (
-                <div
-                  key={admin.id}
-                  className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      id={admin.id}
-                      checked={selectedAdmins.includes(admin.id)}
-                      onChange={() => handleToggleAdmin(admin.id)}
-                      className="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
-                    />
-                    <label htmlFor={admin.id} className="text-sm font-medium">
-                      {admin.name}
-                    </label>
+            {isNoteModalOpen ? (
+              <div className="flex justify-center items-center h-full">
+                <Loader2 className="animate-spin" />
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-[300px] overflow-y-auto mb-4">
+                {filteredAdmins?.map((admin) => (
+                  <div
+                    key={admin.id}
+                    className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id={admin.id.toString()}
+                        checked={selectedAdmins.includes(admin.id)}
+                        onChange={() => handleToggleAdmin(admin.id)}
+                        className="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                      />
+                      <label
+                        htmlFor={admin.id.toString()}
+                        className="text-sm font-medium"
+                      >
+                        {admin.fullname}
+                      </label>
+                    </div>
+                    <span className="text-sm text-gray-500">
+                      {admin?.role || "Admin"}
+                    </span>
                   </div>
-                  <span className="text-sm text-gray-500">
-                    {admin.role}
-                  </span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-3">
@@ -128,7 +201,7 @@ export default function SendPayrollTo({ isOpen, onClose, onSend }: SendPayrollTo
                 disabled={selectedAdmins.length === 0}
                 className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send
+                {loading ? "Sending..." : "Send"}
               </button>
             </div>
           </div>

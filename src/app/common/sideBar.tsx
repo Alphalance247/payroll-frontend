@@ -36,10 +36,28 @@ interface sideBarData {
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
-  const [showDropDown, setShowDropDown] = useState<number | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<{
+    section: number;
+    sub: number;
+  } | null>(null);
 
-  const handleDropDown = useCallback((i: number) => {
-    setShowDropDown(i);
+  const handleDropDown = useCallback(
+    (sectionIdx: number, subIdx: number) => {
+      if (
+        openDropdown &&
+        openDropdown.section === sectionIdx &&
+        openDropdown.sub === subIdx
+      ) {
+        setOpenDropdown(null); // Close if already open
+      } else {
+        setOpenDropdown({ section: sectionIdx, sub: subIdx }); // Open the clicked dropdown
+      }
+    },
+    [openDropdown]
+  );
+
+  const handleNavClick = useCallback(() => {
+    setOpenDropdown(null); // Close any open dropdown when a non-dropdown nav link is clicked
   }, []);
 
   const sideBarData: sideBarData[] = [
@@ -170,9 +188,9 @@ const Sidebar: React.FC = () => {
         <div className="mt-4 px-3">
           <nav className="mt-4">
             <ul className="flex flex-col gap-y-4">
-              {sideBarData.map((item, i) => {
+              {sideBarData.map((item, sectionIdx) => {
                 return (
-                  <div key={i}>
+                  <div key={sectionIdx}>
                     {item?.heading && (
                       <h3 className="mb-3 pl-3 text-xs font-medium text-[white] uppercase font-Graphik ">
                         {item?.heading}
@@ -181,10 +199,16 @@ const Sidebar: React.FC = () => {
 
                     <div className="flex flex-col gap-y-2">
                       {item?.subHeadings &&
-                        item?.subHeadings?.map((items, i) => {
+                        item?.subHeadings?.map((items, subIdx) => {
+                          const isDropdown = !!items?.dropdownText;
+                          const isOpen =
+                            openDropdown &&
+                            openDropdown.section === sectionIdx &&
+                            openDropdown.sub === subIdx;
                           return (
-                            <div key={i}>
-                              {items?.link ? (
+                            <div key={subIdx}>
+                              {/* Top-level nav link (not a dropdown parent) */}
+                              {items?.link && !isDropdown ? (
                                 <Link href={items?.link || "/"} passHref>
                                   <div
                                     className={`flex justify-between py-[10px] pl-3 rounded-lg ${
@@ -192,6 +216,7 @@ const Sidebar: React.FC = () => {
                                         ? "bg-[#414D57] text-white"
                                         : "bg-transparent text-[white]"
                                     }`}
+                                    onClick={handleNavClick}
                                   >
                                     <div
                                       className={`flex gap-x-3 items-center`}
@@ -205,13 +230,12 @@ const Sidebar: React.FC = () => {
                                 </Link>
                               ) : (
                                 <>
+                                  {/* Dropdown parent: never active */}
                                   <div
-                                    className={`flex items-center py-[10px] pl-3 cursor-pointer rounded-lg justify-between ${
-                                      pathname === items?.link
-                                        ? "bg-[#414D57] text-white"
-                                        : "bg-transparent text-[white]"
-                                    }`}
-                                    onClick={() => handleDropDown(i)}
+                                    className={`flex items-center py-[10px] pl-3 cursor-pointer rounded-lg justify-between bg-transparent text-[white]`}
+                                    onClick={() =>
+                                      handleDropDown(sectionIdx, subIdx)
+                                    }
                                   >
                                     <button
                                       className={`flex items-center gap-x-3`}
@@ -223,26 +247,27 @@ const Sidebar: React.FC = () => {
                                       <span>{items?.arrowDown}</span>
                                     )}
                                   </div>
-
-                                  {showDropDown === i && (
+                                  {isOpen && (
                                     <div className="flex flex-col gap-y-2 border-l-[#414D57] border-l pl-4">
-                                      {items?.dropdownText?.map((item, i) => (
-                                        <Link
-                                          href={item?.link || "/"}
-                                          passHref
-                                          key={i}
-                                        >
-                                          <li
-                                            className={`text-sm font-medium rounded-lg py-[10px] pl-4 ${
-                                              pathname === item?.link
-                                                ? "bg-[#414D57] text-white"
-                                                : "bg-transparent text-[white]"
-                                            }`}
+                                      {items?.dropdownText?.map(
+                                        (item, dropIdx) => (
+                                          <Link
+                                            href={item?.link || "/"}
+                                            passHref
+                                            key={dropIdx}
                                           >
-                                            {item?.text}
-                                          </li>
-                                        </Link>
-                                      ))}
+                                            <li
+                                              className={`text-sm font-medium rounded-lg py-[10px] pl-4 ${
+                                                pathname === item?.link
+                                                  ? "bg-[#414D57] text-white"
+                                                  : "bg-transparent text-[white]"
+                                              }`}
+                                            >
+                                              {item?.text}
+                                            </li>
+                                          </Link>
+                                        )
+                                      )}
                                     </div>
                                   )}
                                 </>
