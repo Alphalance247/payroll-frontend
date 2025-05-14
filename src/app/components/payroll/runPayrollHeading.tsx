@@ -35,9 +35,14 @@ const RunPayrollHeading: React.FC<PayrollSummaryProps> = ({ payroll }) => {
   const handleSaveExchangeRate = async (rate: { usd: number; ngn: number }) => {
     setIsLoading(true);
     try {
-      const res = await axiosInstance.patch(`/employees/set-rate/2`, {
-        official_rate: rate?.ngn,
-      });
+      const res = await axiosInstance.patch(
+        `/employees/set-rate/${
+          payroll?.rates?.find((rate) => rate.code === "NGN")?.id
+        }`,
+        {
+          official_rate: rate?.ngn,
+        }
+      );
 
       if (res.status === 200) {
         toast.success("Payroll rate successfully updated");
