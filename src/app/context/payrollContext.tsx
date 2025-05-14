@@ -4,7 +4,7 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 import { PayrollData } from "../utils/type";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axiosInstance from "../utils/axios";
 
 type PayrollContextType = {
   payroll: PayrollData | null;
@@ -22,9 +22,7 @@ export const PayrollProvider = ({ children }: { children: ReactNode }) => {
     const fetchPayroll = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(
-          `https://real.ec2.alluvium.net/api/employees/generate-payroll`
-        );
+        const res = await axiosInstance.get(`/employees/generate-payroll`);
         const { data } = res.data; // response.data.data
         if (res.status === 200) {
           setPayroll(data);

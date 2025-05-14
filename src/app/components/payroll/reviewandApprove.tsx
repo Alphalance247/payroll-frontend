@@ -4,7 +4,7 @@ interface PayrollReviewProps {
   cashRequired: string;
   numberOfEmployees: number;
   employeePayday: string;
-  exchangeRate: string;
+  exchangeRate: number;
   paymentMethod: string;
   bankAccount: string;
   runBy: string;

@@ -4,9 +4,8 @@ import Image from "next/image";
 import { useState } from "react";
 import EditExchange from "./editExchange";
 import { PayrollData } from "../../utils/type";
-import axios from "axios";
 import { toast } from "react-hot-toast";
-import useBoolean from "@/app/hooks/useBoolean";
+import axiosInstance from "@/app/utils/axios";
 
 interface OverviewItem {
   id: string;
@@ -24,41 +23,40 @@ interface PayrollSummaryProps {
 
 const RunPayrollHeading: React.FC<PayrollSummaryProps> = ({ payroll }) => {
   const [isExchangeModalOpen, setIsExchangeModalOpen] = useState(false);
-  const [isLoading, setIsLoading, closeLoading] = useBoolean(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [currentRate, setCurrentRate] = useState({
     usd: 1,
-    ngn: payroll?.rate || 1500,
+    ngn:
+      payroll?.rates?.find((rate) => rate.code === "NGN")?.official_rate ||
+      1500,
   });
 
   const handleSaveExchangeRate = async (rate: { usd: number; ngn: number }) => {
-    setIsLoading();
+    setIsLoading(true);
     try {
-      const res = await axios.patch(
-        `https://real.ec2.alluvium.net/api/employee/set-rate/9`,
-        {
-          payroll_id: payroll?.id,
-          rate: rate?.ngn,
-        }
-      );
+      const res = await axiosInstance.patch(`/employees/set-rate/2`, {
+        official_rate: rate?.ngn,
+      });
 
       if (res.status === 200) {
-        toast.success("Payroll message sent successfully");
+        toast.success("Payroll rate successfully updated");
         setCurrentRate(rate);
+        setIsExchangeModalOpen(false);
       } else {
         toast.error(
           res?.data?.message ||
             "Failed to update exchange rate please try again or contact admin"
         );
       }
-      closeLoading();
+      setIsLoading(false);
     } catch (err: any) {
       toast.error(
         "Submission failed:",
         err?.response?.data?.message || err.message
       );
     } finally {
-      closeLoading();
+      setIsLoading(false);
     }
   };
 

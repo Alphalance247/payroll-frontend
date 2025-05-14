@@ -1,15 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Loader2, Search } from "lucide-react";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { usePayrollContext } from "@/app/context/payrollContext";
 import useBoolean from "@/app/hooks/useBoolean";
+import axiosInstance from "@/app/utils/axios";
 
 interface Employee {
   id: number;
-  role: "super admin" | "admin";
-  fullname: string;
+
+  employee: {
+    fullname: string;
+    role: "super admin" | "admin";
+    id: number;
+  };
 }
 
 interface PayrollAdmin {
@@ -50,10 +54,7 @@ export default function SendPayrollTo({
     const fetchPayrollAdmin = async () => {
       openNoteModal();
       try {
-        const res = await axios.get(
-          `https://real.ec2.alluvium.net/api/employees`
-        );
-        console.log("data from the backend", res?.data);
+        const res = await axiosInstance.get(`/employees/payroll-staffs`);
         if (res.status === 200) {
           setPayrollAdmin(res?.data);
           toast.success(payrollAdmin?.statusmessage || "Payroll Admin fetched");
@@ -76,7 +77,7 @@ export default function SendPayrollTo({
   console.log(selectedAdmins);
 
   const filteredAdmins = payrollAdmin?.employees?.filter((admin) =>
-    admin.fullname.toLowerCase().includes(searchQuery.toLowerCase())
+    admin.employee.fullname?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleToggleAdmin = (adminId: number) => {
@@ -91,13 +92,10 @@ export default function SendPayrollTo({
     onSend(selectedAdmins);
     setLoading(true);
     try {
-      const res = await axios.post(
-        `https://real.ec2.alluvium.net/api/employees/send-payroll-reviews`,
-        {
-          payroll_id: payroll?.id,
-          employee_ids: selectedAdmins,
-        }
-      );
+      const res = await axiosInstance.post(`/employees/send-payroll-reviews`, {
+        payroll_id: payroll?.id,
+        employee_ids: selectedAdmins,
+      });
 
       if (res.status === 200) {
         toast.success("Payroll message sent successfully");
@@ -168,20 +166,20 @@ export default function SendPayrollTo({
                     <div className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        id={admin.id.toString()}
-                        checked={selectedAdmins.includes(admin.id)}
-                        onChange={() => handleToggleAdmin(admin.id)}
+                        id={admin?.employee?.id.toString()}
+                        checked={selectedAdmins.includes(admin?.employee?.id)}
+                        onChange={() => handleToggleAdmin(admin?.employee?.id)}
                         className="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                       />
                       <label
                         htmlFor={admin.id.toString()}
                         className="text-sm font-medium"
                       >
-                        {admin.fullname}
+                        {admin.employee.fullname}
                       </label>
                     </div>
                     <span className="text-sm text-gray-500">
-                      {admin?.role || "Admin"}
+                      {admin?.employee?.role || "Admin"}
                     </span>
                   </div>
                 ))}

@@ -148,11 +148,7 @@ export default function EditExchange({
             onClick={handleSave}
             className="flex-1 px-4 py-2 bg-[#E37915] text-white block w-fit rounded-lg hover:bg-[#c66812] transition-colors"
           >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              "Save Changes"
-            )}
+            {isLoading ? "Saving..." : "Save Changes"}
           </button>
         </DialogFooter>
       </DialogContent>

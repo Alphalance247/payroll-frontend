@@ -3,7 +3,11 @@ export interface Employee {
   ticket_id: string | null;
   acct_id: string | null;
   fullname: string;
-  team: string;
+  team: {
+    bg_color: string;
+    border_color: string;
+    name: string;
+  };
   acct_num: string;
   bank_name: string;
   currency: string;
@@ -17,17 +21,28 @@ export interface Payslip {
   net_pay: string;
 }
 
+export interface payrollRate {
+  id: number;
+  code: string;
+  official_rate: number;
+}
+
 export interface PayrollData {
   id: number;
   total_payout: string;
   total_bonus: string;
   total_hours: string;
   approved_state: string;
-  approved_by: string;
+  approved_by: {
+    fullname: string;
+    id: number;
+  };
   payday: string;
   payment_method: string;
   payslips: Payslip[];
-  rate: number;
+  reviewers_list: number[];
+  rates: payrollRate[];
+  run_by_id: number;
   run_by: {
     fullname: string;
     id: number;

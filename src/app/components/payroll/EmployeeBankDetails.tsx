@@ -68,7 +68,7 @@ export default function EmployeeBankDetails({
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-[#2F2F33] text-base">
-                      {emp?.employee?.team}
+                      {emp?.employee?.team?.name}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">

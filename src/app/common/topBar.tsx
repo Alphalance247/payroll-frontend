@@ -3,8 +3,11 @@ import Image from "next/image";
 import { BiSearch } from "react-icons/bi";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { FaChevronDown } from "react-icons/fa";
+import { useAuth } from "../context/authContext";
 
 const TopBar = () => {
+  const { user, logout, isLoggingOut } = useAuth();
+
   return (
     <header className="sticky top-0 z-10 w-full bg-[#F7F7F7] border-b border-[#E3E3E5]">
       <div className="flex items-center justify-between px-6 py-5 max-w-[1440px] mx-auto">
@@ -39,7 +42,10 @@ const TopBar = () => {
             <IoNotificationsOutline size={38} color="#4E4E4E" />
           </div>
 
-          <div className="flex justify-between gap-x-4 items-center bg-[#F6F6F6] cursor-pointer border-l border-l-[#D3D3D6] pl-4">
+          <div
+            className="flex justify-between gap-x-4 items-center bg-[#F6F6F6] cursor-pointer border-l border-l-[#D3D3D6] pl-4"
+            onClick={logout}
+          >
             <div className="flex items-center gap-x-3">
               <Image
                 src="/assets/topbar/Icon.svg"
@@ -49,15 +55,19 @@ const TopBar = () => {
               />
               <div>
                 <p className="text-[#2F2F33] text-base font-medium font-Graphik mb-1">
-                  Adeyemi Olayiwola
+                  {user?.fullname || "Admin"}
                 </p>
                 <p className="text-[#71717A] text-[13px] leading-5 font-Graphik">
-                  Admin
+                  {user?.is_payroll_staff ? "Admin" : "Staff"}
                 </p>
               </div>
             </div>
             <span>
-              <FaChevronDown color="#7C7C7C" size={20} />
+              {isLoggingOut ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-[#E37915]"></div>
+              ) : (
+                <FaChevronDown color="#7C7C7C" size={20} />
+              )}
             </span>
           </div>
         </div>

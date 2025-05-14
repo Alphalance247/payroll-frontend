@@ -18,6 +18,9 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("firstName");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
+  const currencySymbol = payroll?.rates?.find((rate) => rate.code === "NGN")
+    ? "₦"
+    : "K";
 
   // Filtered and sorted employees
   const filteredEmployees = useMemo(() => {
@@ -26,7 +29,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
         const searchLower = searchQuery.toLowerCase();
         const matchesSearch =
           emp.employee.fullname.toLowerCase().includes(searchLower) ||
-          emp.employee.team.toLowerCase().includes(searchLower);
+          emp.employee.team.name.toLowerCase().includes(searchLower);
 
         if (filterBy === "all") return matchesSearch;
         // Add more filter conditions as needed
@@ -45,7 +48,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
               .slice(-1)[0]
               .localeCompare(b.employee.fullname.split(" ").slice(-1)[0]);
           case "team":
-            return a.employee.team.localeCompare(b.employee.team);
+            return a.employee.team.name.localeCompare(b.employee.team.name);
           default:
             return 0;
         }
@@ -124,8 +127,10 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="inline-block px-3 py-1 rounded-full text-xs border border-[#414D57] bg-[#E7E9EA] text-[#000000] font-medium">
-                      {emp.employee.team}
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-xs border border-[#414D57] bg-[#E7E9EA] text-[#000000] font-medium`}
+                    >
+                      {emp.employee.team?.name}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
@@ -135,13 +140,13 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     {/* {emp.overtimeHours.toFixed(2)} */} 7
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    ₦ {emp.net_pay}
+                    {currencySymbol} {emp.net_pay}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    ₦ {emp?.tax}
+                    {currencySymbol} {emp?.tax}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    ₦ {emp?.debt}
+                    {currencySymbol} {emp?.debt}
                   </td>
                 </tr>
               ))}
