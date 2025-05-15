@@ -10,6 +10,7 @@ import { useAuth } from "./context/authContext";
 import ProtectedRoute from "./common/protectedRoute";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
+import { useEffect } from "react";
 export default function Home() {
   const { user } = useAuth();
 
@@ -29,7 +30,12 @@ export default function Home() {
   ];
 
   // Show success message
-  toast.success(`Sign in successful, welcome ${user?.fullname}`);
+
+  useEffect(() => {
+    if (user) {
+      toast.success(`Sign in successful, welcome ${user.fullname}`);
+    }
+  }, [user]);
 
   return (
     <ProtectedRoute>
