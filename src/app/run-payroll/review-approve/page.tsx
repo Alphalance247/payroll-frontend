@@ -143,11 +143,23 @@ export default function RunPayrollPage() {
                             Next
                           </button>
                         ) : (
-                          <Link href="/run-payroll/process-payment">
-                            <button className="px-4 py-2 text-sm text-white bg-[#E37915] rounded-lg">
-                              Proceed
-                            </button>
-                          </Link>
+                          <div className="flex flex-col items-center gap-2">
+                            {payroll?.approved_state === "approved" &&
+                            user?.uid === payroll?.run_by?.id ? (
+                              <Link href="/run-payroll/process-payment">
+                                <button className="px-4 py-2 text-sm text-white bg-[#E37915] rounded-lg">
+                                  Proceed
+                                </button>
+                              </Link>
+                            ) : (
+                              <button
+                                className="px-4 py-2 text-sm text-white bg-[#E37915] rounded-lg opacity-50 cursor-not-allowed"
+                                disabled
+                              >
+                                Proceed
+                              </button>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>

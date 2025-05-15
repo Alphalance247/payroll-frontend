@@ -3,8 +3,48 @@ import PayrollStepper from "@/app/components/payroll/payrollStepper";
 import DashboardLayout from "../../common/DashBoardLayout";
 import Image from "next/image";
 import ProtectedRoute from "@/app/common/protectedRoute";
+import { usePayrollContext } from "@/app/context/payrollContext";
+import useBoolean from "@/app/hooks/useBoolean";
+import axiosInstance from "@/app/utils/axios";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
 
 export default function PaymentConfirmationPage() {
+  const { payroll } = usePayrollContext();
+  const [
+    isSendPayslipToSlack,
+    setIsSendPayslipToSlack,
+    resetIsSendPayslipToSlack,
+  ] = useBoolean(false);
+
+  const handleSendPayslipToSlack = async () => {
+    setIsSendPayslipToSlack();
+    try {
+      const res = await axiosInstance.get(`/employees/payslip/${payroll?.id}`);
+      if (res.status === 200) {
+        toast.success(`${res?.data?.message}`);
+      } else {
+        toast.error(
+          res?.data?.message ||
+            "Error sending payslip to slack please refresh or contact Admin"
+        );
+      }
+      resetIsSendPayslipToSlack();
+    } catch (err) {
+      // Extract the error message from the response
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        // Check if err is an instance of AxiosError
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      resetIsSendPayslipToSlack();
+    }
+  };
+
   return (
     <ProtectedRoute>
       <DashboardLayout>
@@ -23,8 +63,8 @@ export default function PaymentConfirmationPage() {
               Payroll Processed Successfully
             </h2>
             <p className="text-base font-medium text-[#71717A] w-[60%] mb-10">
-              Salaries will be disbursed to 500 employees. You can now view
-              reports or go back to manage payroll.
+              Salaries will be disbursed to {payroll?.payslips?.length}{" "}
+              employees. You can now view reports or go back to manage payroll.
             </p>
 
             {/* Payroll Summary Card */}
@@ -37,8 +77,12 @@ export default function PaymentConfirmationPage() {
                   <button
                     className="px-4 py-[10px] border text-[#2F2F33] border-[#2F2F33] bg-white rounded-md hover:bg-gray-100 text-sm font-semibold"
                     type="button"
+                    disabled={isSendPayslipToSlack}
+                    onClick={handleSendPayslipToSlack}
                   >
-                    Generate Pay slip to Slack
+                    {isSendPayslipToSlack
+                      ? "Sending..."
+                      : "Send Payslip to Slack"}
                   </button>
                 </div>
 
@@ -60,7 +104,7 @@ export default function PaymentConfirmationPage() {
                           Total Paid
                         </td>
                         <td className="py-[18px] px-4 font-medium text-base text-[#2F2F33]">
-                          NGN 10,000,000
+                          NGN {payroll?.total_payout}
                         </td>
                       </tr>
                       <tr className="border-t">
@@ -68,7 +112,7 @@ export default function PaymentConfirmationPage() {
                           Number of Employees
                         </td>
                         <td className="py-[18px] px-4 font-medium text-base text-[#2F2F33]">
-                          500
+                          {payroll?.payslips?.length}
                         </td>
                       </tr>
                       <tr className="border-t">
@@ -76,7 +120,7 @@ export default function PaymentConfirmationPage() {
                           Payment Method
                         </td>
                         <td className="py-[18px] px-4 font-medium text-base text-[#2F2F33]">
-                          Bank Transfer
+                          {payroll?.payment_method}
                         </td>
                       </tr>
                       <tr className="border-t">
@@ -92,7 +136,7 @@ export default function PaymentConfirmationPage() {
                           Processed By
                         </td>
                         <td className="py-[18px] px-4 font-medium text-base text-[#2F2F33]">
-                          Olivia Rhye (HR)
+                          {payroll?.run_by?.fullname}
                         </td>
                       </tr>
                       <tr className="border-t">
@@ -100,7 +144,7 @@ export default function PaymentConfirmationPage() {
                           Payment Date
                         </td>
                         <td className="py-[18px] px-4 font-medium text-base text-[#2F2F33]">
-                          March 12, 2025
+                          {payroll?.payday}
                         </td>
                       </tr>
                       <tr className="border-t">
@@ -108,7 +152,7 @@ export default function PaymentConfirmationPage() {
                           Approved By
                         </td>
                         <td className="py-[18px] px-4 font-medium text-base text-[#2F2F33]">
-                          David Essien (Management)
+                          {payroll?.approved_by?.fullname}
                         </td>
                       </tr>
                       <tr className="border-t">
@@ -116,7 +160,7 @@ export default function PaymentConfirmationPage() {
                           Approval Date
                         </td>
                         <td className="py-[18px] px-4 font-medium text-base text-[#2F2F33]">
-                          March 11, 2025
+                          {payroll?.payday}
                         </td>
                       </tr>
                     </tbody>

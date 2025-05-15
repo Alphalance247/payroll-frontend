@@ -8,7 +8,8 @@ import { MdOutlineCalendarMonth } from "react-icons/md";
 import Heading from "./common/heading";
 import { useAuth } from "./context/authContext";
 import ProtectedRoute from "./common/protectedRoute";
-
+import Link from "next/link";
+import { toast } from "react-hot-toast";
 export default function Home() {
   const { user } = useAuth();
 
@@ -26,6 +27,9 @@ export default function Home() {
       link: "/",
     },
   ];
+
+  // Show success message
+  toast.success(`Sign in successful, welcome ${user?.fullname}`);
 
   return (
     <ProtectedRoute>
@@ -79,9 +83,11 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="text-base text- font-semibold mt-4">
-                    <button className="bg-[#E37915] text-white py-[10px] px-3 rounded-md w-fit">
-                      Run Payroll
-                    </button>
+                    <Link href="/run-payroll">
+                      <button className="bg-[#E37915] text-white py-[10px] px-3 rounded-md w-fit">
+                        Run Payroll
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </div>

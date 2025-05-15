@@ -140,13 +140,13 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     {/* {emp.overtimeHours.toFixed(2)} */} 7
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp.net_pay}
+                    {currencySymbol} {emp.net_pay?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.tax}
+                    {currencySymbol} {emp?.tax?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.debt}
+                    {currencySymbol} {emp?.debt?.toLocaleString()}
                   </td>
                 </tr>
               ))}
@@ -169,7 +169,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                   ₦{payroll?.total_payout}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{payroll?.rate}
+                  ₦{payroll?.total_tax?.toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ₦{payroll?.total_payout}

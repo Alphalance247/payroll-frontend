@@ -5,12 +5,14 @@ const ProcessPayment = ({
   nairaAccountBalance,
   approvedBy,
   approvalTimestamp,
+  fundStatus,
 }: {
-  cashRequired: string;
-  dollarsAccountBalance: string;
-  nairaAccountBalance: string;
+  cashRequired: number;
+  dollarsAccountBalance: number;
+  nairaAccountBalance: number;
   approvedBy: string;
   approvalTimestamp: string;
+  fundStatus: string;
 }) => {
   const cardData = [
     {
@@ -24,7 +26,7 @@ const ProcessPayment = ({
     {
       label: "Naira Account Balance",
       value: `₦ ${nairaAccountBalance}`,
-      status: "insufficient funds",
+      status: `${fundStatus}`,
     },
   ];
 
