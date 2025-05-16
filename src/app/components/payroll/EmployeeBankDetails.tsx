@@ -2,11 +2,10 @@
 import Link from "next/link";
 import { PayrollData } from "@/app/utils/type";
 import axiosInstance from "@/app/utils/axios";
-import { useState } from "react";
 import toast from "react-hot-toast";
-import router from "next/router";
 import useBoolean from "@/app/hooks/useBoolean";
 import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
 interface PaystackBalance {
   status: string;
@@ -19,9 +18,7 @@ export default function EmployeeBankDetails({
   payroll: PayrollData;
   getPaystackBalance: PaystackBalance;
 }) {
-  const [payrollDisbursement, setPayrollDisbursement] = useState<{
-    status: string;
-  } | null>(null);
+  const router = useRouter();
 
   const [
     isDisbursementLoading,
@@ -35,7 +32,6 @@ export default function EmployeeBankDetails({
       try {
         const res = await axiosInstance.get(`/employees/disburse-salary`);
         if (res.status === 200) {
-          setPayrollDisbursement(res?.data);
           toast.success("Payroll disbursement successful");
           router.push("/run-payroll/payment-confirmation");
         } else {

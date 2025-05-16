@@ -86,7 +86,7 @@ export default function RunPayrollPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <main className="overflow-y-scroll">
+        <main className="overflow-y-scroll py-4 md:py-6 lg:py-10">
           <SendPayrollTo
             isOpen={isOpen}
             onClose={handleClose}
@@ -115,7 +115,7 @@ export default function RunPayrollPage() {
                         ?.official_rate || 1500
                     }
                     paymentMethod={payroll?.payment_method}
-                    bankAccount="0012345678"
+                    bankAccount="1856902353"
                     runBy={payroll?.run_by?.fullname}
                     status={payroll?.approved_state}
                   />

@@ -6,9 +6,9 @@ import ProtectedRoute from "@/app/common/protectedRoute";
 import { usePayrollContext } from "@/app/context/payrollContext";
 import useBoolean from "@/app/hooks/useBoolean";
 import axiosInstance from "@/app/utils/axios";
-import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import Link from "next/link";
 
 export default function PaymentConfirmationPage() {
   const { payroll } = usePayrollContext();
@@ -21,7 +21,7 @@ export default function PaymentConfirmationPage() {
   const handleSendPayslipToSlack = async () => {
     setIsSendPayslipToSlack();
     try {
-      const res = await axiosInstance.get(`/employees/payslip/${payroll?.id}`);
+      const res = await axiosInstance.get(`/employees/payslip/send-to-slack`);
       if (res.status === 200) {
         toast.success(`${res?.data?.message}`);
       } else {
@@ -128,7 +128,7 @@ export default function PaymentConfirmationPage() {
                           Bank Debited
                         </td>
                         <td className="py-[18px] px-4 font-medium text-base text-[#2F2F33]">
-                          0012345678 (GTBank)
+                          Paystack
                         </td>
                       </tr>
                       <tr className="border-t">
@@ -175,13 +175,17 @@ export default function PaymentConfirmationPage() {
                   <button className="px-4 py-2 text-sm font-semibold text-[#2F2F33] border border-[#E3E3E5] rounded-lg">
                     Download Summary
                   </button>
-                  <button className="px-4 py-2 text-sm text-[#2F2F33] font-semibold border border-[#E3E3E5] rounded-lg">
-                    View Payroll Report
-                  </button>
+                  <Link href={`/payroll-history`}>
+                    <button className="px-4 py-2 text-sm text-[#2F2F33] font-semibold border border-[#E3E3E5] rounded-lg">
+                      View Payroll Report
+                    </button>
+                  </Link>
                 </div>
-                <button className="px-4 py-2 text-sm bg-[#E37915] font-semibold text-[white] border border-[#E3E3E5] rounded-lg">
-                  Done
-                </button>
+                <Link href={`/payroll-history`}>
+                  <button className="px-4 py-2 text-sm bg-[#E37915] font-semibold text-[white] border border-[#E3E3E5] rounded-lg">
+                    Done
+                  </button>
+                </Link>
               </div>
             </div>
           </div>

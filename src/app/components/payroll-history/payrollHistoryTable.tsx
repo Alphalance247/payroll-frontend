@@ -72,7 +72,7 @@ const PayrollHistoryTable = () => {
           <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
             <thead className="bg-[#F7F7F7]">
               <tr>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[350px]">
                   Name
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
@@ -90,7 +90,7 @@ const PayrollHistoryTable = () => {
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
                   Deductions
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Net Pay
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
@@ -153,7 +153,7 @@ const PayrollHistoryTable = () => {
             <tfoot className="bg-[#F7F7F7]">
               <tr>
                 <td
-                  colSpan={2}
+                  colSpan={1}
                   className="px-6 py-4 text-base font-semibold text-[#2F2F33]"
                 >
                   Total
@@ -166,6 +166,12 @@ const PayrollHistoryTable = () => {
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ₦{payroll?.total_payout}
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ₦{payroll?.total_tax?.toLocaleString()}
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ₦{payroll?.total_tax?.toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ₦{payroll?.total_tax?.toLocaleString()}
