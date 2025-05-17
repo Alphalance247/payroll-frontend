@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import EmployeeSearch, {
   type SortOption,
   type FilterOption,
+  type SortByTeam,
 } from "../../components/payroll/employeeSearch";
 import { usePayrollContext } from "../../context/payrollContext";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -16,6 +17,9 @@ const PayrollHistoryTable = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("firstName");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
+  const [sortByTeam, setSortByTeam] = useState<SortByTeam>(
+    "Human Resource Department"
+  );
   const currencySymbol = payroll?.rates?.find((rate) => rate.code === "NGN")
     ? "₦"
     : "K";
@@ -50,8 +54,9 @@ const PayrollHistoryTable = () => {
           default:
             return 0;
         }
-      });
-  }, [payroll?.payslips, searchQuery, sortBy, filterBy]);
+      })
+      .filter((emp) => emp.employee.team.name === sortByTeam);
+  }, [payroll?.payslips, searchQuery, sortBy, filterBy, sortByTeam]);
   return (
     <section className="mt-20">
       <EmployeeSearch
@@ -61,11 +66,15 @@ const PayrollHistoryTable = () => {
         onSearchChange={setSearchQuery}
         onSortChange={setSortBy}
         onFilterChange={setFilterBy}
+        sortByTeam={sortByTeam}
+        onSortChangeTeam={setSortByTeam}
+        showSortByTeam={true}
+        showsortFilter={false}
       />
 
       <div className="bg-white rounded-lg border border-[#E3E3E5]">
         <h2 className="text-base font-semibold py-5 pl-6 text-[#2F2F33]">
-          Employees Details
+          Design & Development Team
         </h2>
 
         <div className="overflow-x-auto">

@@ -1,8 +1,17 @@
 "use client";
 import { Search } from "lucide-react";
+import { usePayrollContext } from "@/app/context/payrollContext";
 
 type SortOption = "firstName" | "lastName" | "team";
 type FilterOption = "all" | "active" | "inactive";
+type SortByTeam =
+  | "Human Resource Department"
+  | "Quality Assurance"
+  | "Sales & Marketing Team"
+  | "Operations Team"
+  | "HR & Admin Team"
+  | "Customer Success Team"
+  | "All Teams";
 
 interface EmployeeSearchProps {
   searchQuery: string;
@@ -11,6 +20,10 @@ interface EmployeeSearchProps {
   onSearchChange: (value: string) => void;
   onSortChange: (value: SortOption) => void;
   onFilterChange: (value: FilterOption) => void;
+  sortByTeam: SortByTeam;
+  onSortChangeTeam: (value: SortByTeam) => void;
+  showsortFilter?: boolean;
+  showSortByTeam?: boolean;
 }
 
 export default function EmployeeSearch({
@@ -20,7 +33,12 @@ export default function EmployeeSearch({
   onSearchChange,
   onSortChange,
   onFilterChange,
+  sortByTeam,
+  onSortChangeTeam,
+  showSortByTeam = false,
+  showsortFilter,
 }: EmployeeSearchProps) {
+  const { payroll } = usePayrollContext();
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between">
@@ -34,33 +52,65 @@ export default function EmployeeSearch({
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
         </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-[#71717A]">View</span>
-            <select
-              value={filterBy}
-              onChange={(e) => onFilterChange(e.target.value as FilterOption)}
-              className="border border-[#E3E3E5] rounded-lg px-4 py-2 text-base font-medium text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] min-w-[140px]"
-            >
-              <option value="all" className="">All employees</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-[#71717A]">Sort by</span>
-            <select
-              value={sortBy}
-              onChange={(e) => onSortChange(e.target.value as SortOption)}
-              className="border border-[#E3E3E5] rounded-lg px-4 py-2 text-base font-medium text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] min-w-[140px]"
-            >
-              <option value="firstName">First Names</option>
-              <option value="lastName">Last Names</option>
-              <option value="team">Team</option>
-            </select>
-          </div>
+        <div className="flex items-center gap-4">
+          {showsortFilter && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-[#71717A]">View</span>
+              <select
+                value={filterBy}
+                onChange={(e) => onFilterChange(e.target.value as FilterOption)}
+                className="border border-[#E3E3E5] rounded-lg px-4 py-2 text-base font-medium text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] min-w-[140px]"
+              >
+                <option value="all" className="">
+                  All employees
+                </option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          )}
+
+          {showsortFilter && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-[#71717A]">
+                Sort by
+              </span>
+              <select
+                value={sortBy}
+                onChange={(e) => onSortChange(e.target.value as SortOption)}
+                className="border border-[#E3E3E5] rounded-lg px-4 py-2 text-base font-medium text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] min-w-[140px]"
+              >
+                <option value="firstName">First Names</option>
+                <option value="lastName">Last Names</option>
+                <option value="team">Team</option>
+              </select>
+            </div>
+          )}
+
+          {/* Sort by team */}
+
+          {showSortByTeam && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-[#71717A]">
+                Sort by
+              </span>
+
+              <select
+                value={sortByTeam}
+                onChange={(e) => onSortChangeTeam(e.target.value as SortByTeam)}
+                className="border border-[#E3E3E5] rounded-lg px-4 py-2 text-base font-medium text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] min-w-[140px]"
+              >
+                {payroll?.payslips?.map((el, i) => {
+                  return (
+                    <option value={el?.employee?.team?.name} key={i}>
+                      {el?.employee?.team?.name}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -68,4 +118,4 @@ export default function EmployeeSearch({
 }
 
 // Export types for reuse
-export type { SortOption, FilterOption };
+export type { SortOption, FilterOption, SortByTeam };
