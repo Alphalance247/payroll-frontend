@@ -86,7 +86,7 @@ export default function RunPayrollPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <main className="overflow-y-scroll">
+        <main className="overflow-y-scroll py-4 md:py-6 lg:py-10">
           <SendPayrollTo
             isOpen={isOpen}
             onClose={handleClose}
@@ -115,7 +115,7 @@ export default function RunPayrollPage() {
                         ?.official_rate || 1500
                     }
                     paymentMethod={payroll?.payment_method}
-                    bankAccount="0012345678"
+                    bankAccount="1856902353"
                     runBy={payroll?.run_by?.fullname}
                     status={payroll?.approved_state}
                   />
@@ -143,11 +143,23 @@ export default function RunPayrollPage() {
                             Next
                           </button>
                         ) : (
-                          <Link href="/run-payroll/process-payment">
-                            <button className="px-4 py-2 text-sm text-white bg-[#E37915] rounded-lg">
-                              Proceed
-                            </button>
-                          </Link>
+                          <div className="flex flex-col items-center gap-2">
+                            {payroll?.approved_state === "approved" &&
+                            user?.uid === payroll?.run_by?.id ? (
+                              <Link href="/run-payroll/process-payment">
+                                <button className="px-4 py-2 text-sm text-white bg-[#E37915] rounded-lg">
+                                  Proceed
+                                </button>
+                              </Link>
+                            ) : (
+                              <button
+                                className="px-4 py-2 text-sm text-white bg-[#E37915] rounded-lg opacity-50 cursor-not-allowed"
+                                disabled
+                              >
+                                Proceed
+                              </button>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>

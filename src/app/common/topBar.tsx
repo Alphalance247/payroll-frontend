@@ -4,6 +4,7 @@ import { BiSearch } from "react-icons/bi";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { FaChevronDown } from "react-icons/fa";
 import { useAuth } from "../context/authContext";
+import Link from "next/link";
 
 const TopBar = () => {
   const { user, logout, isLoggingOut } = useAuth();
@@ -12,12 +13,14 @@ const TopBar = () => {
     <header className="sticky top-0 z-10 w-full bg-[#F7F7F7] border-b border-[#E3E3E5]">
       <div className="flex items-center justify-between px-6 py-5 max-w-[1440px] mx-auto">
         <div className="font-bold">
-          <Image
-            src="/assets/Home/alluvium.svg"
-            width={121}
-            height={25}
-            alt="alluviumlogo"
-          />
+          <Link href="/">
+            <Image
+              src="/assets/Home/alluvium.svg"
+              width={121}
+              height={25}
+              alt="alluviumlogo"
+            />
+          </Link>
         </div>
 
         <div className="flex gap-x-6">
@@ -47,12 +50,13 @@ const TopBar = () => {
             onClick={logout}
           >
             <div className="flex items-center gap-x-3">
-              <Image
-                src="/assets/topbar/Icon.svg"
-                width={40}
-                height={40}
-                alt="avatar"
-              />
+              <div className="h-10 w-10 rounded-full bg-[#009BC0] text-white flex items-center justify-center text-sm font-medium">
+                {user?.fullname
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </div>
+
               <div>
                 <p className="text-[#2F2F33] text-base font-medium font-Graphik mb-1">
                   {user?.fullname || "Admin"}

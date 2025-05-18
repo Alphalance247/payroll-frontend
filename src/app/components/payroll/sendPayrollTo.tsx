@@ -74,8 +74,6 @@ export default function SendPayrollTo({
     }
   }, [isOpen]);
 
-  console.log(selectedAdmins);
-
   const filteredAdmins = payrollAdmin?.employees?.filter((admin) =>
     admin.employee.fullname?.toLowerCase().includes(searchQuery.toLowerCase())
   );

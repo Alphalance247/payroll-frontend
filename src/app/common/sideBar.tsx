@@ -84,15 +84,15 @@ const Sidebar: React.FC = () => {
               text: "Run Payroll",
             },
             {
-              link: "/jdjjs",
+              link: "/",
               text: "Run Off-Cycle Payroll",
             },
             {
-              link: "/hs",
+              link: "/payroll-history",
               text: "Payroll History",
             },
             {
-              link: "/jjsajk",
+              link: "/",
               text: "Payroll Settings",
             },
           ],
@@ -105,12 +105,12 @@ const Sidebar: React.FC = () => {
         {
           text: "Tax",
           icons: <HiOutlineReceiptTax size={20} />,
-          link: "/nil",
+          link: "/",
         },
         {
           text: "Loan requests",
           icons: <FaMoneyCheckAlt size={20} />,
-          link: "/nil",
+          link: "/",
         },
       ],
     },
@@ -156,7 +156,7 @@ const Sidebar: React.FC = () => {
               text: "Run Off-Cycle Payroll",
             },
             {
-              link: "/hs",
+              link: "/payroll-history",
               text: "Payroll History",
             },
             {

@@ -1,10 +1,10 @@
 "use client";
-
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { PayrollData } from "../utils/type";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import axiosInstance from "../utils/axios";
+import { AxiosError } from "axios";
 
 type PayrollContextType = {
   payroll: PayrollData | null;
@@ -26,13 +26,20 @@ export const PayrollProvider = ({ children }: { children: ReactNode }) => {
         const { data } = res.data; // response.data.data
         if (res.status === 200) {
           setPayroll(data);
-          toast.success("Payroll data loaded");
+          toast.success(res?.data?.message);
         } else {
-          toast.error("Failed to fetch payroll");
+          toast.error(res?.data?.message);
         }
       } catch (err) {
-        // console.error("Failed to fetch payroll:", err);
-        toast.error("Failed to fetch payroll");
+        // Extract the error message from the response
+        let errorMessage =
+          "An error occurred please try again or contact Admin";
+        if (err instanceof AxiosError) {
+          // Check if err is an instance of AxiosError
+          errorMessage = err.response?.data?.message || errorMessage;
+        }
+
+        toast.error(errorMessage);
       } finally {
         setLoading(false);
       }

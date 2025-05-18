@@ -33,6 +33,7 @@ export interface PayrollData {
   total_bonus: string;
   total_hours: string;
   approved_state: string;
+  total_tax: number;
   approved_by: {
     fullname: string;
     id: number;
