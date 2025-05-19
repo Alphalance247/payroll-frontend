@@ -1,28 +1,34 @@
-import { usePayrollContext } from "@/app/context/payrollContext";
-
-const HistoryOverview = () => {
-  const { payroll } = usePayrollContext();
-
+const HistoryOverview = ({
+  approvedBy,
+  approvalTimestamp,
+  fundStatus,
+  totalHours,
+}: {
+  approvedBy: string;
+  approvalTimestamp: string;
+  fundStatus: string;
+  totalHours: string;
+}) => {
   const payrollHistoryData = [
     {
       payrollId: "PR-2025-01-15",
-      totalPayroll: payroll?.total_payout,
+      totalPayroll: `₦ ${fundStatus}`,
       payhead: "Payroll ID",
       subhead: "Total Amount paid out",
       heading2: "Total Payroll",
       subhead2: "Total Amount paid out",
     },
     {
-      payrollId: payroll?.payday,
-      totalPayroll: payroll?.total_hours,
+      payrollId: approvalTimestamp,
+      totalPayroll: totalHours,
       payhead: "Payday",
       subhead: "The specific day payroll was processed",
       heading2: "Total Hours Worked",
       subhead2: "Total Employees hours booked",
     },
     {
-      payrollId: payroll?.approved_by?.fullname,
-      totalPayroll: payroll?.payday,
+      payrollId: approvedBy,
+      totalPayroll: approvalTimestamp,
       payhead: "Approved By",
       subhead: "Approved by the admin",
       heading2: "Date of Approval",

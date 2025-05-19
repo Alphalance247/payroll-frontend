@@ -133,14 +133,14 @@ const RunPayrollHeading: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                 )}
               </p>
 
-              {item.hasEdit && (
+              {/* {item.hasEdit && (
                 <button
                   onClick={item.onEdit}
                   className="text-orange-500 text-sm flex items-center gap-1 hover:text-orange-600 transition-colors"
                 >
                   Edit <FaEdit size={14} />
                 </button>
-              )}
+              )} */}
             </div>
           </div>
         ))}

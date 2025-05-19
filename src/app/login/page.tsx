@@ -129,7 +129,7 @@ const Login = () => {
                   </span>
                 </div>
                 <input
-                  type="text"
+                  type="password"
                   value={userData?.password || ""}
                   className={`w-full h-11 px-3.5 py-3 bg-white rounded-[5px] border border-neutral-200 focus:shadow-none flex-col justify-start items-start flex text-black placeholder-gray-400 text-sm font-normal leading-tight`}
                   name="password"

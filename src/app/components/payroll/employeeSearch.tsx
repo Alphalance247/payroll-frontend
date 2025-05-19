@@ -1,9 +1,8 @@
 "use client";
 import { Search } from "lucide-react";
-import { usePayrollContext } from "@/app/context/payrollContext";
 
 type SortOption = "firstName" | "lastName" | "team";
-type FilterOption = "all" | "active" | "inactive";
+type FilterOption = "all" | "active" | "inactive" | "team";
 type SortByTeam =
   | "Human Resource Department"
   | "Quality Assurance"
@@ -24,6 +23,7 @@ interface EmployeeSearchProps {
   onSortChangeTeam: (value: SortByTeam) => void;
   showsortFilter?: boolean;
   showSortByTeam?: boolean;
+  teams: string[];
 }
 
 export default function EmployeeSearch({
@@ -36,9 +36,9 @@ export default function EmployeeSearch({
   sortByTeam,
   onSortChangeTeam,
   showSortByTeam = false,
-  showsortFilter,
+  showsortFilter = true,
+  teams,
 }: EmployeeSearchProps) {
-  const { payroll } = usePayrollContext();
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between">
@@ -101,10 +101,11 @@ export default function EmployeeSearch({
                 onChange={(e) => onSortChangeTeam(e.target.value as SortByTeam)}
                 className="border border-[#E3E3E5] rounded-lg px-4 py-2 text-base font-medium text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] min-w-[140px]"
               >
-                {payroll?.payslips?.map((el, i) => {
+                <option value="All Teams">All</option>
+                {teams?.map((el, i) => {
                   return (
-                    <option value={el?.employee?.team?.name} key={i}>
-                      {el?.employee?.team?.name}
+                    <option value={el} key={i}>
+                      {el}
                     </option>
                   );
                 })}

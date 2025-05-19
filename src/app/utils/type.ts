@@ -19,6 +19,7 @@ export interface Payslip {
   debt: string;
   tax: string;
   net_pay: string;
+  official_base_pay: number;
 }
 
 export interface payrollRate {

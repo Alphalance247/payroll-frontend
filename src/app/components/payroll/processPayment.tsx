@@ -80,7 +80,13 @@ const ProcessPayment = ({
             </p>
 
             {item?.status && (
-              <p className="text-sm text-[#AA3030] font-medium bg-[#FDECEC] rounded-full px-2 py-1 mt-2 w-fit border border-[#AA3030]">
+              <p
+                className={`text-sm font-medium bg-[#FDECEC] rounded-full px-2 py-1 mt-2 w-fit border ${
+                  item?.status !== "Sufficient funds"
+                    ? "border-[#AA3030] text-[#AA3030] bg-[#FDECEC]"
+                    : "border-[#48bd82] text-[white] bg-[#48bd82]"
+                }`}
+              >
                 {item?.status}
               </p>
             )}

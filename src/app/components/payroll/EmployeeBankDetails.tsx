@@ -120,7 +120,7 @@ export default function EmployeeBankDetails({
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    ₦ {emp?.net_pay?.toLocaleString()}
+                    ₦ {emp?.official_base_pay?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {emp.employee?.acct_num || "3120158741"}
