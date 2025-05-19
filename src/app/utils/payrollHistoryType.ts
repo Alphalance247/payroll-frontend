@@ -10,8 +10,8 @@ export interface payslipData {
   tax: string;
   debt: string;
   gross_pay: string;
-  status: number;
-  official_base_pay: string;
+  status: string;
+  official_base_pay: number;
   employee: {
     fullname: string;
     team: {
