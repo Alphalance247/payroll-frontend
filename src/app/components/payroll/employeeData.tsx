@@ -140,7 +140,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     {/* {emp.overtimeHours.toFixed(2)} */} 7
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp.net_pay?.toLocaleString()}
+                    {currencySymbol} {emp?.official_base_pay?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {currencySymbol} {emp?.tax?.toLocaleString()}

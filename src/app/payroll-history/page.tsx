@@ -8,24 +8,30 @@ import { GoChevronRight } from "react-icons/go";
 import axiosInstance from "../utils/axios";
 import { toast } from "react-hot-toast";
 import { AxiosError } from "axios";
+import { PayrollHistoryTranferData } from "../utils/payrollHistoryType";
 
 const PayrollHistory = () => {
   const [activeTab, setActiveTab] = useState("Payroll Details");
+  const [payrollHistory, setPayrollHistory] =
+    useState<PayrollHistoryTranferData | null>(null);
   const tabs = [{ name: "Payroll Details" }, { name: "Audit logs" }];
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchPayrollAdmin = async () => {
+      setIsLoading(true);
       try {
         const res = await axiosInstance.get(`/employees/transfers`);
         if (res.status === 200) {
-          // setGetPaystackBalance(res?.data);
-          toast.success("Paystack balance fetched");
+          setPayrollHistory(res?.data?.data);
+          toast.success("Payroll history fetched");
         } else {
           toast.error(
             res?.data?.message ||
-              "Error fetching paystack balance please refresh or contact Admin"
+              "Error fetching payroll history please refresh or contact Admin"
           );
         }
+        setIsLoading(false);
       } catch (err) {
         // Extract the error message from the response
         let errorMessage =
@@ -37,6 +43,7 @@ const PayrollHistory = () => {
 
         toast.error(errorMessage);
       } finally {
+        setIsLoading(false);
       }
     };
 
@@ -82,8 +89,31 @@ const PayrollHistory = () => {
           <div className="">
             {activeTab === "Payroll Details" && (
               <>
-                <HistoryOverview />
-                <PayrollHistoryTable />
+                {isLoading ? (
+                  <div className="flex justify-center items-center h-screen">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+                  </div>
+                ) : payrollHistory ? (
+                  <>
+                    <HistoryOverview
+                      approvedBy={
+                        payrollHistory?.payroll?.approved_by?.fullname
+                      }
+                      approvalTimestamp={payrollHistory?.payroll?.payday}
+                      fundStatus={payrollHistory?.payroll?.total_payout}
+                      totalHours={payrollHistory?.payroll?.total_hours}
+                    />
+                    <PayrollHistoryTable
+                      teams={payrollHistory?.teams}
+                      transferData={payrollHistory?.transfer_data}
+                      payroll={payrollHistory}
+                    />
+                  </>
+                ) : (
+                  <div className="text-center py-10 text-[#71717A]">
+                    No payroll history data available
+                  </div>
+                )}
               </>
             )}
 
