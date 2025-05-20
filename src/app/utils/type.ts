@@ -55,3 +55,20 @@ export interface PayrollResponse {
   message: string;
   data: PayrollData;
 }
+
+export interface TeamData {
+  id: number;
+  name: string;
+}
+
+export interface DenominationData {
+  id: number;
+  code: string;
+  name: string;
+}
+
+export interface BankData {
+  id: number;
+  name: string;
+  code: string;
+}
