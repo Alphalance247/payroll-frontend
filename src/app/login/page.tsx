@@ -51,6 +51,8 @@ const Login = () => {
           // Use the login function from auth context
           login({ email, fullname, is_payroll_staff, uid });
 
+          toast.success("Login successful Redirecting...");
+
           // Clear form
           setUserData({ email: "", password: "" });
 

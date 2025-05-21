@@ -11,6 +11,7 @@ interface InputProps {
   withWidth?: boolean;
   readonly?: boolean;
   id?: string;
+  disabled?: boolean;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -21,6 +22,8 @@ const Input: React.FC<InputProps> = ({
   onChange,
   className,
   id,
+  readonly = false,
+  disabled,
 }) => {
   return (
     <input
@@ -29,9 +32,17 @@ const Input: React.FC<InputProps> = ({
       name={name}
       value={value}
       placeholder={placeholder}
+      readOnly={readonly}
       required
       onChange={onChange}
-      className={` font-poppinsRegular outline-[#51F4A6] text-black border-[#D7DEDD] border w-full  p-3 text-sm rounded-lg ${className}`}
+      disabled={disabled}
+      className={` font-poppinsRegular ${
+        readonly
+          ? "outline-none bg-gray-200 cursor-not-allowed"
+          : "outline-[#51F4A6]"
+      } text-black border-[#D7DEDD] border w-full  p-3 text-sm rounded-lg ${className} ${
+        disabled ? "bg-gray-200 cursor-not-allowed" : ""
+      }`}
     />
   );
 };
