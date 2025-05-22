@@ -11,6 +11,8 @@ export interface Employee {
   acct_num: string;
   bank_name: string;
   currency: string;
+  base_pay: number;
+  pay_deno: string;
 }
 
 export interface Payslip {
@@ -20,6 +22,7 @@ export interface Payslip {
   tax: string;
   net_pay: string;
   official_base_pay: number;
+  bonus: number;
 }
 
 export interface payrollRate {
@@ -41,6 +44,7 @@ export interface PayrollData {
   };
   payday: string;
   payment_method: string;
+  total_debt: number;
   payslips: Payslip[];
   reviewers_list: number[];
   rates: payrollRate[];

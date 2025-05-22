@@ -26,6 +26,39 @@ export default function EmployeeBankDetails({
     resetIsDisbursementLoading,
   ] = useBoolean(false);
 
+  const [
+    isSendPayslipToSlack,
+    setIsSendPayslipToSlack,
+    resetIsSendPayslipToSlack,
+  ] = useBoolean(false);
+
+  const handleSendPayslipToSlack = async () => {
+    setIsSendPayslipToSlack();
+    try {
+      const res = await axiosInstance.get(`/employees/payslip/send-to-slack`);
+      if (res.status === 200) {
+        toast.success(`${res?.data?.message}`);
+      } else {
+        toast.error(
+          res?.data?.message ||
+            "Error sending payslip to slack please refresh or contact Admin"
+        );
+      }
+      resetIsSendPayslipToSlack();
+    } catch (err) {
+      // Extract the error message from the response
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        // Check if err is an instance of AxiosError
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      resetIsSendPayslipToSlack();
+    }
+  };
+
   const handleDisbursement = async () => {
     const payrollDisbursement = async () => {
       setIsDisbursementLoading();
@@ -58,9 +91,22 @@ export default function EmployeeBankDetails({
   return (
     <section className="px-12">
       <div className="bg-white rounded-lg border border-[#E3E3E5]">
-        <h2 className="text-base font-semibold py-5 pl-6 text-[#2F2F33]">
-          Employees Details
-        </h2>
+        <div className="flex justify-between items-center px-6 py-5">
+          <h2 className="text-base font-semibold text-[#2F2F33]">
+            Employees Details
+          </h2>
+
+          <div>
+            <button
+              className="px-4 py-[10px] border text-[#2F2F33] border-[#2F2F33] bg-white rounded-md hover:bg-gray-100 text-sm font-semibold"
+              type="button"
+              disabled={isSendPayslipToSlack}
+              onClick={handleSendPayslipToSlack}
+            >
+              {isSendPayslipToSlack ? "Sending..." : "Send Payslip to Slack"}
+            </button>
+          </div>
+        </div>
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[full] border-b border-[#E3E3E5]">

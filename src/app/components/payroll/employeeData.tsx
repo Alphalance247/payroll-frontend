@@ -64,6 +64,8 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
         onSearchChange={setSearchQuery}
         onSortChange={setSortBy}
         onFilterChange={setFilterBy}
+        showSortByTeam={false}
+        onSortChangeTeam={() => {}}
       />
 
       <div className="bg-white rounded-lg border border-[#E3E3E5]">
@@ -72,13 +74,13 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
         </h2>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
+          <table className="w-full min-w-[1400px] border-b border-[#E3E3E5]">
             <thead className="bg-[#F7F7F7]">
               <tr>
                 <th className="px-6 py-[14px] w-[40px]">
                   <input type="checkbox" className="rounded border-gray-300" />
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[400px]">
                   Name
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
@@ -92,6 +94,12 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
                   Salary
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  Salary (NGN/USD)
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
+                  Bonus
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                   Tax
@@ -143,6 +151,13 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     {currencySymbol} {emp?.official_base_pay?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {emp?.employee?.pay_deno === "Dollars" ? "$ " : "₦ "}
+                    {emp?.employee?.base_pay?.toLocaleString() || 0}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {emp?.bonus?.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {currencySymbol} {emp?.tax?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
@@ -169,10 +184,16 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                   ₦{payroll?.total_payout}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ----
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  {payroll?.total_bonus}
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ₦{payroll?.total_tax?.toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{payroll?.total_payout}
+                  ₦ {payroll?.total_debt?.toLocaleString()}
                 </td>
               </tr>
             </tfoot>

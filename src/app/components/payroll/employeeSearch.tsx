@@ -19,11 +19,11 @@ interface EmployeeSearchProps {
   onSearchChange: (value: string) => void;
   onSortChange: (value: SortOption) => void;
   onFilterChange: (value: FilterOption) => void;
-  sortByTeam: SortByTeam;
+  sortByTeam?: SortByTeam;
   onSortChangeTeam: (value: SortByTeam) => void;
   showsortFilter?: boolean;
   showSortByTeam?: boolean;
-  teams: string[];
+  teams?: string[];
 }
 
 export default function EmployeeSearch({
