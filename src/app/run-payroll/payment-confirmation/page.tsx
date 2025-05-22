@@ -4,46 +4,10 @@ import DashboardLayout from "../../common/DashBoardLayout";
 import Image from "next/image";
 import ProtectedRoute from "@/app/common/protectedRoute";
 import { usePayrollContext } from "@/app/context/payrollContext";
-import useBoolean from "@/app/hooks/useBoolean";
-import axiosInstance from "@/app/utils/axios";
-import toast from "react-hot-toast";
-import { AxiosError } from "axios";
 import Link from "next/link";
 
 export default function PaymentConfirmationPage() {
   const { payroll } = usePayrollContext();
-  const [
-    isSendPayslipToSlack,
-    setIsSendPayslipToSlack,
-    resetIsSendPayslipToSlack,
-  ] = useBoolean(false);
-
-  const handleSendPayslipToSlack = async () => {
-    setIsSendPayslipToSlack();
-    try {
-      const res = await axiosInstance.get(`/employees/payslip/send-to-slack`);
-      if (res.status === 200) {
-        toast.success(`${res?.data?.message}`);
-      } else {
-        toast.error(
-          res?.data?.message ||
-            "Error sending payslip to slack please refresh or contact Admin"
-        );
-      }
-      resetIsSendPayslipToSlack();
-    } catch (err) {
-      // Extract the error message from the response
-      let errorMessage = "An error occurred please try again or contact Admin";
-      if (err instanceof AxiosError) {
-        // Check if err is an instance of AxiosError
-        errorMessage = err.response?.data?.message || errorMessage;
-      }
-
-      toast.error(errorMessage);
-    } finally {
-      resetIsSendPayslipToSlack();
-    }
-  };
 
   return (
     <ProtectedRoute>
@@ -74,16 +38,6 @@ export default function PaymentConfirmationPage() {
                   <h3 className="text-lg font-semibold text-[#2F2F33] tracking-[-0.5px]">
                     Payroll Summary
                   </h3>
-                  <button
-                    className="px-4 py-[10px] border text-[#2F2F33] border-[#2F2F33] bg-white rounded-md hover:bg-gray-100 text-sm font-semibold"
-                    type="button"
-                    disabled={isSendPayslipToSlack}
-                    onClick={handleSendPayslipToSlack}
-                  >
-                    {isSendPayslipToSlack
-                      ? "Sending..."
-                      : "Send Payslip to Slack"}
-                  </button>
                 </div>
 
                 <div className="rounded-lg overflow-hidden border border-[#E3E3E5] bg-white">
