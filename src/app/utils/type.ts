@@ -38,6 +38,7 @@ export interface PayrollData {
   total_hours: string;
   approved_state: string;
   total_tax: number;
+  total_salary: number;
   approved_by: {
     fullname: string;
     id: number;
