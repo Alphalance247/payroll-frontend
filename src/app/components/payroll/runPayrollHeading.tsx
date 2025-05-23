@@ -111,10 +111,9 @@ const RunPayrollHeading: React.FC<PayrollSummaryProps> = ({ payroll }) => {
 
       {/* Description */}
       <p className="mb-6 text-base text-[#71717A] w-[80%]">
-        Lorem ipsum dolor sit amet consectetur. Feugiat lacus amet justo
-        tincidunt faucibus nunc est et hendrerit.. Id tortor convallis sed sem
-        tristique accumsan.. Senectus tempor vitae faucibus pulvinar luctus..
-        Mollis tempus mauris risus est donec mattis maecenas elit..
+        Review the payroll summary and make any necessary adjustments before
+        proceeding to the next step. Ensure that all information is accurate to
+        avoid any discrepancies in the payroll process.
       </p>
 
       {/* Overview Items */}

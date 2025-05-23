@@ -117,8 +117,9 @@ const ApprovalConfirmation = ({ onClose }: { onClose: () => void }) => {
                 Are you sure you want to approve payroll?
               </p>
               <p className="text-[#71717A] text-base">
-                Lorem ipsum dolor sit amet consectetur. Mauris congue tincidunt
-                vivamus in sed integer. Elementum{" "}
+                This action will approve the payroll for all employees in this
+                payroll run. If you want to reject the payroll, please provide a
+                reason.
               </p>
 
               {/* Input for rejection reason */}

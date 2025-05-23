@@ -65,8 +65,6 @@ const EmployeeOnboardingPage = () => {
   const [loadingBankDetails, setLoadingBankDetails, resetIsLoadingBankDetails] =
     useBoolean(false);
 
-  console.log(selectedBankCode);
-
   useEffect(() => {
     const fetchTeam = async () => {
       try {
@@ -77,14 +75,13 @@ const EmployeeOnboardingPage = () => {
         }
       } catch (err) {
         // Extract the error message from the response
-        let errorMessage =
-          "An error occurred please try again or contact Admin";
-        if (err instanceof AxiosError) {
-          // Check if err is an instance of AxiosError
-          errorMessage = err.response?.data?.message || errorMessage;
-        }
-
-        toast.error(errorMessage);
+        // let errorMessage =
+        //   "An error occurred please try again or contact Admin";
+        // if (err instanceof AxiosError) {
+        //   // Check if err is an instance of AxiosError
+        //   errorMessage = err.response?.data?.message || errorMessage;
+        // }
+        // // toast.error(errorMessage);
       }
     };
 
@@ -102,14 +99,12 @@ const EmployeeOnboardingPage = () => {
         }
       } catch (err) {
         // Extract the error message from the response
-        let errorMessage =
-          "An error occurred please try again or contact Admin";
+        // let errorMessage =
+        //   "An error occurred please try again or contact Admin";
         if (err instanceof AxiosError) {
           // Check if err is an instance of AxiosError
-          errorMessage = err.response?.data?.message || errorMessage;
+          // errorMessage = err.response?.data?.message || errorMessage;
         }
-
-        toast.error(errorMessage);
       }
     };
 
@@ -124,7 +119,6 @@ const EmployeeOnboardingPage = () => {
 
         if (res.status === 200) {
           setBankData(data);
-          toast.success(res.data.message);
         }
       } catch (err) {
         // Extract the error message from the response
@@ -141,8 +135,6 @@ const EmployeeOnboardingPage = () => {
 
     fetchBank();
   }, []);
-
-  console.log(form);
 
   // Define required fields for each step
   const requiredFields = {

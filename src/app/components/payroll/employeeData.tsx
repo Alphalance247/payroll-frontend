@@ -74,7 +74,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
         </h2>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1400px] border-b border-[#E3E3E5]">
+          <table className="w-full min-w-[1700px] border-b border-[#E3E3E5]">
             <thead className="bg-[#F7F7F7]">
               <tr>
                 <th className="px-6 py-[14px] w-[40px]">
@@ -92,7 +92,10 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
                   Overtime Hours
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  Net Pay
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Salary
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
@@ -148,6 +151,9 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     {/* {emp.overtimeHours.toFixed(2)} */} 7
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {currencySymbol} {emp?.net_pay?.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {currencySymbol} {emp?.official_base_pay?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
@@ -181,7 +187,10 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                   {payroll?.total_bonus}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{payroll?.total_payout}
+                  ₦ {payroll?.total_payout.toLocaleString()}
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ₦ {payroll?.total_salary.toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ----
