@@ -74,7 +74,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
         </h2>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1700px] border-b border-[#E3E3E5]">
+          <table className="w-full min-w-[1650px] border-b border-[#E3E3E5]">
             <thead className="bg-[#F7F7F7]">
               <tr>
                 <th className="px-6 py-[14px] w-[40px]">
@@ -86,12 +86,10 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                   Team
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                   Regular Hours
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
-                  Overtime Hours
-                </th>
+
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Net Pay
                 </th>
@@ -144,12 +142,8 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                       {emp.employee.team?.name}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {/* {emp.regularHours.toFixed(2)} */} 6
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {/* {emp.overtimeHours.toFixed(2)} */} 7
-                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">150</td>
+
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {currencySymbol} {emp?.net_pay?.toLocaleString()}
                   </td>
@@ -181,11 +175,9 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                   Total
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  {payroll?.total_hours}
+                  6000 hrs
                 </td>
-                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  {payroll?.total_bonus}
-                </td>
+
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ₦ {payroll?.total_payout.toLocaleString()}
                 </td>
