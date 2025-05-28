@@ -120,7 +120,7 @@ const Sidebar: React.FC = () => {
         {
           text: "People",
           icons: <FaUserFriends size={20} />,
-          link: "/employee-onboarding",
+          link: "/employee-management",
         },
         {
           text: "Documents",

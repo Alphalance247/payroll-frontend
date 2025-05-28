@@ -16,7 +16,6 @@ const Button: React.FC<buttonProps> = ({
   children,
   className,
   variant = "primary",
-  disabled,
 }) => {
   const buttonColor = {
     primary: "text-[white] bg-[#E37915]",
@@ -24,7 +23,7 @@ const Button: React.FC<buttonProps> = ({
   };
   return (
     <button
-      className={`text-sm px-3 py-2 font-Graphik font-semibold border-[#E3E3E5] border rounded-md ${className} ${buttonColor[variant]}`}
+      className={`text-sm px-3 py-2 font-Graphik font-semibold rounded-md ${className} ${buttonColor[variant]}`}
     >
       {children}
     </button>

@@ -36,7 +36,11 @@ export default function Home() {
         <main className="p-10 overflow-y-scroll">
           <Heading
             flexDirection=""
-            user={user?.fullname || "Good afternoon, James"}
+            user={
+              user?.fullname
+                ? `Good afternoon, ${user.fullname}`
+                : "Good afternoon, James"
+            }
           />
           <div className="grid grid-cols-6 gap-6 mt-11">
             {/* Left Section */}
