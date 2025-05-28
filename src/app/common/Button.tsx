@@ -1,8 +1,31 @@
 import { ReactNode } from "react";
 
-const Button = ({ children }: { children: ReactNode }) => {
+type buttonVariant = "primary" | "secondary";
+
+// type buttonSize = "small" | "medium" | "large" | "switch";
+
+interface buttonProps {
+  children?: ReactNode;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  variant?: buttonVariant;
+  className?: string;
+  disabled?: boolean;
+}
+
+const Button: React.FC<buttonProps> = ({
+  children,
+  className,
+  variant = "primary",
+  disabled,
+}) => {
+  const buttonColor = {
+    primary: "text-[white] bg-[#E37915]",
+    secondary: "",
+  };
   return (
-    <button className="text-sm px-3 py-2 text-[#2F2F33] font-Graphik font-medium border-[#E3E3E5] border rounded-md">
+    <button
+      className={`text-sm px-3 py-2 font-Graphik font-semibold border-[#E3E3E5] border rounded-md ${className} ${buttonColor[variant]}`}
+    >
       {children}
     </button>
   );
