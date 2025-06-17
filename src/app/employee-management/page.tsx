@@ -1,3 +1,4 @@
+"use client";
 import Button from "../common/Button";
 import DashboardLayout from "../common/DashBoardLayout";
 import Heading from "../common/heading";
@@ -5,8 +6,22 @@ import Link from "next/link";
 import { FiPlus } from "react-icons/fi";
 import EmployeeSearchManagement from "../components/employee-managemnt/employeeSearchManagement";
 import EmployeesFullDetailsTable from "../components/employee-managemnt/employeesFullDetailsTable";
+import { useEffect, useState } from "react";
+import { getEmployeeListStore } from "@/stores/getEmployee";
+import Spinner from "../common/spinner";
 
 const EmployeeManagement = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedEmployeeType, setSelectedEmployeeType] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedTeam, setSelectedTeam] = useState("");
+
+  const { fetchEmployeeList, loading, error } = getEmployeeListStore();
+
+  useEffect(() => {
+    fetchEmployeeList();
+  }, [fetchEmployeeList]);
+
   return (
     <DashboardLayout>
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
@@ -28,8 +43,26 @@ const EmployeeManagement = () => {
           </Link>
         </div>
 
-        <EmployeeSearchManagement />
-        <EmployeesFullDetailsTable />
+        <EmployeeSearchManagement
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedCountry={selectedCountry}
+          selectedEmployeeType={selectedEmployeeType}
+          selectedTeam={selectedTeam}
+          setSelectedEmployeeType={setSelectedEmployeeType}
+          setSelectedTeam={setSelectedTeam}
+          setSelectedCountry={setSelectedCountry}
+        />
+        {loading ? (
+          <Spinner />
+        ) : error ? (
+          <p>error fetching data</p>
+        ) : (
+          <EmployeesFullDetailsTable
+            searchQuery={searchQuery}
+            selectedTeam={selectedTeam}
+          />
+        )}
       </main>
     </DashboardLayout>
   );
