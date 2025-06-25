@@ -4,34 +4,50 @@ import PayrollCard from "@/app/common/payrollCard";
 import { DoughnutChart1 } from "../charts/chart-pie-donut-text";
 import { ChartConfig } from "@/components/ui/chart";
 import { LoanTrendChart } from "../charts/loanTrendChart";
+import { getLoanAnalytics } from "@/stores/getLoanAnalytics";
 
 const Loan = () => {
+  const { data: loanData } = getLoanAnalytics();
+
   const data = [
     {
       heading: "Total Loans Disbursed",
-      subhead: "NGN 5,200,000",
+      subhead: `NGN ${loanData?.["total_loans_disbursed "].toFixed(2) || 2000}`,
     },
     {
       heading: "Total Repayments Collected",
-      subhead: "NGN 2,800,000",
+      subhead: `NGN ${loanData?.total_repayments_collected.toFixed(2) || 2000}`,
     },
     {
       heading: "Outstanding Loan Balance",
-      subhead: "NGN 2,400,000",
+      subhead: `NGN ${loanData?.outstanding_loan_balance.toFixed(2) || 2000}`,
     },
   ];
 
   const chartData1 = [
-    { browser: "Approved", visitors: 275, fill: "bg-[#F5B971]" },
-    { browser: "Pending", visitors: 200, fill: "bg-[#78D6E0]" },
-    { browser: "Rejected", visitors: 287, fill: "bg-[#2E6171]" },
-    { browser: "Disbursed", visitors: 173, fill: "bg-[#009BC0]" },
+    {
+      browser: "Approved",
+      visitors: loanData?.["approved %"] || 2,
+      fill: "bg-[#F5B971]",
+    },
+    {
+      browser: "Pending",
+      visitors: loanData?.["pending %"] || 2,
+      fill: "bg-[#78D6E0]",
+    },
+    {
+      browser: "Rejected",
+      visitors: loanData?.["rejected %"] || 2,
+      fill: "bg-[#2E6171]",
+    },
+    {
+      browser: "Disbursed",
+      visitors: loanData?.["approved %"] || 2,
+      fill: "bg-[#009BC0]",
+    },
   ];
 
   const chartConfig1 = {
-    //   visitors: {
-    //     label: "Visitors",
-    //   },
     Salary: {
       label: "Salary",
       color: "#F5B971",

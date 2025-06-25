@@ -79,7 +79,17 @@ const TeamsDetailsTable = ({
                   {emp?.role}
                 </td>
                 <td className="px-6 py-4 text-sm text-[#188C43]">
-                  <p className="bg-[#E9F9EF] border-[#188C43] border px-2 py-[2px] w-fit rounded-2xl">
+                  <p
+                    className={`border px-2 py-[2px] w-fit rounded-2xl  ${
+                      emp?.status === "active"
+                        ? "bg-[#E9F9EF] border-[#188C43] text-[#188C43]"
+                        : emp?.status === "former"
+                        ? "bg-[#F3F4F6] border-[#6B7280] text-[#6B7280]"
+                        : emp?.status === "suspended"
+                        ? "bg-[#FEF2F2] border-[#DC2626] text-[#DC2626]"
+                        : "bg-[#E9F9EF] border-[#188C43] text-[#188C43]"
+                    }`}
+                  >
                     {emp?.status}
                   </p>
                 </td>

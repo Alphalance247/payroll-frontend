@@ -1,21 +1,67 @@
+"use client";
 import HeadingSubHead from "@/app/common/headingSubHead";
 import React from "react";
-import { FaCaretDown } from "react-icons/fa";
 import { DoughnutChart1 } from "../charts/chart-pie-donut-text";
 import { ChartConfig } from "@/components/ui/chart";
 import PayrollCard from "@/app/common/payrollCard";
+import { getPayrollAnalysis } from "@/stores/getPayrollAnalysis";
+import Button from "@/app/common/Button";
 
-const Payroll: React.FC = () => {
+const Payroll: React.FC<{
+  start_date: string;
+  end_date: string;
+  setStartDate: (date: string) => void;
+  setEndDate: (date: string) => void;
+  fetchPayrollAnalysis: (start_date: string, end_date: string) => Promise<void>;
+}> = ({
+  start_date,
+  end_date,
+  setStartDate,
+  setEndDate,
+  fetchPayrollAnalysis,
+}) => {
+  const { data } = getPayrollAnalysis();
+
   const chartData1 = [
-    { browser: "Salary", visitors: 275, fill: "bg-[#F5B971]" },
-    { browser: "Loan", visitors: 200, fill: "bg-[#78D6E0]" },
-    { browser: "Tax", visitors: 287, fill: "bg-[#2E6171]" },
-    { browser: "Bonus", visitors: 173, fill: "bg-[#009BC0]" },
+    {
+      browser: "Salary",
+      visitors: parseFloat(data?.salary || "0"),
+      fill: "bg-[#F5B971]",
+    },
+    {
+      browser: "Loan",
+      visitors: parseFloat(data?.loan || "0"),
+      fill: "bg-[#78D6E0]",
+    },
+    {
+      browser: "Tax",
+      visitors: parseFloat(data?.tax || "0"),
+      fill: "bg-[#2E6171]",
+    },
+    {
+      browser: "Bonus",
+      visitors: parseFloat(data?.bonus || "0"),
+      fill: "bg-[#009BC0]",
+    },
   ];
 
+  const percentageString = data?.percentage_full_time || "0";
+  const percentage_full_time = parseFloat(percentageString.replace("%", ""));
+
+  const percentageString2 = data?.percentage_contractor || "0";
+  const percentage_contractor = parseFloat(percentageString2.replace("%", ""));
+
   const chartData2 = [
-    { browser: "Full-time", visitors: 275, fill: "bg-[#78D6E0]" },
-    { browser: "Contractor", visitors: 200, fill: "bg-[#2E6171]" },
+    {
+      browser: "Full-time",
+      visitors: percentage_full_time || 0,
+      fill: "bg-[#78D6E0]",
+    },
+    {
+      browser: "Contractor",
+      visitors: percentage_contractor || 0,
+      fill: "bg-[#2E6171]",
+    },
   ];
 
   const chartConfig1 = {
@@ -54,18 +100,20 @@ const Payroll: React.FC = () => {
     },
   } satisfies ChartConfig;
 
-  const data = [
+  const payrollData = [
     {
       heading: "Total Salary Paid",
-      subhead: "NGN 10,600,000",
+      subhead:
+        `NGN ${data?.total_salary_paid.toLocaleString()}` || "NGN 10,600,000",
     },
     {
       heading: "Total Bonus Paid",
-      subhead: "NGN 300,000",
+      subhead:
+        `NGN ${data?.total_bonus_paid.toLocaleString()}` || "NGN 300,000",
     },
     {
       heading: "Total Expenses",
-      subhead: "NGN 500,000",
+      subhead: "Nil",
     },
   ];
   return (
@@ -82,25 +130,61 @@ const Payroll: React.FC = () => {
         </div>
 
         <div className="relative">
-          <div
-            className="flex items-center gap-x-4 px-4 py-3 bg-white border border-[#d9d9d9]  rounded-lg cursor-pointer w-fit"
-            // onClick={handleOpen}
-          >
-            <p className="">
-              <span className="text-base font-Graphik text-[#2F2F33] tracking-[-0.3px]">
-                Last 12 months
-              </span>{" "}
-              <span className="font-medium text-[15px] leading-5 text-[#262626] ">
-                {""}
-              </span>
-            </p>
-            <FaCaretDown size={20} color="black" />
+          <div className="flex items-center gap-x-4">
+            <div className="relative">
+              <label
+                htmlFor="start_date"
+                className=" px-4 py-3 bg-white border border-[#d9d9d9] relative rounded-lg cursor-pointer w-fit"
+              >
+                {start_date ? start_date : "Start Date"}
+              </label>
+              <input
+                id="start_date"
+                type="date"
+                value={start_date}
+                className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer"
+                style={{ zIndex: 2 }}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+
+            <div className="relative">
+              <label
+                htmlFor="end_date"
+                className=" px-4 py-3 bg-white border border-[#d9d9d9] relative rounded-lg cursor-pointer w-fit"
+              >
+                {end_date ? end_date : "End Date"}
+                <input
+                  id="end_date"
+                  type="date"
+                  value={end_date}
+                  className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer"
+                  style={{ zIndex: 2 }}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </label>
+            </div>
+
+            <Button
+              onButtonClick={() => {
+                fetchPayrollAnalysis(start_date, end_date);
+                setStartDate("");
+                setEndDate("");
+              }}
+              variant="primary"
+              className={`${
+                !start_date || !end_date ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={!start_date || !end_date}
+            >
+              Apply
+            </Button>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-x-4 mb-6">
-        {data.map((el, i) => {
+        {payrollData.map((el, i) => {
           return (
             <PayrollCard key={i} heading={el?.heading} subhead={el?.subhead} />
           );

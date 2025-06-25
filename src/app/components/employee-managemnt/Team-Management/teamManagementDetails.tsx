@@ -30,6 +30,8 @@ const TeamManagementDetails = ({
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
 
   useEffect(() => {
     const fetchEmployeeData = async () => {
@@ -157,6 +159,10 @@ const TeamManagementDetails = ({
           <TeamSearch
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
+            selectedRole={selectedRole}
+            selectedStatus={selectedStatus}
+            setSelectedRole={setSelectedRole}
+            setSelectedStatus={setSelectedStatus}
           />
         </div>
 

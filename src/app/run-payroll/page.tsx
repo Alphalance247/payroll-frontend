@@ -11,6 +11,8 @@ import ProtectedRoute from "../common/protectedRoute";
 export default function RunPayrollPage() {
   const { payroll, loading } = usePayrollContext();
 
+  console.log(payroll);
+
   return (
     <ProtectedRoute>
       <DashboardLayout>

@@ -8,6 +8,7 @@ interface employeesData {
   email: string;
   fullname: string;
   job_role: string;
+  job_type: string;
   country: string;
   team: {
     name: string;

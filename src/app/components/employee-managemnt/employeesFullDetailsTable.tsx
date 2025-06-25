@@ -1,33 +1,37 @@
 "use client";
 import Link from "next/link";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { useSearch } from "@/app/hooks/useSearch";
 import { getEmployeeListStore } from "@/stores/getEmployee";
+import { useFilter } from "@/app/hooks/useFilter";
+import { useEffect } from "react";
 
 const EmployeesFullDetailsTable = ({
   searchQuery,
   selectedTeam,
+  selectedEmployeeType,
 }: {
   searchQuery: string;
   selectedTeam: string;
+  selectedEmployeeType: string;
 }) => {
-  // const filterSearch = useMemo(() => {
-  //   return filterTable.filter((el) => {
-  //     const lowerCase = searchQuery.toLowerCase();
-  //     const matchesSearch = el?.name?.toLowerCase().includes(lowerCase);
-  //     return matchesSearch;
-  //   });
-  // }, [searchQuery]);
-
   const { data } = getEmployeeListStore();
 
-  const filteredEmployees = useSearch({
-    data: data?.employees ?? [],
-    searchQuery,
-    searchFields: ["fullname"],
-  });
+  const { filteredData, setSearchQuery, setFilter } = useFilter(
+    data?.employees || [],
+    ["fullname", "job_type"]
+  );
 
-  console.log(data);
+  // Apply team filter using nested key:
+  useEffect(() => {
+    setSearchQuery(searchQuery);
+    setFilter("job_type", selectedEmployeeType);
+    setFilter("team.name", selectedTeam);
+    setFilter("team.name", selectedTeam === "All" ? "" : selectedTeam);
+    setFilter(
+      "job_type",
+      selectedEmployeeType === "All" ? "" : selectedEmployeeType
+    );
+  }, [searchQuery, selectedTeam, selectedEmployeeType]);
 
   return (
     <div className="bg-white rounded-lg border border-[#E3E3E5] mt-10">
@@ -69,7 +73,7 @@ const EmployeesFullDetailsTable = ({
           </thead>
 
           <tbody>
-            {filteredEmployees.map((emp, i) => (
+            {filteredData.map((emp, i) => (
               <tr key={i} className="border-b border-[#E3E3E5] last:border-b-0">
                 <td className="px-6 py-4">
                   <input type="checkbox" className="rounded border-gray-300" />
@@ -96,7 +100,9 @@ const EmployeesFullDetailsTable = ({
                 <td className="px-6 py-4 text-sm text-[#2F2F33]">
                   {emp?.email}
                 </td>
-                <td className="px-6 py-4 text-sm text-[#2F2F33]">Employee</td>
+                <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                  {emp?.job_type}
+                </td>
                 <td className="px-6 py-4">
                   <span
                     className={`inline-block px-3 py-1 rounded-full text-xs border border-[#414D57] bg-[#E7E9EA] text-[#000000] font-medium`}

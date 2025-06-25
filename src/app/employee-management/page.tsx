@@ -60,6 +60,7 @@ const EmployeeManagement = () => {
         ) : (
           <EmployeesFullDetailsTable
             searchQuery={searchQuery}
+            selectedEmployeeType={selectedEmployeeType}
             selectedTeam={selectedTeam}
           />
         )}

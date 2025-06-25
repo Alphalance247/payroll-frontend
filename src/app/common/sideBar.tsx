@@ -105,12 +105,12 @@ const Sidebar: React.FC = () => {
         {
           text: "Tax",
           icons: <HiOutlineReceiptTax size={20} />,
-          link: "/",
+          link: "/tax",
         },
         {
           text: "Loan requests",
           icons: <FaMoneyCheckAlt size={20} />,
-          link: "/",
+          link: "/loan",
         },
       ],
     },

@@ -21,15 +21,21 @@ const EmployeeSearchManagement = ({
   setSelectedTeam: (value: string) => void;
   onSearchChange: (value: string) => void;
 }) => {
-  const employeeTypeOptions = [
-    "Contractor",
-    "Casual",
-    "Staff",
-    "Domestice staff",
-    "Legal",
-  ];
+  const employeeTypeOptions = ["All", "Full Time", "Intern", "Part Time"];
   const countryOptions = ["Nigeria", "Ghana", "Kenya"];
-  const teamOptions = ["Design & Development", "Marketing", "Sales", "Legal"];
+  const teamOptions = [
+    "All",
+    "DevOps",
+    "ITSM",
+    "Design",
+    "Cloud",
+    "Quality  Assurance",
+    "Development",
+    "Management",
+    "Domestic Staff",
+    "Advocate",
+    "Product Office",
+  ];
 
   return (
     <div className="flex gap-x-2 mt-10">
@@ -46,6 +52,7 @@ const EmployeeSearchManagement = ({
 
       <DropDownBtn
         selectedValue={selectedEmployeeType}
+        btnHeight="h-fit"
         subText="Type"
         onSelectOption={setSelectedEmployeeType}
         options={employeeTypeOptions}
@@ -54,14 +61,17 @@ const EmployeeSearchManagement = ({
 
       <DropDownBtn
         selectedValue={selectedCountry}
+        btnHeight="h-fit"
         subText={"Country"}
         onSelectOption={setSelectedCountry}
         options={countryOptions}
         placeholder="Nigeria"
       />
+
       <DropDownBtn
         subText="Team"
-        placeholder="Design &  Development"
+        btnHeight="h-[350px]"
+        placeholder="Teams"
         onSelectOption={setSelectedTeam}
         options={teamOptions}
         selectedValue={selectedTeam}
