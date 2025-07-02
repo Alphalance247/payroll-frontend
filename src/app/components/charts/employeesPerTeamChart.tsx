@@ -50,10 +50,14 @@ export function EmployeesPerTeamChart({
   chartData,
   domain,
   ticks,
+  dataKeyX,
+  dataKeyBar,
 }: {
-  chartData: { name: string; value: number }[];
+  chartData: { team_name: string; count: number }[];
   domain?: [number, number];
   ticks?: number[];
+  dataKeyX?: string;
+  dataKeyBar?: string;
 }) {
   const barSize = useResponsiveBarSize();
 
@@ -82,7 +86,8 @@ export function EmployeesPerTeamChart({
                   stroke="#e5e7eb"
                 />
                 <XAxis
-                  dataKey="name"
+                  // dataKey="team_name"
+                  dataKey={dataKeyX || "name"}
                   tickLine={false}
                   axisLine={false}
                   tick={{ fontSize: 12 }}
@@ -90,8 +95,8 @@ export function EmployeesPerTeamChart({
                   height={60}
                 />
                 <YAxis
-                  domain={domain || [0, 10]}
-                  ticks={ticks || [0, 2, 4, 6, 8, 10]}
+                  domain={domain || [0, 8]}
+                  ticks={ticks || [0, 2, 4, 6, 8]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12 }}
@@ -103,13 +108,14 @@ export function EmployeesPerTeamChart({
                 />
 
                 <Bar
-                  dataKey="value"
+                  // dataKey="count"
+                  dataKey={dataKeyBar || "value"}
                   fill="#009BC0"
                   radius={[0, 0, 0, 0]}
                   barSize={barSize}
                 >
                   <LabelList
-                    dataKey="value"
+                    dataKey="count"
                     position="insideTop"
                     className="fill-[white] p-3 m-4"
                   />

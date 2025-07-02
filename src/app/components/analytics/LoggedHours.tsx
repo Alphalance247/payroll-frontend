@@ -3,66 +3,60 @@ import { FaCaretDown } from "react-icons/fa";
 import { EmploymentsTypeChart } from "../charts/employmentTypeChart";
 import Image from "next/image";
 import PayrollCard from "@/app/common/payrollCard";
+import { getTeamAnalytics } from "@/stores/getTeamAnalytics";
 
 const LoggedHours = () => {
+  const { data: teamData } = getTeamAnalytics();
+  console.log(teamData);
+
   const data = [
     {
       heading: "Total Teams",
-      subhead: "10",
+      subhead: teamData?.["total-teams"].toString() || "0",
     },
     {
       heading: "Active Employee",
-      subhead: "100",
+      subhead: teamData?.active_employee.toString() || "0",
     },
     {
       heading: "Total Hours",
-      subhead: "40:10:00",
+      subhead: teamData?.total_hours.toString() || "0",
     },
   ];
 
   const data1 = [
     {
-      country: "Nigeria",
       svg: "/assets/analytics/nija.svg",
-      subhead: "20",
     },
     {
-      country: "Kenya",
       svg: "/assets/analytics/kenya.svg",
-      subhead: "10",
     },
 
     {
-      country: "Germany",
       svg: "/assets/analytics/germany.svg",
-      subhead: "10",
     },
     {
-      country: "United Kingdom",
       svg: "/assets/analytics/uk.svg",
-      subhead: "10",
     },
     {
-      country: "United States",
       svg: "/assets/analytics/us.svg",
-      subhead: "10",
     },
     {
-      country: "Ghana",
       svg: "/assets/analytics/ghana.svg",
-      subhead: "10",
     },
     {
-      country: "Nigeria",
       svg: "/assets/analytics/nija.svg",
-      subhead: "20",
     },
     {
-      country: "Nigeria",
       svg: "/assets/analytics/nija.svg",
-      subhead: "20",
     },
   ];
+
+  const locationData =
+    teamData?.location.map((el) => ({
+      ...el,
+      svg: data1.find((item) => item.svg)?.svg || "/assets/analytics/nija.svg",
+    })) || [];
 
   return (
     <section className="mt-10">
@@ -118,7 +112,7 @@ const LoggedHours = () => {
           </div>
         </div>
 
-        <div className="border border-[#d9d9d9] rounded-lg">
+        <div className="border border-[#d9d9d9] rounded-lg h-fit">
           <div className="py-[14px] px-6  border-b border-[#d9d9d9] ">
             <HeadingSubHead
               withSubHead={false}
@@ -128,7 +122,7 @@ const LoggedHours = () => {
           </div>
 
           <div className="p-6 h-full">
-            {data1.map((el, i) => {
+            {locationData.map((el, i) => {
               return (
                 <div
                   className={`flex justify-between border-b pb-5   
@@ -142,11 +136,16 @@ const LoggedHours = () => {
                   key={i}
                 >
                   <div className="flex gap-x-2">
-                    <Image width={24} height={24} src={el?.svg} alt="nigeria" />
-                    <p>{el?.country}</p>
+                    <Image
+                      width={24}
+                      height={24}
+                      src={el?.svg || ""}
+                      alt="nigeria"
+                    />
+                    <p>{el?.country || "No Country"}</p>
                   </div>
 
-                  <p>{el?.subhead}</p>
+                  <p>{el?.team_count}</p>
                 </div>
               );
             })}

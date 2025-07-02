@@ -7,7 +7,6 @@ import PhoneInput from "react-phone-number-input";
 import styles from "../../styles/phone.module.scss";
 import "react-phone-number-input/style.css";
 import { useState, useEffect } from "react";
-// import { Country, State, ICountry, IState } from "country-state-city";
 import { toast } from "react-hot-toast";
 import { BankData, DenominationData, TeamData } from "../utils/type";
 import { AxiosError } from "axios";
@@ -16,8 +15,6 @@ import useBoolean from "../hooks/useBoolean";
 import LoadingScreen from "../common/loading";
 
 const EmployeeOnboardingPage = () => {
-  // const [countries, setCountries] = useState<ICountry[]>([]);
-  // const [states, setStates] = useState<IState[]>([]);
   const [formStep, setFormStep] = useState(1);
   const [teamData, setTeamData] = useState<TeamData[] | null>(null);
   const [denominationData, setDenominationData] = useState<DenominationData[]>(
@@ -73,16 +70,7 @@ const EmployeeOnboardingPage = () => {
         if (res.status === 200) {
           setTeamData(data);
         }
-      } catch (err) {
-        // Extract the error message from the response
-        // let errorMessage =
-        //   "An error occurred please try again or contact Admin";
-        // if (err instanceof AxiosError) {
-        //   // Check if err is an instance of AxiosError
-        //   errorMessage = err.response?.data?.message || errorMessage;
-        // }
-        // // toast.error(errorMessage);
-      }
+      } catch (err) {}
     };
 
     fetchTeam();
@@ -435,23 +423,9 @@ const EmployeeOnboardingPage = () => {
                     id="country"
                     name="country"
                     placeholder="Enter Country"
-                    value={form?.country || ""}
+                    value={form?.country || "Nigeria"}
                     onChange={handleChange}
                   />
-                  {/* <select
-                    id="country"
-                    name="country"
-                    value={form?.country || ""}
-                    onChange={handleChange}
-                    className="w-full border border-[#E0E0E0] rounded-md text-sm px-3 py-[14px] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
-                  >
-                    <option value="">Select Country</option>
-                    {countries.map((country) => (
-                      <option key={country.isoCode} value={country.isoCode}>
-                        {country.name}
-                      </option>
-                    ))}
-                  </select> */}
                 </div>
 
                 {/* State Dropdown */}
@@ -503,11 +477,7 @@ const EmployeeOnboardingPage = () => {
                 </div>
 
                 <div>
-                  <Label
-                    //   htmlFor="first-name"
-                    id="address"
-                    className="block mb-1"
-                  >
+                  <Label id="address" className="block mb-1">
                     Address
                   </Label>
                   <Input

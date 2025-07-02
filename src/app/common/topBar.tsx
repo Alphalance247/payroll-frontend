@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { BiSearch } from "react-icons/bi";
 import { IoNotificationsOutline } from "react-icons/io5";
@@ -8,6 +8,23 @@ import Link from "next/link";
 
 const TopBar = () => {
   const { user, logout, isLoggingOut } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="sticky top-0 z-10 w-full bg-[#F7F7F7] border-b border-[#E3E3E5]">
@@ -44,35 +61,48 @@ const TopBar = () => {
             </p>
             <IoNotificationsOutline size={38} color="#4E4E4E" />
           </div>
+          <div className="relative" ref={dropdownRef}>
+            <div
+              className="flex justify-between gap-x-4 items-center bg-[#F6F6F6] cursor-pointer border-l border-l-[#D3D3D6] pl-4"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <div className="flex items-center gap-x-3">
+                <div className="h-10 w-10 rounded-full bg-[#009BC0] text-white flex items-center justify-center text-sm font-medium">
+                  {user?.fullname
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </div>
 
-          <div
-            className="flex justify-between gap-x-4 items-center bg-[#F6F6F6] cursor-pointer border-l border-l-[#D3D3D6] pl-4"
-            onClick={logout}
-          >
-            <div className="flex items-center gap-x-3">
-              <div className="h-10 w-10 rounded-full bg-[#009BC0] text-white flex items-center justify-center text-sm font-medium">
-                {user?.fullname
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                <div>
+                  <p className="text-[#2F2F33] text-base font-medium font-Graphik mb-1">
+                    {user?.fullname || "Admin"}
+                  </p>
+                  <p className="text-[#71717A] text-[13px] leading-5 font-Graphik">
+                    {user?.is_payroll_staff ? "Admin" : "Staff"}
+                  </p>
+                </div>
               </div>
-
-              <div>
-                <p className="text-[#2F2F33] text-base font-medium font-Graphik mb-1">
-                  {user?.fullname || "Admin"}
-                </p>
-                <p className="text-[#71717A] text-[13px] leading-5 font-Graphik">
-                  {user?.is_payroll_staff ? "Admin" : "Staff"}
-                </p>
-              </div>
+              <span>
+                {isLoggingOut ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-[#E37915]"></div>
+                ) : (
+                  <FaChevronDown color="#7C7C7C" size={20} />
+                )}
+              </span>
             </div>
-            <span>
-              {isLoggingOut ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-[#E37915]"></div>
-              ) : (
-                <FaChevronDown color="#7C7C7C" size={20} />
-              )}
-            </span>
+
+            {/* Dropdown Menu */}
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
+                <button
+                  onClick={logout}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

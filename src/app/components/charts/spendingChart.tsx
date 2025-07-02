@@ -9,37 +9,38 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { getPayrollAnalysis } from "@/stores/getPayrollAnalysis";
 
-const chartData = [
-  {
-    name: "Joshua\nEzeoke",
-    value: 850000,
-  },
-  {
-    name: "Daniel\nAlade",
-    value: 600000,
-  },
-  {
-    name: "Adetayo\nOyebanji",
-    value: 750000,
-  },
-  {
-    name: "James\nAdelabu",
-    value: 300000,
-  },
-  {
-    name: "Sandra\nOyinmeachi",
-    value: 780000,
-  },
-  {
-    name: "Matthew\nKelvin",
-    value: 980000,
-  },
-  {
-    name: "Margaret\nOkechukwu",
-    value: 580000,
-  },
-];
+// const chartData = [
+//   {
+//     name: "Joshua\nEzeoke",
+//     value: 50000,
+//   },
+//   {
+//     name: "Daniel\nAlade",
+//     value: 60000,
+//   },
+//   {
+//     name: "Adetayo\nOyebanji",
+//     value: 75000,
+//   },
+//   {
+//     name: "James\nAdelabu",
+//     value: 30000,
+//   },
+//   {
+//     name: "Sandra\nOyinmeachi",
+//     value: 70000,
+//   },
+//   {
+//     name: "Matthew\nKelvin",
+//     value: 90000,
+//   },
+//   {
+//     name: "Margaret\nOkechukwu",
+//     value: 50000,
+//   },
+// ];
 
 const chartConfig = {
   value: {
@@ -52,9 +53,7 @@ const formatYAxis = (value: number): string => {
   if (value === 0) return "0";
   if (value === 500000) return "500k";
   if (value === 1000000) return "1M";
-  if (value === 2000000) return "2M";
-  if (value === 3000000) return "3M";
-  if (value === 4000000) return "4M";
+
   return value.toString();
 };
 
@@ -80,8 +79,9 @@ function useResponsiveBarSize() {
   return barSize;
 }
 
-export function SpendingChart() {
+export function SpendingChart({ selectedTeam }: { selectedTeam: string }) {
   const barSize = useResponsiveBarSize();
+  const { data } = getPayrollAnalysis();
 
   return (
     <Card className="border-0 shadow-none w-full">
@@ -94,7 +94,10 @@ export function SpendingChart() {
             >
               <BarChart
                 accessibilityLayer
-                data={chartData}
+                data={
+                  data?.Teams.find((team) => team.team_name === selectedTeam)
+                    ?.employees
+                }
                 margin={{ top: 40, right: 30, left: 40, bottom: 20 }}
                 layout="horizontal"
                 className="w-full"
@@ -117,8 +120,10 @@ export function SpendingChart() {
                 />
                 <YAxis
                   tickFormatter={formatYAxis}
-                  domain={[0, 4000000]}
-                  ticks={[0, 500000, 1000000, 2000000, 3000000, 4000000]}
+                  domain={[
+                    0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000,
+                  ]}
+                  ticks={[0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12 }}
@@ -137,7 +142,7 @@ export function SpendingChart() {
                   }}
                 />
                 <Bar
-                  dataKey="value"
+                  dataKey="amount"
                   fill="hsl(199, 30%, 50%)"
                   radius={[0, 0, 0, 0]}
                   barSize={barSize}

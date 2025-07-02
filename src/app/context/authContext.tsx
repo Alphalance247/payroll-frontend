@@ -7,7 +7,6 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import toast from "react-hot-toast";
 
 type User = {
   email: string;
@@ -23,6 +22,7 @@ type AuthContextType = {
   isLoggingOut: boolean;
   logout: () => Promise<void>;
   login: (userData: User) => void;
+  isTokenExpired: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isTokenExpired, setIsTokenExpired] = useState(false);
 
   useEffect(() => {
     // Read user info from localStorage
@@ -39,6 +40,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(JSON.parse(storedUser));
     }
     setIsLoading(false);
+
+    // Add event listener for token expiration
+    const handleTokenExpired = () => {
+      setIsTokenExpired(true);
+      // Automatically logout after 5 seconds
+      setTimeout(() => {
+        logout();
+      }, 1000);
+    };
+
+    window.addEventListener("tokenExpired", handleTokenExpired);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("tokenExpired", handleTokenExpired);
+    };
   }, []);
 
   const login = (userData: User) => {
@@ -57,7 +74,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("user");
       setUser(null);
       window.location.href = "/login";
-      toast.success("Logged out successfully");
     } finally {
       setIsLoggingOut(false);
     }
@@ -72,6 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isLoggingOut,
         logout,
         login,
+        isTokenExpired,
       }}
     >
       {children}

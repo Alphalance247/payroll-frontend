@@ -24,7 +24,6 @@ const PayrollHistory = () => {
         const res = await axiosInstance.get(`/employees/transfers`);
         if (res.status === 200) {
           setPayrollHistory(res?.data?.data);
-          toast.success("Payroll history fetched");
         } else {
           toast.error(
             res?.data?.message ||

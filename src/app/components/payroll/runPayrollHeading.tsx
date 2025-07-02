@@ -65,8 +65,6 @@ const RunPayrollHeading: React.FC<PayrollSummaryProps> = ({ payroll }) => {
     }
   };
 
-  console.log(payroll);
-
   const overviewItems: OverviewItem[] = [
     {
       id: "exchange-rate",

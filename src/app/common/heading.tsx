@@ -4,9 +4,15 @@ interface subHeadProps {
   subHead?: string;
   flexDirection: string;
   user: string;
+  subHeadClassName?: string;
 }
 
-const Heading: React.FC<subHeadProps> = ({ subHead, flexDirection, user }) => {
+const Heading: React.FC<subHeadProps> = ({
+  subHead,
+  flexDirection,
+  user,
+  subHeadClassName,
+}) => {
   return (
     <div
       className={`${
@@ -16,9 +22,11 @@ const Heading: React.FC<subHeadProps> = ({ subHead, flexDirection, user }) => {
       <h2
         className={`font-Graphik font-semibold text-[2rem] leading-[2.5rem] tracking-[-1px] text-[#2F2F33] mb-2`}
       >
-        {`Good afternoon, ${user}`}
+        {`${user}`}
       </h2>
-      <p className={` font-Graphik text-base text-[#71717A] tracking-[-0.5px]`}>
+      <p
+        className={`font-Graphik text-base text-[#71717A] tracking-[-0.5px] ${subHeadClassName}`}
+      >
         {subHead || "Wednesday, 20 February, 2024"}
       </p>
     </div>

@@ -27,7 +27,6 @@ export default function RunPayrollPage() {
         const res = await axiosInstance.get(`/employees/paystack-balance`);
         if (res.status === 200) {
           setGetPaystackBalance(res?.data);
-          toast.success("Paystack balance fetched");
         } else {
           toast.error(
             res?.data?.message ||

@@ -77,3 +77,46 @@ export interface BankData {
   name: string;
   code: string;
 }
+
+export interface dataDetails {
+  id: string;
+  fullname: string;
+  email: string;
+  dob: string;
+  employee_id: string;
+  phone: string;
+  country: string;
+  postal_code: string;
+  street_address: string;
+  city: string;
+  state: string;
+  nok_name: string;
+  nok_phone: string;
+  nok_address: string;
+  job_type: string;
+  job_role: string;
+  team: {
+    name: string;
+  };
+  start_date: string;
+}
+
+export interface dataDetails {
+  name: string;
+  id: string;
+  description: string;
+  members: [
+    {
+      name: string;
+      email: string;
+      Type: string;
+      status: string;
+      role: string;
+      id: string;
+    }
+  ];
+}
+
+export interface employeeDetailsData {
+  data: dataDetails;
+}
