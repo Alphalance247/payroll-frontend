@@ -39,49 +39,6 @@ const TimeTracking = ({
     },
   ];
 
-  // const chartData = [
-  //   {
-  //     team_name: "Artificial Intelligence",
-  //     count: 800,
-  //   },
-  //   {
-  //     team_name: "Advocate",
-  //     count: 600,
-  //   },
-  //   {
-  //     team_name: "Cloud",
-  //     count: 700,
-  //   },
-  //   {
-  //     team_name: "Design & Development",
-  //     count: 300,
-  //   },
-  //   {
-  //     team_name: "Domestics ",
-  //     count: 700,
-  //   },
-  //   {
-  //     team_name: "Devops",
-  //     count: 900,
-  //   },
-  //   {
-  //     team_name: "ITSM",
-  //     count: 500,
-  //   },
-  //   {
-  //     team_name: "Product",
-  //     count: 600,
-  //   },
-  //   {
-  //     team_name: "Quality Assurance",
-  //     count: 200,
-  //   },
-  //   {
-  //     team_name: "Legal & Compliance",
-  //     count: 100,
-  //   },
-  // ];
-
   return (
     <section className="mt-10">
       <div className="flex justify-between items-center mb-6">
