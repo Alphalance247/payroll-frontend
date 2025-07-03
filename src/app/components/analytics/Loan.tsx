@@ -5,6 +5,7 @@ import { DoughnutChart1 } from "../charts/chart-pie-donut-text";
 import { ChartConfig } from "@/components/ui/chart";
 import { LoanTrendChart } from "../charts/loanTrendChart";
 import { getLoanAnalytics } from "@/stores/getLoanAnalytics";
+import { formatCurrencyShort } from "@/app/utils/formatCurrency";
 
 const Loan = () => {
   const { data: loanData } = getLoanAnalytics();
@@ -12,37 +13,37 @@ const Loan = () => {
   const data = [
     {
       heading: "Total Loans Disbursed",
-      subhead: `NGN ${loanData?.["total_loans_disbursed "].toFixed(2) || 2000}`,
+      subhead: `NGN ${loanData?.total_loans_disbursed || 0}`,
     },
     {
       heading: "Total Repayments Collected",
-      subhead: `NGN ${loanData?.total_repayments_collected.toFixed(2) || 2000}`,
+      subhead: `NGN ${loanData?.total_repayments_collected || 0}`,
     },
     {
       heading: "Outstanding Loan Balance",
-      subhead: `NGN ${loanData?.outstanding_loan_balance.toFixed(2) || 2000}`,
+      subhead: `NGN ${loanData?.outstanding_loan_balance || 0}`,
     },
   ];
 
   const chartData1 = [
     {
       browser: "Approved",
-      visitors: loanData?.["approved %"] || 2,
+      visitors: loanData?.approved || 0,
       fill: "bg-[#F5B971]",
     },
     {
       browser: "Pending",
-      visitors: loanData?.["pending %"] || 2,
+      visitors: loanData?.pending || 0,
       fill: "bg-[#78D6E0]",
     },
     {
       browser: "Rejected",
-      visitors: loanData?.["rejected %"] || 2,
+      visitors: loanData?.rejected || 0,
       fill: "bg-[#2E6171]",
     },
     {
       browser: "Disbursed",
-      visitors: loanData?.["approved %"] || 2,
+      visitors: loanData?.disbursed || 0,
       fill: "bg-[#009BC0]",
     },
   ];
@@ -120,6 +121,10 @@ const Loan = () => {
               <DoughnutChart1
                 chartConfig={chartConfig1}
                 chartData={chartData1}
+                total_salary_paid={formatCurrencyShort(
+                  Number(loanData?.disbursed) || 0
+                )}
+                text="disbursed"
               />
             </div>
           </div>

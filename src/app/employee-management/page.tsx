@@ -9,6 +9,7 @@ import EmployeesFullDetailsTable from "../components/employee-managemnt/employee
 import { useEffect, useState } from "react";
 import { getEmployeeListStore } from "@/stores/getEmployee";
 import Spinner from "../common/spinner";
+import { getTimeSheetWithId } from "@/stores/time-sheet-id/getTimeSheetWithId";
 
 const EmployeeManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,10 +18,12 @@ const EmployeeManagement = () => {
   const [selectedTeam, setSelectedTeam] = useState("");
 
   const { fetchEmployeeList, loading, error } = getEmployeeListStore();
+  const { fetchTimeSheetWithId } = getTimeSheetWithId();
 
   useEffect(() => {
     fetchEmployeeList();
-  }, [fetchEmployeeList]);
+    fetchTimeSheetWithId();
+  }, [fetchEmployeeList, fetchTimeSheetWithId]);
 
   return (
     <DashboardLayout>

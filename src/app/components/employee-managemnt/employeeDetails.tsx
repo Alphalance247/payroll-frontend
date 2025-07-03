@@ -11,6 +11,7 @@ import useBoolean from "@/app/hooks/useBoolean";
 import axiosInstance from "@/app/utils/axios";
 import { employeeDetailsData } from "@/app/utils/type";
 import Spinner from "@/app/common/spinner";
+import { getTimeSheetWithId } from "@/stores/time-sheet-id/getTimeSheetWithId";
 
 interface EmployeeDetailsClientProps {
   employeeId: string;
@@ -25,6 +26,9 @@ export default function EmployeeDetailsClient({
     setIsEmployeeDeactivated,
     resetIsEmployeeDeactivated,
   ] = useBoolean(false);
+
+  const { fetchTimeSheetWithId, loading: timeSheetLoading } =
+    getTimeSheetWithId();
 
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "Projects" },
@@ -90,7 +94,12 @@ export default function EmployeeDetailsClient({
                     ? "text-[#E37915] border-b-[2px] border-[#E37915]"
                     : "text-[#71717A] border-transparent "
                 }   font-semibold text-base p-4 border-b-[1px] cursor-pointer`}
-                onClick={() => setActiveBtn(el.name)}
+                onClick={() => {
+                  setActiveBtn(el.name);
+                  if (el.name === "Timesheet") {
+                    fetchTimeSheetWithId(employeeId);
+                  }
+                }}
                 key={i}
               >
                 {el.name}
@@ -125,7 +134,8 @@ export default function EmployeeDetailsClient({
             </>
           )}
           {activeBtn === "Uploads" && <Uploads />}
-          {activeBtn === "Timesheet" && <TimeSheet />}
+          {activeBtn === "Timesheet" &&
+            (timeSheetLoading ? <Spinner /> : <TimeSheet />)}
         </div>
         {isEmployeeDeactivivated && (
           <>

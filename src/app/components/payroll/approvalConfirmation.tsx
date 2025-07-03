@@ -3,6 +3,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import useBoolean from "@/app/hooks/useBoolean";
 import axiosInstance from "@/app/utils/axios";
+import { AxiosError } from "axios";
 
 const ApprovalConfirmation = ({ onClose }: { onClose: () => void }) => {
   const [approveLoading, setApproveLoading, setApproveLoadingFalse] =
@@ -32,11 +33,13 @@ const ApprovalConfirmation = ({ onClose }: { onClose: () => void }) => {
         );
       }
       setApproveLoadingFalse();
-    } catch (err: any) {
-      toast.error(
-        "Failed to approve payroll please try again or contact admin",
-        err?.response?.data?.message || err.message
-      );
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        // Check if err is an instance of AxiosError
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+      toast.error(errorMessage);
     } finally {
       setApproveLoadingFalse();
     }
@@ -75,11 +78,13 @@ const ApprovalConfirmation = ({ onClose }: { onClose: () => void }) => {
             "Failed to reject payroll please try again or contact admin"
         );
       }
-    } catch (err: any) {
-      toast.error(
-        "Failed to reject payroll please try again or contact admin",
-        err?.response?.data?.message || err.message
-      );
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        // Check if err is an instance of AxiosError
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+      toast.error(errorMessage);
     } finally {
       setRejectLoadingFalse();
     }

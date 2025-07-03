@@ -9,6 +9,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { getPayrollAnalysis } from "@/stores/getPayrollAnalysis";
+import { formatCurrencyShort } from "@/app/utils/formatCurrency";
 
 let chartData: {
   team_name: string;
@@ -352,7 +353,8 @@ export function TeamPayrollChart() {
                           y={(viewBox.cy ?? 0) - 5}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          ₦ 300K
+                          ₦{" "}
+                          {formatCurrencyShort(Number(data?.total_salary_paid))}
                         </tspan>
                         <tspan
                           x={viewBox.cx}

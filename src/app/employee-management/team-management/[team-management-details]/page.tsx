@@ -4,7 +4,7 @@ import TeamManagementDetails from "@/app/components/employee-managemnt/Team-Mana
 export default async function TeamManagementDetailsPage({
   params,
 }: {
-  params: { "team-management-details": string };
+  params: Promise<{ "team-management-details": string }>;
 }): Promise<JSX.Element> {
   const { "team-management-details": teamManagementDetails } = await params;
 

@@ -36,7 +36,17 @@ const TeamManagement = () => {
         </div>
 
         {loading && <Spinner />}
-        {error && <p className="text-red-500">Error fetching team list</p>}
+        {error && (
+          <div className="flex flex-col justify-center items-center h-full ">
+            <p className="text-red-500 text-center">Error fetching team list</p>
+            <Button
+              className="flex items-center gap-x-1 mt-4"
+              onButtonClick={() => fetchTeamList()}
+            >
+              Retry
+            </Button>
+          </div>
+        )}
         <div className="mt-6 grid grid-cols-3 gap-x-5 gap-y-8">
           {data?.data.map((team) => (
             <TeamCard

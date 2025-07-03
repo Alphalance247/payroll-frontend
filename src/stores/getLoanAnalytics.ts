@@ -3,7 +3,7 @@ import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 
 interface loanAnalyticsDataStore {
-  "total_loans_disbursed ": number;
+  total_loans_disbursed: number;
   total_repayments_collected: number;
   outstanding_loan_balance: number;
   "pending %": number;
@@ -12,6 +12,8 @@ interface loanAnalyticsDataStore {
   pending: number;
   approved: number;
   rejected: number;
+  "disbursed %": number;
+  disbursed: number;
 }
 
 interface loanAnalyticsStore {

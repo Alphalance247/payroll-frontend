@@ -22,6 +22,7 @@ interface employeeListDataStore {
   data: data[];
   total_bonus_paid: string;
   total_salary_paid: string;
+  active_employees: number;
   tax: string;
   loan: string;
   bonus: string;

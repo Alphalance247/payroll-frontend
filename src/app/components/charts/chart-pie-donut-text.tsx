@@ -9,10 +9,11 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
 interface DoughnutChartProps {
   chartConfig: ChartConfig;
   chartData: { browser: string; visitors: number; fill: string }[];
+  total_salary_paid?: string | number;
+  text?: string;
 }
 
 // Custom label component to render percentages
@@ -66,9 +67,14 @@ const renderCustomizedLabel = ({
   );
 };
 
-export function DoughnutChart1({ chartConfig, chartData }: DoughnutChartProps) {
+export function DoughnutChart1({
+  chartConfig,
+  chartData,
+  total_salary_paid,
+  text,
+}: DoughnutChartProps) {
   const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
+    return chartData.reduce((acc, curr) => acc + curr?.visitors, 0);
   }, [chartData]);
 
   // Calculate percentages for each data point
@@ -134,27 +140,30 @@ export function DoughnutChart1({ chartConfig, chartData }: DoughnutChartProps) {
                 content={({ viewBox }) => {
                   if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                     return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
+                      <>
+                        <text
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
                         >
-                          ₦ {totalVisitors.toLocaleString()}K
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          paid out
-                        </tspan>
-                      </text>
+                          <tspan
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            className="fill-foreground text-3xl font-bold"
+                          >
+                            {total_salary_paid}
+                          </tspan>
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy || 0) + 24}
+                            className="fill-muted-foreground"
+                          >
+                            {/* paid out */}
+                            {text}
+                          </tspan>
+                        </text>
+                      </>
                     );
                   }
                 }}

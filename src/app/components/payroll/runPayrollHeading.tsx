@@ -1,11 +1,11 @@
 "use client";
-import { FaEdit } from "react-icons/fa";
 import Image from "next/image";
 import { useState } from "react";
 import EditExchange from "./editExchange";
 import { PayrollData } from "../../utils/type";
 import { toast } from "react-hot-toast";
 import axiosInstance from "@/app/utils/axios";
+import { AxiosError } from "axios";
 
 interface OverviewItem {
   id: string;
@@ -55,11 +55,13 @@ const RunPayrollHeading: React.FC<PayrollSummaryProps> = ({ payroll }) => {
         );
       }
       setIsLoading(false);
-    } catch (err: any) {
-      toast.error(
-        "Submission failed:",
-        err?.response?.data?.message || err.message
-      );
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        // Check if err is an instance of AxiosError
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

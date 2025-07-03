@@ -14,7 +14,7 @@ import { useAuth } from "@/app/context/authContext";
 import { toast } from "react-hot-toast";
 
 export default function RunPayrollPage() {
-  const [isNoteModalOpen, openNoteModal, closeNoteModal] = useBoolean();
+  const [isNoteModalOpen, closeNoteModal] = useBoolean();
   const [isOpen, setIsOpen, setIsClose] = useBoolean();
   const [
     isApprovalConfirmationOpen,
@@ -24,6 +24,8 @@ export default function RunPayrollPage() {
   const [initialValue, sendpayrollAproval] = useBoolean();
   const { payroll, loading } = usePayrollContext();
   const { user } = useAuth();
+
+  console.log(initialValue);
 
   // useEffect(() => {
   //   const fetchPayroll = async () => {
@@ -79,9 +81,9 @@ export default function RunPayrollPage() {
     sendpayrollAproval();
   };
 
-  const handleNote = () => {
-    openNoteModal();
-  };
+  // const handleNote = () => {
+  //   openNoteModal();
+  // };
 
   return (
     <ProtectedRoute>

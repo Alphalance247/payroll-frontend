@@ -4,7 +4,7 @@ import { JSX } from "react";
 export default async function EmployeeDetailsPage({
   params,
 }: {
-  params: { employeeId: string };
+  params: Promise<{ employeeId: string }>;
 }): Promise<JSX.Element> {
   const { employeeId } = await params;
 

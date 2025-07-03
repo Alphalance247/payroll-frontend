@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { usePayrollContext } from "@/app/context/payrollContext";
 import useBoolean from "@/app/hooks/useBoolean";
 import axiosInstance from "@/app/utils/axios";
+import { AxiosError } from "axios";
 
 interface Employee {
   id: number;
@@ -62,8 +63,13 @@ export default function SendPayrollTo({
           toast.error(res?.data?.message || "Failed to fetch payroll");
         }
       } catch (err) {
-        // console.error("Failed to fetch payroll:", err);
-        toast.error("Error fetching payroll admin");
+        let errorMessage =
+          "An error occurred please try again or contact Admin";
+        if (err instanceof AxiosError) {
+          // Check if err is an instance of AxiosError
+          errorMessage = err.response?.data?.message || errorMessage;
+        }
+        toast.error(errorMessage);
       } finally {
         closeNoteModal();
       }
@@ -104,11 +110,13 @@ export default function SendPayrollTo({
         );
       }
       setLoading(false);
-    } catch (err: any) {
-      toast.error(
-        "Submission failed:",
-        err?.response?.data?.message || err.message
-      );
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        // Check if err is an instance of AxiosError
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

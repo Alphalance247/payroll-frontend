@@ -9,81 +9,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartData = [
-  {
-    month: "Jan",
-    Salary: 800000,
-    Bonus: 900000,
-    Tax: 500000,
-  },
-  {
-    month: "Feb",
-    Salary: 600000,
-    Bonus: 400000,
-    Tax: 1400000,
-  },
-  {
-    month: "Mar",
-    Salary: 700000,
-    Bonus: 600000,
-    Tax: 1200000,
-  },
-  {
-    month: "Apr",
-    Salary: 300000,
-    Bonus: 200000,
-    Tax: 300000,
-  },
-  {
-    month: "May",
-    Salary: 750000,
-    Bonus: 450000,
-    Tax: 800000,
-  },
-  {
-    month: "Jun",
-    Salary: 1000000,
-    Bonus: 100000,
-    Tax: 700000,
-  },
-  {
-    month: "Jul",
-    Salary: 600000,
-    Bonus: 300000,
-    Tax: 1300000,
-  },
-  {
-    month: "Aug",
-    Salary: 400000,
-    Bonus: 200000,
-    Tax: 900000,
-  },
-  {
-    month: "Sep",
-    Salary: 1000000,
-    Bonus: 700000,
-    Tax: 1500000,
-  },
-  {
-    month: "Oct",
-    Salary: 600000,
-    Bonus: 1400000,
-    Tax: 1000000,
-  },
-  {
-    month: "Nov",
-    Salary: 300000,
-    Bonus: 600000,
-    Tax: 1800000,
-  },
-  {
-    month: "Dec",
-    Salary: 700000,
-    Bonus: 200000,
-    Tax: 800000,
-  },
-];
+import { useStore } from "zustand";
+import { getPayrollBreakdown } from "@/stores/analytics/getPayrollBreakdown";
 
 const chartConfig = {
   Salary: {
@@ -136,6 +63,83 @@ function useResponsiveBarSize() {
 export function InsightChart() {
   const barSize = useResponsiveBarSize();
 
+  const { data: payrollBreakdownData } = useStore(getPayrollBreakdown);
+
+  const chartData = [
+    {
+      month: "Jan",
+      Salary: payrollBreakdownData?.data?.January?.salary,
+      Bonus: payrollBreakdownData?.data?.January?.bonus,
+      Tax: payrollBreakdownData?.data?.January?.tax,
+    },
+    {
+      month: "Feb",
+      Salary: payrollBreakdownData?.data?.February?.salary,
+      Bonus: payrollBreakdownData?.data?.February?.bonus,
+      Tax: payrollBreakdownData?.data?.February?.tax,
+    },
+    {
+      month: "Mar",
+      Salary: payrollBreakdownData?.data?.March?.salary,
+      Bonus: payrollBreakdownData?.data?.March?.bonus,
+      Tax: payrollBreakdownData?.data?.March?.tax,
+    },
+    {
+      month: "Apr",
+      Salary: payrollBreakdownData?.data?.April?.salary,
+      Bonus: payrollBreakdownData?.data?.April?.bonus,
+      Tax: payrollBreakdownData?.data?.April?.tax,
+    },
+    {
+      month: "May",
+      Salary: payrollBreakdownData?.data?.May?.salary,
+      Bonus: payrollBreakdownData?.data?.May?.bonus,
+      Tax: payrollBreakdownData?.data?.May?.tax,
+    },
+    {
+      month: "Jun",
+      Salary: payrollBreakdownData?.data?.June?.salary,
+      Bonus: payrollBreakdownData?.data?.June?.bonus,
+      Tax: payrollBreakdownData?.data?.June?.tax,
+    },
+    {
+      month: "Jul",
+      Salary: payrollBreakdownData?.data?.July?.salary,
+      Bonus: payrollBreakdownData?.data?.July?.bonus,
+      Tax: payrollBreakdownData?.data?.July?.tax,
+    },
+    {
+      month: "Aug",
+      Salary: payrollBreakdownData?.data?.August?.salary,
+      Bonus: payrollBreakdownData?.data?.August?.bonus,
+      Tax: payrollBreakdownData?.data?.August?.tax,
+    },
+    {
+      month: "Sep",
+      Salary: payrollBreakdownData?.data?.September?.salary,
+      Bonus: payrollBreakdownData?.data?.September?.bonus,
+      Tax: payrollBreakdownData?.data?.September?.tax,
+    },
+    {
+      month: "Oct",
+      Salary: payrollBreakdownData?.data?.October?.salary,
+      Bonus: payrollBreakdownData?.data?.October?.bonus,
+      Tax: payrollBreakdownData?.data?.October?.tax,
+    },
+    {
+      month: "Nov",
+      Salary: payrollBreakdownData?.data?.November?.salary,
+      Bonus: payrollBreakdownData?.data?.November?.bonus,
+      Tax: payrollBreakdownData?.data?.November?.tax,
+    },
+    {
+      month: "Dec",
+      Salary: payrollBreakdownData?.data?.December?.salary,
+      Bonus: payrollBreakdownData?.data?.December?.bonus,
+      Tax: payrollBreakdownData?.data?.December?.tax,
+    },
+  ];
+
   return (
     <Card className="border-0 shadow-none w-full">
       <CardContent className="p-0">
@@ -184,15 +188,10 @@ export function InsightChart() {
                 />
                 <ChartTooltip
                   cursor={false}
+                  // formatter={(value: number) => {
+                  //   return `₦ ${formatCurrencyShort(value)}`;
+                  // }}
                   content={<ChartTooltipContent className="bg-white" />}
-                  formatter={(value: number) => {
-                    if (value >= 1000000) {
-                      return `${(value / 1000000).toFixed(1)}M`;
-                    } else if (value >= 1000) {
-                      return `${(value / 1000).toFixed(0)}k`;
-                    }
-                    return value;
-                  }}
                 />
                 <Bar
                   dataKey="Salary"

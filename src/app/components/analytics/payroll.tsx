@@ -5,21 +5,16 @@ import { DoughnutChart1 } from "../charts/chart-pie-donut-text";
 import { ChartConfig } from "@/components/ui/chart";
 import PayrollCard from "@/app/common/payrollCard";
 import { getPayrollAnalysis } from "@/stores/getPayrollAnalysis";
-import Button from "@/app/common/Button";
+import { formatCurrencyShort } from "@/app/utils/formatCurrency";
+import StartEndDate from "../common/startEndDate";
 
 const Payroll: React.FC<{
   start_date: string;
   end_date: string;
   setStartDate: (date: string) => void;
   setEndDate: (date: string) => void;
-  fetchPayrollAnalysis: (start_date: string, end_date: string) => Promise<void>;
-}> = ({
-  start_date,
-  end_date,
-  setStartDate,
-  setEndDate,
-  fetchPayrollAnalysis,
-}) => {
+  onFetch: () => void;
+}> = ({ start_date, end_date, setStartDate, setEndDate, onFetch }) => {
   const { data } = getPayrollAnalysis();
 
   const chartData1 = [
@@ -130,56 +125,13 @@ const Payroll: React.FC<{
         </div>
 
         <div className="relative">
-          <div className="flex items-center gap-x-4">
-            <div className="relative">
-              <label
-                htmlFor="start_date"
-                className=" px-4 py-3 bg-white border border-[#d9d9d9] relative rounded-lg cursor-pointer w-fit"
-              >
-                {start_date ? start_date : "Start Date"}
-              </label>
-              <input
-                id="start_date"
-                type="date"
-                value={start_date}
-                className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer"
-                style={{ zIndex: 2 }}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
-
-            <div className="relative">
-              <label
-                htmlFor="end_date"
-                className=" px-4 py-3 bg-white border border-[#d9d9d9] relative rounded-lg cursor-pointer w-fit"
-              >
-                {end_date ? end_date : "End Date"}
-                <input
-                  id="end_date"
-                  type="date"
-                  value={end_date}
-                  className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer"
-                  style={{ zIndex: 2 }}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </label>
-            </div>
-
-            <Button
-              onButtonClick={() => {
-                fetchPayrollAnalysis(start_date, end_date);
-                setStartDate("");
-                setEndDate("");
-              }}
-              variant="primary"
-              className={`${
-                !start_date || !end_date ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={!start_date || !end_date}
-            >
-              Apply
-            </Button>
-          </div>
+          <StartEndDate
+            start_date={start_date}
+            end_date={end_date}
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            onFetch={onFetch}
+          />
         </div>
       </div>
 
@@ -204,7 +156,14 @@ const Payroll: React.FC<{
           </div>
 
           <div className="text-center mt-14 mb-8">
-            <DoughnutChart1 chartConfig={chartConfig1} chartData={chartData1} />
+            <DoughnutChart1
+              chartConfig={chartConfig1}
+              chartData={chartData1}
+              total_salary_paid={formatCurrencyShort(
+                Number(data?.total_salary_paid)
+              )}
+              text="paid out"
+            />
           </div>
         </div>
         <div className="border border-[#d9d9d9] dark:border-[#424E59] rounded-lg">
@@ -219,7 +178,12 @@ const Payroll: React.FC<{
           </div>
 
           <div className="text-center mt-12">
-            <DoughnutChart1 chartConfig={chartConfig2} chartData={chartData2} />
+            <DoughnutChart1
+              chartConfig={chartConfig2}
+              chartData={chartData2}
+              // total_salary_paid={data?.total_salary_paid}
+              // text="paid out"
+            />
           </div>
         </div>
       </div>

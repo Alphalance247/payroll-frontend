@@ -120,7 +120,17 @@ const Sidebar: React.FC = () => {
         {
           text: "People",
           icons: <FaUserFriends size={20} />,
-          link: "/employee-management",
+          arrowDown: <IoIosArrowDown size={20} />,
+          dropdownText: [
+            {
+              link: "/employee-management",
+              text: "Employee Management",
+            },
+            {
+              link: "/employee-management/team-management",
+              text: "Team Management",
+            },
+          ],
         },
         {
           text: "Documents",
