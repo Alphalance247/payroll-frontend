@@ -385,7 +385,7 @@ const Request = () => {
 
                       <div>
                         <div className="py-3 flex justify-between items-center">
-                          <p>Query ID</p>
+                          <p className="text-sm text-[#71717A]">Query ID</p>
                           <p>CMP-20240201</p>
                         </div>
                       </div>

@@ -16,6 +16,11 @@ const QueryOverview = () => {
       value: "Samuel Johnson",
       img: "",
     },
+    {
+      label: "Query Type",
+      value: "Missing Payment",
+      img: "",
+    },
   ];
   return (
     <div className="border-t border-[E3E3E5] px-6">
