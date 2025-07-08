@@ -7,9 +7,10 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { usePayrollContext } from "../context/payrollContext";
 import ProtectedRoute from "../common/protectedRoute";
+import Button from "../common/Button";
 
 export default function RunPayrollPage() {
-  const { payroll, loading } = usePayrollContext();
+  const { payroll, loading, fetchPayroll } = usePayrollContext();
 
   console.log(payroll);
 
@@ -54,9 +55,21 @@ export default function RunPayrollPage() {
                   </div>
                 </>
               ) : (
-                <p className="text-center text-2xl font-semibold flex-col flex justify-center">
-                  No data found please refresh the page or contact support
-                </p>
+                <div className="flex flex-col justify-center items-center h-full ">
+                  <p className="text-center text-2xl font-semibold mb-2">
+                    Payslips are being generated in the background.
+                    <br />
+                    <span className="text-gray-500 text-base">
+                      Please wait a moment and click refresh below.
+                    </span>
+                  </p>
+                  <Button
+                    className="flex items-center gap-x-1 mt-4"
+                    onButtonClick={() => fetchPayroll()}
+                  >
+                    Refresh
+                  </Button>
+                </div>
               )}
             </>
           )}
