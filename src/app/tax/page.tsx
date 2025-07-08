@@ -13,41 +13,6 @@ import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 const Tax = () => {
-  const filteredEmployees = [
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-  ];
-
   const {
     data: payrollTax,
     loading: payrollTaxLoading,
@@ -89,7 +54,7 @@ const Tax = () => {
             Tax Breakdown
           </h2>
 
-          <div className="overflow-x-auto">
+          <div>
             {payrollTaxLoading ? (
               <div className="flex justify-center items-center h-full mt-10">
                 <Loader2 className="animate-spin" />
@@ -110,127 +75,100 @@ const Tax = () => {
                 </p>
               </div>
             ) : (
-              <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
-                <thead className="bg-[#F7F7F7]">
-                  <tr>
-                    <th className="px-6 py-[14px] text-sm font-medium w-[40px] text-[#71717A]">
-                      S/N
-                    </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
-                      <p className="flex gap-x-1 cursor-pointer items-center">
-                        Name{" "}
-                        <span>
-                          <RiExpandUpDownFill fill="#2F2F33" size={12} />
-                        </span>
-                      </p>
-                    </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                      <p className="flex gap-x-1 cursor-pointer items-center">
-                        Remmited
-                        <span>
-                          <IoMdInformationCircle fill="#71717A" size={16} />
-                        </span>
-                      </p>
-                    </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                      <p className="flex gap-x-1 cursor-pointer items-center">
-                        Annual Salary
-                        <span>
-                          <IoMdInformationCircle fill="#71717A" size={16} />
-                        </span>
-                      </p>
-                    </th>
-
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                      <p className="flex gap-x-1 cursor-pointer items-center">
-                        NHF
-                        <span>
-                          <IoMdInformationCircle fill="#71717A" size={16} />
-                        </span>
-                      </p>
-                    </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                      <p className="flex gap-x-1 cursor-pointer items-center">
-                        NHIS
-                        <span>
-                          <IoMdInformationCircle fill="#71717A" size={16} />
-                        </span>
-                      </p>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {payrollTax?.data?.map((emp, i) => (
-                    <tr
-                      key={i}
-                      className="border-b border-[#E3E3E5] last:border-b-0"
-                    >
-                      <td className="px-6 py-4">{i + 1}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                            {emp?.payslip?.employee?.fullname
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </div>
-                          <span className="text-[#2F2F33] text-sm font-medium">
-                            {emp?.payslip?.employee?.fullname}
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
+                  <thead className="bg-[#F7F7F7]">
+                    <tr>
+                      <th className="px-6 py-[14px] text-sm font-medium w-[40px] text-[#71717A]">
+                        S/N
+                      </th>
+                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
+                        <p className="flex gap-x-1 cursor-pointer items-center">
+                          Name{" "}
+                          <span>
+                            <RiExpandUpDownFill fill="#2F2F33" size={12} />
                           </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs border border-[#414D57] bg-[#E7E9EA] text-[#000000] font-medium`}
-                        >
-                          ₦ {emp.tax_amount_monthly.toLocaleString()}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        ₦ {emp.tax_amount_yearly.toLocaleString()}
-                      </td>
+                        </p>
+                      </th>
+                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                        <p className="flex gap-x-1 cursor-pointer items-center">
+                          Monthly Tax
+                          <span>
+                            <IoMdInformationCircle fill="#71717A" size={16} />
+                          </span>
+                        </p>
+                      </th>
+                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                        <p className="flex gap-x-1 cursor-pointer items-center">
+                          Annual Salary
+                          <span>
+                            <IoMdInformationCircle fill="#71717A" size={16} />
+                          </span>
+                        </p>
+                      </th>
 
-                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        {" "}
-                        {emp.remmited ? "Yes" : "No"}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-[#2F2F33]"> ₦ 0</td>
+                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                        <p className="flex gap-x-1 cursor-pointer items-center">
+                          Remmited
+                          <span>
+                            <IoMdInformationCircle fill="#71717A" size={16} />
+                          </span>
+                        </p>
+                      </th>
+                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                        <p className="flex gap-x-1 cursor-pointer items-center">
+                          NHIS
+                          <span>
+                            <IoMdInformationCircle fill="#71717A" size={16} />
+                          </span>
+                        </p>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-                {/* <tfoot className="bg-[#F7F7F7]">
-                <tr>
-                  <td
-                    colSpan={3}
-                    className="px-6 py-4 text-base font-semibold text-[#2F2F33]"
-                  >
-                    Total
-                  </td>
-                  <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                    6000 hrs
-                  </td>
+                  </thead>
+                  <tbody>
+                    {payrollTax?.data?.map((emp, i) => (
+                      <tr
+                        key={i}
+                        className="border-b border-[#E3E3E5] last:border-b-0"
+                      >
+                        <td className="px-6 py-4">{i + 1}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
+                              {emp?.payslip?.employee?.fullname
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </div>
+                            <span className="text-[#2F2F33] text-sm font-medium">
+                              {emp?.payslip?.employee?.fullname}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
+                          >
+                            ₦ {emp.tax_amount_monthly.toLocaleString()}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                          ₦ {emp.tax_amount_yearly.toLocaleString()}
+                        </td>
 
-                  <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                    ₦ {payroll?.total_payout.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                    ₦ {payroll?.total_salary.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                    ----
-                  </td>
-                  <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                    {payroll?.total_bonus}
-                  </td>
-                  <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                    ₦{payroll?.total_tax?.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                    ₦ {payroll?.total_debt?.toLocaleString()}
-                  </td>
-                </tr>
-                </tfoot> */}
-              </table>
+                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                          {" "}
+                          {emp.remmited ? "Yes" : "No"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                          {" "}
+                          ₦ 0
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         </div>

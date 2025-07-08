@@ -1,6 +1,5 @@
 // lib/api.ts
 import axios from "axios";
-
 const BASE_URL = "https://real.ec2.alluvium.net";
 
 const axiosInstance = axios.create({

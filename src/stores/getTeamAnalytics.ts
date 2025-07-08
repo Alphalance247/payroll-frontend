@@ -11,7 +11,7 @@ interface data {
 
 interface teamAnalyticsDataStore {
   team_count: data[];
-  "total-teams": number;
+  total_teams: number;
   active_employee: number;
   Full_time: number;
   contractors: number;

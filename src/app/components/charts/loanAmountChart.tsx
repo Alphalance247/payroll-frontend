@@ -17,79 +17,96 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartData = [
-  {
-    month: "Jan",
-    "Travel Allowance": 80,
-    "Full-time": 50,
-  },
-  {
-    month: "Feb",
-    "Travel Allowance": 60,
-    "Full-time": 140,
-  },
-  {
-    month: "Mar",
-    "Travel Allowance": 70,
-    "Full-time": 120,
-  },
-  {
-    month: "Apr",
-    "Travel Allowance": 30,
-    "Full-time": 30,
-  },
-  {
-    month: "May",
-    "Travel Allowance": 75,
-    "Full-time": 80,
-  },
-  {
-    month: "Jun",
-    "Travel Allowance": 100,
-    "Full-time": 70,
-  },
-  {
-    month: "Jul",
-    "Travel Allowance": 60,
-    "Full-time": 130,
-  },
-  {
-    month: "Aug",
-    "Travel Allowance": 40,
-    "Full-time": 90,
-  },
-  {
-    month: "Sep",
-    "Travel Allowance": 100,
-    "Full-time": 150,
-  },
-  {
-    month: "Oct",
-    "Travel Allowance": 60,
-    "Full-time": 100,
-  },
-  {
-    month: "Nov",
-    "Travel Allowance": 30,
-    "Full-time": 180,
-  },
-  {
-    month: "Dec",
-    ["Travel Allowance"]: 70,
-    "Full-time": 80,
-  },
-];
+import { getLoanCategory } from "@/stores/analytics/getLoanCategory";
+// const chartData = [
+//   {
+//     month: "Jan",
+//     "Travel Allowance": 80,
+//     "Official Fund": 50,
+//     "Personal Loan": 100,
+//   },
+//   {
+//     month: "Feb",
+//     "Travel Allowance": 60,
+//     "Official Fund": 140,
+//     "Personal Loan": 100,
+//   },
+//   {
+//     month: "Mar",
+//     "Travel Allowance": 70,
+//     "Official Fund": 120,
+//     "Personal Loan": 300,
+//   },
+//   {
+//     month: "Apr",
+//     "Travel Allowance": 30,
+//     "Official Fund": 30,
+//     "Personal Loan": 200,
+//   },
+//   {
+//     month: "May",
+//     "Travel Allowance": 75,
+//     "Official Fund": 80,
+//     "Personal Loan": 60,
+//   },
+//   {
+//     month: "Jun",
+//     "Travel Allowance": 100,
+//     "Official Fund": 70,
+//     "Personal Loan": 90,
+//   },
+//   {
+//     month: "Jul",
+//     "Travel Allowance": 60,
+//     "Official Fund": 130,
+//     "Personal Loan": 110,
+//   },
+//   {
+//     month: "Aug",
+//     "Travel Allowance": 40,
+//     "Official Fund": 90,
+//     "Personal Loan": 120,
+//   },
+//   {
+//     month: "Sep",
+//     "Travel Allowance": 100,
+//     "Official Fund": 150,
+//     "Personal Loan": 130,
+//   },
+//   {
+//     month: "Oct",
+//     "Travel Allowance": 60,
+//     "Official Fund": 100,
+//     "Personal Loan": 80,
+//   },
+//   {
+//     month: "Nov",
+//     "Travel Allowance": 30,
+//     "Official Fund": 180,
+//     "Personal Loan": 120,
+//   },
+//   {
+//     month: "Dec",
+//     ["Travel Allowance"]: 70,
+//     "Official Fund": 80,
+//     "Personal Loan": 100,
+//   },
+// ];
 
 const chartConfig = {
   "Travel Allowance": {
     label: "Travel Allowance",
-    color: "hsl(195, 30%, 40%)",
+    color: "#FFD166",
   },
 
-  "Full-time": {
-    label: "Full-time",
-    color: "hsl(35, 90%, 75%)",
+  "Official Fund": {
+    label: "Official Fund",
+    color: "#2E6171",
+  },
+
+  "Personal Loan": {
+    label: "Personal Loan",
+    color: "#8A508F",
   },
 };
 
@@ -117,6 +134,22 @@ function useResponsiveBarSize() {
 
 export function LoanAmountsCharts() {
   const barSize = useResponsiveBarSize();
+  const { data } = getLoanCategory();
+  console.log(data?.monthly_data);
+
+  const chartData = data?.monthly_data.map((item) => ({
+    month: item.month,
+    ...item.categories.reduce(
+      (
+        acc: Record<string, number>,
+        curr: { category: string; total_amount: number }
+      ) => {
+        acc[curr.category] = curr.total_amount;
+        return acc;
+      },
+      {}
+    ),
+  }));
 
   return (
     <Card className="border-0 shadow-none w-full">
@@ -154,61 +187,42 @@ export function LoanAmountsCharts() {
                   height={40}
                 />
                 <YAxis
-                  //   tickFormatter={formatYAxis}
-                  domain={[0, 300]}
-                  ticks={[0, 50, 100, 150, 200, 250]}
+                  domain={[0, 8000000]}
+                  ticks={[0, 2000000, 4000000, 6000000, 8000000]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12 }}
                   width={100}
-                  //   label={{
-                  //     value: "Total Amount (USD)",
-                  //     angle: -90,
-                  //     position: "insideLeft",
-                  //     style: { textAnchor: "middle" },
-                  //     offset: -40,
-                  //   }}
                   className="font-Graphik text-[#71717A] text-sm font-medium"
                 />
                 <ChartTooltip
                   cursor={false}
                   content={<ChartTooltipContent className="bg-white" />}
-                  formatter={(value: number) => {
-                    if (value >= 1000000) {
-                      return `${(value / 1000000).toFixed(1)}M`;
-                    } else if (value >= 1000) {
-                      return `${(value / 1000).toFixed(0)}k`;
-                    }
-                    return value;
-                  }}
                 />
 
                 <Bar
-                  dataKey="Full-time"
-                  fill={chartConfig["Full-time"].color}
+                  dataKey="Official Fund"
+                  fill={chartConfig["Official Fund"].color}
                   radius={[0, 0, 0, 0]}
                   barSize={barSize}
                   stackId="a"
                 />
 
                 <Bar
-                  dataKey="'Travel Allowance'"
+                  dataKey="Travel Allowance"
                   fill={chartConfig["Travel Allowance"].color}
                   radius={[0, 0, 0, 0]}
                   barSize={barSize}
                   stackId="a"
-                >
-                  {/* Add labels on top of the stacked bars */}
-                  <LabelList
-                    dataKey="Contractors"
-                    position="top"
-                    style={{
-                      fontSize: "11px",
-                      fill: "#666",
-                      fontWeight: 500,
-                    }}
-                  />
-                </Bar>
+                />
+
+                <Bar
+                  dataKey="Personal Loan"
+                  fill={chartConfig["Personal Loan"].color}
+                  radius={[0, 0, 0, 0]}
+                  barSize={barSize}
+                  stackId="a"
+                />
 
                 <Legend
                   verticalAlign="bottom"

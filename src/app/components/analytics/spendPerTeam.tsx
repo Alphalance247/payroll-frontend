@@ -23,23 +23,6 @@ const SpendPerTeam = () => {
             />
           </div>
 
-          {/* <div className="relative">
-            <div
-              className="flex items-center gap-x-4 px-4 py-3 bg-white border border-[#d9d9d9]  rounded-lg cursor-pointer w-fit"
-              // onClick={handleOpen}
-            >
-              <p className="">
-                <span className="text-base font-Graphik text-[#2F2F33] tracking-[-0.3px]">
-                  Design & Development
-                </span>{" "}
-                <span className="font-medium text-[15px] leading-5 text-[#262626] ">
-                  {""}
-                </span>
-              </p>
-              <FaCaretDown size={20} color="black" />
-            </div>
-          </div> */}
-
           <DropDownBtn
             className="w-full"
             subText="Select Team"

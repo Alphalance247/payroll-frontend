@@ -1,106 +1,60 @@
 "use client";
 import DropDownBtn from "@/app/common/dropDownBtn";
-import React from "react";
+import { getTimeSheetWithId } from "@/stores/time-sheet-id/getTimeSheetWithId";
+import React, { useState } from "react";
 
-// Dummy data mimicking API response for a few days
-const wk1 = [
-  { date: "2023-10-01", dayOfMonth: 1, dayOfWeek: "Sunday", type: "weekend" },
-  {
-    date: "2023-10-02",
-    dayOfMonth: 2,
-    dayOfWeek: "Monday",
-    type: "workday",
-    regularHours: "08:00:00",
-    overtimeHours: "00:00:00",
-  },
-  {
-    date: "2023-10-03",
-    dayOfMonth: 3,
-    dayOfWeek: "Tuesday",
-    type: "workday",
-    regularHours: "06:00:00",
-    overtimeHours: "00:00:00",
-  },
-  {
-    date: "2023-10-04",
-    dayOfMonth: 4,
-    dayOfWeek: "Wednesday",
-    type: "workday",
-    regularHours: "06:00:00",
-    overtimeHours: "00:00:00",
-  },
-  {
-    date: "2023-10-05",
-    dayOfMonth: 5,
-    dayOfWeek: "Thursday",
-    type: "workday",
-    regularHours: "06:00:00",
-    overtimeHours: "00:00:00",
-  },
-  {
-    date: "2023-10-06",
-    dayOfMonth: 6,
-    dayOfWeek: "Friday",
-    type: "workday",
-    regularHours: "06:00:00",
-    overtimeHours: "00:00:00",
-  },
-  { date: "2023-10-07", dayOfMonth: 7, dayOfWeek: "Saturday", type: "weekend" },
-];
-
-const wk2 = [
-  { date: "2023-10-01", dayOfMonth: 8, dayOfWeek: "Sunday", type: "weekend" },
-  {
-    date: "2023-10-02",
-    dayOfMonth: 9,
-    dayOfWeek: "Monday",
-    type: "workday",
-    regularHours: "08:00:00",
-    overtimeHours: "00:00:00",
-  },
-  {
-    date: "2023-10-03",
-    dayOfMonth: 10,
-    dayOfWeek: "Tuesday",
-    type: "workday",
-    regularHours: "06:00:00",
-    overtimeHours: "00:00:00",
-  },
-  {
-    date: "2023-10-04",
-    dayOfMonth: 11,
-    dayOfWeek: "Wednesday",
-    type: "workday",
-    regularHours: "06:00:00",
-    overtimeHours: "00:00:00",
-  },
-  {
-    date: "2023-10-05",
-    dayOfMonth: 12,
-    dayOfWeek: "Thursday",
-    type: "workday",
-    regularHours: "06:00:00",
-    overtimeHours: "00:00:00",
-  },
-  {
-    date: "2023-10-06",
-    dayOfMonth: 13,
-    dayOfWeek: "Friday",
-    type: "workday",
-    regularHours: "06:00:00",
-    overtimeHours: "00:00:00",
-  },
-  {
-    date: "2023-10-07",
-    dayOfMonth: 14,
-    dayOfWeek: "Saturday",
-    type: "weekend",
-  },
-];
+type Month =
+  | "January"
+  | "February"
+  | "March"
+  | "April"
+  | "May"
+  | "June"
+  | "July"
+  | "August"
+  | "September"
+  | "October"
+  | "November"
+  | "December";
 
 const TimeSheet = () => {
-  // In a real scenario, you'd fetch data here and store it in state
-  //   const calendarData = dummyCalendarData; // Using dummy data for now
+  const { data: timeSheetData } = getTimeSheetWithId();
+  const [selectedMonth, setSelectedMonth] = useState<Month>("January");
+
+  // Create dummy entries
+  const sundayEntry = {
+    hours: 10,
+    overtime: 10,
+    type: "weekend",
+  };
+
+  const saturdayEntry = {
+    hours: 12,
+    overtime: 19,
+    type: "weekend",
+  };
+
+  const originalWk1 =
+    timeSheetData?.timesheet_data?.[selectedMonth] !== undefined
+      ? timeSheetData?.timesheet_data?.[selectedMonth]?.slice(0, 5)
+      : [];
+  const originalWk2 =
+    timeSheetData?.timesheet_data?.[selectedMonth] !== undefined
+      ? timeSheetData?.timesheet_data?.[selectedMonth]?.slice(5, 10)
+      : [];
+  const originalWk3 =
+    timeSheetData?.timesheet_data?.[selectedMonth] !== undefined
+      ? timeSheetData?.timesheet_data?.[selectedMonth]?.slice(10, 15)
+      : [];
+  const originalWk4 =
+    timeSheetData?.timesheet_data?.[selectedMonth] !== undefined
+      ? timeSheetData?.timesheet_data?.[selectedMonth]?.slice(15, 20)
+      : [];
+
+  const wk1 = [sundayEntry, ...originalWk1, saturdayEntry];
+  const wk2 = [sundayEntry, ...originalWk2, saturdayEntry];
+  const wk3 = [sundayEntry, ...originalWk3, saturdayEntry];
+  const wk4 = [sundayEntry, ...originalWk4, saturdayEntry];
 
   const daysOfWeek = [
     "Sunday",
@@ -115,15 +69,15 @@ const TimeSheet = () => {
   const hrsandtime = [
     {
       hrs: "Regular Hours",
-      time: "06.00",
+      time: timeSheetData?.total_regular_hours || "00.00",
     },
     {
       hrs: "Overtime Hours",
-      time: "06.00",
+      time: timeSheetData?.total_overtime || "00.00",
     },
     {
       hrs: "Total Hours",
-      time: "12.00",
+      time: timeSheetData?.total_hours || "00.00",
     },
   ];
 
@@ -140,7 +94,27 @@ const TimeSheet = () => {
               Time logged
             </h2>
 
-            <DropDownBtn text="January" subText="" />
+            <DropDownBtn
+              placeholder="Month"
+              subText=""
+              options={[
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+              ]}
+              onSelectOption={(value) => setSelectedMonth(value as Month)}
+              selectedValue={selectedMonth}
+              btnHeight="h-[200px]"
+            />
           </div>
 
           <div className="bg-[#F7F7F7] py-4 px-6 flex flex-col gap-y-3">
@@ -167,77 +141,131 @@ const TimeSheet = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              {wk1.map((dayData) => (
-                <td
-                  key={dayData.date}
-                  // style={{
-                  //   border: "1px solid #ddd",
-                  //   padding: "15px",
-                  //   verticalAlign: "top",
-                  //   minHeight: "100px",
-                  //   width: `${100 / 7}%`,
-                  // }}
-                  className="p-4 min-h-[100px] w-[200px] align-top border border-[#E3E3E5]"
-                >
-                  <div className="mb-16">
-                    <p className="text-xl font-medium text-[#71717A]">
-                      {dayData.dayOfMonth}
-                    </p>
-                  </div>
-                  {dayData.type === "weekend" ? (
-                    <div
-                      // style={{
-                      //   fontSize: "0.9em",
-                      //   color: "#666",
-                      //   marginTop: "10px",
-                      // }}
-                      className="text-[#00000080] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#00000080] bg-[#F1F1F2]"
+            {timeSheetData?.timesheet_data?.[selectedMonth] === undefined ? (
+              <tr>
+                <td colSpan={7} className="text-center py-8 text-[#71717A]">
+                  No data available for this month.
+                </td>
+              </tr>
+            ) : (
+              <>
+                <tr>
+                  {wk1.map((dayData, i) => (
+                    <td
+                      key={i}
+                      className="p-4 min-h-[100px] w-[200px] align-top border border-[#E3E3E5]"
                     >
-                      Weekend break
-                    </div>
-                  ) : (
-                    <div style={{ fontSize: "0.9em" }}>
-                      <div className="text-[#0185C0] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#E6F5F9] mb-[5.5px]">
-                        Regular: {dayData.regularHours}
+                      <div className="mb-16">
+                        <p className="text-xl font-medium text-[#71717A]">
+                          {/* {dayData.dayOfMonth} */} {i + 1}
+                        </p>
                       </div>
-                      <div className="text-[#CF6E13] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#FCF2E8]">
-                        Overtime: {dayData.overtimeHours}
+                      {dayData?.type === "weekend" ? (
+                        <div className="text-[#00000080] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#00000080] bg-[#F1F1F2]">
+                          Weekend break
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: "0.9em" }}>
+                          <div className="text-[#0185C0] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#E6F5F9] mb-[5.5px]">
+                            Regular: {dayData?.hours || "00:00"}
+                          </div>
+                          <div className="text-[#CF6E13] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#FCF2E8]">
+                            Overtime: {dayData?.overtime || "00:00"}
+                          </div>
+                        </div>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+                {/* Add more rows here for additional weeks */}
+                <tr>
+                  {wk2.map((dayData, i) => (
+                    <td
+                      key={i}
+                      className="p-4 min-h-[100px] w-[200px] align-top border border-[#E3E3E5]"
+                    >
+                      <div className="mb-16">
+                        <p className="text-xl font-medium text-[#71717A]">
+                          {i + 8}
+                        </p>
                       </div>
-                    </div>
-                  )}
-                </td>
-              ))}
-            </tr>
-            {/* Add more rows here for additional weeks */}
-            <tr>
-              {wk2.map((dayData) => (
-                <td
-                  key={dayData.date}
-                  className="p-4 min-h-[100px] w-[200px] align-top border border-[#E3E3E5]"
-                >
-                  <div className="mb-16">
-                    <p className="text-xl font-medium text-[#71717A]">
-                      {dayData.dayOfMonth}
-                    </p>
-                  </div>
-                  {dayData.type === "weekend" ? (
-                    <div className="text-[#00000080] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#00000080] bg-[#F1F1F2]">
-                      Weekend break
-                    </div>
-                  ) : (
-                    <div style={{ fontSize: "0.9em" }}>
-                      <div className="text-[#0185C0] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#E6F5F9] mb-[5.5px]">
-                        Regular: {dayData.regularHours}
+                      {dayData.type === "weekend" ? (
+                        <div className="text-[#00000080] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#00000080] bg-[#F1F1F2]">
+                          Weekend break
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: "0.9em" }}>
+                          <div className="text-[#0185C0] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#E6F5F9] mb-[5.5px]">
+                            Regular: {dayData?.hours || "00:00"}
+                          </div>
+                          <div className="text-[#CF6E13] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#FCF2E8]">
+                            Overtime: {dayData?.overtime || "00:00"}
+                          </div>
+                        </div>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+
+                <tr>
+                  {wk3.map((dayData, i) => (
+                    <td
+                      key={i}
+                      className="p-4 min-h-[100px] w-[200px] align-top border border-[#E3E3E5]"
+                    >
+                      <div className="mb-16">
+                        <p className="text-xl font-medium text-[#71717A]">
+                          {i + 15}
+                        </p>
                       </div>
-                      <div className="text-[#CF6E13] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#FCF2E8]">
-                        Overtime: {dayData.overtimeHours}
+                      {dayData.type === "weekend" ? (
+                        <div className="text-[#00000080] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#00000080] bg-[#F1F1F2]">
+                          Weekend break
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: "0.9em" }}>
+                          <div className="text-[#0185C0] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#E6F5F9] mb-[5.5px]">
+                            Regular: {dayData?.hours || "00:00"}
+                          </div>
+                          <div className="text-[#CF6E13] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#FCF2E8]">
+                            Overtime: {dayData?.overtime || "00:00"}
+                          </div>
+                        </div>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+
+                <tr>
+                  {wk4.map((dayData, i) => (
+                    <td
+                      key={i}
+                      className="p-4 min-h-[100px] w-[200px] align-top border border-[#E3E3E5]"
+                    >
+                      <div className="mb-16">
+                        <p className="text-xl font-medium text-[#71717A]">
+                          {i + 22}
+                        </p>
                       </div>
-                    </div>
-                  )}
-                </td>
-              ))}
-            </tr>
+                      {dayData.type === "weekend" ? (
+                        <div className="text-[#00000080] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#00000080] bg-[#F1F1F2]">
+                          Weekend break
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: "0.9em" }}>
+                          <div className="text-[#0185C0] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#E6F5F9] mb-[5.5px]">
+                            Regular: {dayData?.hours || "00:00"}
+                          </div>
+                          <div className="text-[#CF6E13] px-[5.55px] w-fit text-[10px] font-medium rounded-[3px] border-[0.55px] border-[#0185C080] bg-[#FCF2E8]">
+                            Overtime: {dayData?.overtime || "00:00"}
+                          </div>
+                        </div>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              </>
+            )}
           </tbody>
         </table>
       </div>{" "}

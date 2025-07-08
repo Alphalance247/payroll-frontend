@@ -33,7 +33,7 @@ const Loan = () => {
   ];
 
   const [activeBtn, setActiveBtn] = useState<string>("All requests");
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
 
   const tabs: { id: number; name: string }[] = [
@@ -109,9 +109,9 @@ const Loan = () => {
             <input
               type="text"
               placeholder="Search"
-              value={searchQuery}
+              // value={searchQuery}
               //   onSearchChange(e.target.value)
-              onChange={(e) => {}}
+              // onChange={(e) => {}}
               className="w-full pl-10 pr-4 py-[10px] border border-[#E3E3E5] rounded-lg text-base focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
             />
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
@@ -129,7 +129,6 @@ const Loan = () => {
 
         <div className="mt-8">
           <LoanDetailsTable />
-          
         </div>
       </main>
     </DashboardLayout>

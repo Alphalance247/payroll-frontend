@@ -14,11 +14,14 @@ import WorkHoursBreakDown from "../components/analytics/WorkHoursBreakDown";
 import { getPayrollAnalysis } from "@/stores/getPayrollAnalysis";
 import { getTeamAnalytics } from "@/stores/getTeamAnalytics";
 import { getLoanAnalytics } from "@/stores/getLoanAnalytics";
-import { getTeamHoursLogged } from "@/stores/getTeamHousLogged";
+import { getTeamHoursLogged } from "@/stores/getTeamHoursLogged";
 import { useEffect, useState } from "react";
 import Heading from "../common/heading";
 import { Loader2 } from "lucide-react";
 import StartEndDate from "../components/common/startEndDate";
+import { getPayrollBreakdown } from "@/stores/analytics/getPayrollBreakdown";
+import { getYearlyJobType } from "@/stores/analytics/getYearlyJobType";
+import { getLoanCategory } from "@/stores/analytics/getLoanCategory";
 
 const PayrollAnalytics = () => {
   const {
@@ -32,17 +35,36 @@ const PayrollAnalytics = () => {
     getTeamHoursLogged();
   const [start_date, setStartDate] = useState("");
   const [end_date, setEndDate] = useState("");
+  const [selectedYear, setSelectedYear] = useState<string>("");
+  const [selectedYearJobType, setSelectedYearJobType] = useState<string>("");
+  const [timeTrackingStartDate, setTimeTrackingStartDate] =
+    useState<string>("");
+  const [timeTrackingEndDate, setTimeTrackingEndDate] = useState<string>("");
+  const {
+    fetchPayrollBreakdown,
+    loading: payrollBreakdownLoading,
+    error: payrollBreakdownError,
+  } = getPayrollBreakdown();
+  const { fetchYearlyJobType, loading: yearlyJobTypeLoading } =
+    getYearlyJobType();
+  const { fetchLoanCategory } = getLoanCategory();
 
   useEffect(() => {
     fetchPayrollAnalysis();
     fetchTeamAnalytics();
     fetchLoanAnalytics();
     fetchTeamHoursLogged();
+    fetchPayrollBreakdown();
+    fetchYearlyJobType();
+    fetchLoanCategory();
   }, [
     fetchTeamAnalytics,
     fetchLoanAnalytics,
     fetchTeamHoursLogged,
     fetchPayrollAnalysis,
+    fetchPayrollBreakdown,
+    fetchYearlyJobType,
+    fetchLoanCategory,
   ]);
 
   // Global data not found check for payroll-related analytics
@@ -68,7 +90,9 @@ const PayrollAnalytics = () => {
               end_date={end_date}
               setStartDate={setStartDate}
               setEndDate={setEndDate}
-              fetchPayrollAnalysis={fetchPayrollAnalysis}
+              onFetch={() => {
+                fetchPayrollAnalysis(start_date, end_date);
+              }}
             />
           )}
         </div>
@@ -91,22 +115,43 @@ const PayrollAnalytics = () => {
               end_date={end_date}
               setStartDate={setStartDate}
               setEndDate={setEndDate}
-              fetchPayrollAnalysis={fetchPayrollAnalysis}
+              onFetch={() => {
+                fetchPayrollAnalysis(start_date, end_date);
+              }}
             />
             <PayrollPerTeam />
             <SpendPerTeam />
-            <PayrollInsights />
           </>
         )}
 
+        {payrollBreakdownLoading ? (
+          <div className="flex justify-center items-center h-full mt-10">
+            <Loader2 className="animate-spin" />
+          </div>
+        ) : payrollBreakdownError ? (
+          <div className="flex justify-center items-center h-full mt-10">
+            <p className="text-sm text-[#2F2F33] flex items-center gap-x-2">
+              Error fetching payroll breakdown data
+            </p>
+          </div>
+        ) : (
+          <PayrollInsights
+            selectedYear={selectedYear}
+            setSelectedYear={setSelectedYear}
+          />
+        )}
+
         {/* Team Group */}
-        {teamLoading ? (
+        {teamLoading || yearlyJobTypeLoading ? (
           <div className="flex justify-center items-center h-full mt-10">
             <Loader2 className="animate-spin" />
           </div>
         ) : (
           <>
-            <LoggedHours />
+            <LoggedHours
+              selectedYearJobType={selectedYearJobType}
+              setSelectedYearJobType={setSelectedYearJobType}
+            />
             <EachTeamEmployee />
           </>
         )}
@@ -117,7 +162,18 @@ const PayrollAnalytics = () => {
           </div>
         ) : (
           <>
-            <TimeTracking />
+            <TimeTracking
+              start_date={timeTrackingStartDate}
+              end_date={timeTrackingEndDate}
+              setStartDate={setTimeTrackingStartDate}
+              setEndDate={setTimeTrackingEndDate}
+              onFetch={() => {
+                fetchTeamHoursLogged(
+                  timeTrackingStartDate,
+                  timeTrackingEndDate
+                );
+              }}
+            />
             <WorkHoursBreakDown />
           </>
         )}

@@ -14,12 +14,12 @@ const Overview = () => {
     },
     {
       heading: "Active Employees",
-      subHead: teamData?.active_employee || 0,
+      subHead: data?.active_employees || 0,
       feature: "Total of 20 active teams",
     },
     {
       heading: "Total Hours Logged",
-      subHead: teamData?.total_hours || 0,
+      subHead: teamData?.total_hours?.toFixed(2) || 0,
       feature: "Last updated: 16 hours ago",
     },
   ];

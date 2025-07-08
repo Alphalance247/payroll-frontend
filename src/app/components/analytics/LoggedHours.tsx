@@ -1,26 +1,33 @@
 import HeadingSubHead from "@/app/common/headingSubHead";
-import { FaCaretDown } from "react-icons/fa";
 import { EmploymentsTypeChart } from "../charts/employmentTypeChart";
 import Image from "next/image";
 import PayrollCard from "@/app/common/payrollCard";
 import { getTeamAnalytics } from "@/stores/getTeamAnalytics";
+import Button from "@/app/common/Button";
+import { getYearlyJobType } from "@/stores/analytics/getYearlyJobType";
 
-const LoggedHours = () => {
+const LoggedHours = ({
+  selectedYearJobType,
+  setSelectedYearJobType,
+}: {
+  selectedYearJobType: string;
+  setSelectedYearJobType: (year: string) => void;
+}) => {
+  const { fetchYearlyJobType } = getYearlyJobType();
   const { data: teamData } = getTeamAnalytics();
-  console.log(teamData);
 
   const data = [
     {
       heading: "Total Teams",
-      subhead: teamData?.["total-teams"].toString() || "0",
+      subhead: teamData?.total_teams || "0",
     },
     {
       heading: "Active Employee",
-      subhead: teamData?.active_employee.toString() || "0",
+      subhead: teamData?.active_employee || "0",
     },
     {
       heading: "Total Hours",
-      subhead: teamData?.total_hours.toString() || "0",
+      subhead: teamData?.total_hours?.toFixed(2) || "0",
     },
   ];
 
@@ -71,28 +78,70 @@ const LoggedHours = () => {
           />
         </div>
 
-        <div className="relative">
-          <div
-            className="flex items-center gap-x-4 px-4 py-3 bg-white border border-[#d9d9d9]  rounded-lg cursor-pointer w-fit"
-            // onClick={handleOpen}
-          >
-            <p className="">
-              <span className="text-base font-Graphik text-[#2F2F33] tracking-[-0.3px]">
-                Last 12 months
-              </span>{" "}
-              <span className="font-medium text-[15px] leading-5 text-[#262626] ">
-                {""}
-              </span>
-            </p>
-            <FaCaretDown size={20} color="black" />
+        <div className="flex items-center gap-2">
+          <div>
+            <select
+              name=""
+              id=""
+              className="border  rounded-md px-4 py-[10px] focus:outline-none"
+              value={selectedYearJobType}
+              onChange={(e) => setSelectedYearJobType(e.target.value)}
+            >
+              <option value="">Select year</option>
+              <option value="2000">2000</option>
+              <option value="2001">2001</option>
+              <option value="2002">2002</option>
+              <option value="2003">2003</option>
+              <option value="2004">2004</option>
+              <option value="2005">2005</option>
+              <option value="2006">2006</option>
+              <option value="2007">2007</option>
+              <option value="2020">2020</option>
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
+              <option value="2029">2029</option>
+              <option value="2030">2030</option>
+              <option value="2031">2031</option>
+              <option value="2032">2032</option>
+              <option value="2033">2033</option>
+              <option value="2034">2034</option>
+              <option value="2035">2035</option>
+              <option value="2036">2036</option>
+              <option value="2037">2037</option>
+            </select>
           </div>
+
+          <Button
+            variant="primary"
+            className={`w-[100px] h-[40px] ${
+              !selectedYearJobType || selectedYearJobType === ""
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
+            onButtonClick={() => {
+              fetchYearlyJobType(selectedYearJobType);
+            }}
+            disabled={!selectedYearJobType || selectedYearJobType === ""}
+          >
+            Apply
+          </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-x-4 mb-6">
         {data.map((el, i) => {
           return (
-            <PayrollCard key={i} heading={el?.heading} subhead={el?.subhead} />
+            <PayrollCard
+              key={i}
+              heading={el?.heading}
+              subhead={el?.subhead.toString()}
+            />
           );
         })}
       </div>

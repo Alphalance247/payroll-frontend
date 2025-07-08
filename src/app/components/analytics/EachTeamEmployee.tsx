@@ -4,7 +4,6 @@ import { getTeamAnalytics } from "@/stores/getTeamAnalytics";
 
 const EachTeamEmployee = () => {
   const { data: teamData } = getTeamAnalytics();
-  console.log(teamData);
 
   const chartData =
     teamData?.team_count.map((el) => ({

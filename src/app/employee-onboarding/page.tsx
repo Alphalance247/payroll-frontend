@@ -70,7 +70,15 @@ const EmployeeOnboardingPage = () => {
         if (res.status === 200) {
           setTeamData(data);
         }
-      } catch (err) {}
+      } catch (err) {
+        let errorMessage =
+          "An error occurred please try again or contact Admin";
+        if (err instanceof AxiosError) {
+          // Check if err is an instance of AxiosError
+          errorMessage = err.response?.data?.message || errorMessage;
+        }
+        toast.error(errorMessage);
+      }
     };
 
     fetchTeam();

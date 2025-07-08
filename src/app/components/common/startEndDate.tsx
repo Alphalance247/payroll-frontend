@@ -5,7 +5,7 @@ interface StartEndDateProps {
   end_date: string;
   setStartDate: (date: string) => void;
   setEndDate: (date: string) => void;
-  fetchPayrollAnalysis: (start_date: string, end_date: string) => Promise<void>;
+  onFetch: () => void;
 }
 
 const StartEndDate = ({
@@ -13,7 +13,7 @@ const StartEndDate = ({
   end_date,
   setStartDate,
   setEndDate,
-  fetchPayrollAnalysis,
+  onFetch,
 }: StartEndDateProps) => {
   return (
     <div className="flex items-center gap-x-4">
@@ -53,14 +53,12 @@ const StartEndDate = ({
 
       <Button
         onButtonClick={() => {
-          fetchPayrollAnalysis(start_date, end_date);
-          setStartDate("");
-          setEndDate("");
+          onFetch();
         }}
         variant="primary"
         className={`${
           !start_date || !end_date ? "opacity-50 cursor-not-allowed" : ""
-        }`}
+        } w-[100px] h-[40px]`}
         disabled={!start_date || !end_date}
       >
         Apply

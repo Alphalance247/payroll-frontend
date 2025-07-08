@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Bar,
   BarChart,
@@ -17,69 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartData = [
-  {
-    month: "Jan",
-    Contractors: 80,
-    "Full-time": 50,
-  },
-  {
-    month: "Feb",
-    Contractors: 60,
-    "Full-time": 140,
-  },
-  {
-    month: "Mar",
-    Contractors: 70,
-    "Full-time": 120,
-  },
-  {
-    month: "Apr",
-    Contractors: 30,
-    "Full-time": 30,
-  },
-  {
-    month: "May",
-    Contractors: 75,
-    "Full-time": 80,
-  },
-  {
-    month: "Jun",
-    Contractors: 100,
-    "Full-time": 70,
-  },
-  {
-    month: "Jul",
-    Contractors: 60,
-    "Full-time": 130,
-  },
-  {
-    month: "Aug",
-    Contractors: 40,
-    "Full-time": 90,
-  },
-  {
-    month: "Sep",
-    Contractors: 100,
-    "Full-time": 150,
-  },
-  {
-    month: "Oct",
-    Contractors: 60,
-    "Full-time": 100,
-  },
-  {
-    month: "Nov",
-    Contractors: 30,
-    "Full-time": 180,
-  },
-  {
-    month: "Dec",
-    Contractors: 70,
-    "Full-time": 80,
-  },
-];
+import { getYearlyJobType } from "@/stores/analytics/getYearlyJobType";
 
 const chartConfig = {
   Contractors: {
@@ -118,6 +55,71 @@ function useResponsiveBarSize() {
 export function EmploymentsTypeChart() {
   const barSize = useResponsiveBarSize();
 
+  const { data: yearlyJobTypeData } = getYearlyJobType();
+
+  const chartData = [
+    {
+      month: "Jan",
+      Contractors: yearlyJobTypeData?.data?.January?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.January?.["Full time"],
+    },
+    {
+      month: "Feb",
+      Contractors: yearlyJobTypeData?.data?.February?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.February?.["Full time"],
+    },
+    {
+      month: "Mar",
+      Contractors: yearlyJobTypeData?.data?.March?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.March?.["Full time"],
+    },
+    {
+      month: "Apr",
+      Contractors: yearlyJobTypeData?.data?.April?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.April?.["Full time"],
+    },
+    {
+      month: "May",
+      Contractors: yearlyJobTypeData?.data?.May?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.May?.["Full time"],
+    },
+    {
+      month: "Jun",
+      Contractors: yearlyJobTypeData?.data?.June?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.June?.["Full time"],
+    },
+    {
+      month: "Jul",
+      Contractors: yearlyJobTypeData?.data?.July?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.July?.["Full time"],
+    },
+    {
+      month: "Aug",
+      Contractors: yearlyJobTypeData?.data?.August?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.August?.["Full time"],
+    },
+    {
+      month: "Sep",
+      Contractors: yearlyJobTypeData?.data?.September?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.September?.["Full time"],
+    },
+    {
+      month: "Oct",
+      Contractors: yearlyJobTypeData?.data?.October?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.October?.["Full time"],
+    },
+    {
+      month: "Nov",
+      Contractors: yearlyJobTypeData?.data?.November?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.November?.["Full time"],
+    },
+    {
+      month: "Dec",
+      Contractors: yearlyJobTypeData?.data?.December?.Contractors,
+      "Full-time": yearlyJobTypeData?.data?.December?.["Full time"],
+    },
+  ];
+
   return (
     <Card className="border-0 shadow-none w-full">
       <CardContent className="p-0">
@@ -155,8 +157,8 @@ export function EmploymentsTypeChart() {
                 />
                 <YAxis
                   //   tickFormatter={formatYAxis}
-                  domain={[0, 300]}
-                  ticks={[0, 50, 100, 150, 200, 250]}
+                  domain={[0, 70]}
+                  ticks={[0, 10, 20, 30, 40, 50, 60, 70]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12 }}
@@ -173,14 +175,6 @@ export function EmploymentsTypeChart() {
                 <ChartTooltip
                   cursor={false}
                   content={<ChartTooltipContent className="bg-white" />}
-                  formatter={(value: number) => {
-                    if (value >= 1000000) {
-                      return `${(value / 1000000).toFixed(1)}M`;
-                    } else if (value >= 1000) {
-                      return `${(value / 1000).toFixed(0)}k`;
-                    }
-                    return value;
-                  }}
                 />
 
                 <Bar
@@ -197,18 +191,7 @@ export function EmploymentsTypeChart() {
                   radius={[0, 0, 0, 0]}
                   barSize={barSize}
                   stackId="a"
-                >
-                  {/* Add labels on top of the stacked bars */}
-                  <LabelList
-                    dataKey="Contractors"
-                    position="top"
-                    style={{
-                      fontSize: "11px",
-                      fill: "#666",
-                      fontWeight: 500,
-                    }}
-                  />
-                </Bar>
+                ></Bar>
 
                 <Legend
                   verticalAlign="bottom"
