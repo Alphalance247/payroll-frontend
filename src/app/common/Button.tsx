@@ -1,6 +1,11 @@
 import { ReactNode } from "react";
 
-type buttonVariant = "primary" | "secondary" | "tertiary" | "danger";
+type buttonVariant =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "danger"
+  | "primaryWhite";
 
 // type buttonSize = "small" | "medium" | "large" | "switch";
 
@@ -22,6 +27,7 @@ const Button: React.FC<buttonProps> = ({
 }) => {
   const buttonColor = {
     primary: "text-[white] bg-[#E37915]",
+    primaryWhite: "text-[#71717A] bg-[white] border border-[#E3E3E5]",
     secondary: "bg-[#F1F1F2] text-[#2F2F33] border border-[#E3E3E5]",
     tertiary: "bg-[#FCF2E8] text-[#CF6E13]",
     danger: "bg-[#EC221F] text-[#FEE9E7]",

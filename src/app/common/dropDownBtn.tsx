@@ -17,7 +17,7 @@ const DropDownBtn = ({
   selectedValue: string;
   options: string[];
   onSelectOption: (value: string) => void;
-  placeholder: string;
+  placeholder?: string;
   btnHeight: string;
   isSubTextAvailable?: boolean;
 }) => {

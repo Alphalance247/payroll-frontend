@@ -98,11 +98,6 @@ const Sidebar: React.FC = () => {
           ],
         },
         {
-          text: "Payment method",
-          icons: <FaMoneyCheckAlt size={20} />,
-          link: "/nil",
-        },
-        {
           text: "Tax",
           icons: <HiOutlineReceiptTax size={20} />,
           link: "/tax",
@@ -138,9 +133,9 @@ const Sidebar: React.FC = () => {
           link: "/nil",
         },
         {
-          text: "Query",
+          text: "Request",
           icons: <AiOutlineMessage size={20} />,
-          link: "/nil",
+          link: "/request",
         },
       ],
     },
@@ -153,25 +148,21 @@ const Sidebar: React.FC = () => {
           icons: <BsBarChartLine size={20} />,
         },
         {
-          text: "Time Tracking",
+          text: "Time Tool",
           icons: <MdOutlinePayment size={20} />,
           arrowDown: <IoIosArrowDown size={20} />,
           dropdownText: [
             {
-              link: "/analytics",
-              text: "Testing 1",
+              link: "/time-sheet",
+              text: "Timesheet",
             },
             {
-              link: "/jdjjs",
-              text: "Run Off-Cycle Payroll",
+              link: "/leave-management",
+              text: "Leave Management",
             },
             {
-              link: "/payroll-history",
-              text: "Payroll History",
-            },
-            {
-              link: "/jjsajk",
-              text: "Payroll Settings",
+              link: "/holiday-calendar",
+              text: "Holiday Calendar",
             },
           ],
         },
