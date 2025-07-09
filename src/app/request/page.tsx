@@ -138,7 +138,7 @@ const Request = () => {
 
           <div className="pb-2">
             <button className="border border-[#E3E3E5] rounded-md bg-white py-1 px-3 text-[#71717A] flex gap-x-2 items-center shadow-md">
-              <FiRefreshCw size={18} /> Refresh Table
+              <FiRefreshCw size={18} /> Refresh Tables
             </button>
           </div>
         </div>
