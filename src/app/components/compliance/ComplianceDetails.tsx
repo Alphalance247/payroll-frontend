@@ -5,6 +5,7 @@ import DashboardLayout from "@/app/common/DashBoardLayout";
 import Heading from "@/app/common/heading";
 import Spinner from "@/app/common/spinner";
 import Button from "@/app/common/Button";
+import Link from "next/link";
 
 const ComplianceDetails = ({
   complianceTitle,
@@ -21,13 +22,27 @@ const ComplianceDetails = ({
   return (
     <DashboardLayout>
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
+        <div className="flex justify-between items-center mb-12">
+          <div className="text-base font-medium flex gap-x-2">
+            <Link href={"/compliance"}>
+              <li className="text-[#E37915] list-none">Compliance</li>
+            </Link>{" "}
+            <span className="text-[#A0A0A6]">
+              / {data?.title || "PAYE Tax Guide"}
+            </span>
+          </div>
+
+          <div>
+            <Button variant="primary" className="px-8">
+              Edit
+            </Button>
+          </div>
+        </div>
         <div className="flex items-center justify-between ">
           <Heading
             flexDirection="column"
-            subHead={
-              "Dedicated to testing and validating our products to ensure they are reliable, efficient, and meet customer expectations"
-            }
-            user={"Quality Assurance"}
+            subHead={"'"}
+            user={data?.title || "PAYE Tax Guide"}
             subHeadClassName="w-[70%]"
           />
         </div>
@@ -51,7 +66,20 @@ const ComplianceDetails = ({
                 </Button>
               </div>
             ) : (
-              <p>data</p>
+              <div>
+                <div className="">
+                  <img
+                    src={data?.detail_image}
+                    alt="imageContent"
+                    width={500}
+                    height={200}
+                    className="rounded-md mx-auto mb-8"
+                  />
+                </div>
+                <div className="w-[80%]">
+                  <div dangerouslySetInnerHTML={{ __html: data?.content }} />
+                </div>
+              </div>
             )}
           </>
         )}

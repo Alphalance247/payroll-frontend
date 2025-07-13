@@ -22,6 +22,7 @@ import StartEndDate from "../components/common/startEndDate";
 import { getPayrollBreakdown } from "@/stores/analytics/getPayrollBreakdown";
 import { getYearlyJobType } from "@/stores/analytics/getYearlyJobType";
 import { getLoanCategory } from "@/stores/analytics/getLoanCategory";
+import ProtectedRoute from "../common/protectedRoute";
 
 const PayrollAnalytics = () => {
   const {
@@ -73,123 +74,125 @@ const PayrollAnalytics = () => {
     (Array.isArray(payrollData.data) && payrollData.data.length === 0);
 
   return (
-    <DashboardLayout>
-      <main className="p-10 overflow-auto">
-        {/* Heading */}
+    <ProtectedRoute>
+      <DashboardLayout>
+        <main className="p-10 overflow-auto">
+          {/* Heading */}
 
-        <div className="flex justify-between items-center">
-          <Heading
-            flexDirection="column"
-            subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
-            user={"Payroll Analysis"}
-          />
+          <div className="flex justify-between items-center">
+            <Heading
+              flexDirection="column"
+              subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+              user={"Payroll Analysis"}
+            />
 
-          {isPayrollDataEmpty && !loading && (
-            <StartEndDate
-              start_date={start_date}
-              end_date={end_date}
-              setStartDate={setStartDate}
-              setEndDate={setEndDate}
-              onFetch={() => {
-                fetchPayrollAnalysis(start_date, end_date);
-              }}
+            {isPayrollDataEmpty && !loading && (
+              <StartEndDate
+                start_date={start_date}
+                end_date={end_date}
+                setStartDate={setStartDate}
+                setEndDate={setEndDate}
+                onFetch={() => {
+                  fetchPayrollAnalysis(start_date, end_date);
+                }}
+              />
+            )}
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center items-center h-full mt-10">
+              <Loader2 className="animate-spin" />
+            </div>
+          ) : isPayrollDataEmpty ? (
+            <div className="flex justify-center items-center h-40">
+              <span className="text-gray-500 text-lg font-medium">
+                Data not found for the selected month(s)
+              </span>
+            </div>
+          ) : (
+            <>
+              <Overview />
+              <Payroll
+                start_date={start_date}
+                end_date={end_date}
+                setStartDate={setStartDate}
+                setEndDate={setEndDate}
+                onFetch={() => {
+                  fetchPayrollAnalysis(start_date, end_date);
+                }}
+              />
+              <PayrollPerTeam />
+              <SpendPerTeam />
+            </>
+          )}
+
+          {payrollBreakdownLoading ? (
+            <div className="flex justify-center items-center h-full mt-10">
+              <Loader2 className="animate-spin" />
+            </div>
+          ) : payrollBreakdownError ? (
+            <div className="flex justify-center items-center h-full mt-10">
+              <p className="text-sm text-[#2F2F33] flex items-center gap-x-2">
+                Error fetching payroll breakdown data
+              </p>
+            </div>
+          ) : (
+            <PayrollInsights
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
             />
           )}
-        </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center h-full mt-10">
-            <Loader2 className="animate-spin" />
-          </div>
-        ) : isPayrollDataEmpty ? (
-          <div className="flex justify-center items-center h-40">
-            <span className="text-gray-500 text-lg font-medium">
-              Data not found for the selected month(s)
-            </span>
-          </div>
-        ) : (
-          <>
-            <Overview />
-            <Payroll
-              start_date={start_date}
-              end_date={end_date}
-              setStartDate={setStartDate}
-              setEndDate={setEndDate}
-              onFetch={() => {
-                fetchPayrollAnalysis(start_date, end_date);
-              }}
-            />
-            <PayrollPerTeam />
-            <SpendPerTeam />
-          </>
-        )}
+          {/* Team Group */}
+          {teamLoading || yearlyJobTypeLoading ? (
+            <div className="flex justify-center items-center h-full mt-10">
+              <Loader2 className="animate-spin" />
+            </div>
+          ) : (
+            <>
+              <LoggedHours
+                selectedYearJobType={selectedYearJobType}
+                setSelectedYearJobType={setSelectedYearJobType}
+              />
+              <EachTeamEmployee />
+            </>
+          )}
 
-        {payrollBreakdownLoading ? (
-          <div className="flex justify-center items-center h-full mt-10">
-            <Loader2 className="animate-spin" />
-          </div>
-        ) : payrollBreakdownError ? (
-          <div className="flex justify-center items-center h-full mt-10">
-            <p className="text-sm text-[#2F2F33] flex items-center gap-x-2">
-              Error fetching payroll breakdown data
-            </p>
-          </div>
-        ) : (
-          <PayrollInsights
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-          />
-        )}
+          {teamHoursLoggedLoading ? (
+            <div className="flex justify-center items-center h-full mt-10">
+              <Loader2 className="animate-spin" />
+            </div>
+          ) : (
+            <>
+              <TimeTracking
+                start_date={timeTrackingStartDate}
+                end_date={timeTrackingEndDate}
+                setStartDate={setTimeTrackingStartDate}
+                setEndDate={setTimeTrackingEndDate}
+                onFetch={() => {
+                  fetchTeamHoursLogged(
+                    timeTrackingStartDate,
+                    timeTrackingEndDate
+                  );
+                }}
+              />
+              <WorkHoursBreakDown />
+            </>
+          )}
 
-        {/* Team Group */}
-        {teamLoading || yearlyJobTypeLoading ? (
-          <div className="flex justify-center items-center h-full mt-10">
-            <Loader2 className="animate-spin" />
-          </div>
-        ) : (
-          <>
-            <LoggedHours
-              selectedYearJobType={selectedYearJobType}
-              setSelectedYearJobType={setSelectedYearJobType}
-            />
-            <EachTeamEmployee />
-          </>
-        )}
-
-        {teamHoursLoggedLoading ? (
-          <div className="flex justify-center items-center h-full mt-10">
-            <Loader2 className="animate-spin" />
-          </div>
-        ) : (
-          <>
-            <TimeTracking
-              start_date={timeTrackingStartDate}
-              end_date={timeTrackingEndDate}
-              setStartDate={setTimeTrackingStartDate}
-              setEndDate={setTimeTrackingEndDate}
-              onFetch={() => {
-                fetchTeamHoursLogged(
-                  timeTrackingStartDate,
-                  timeTrackingEndDate
-                );
-              }}
-            />
-            <WorkHoursBreakDown />
-          </>
-        )}
-
-        {loanLoading ? (
-          <div className="flex justify-center items-center h-full mt-10">
-            <Loader2 className="animate-spin" />
-          </div>
-        ) : (
-          <>
-            <Loan />
-            <LoanAmounts />
-          </>
-        )}
-      </main>
-    </DashboardLayout>
+          {loanLoading ? (
+            <div className="flex justify-center items-center h-full mt-10">
+              <Loader2 className="animate-spin" />
+            </div>
+          ) : (
+            <>
+              <Loan />
+              <LoanAmounts />
+            </>
+          )}
+        </main>
+      </DashboardLayout>
+    </ProtectedRoute>
   );
 };
 

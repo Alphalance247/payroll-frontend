@@ -26,8 +26,6 @@ export const PayrollProvider = ({ children }: { children: ReactNode }) => {
       const { data } = res.data; // response.data.data
       if (res.status === 200) {
         setPayroll(data);
-      } else {
-        toast.error(res?.data?.message);
       }
     } catch (err) {
       // Extract the error message from the response
