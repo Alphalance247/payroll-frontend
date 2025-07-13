@@ -72,7 +72,7 @@ const Login = () => {
         }
       } catch (err) {
         let errorMessage =
-          "invalid email or password please try again or contact Admin";
+          "Something went wrong please try again or contact Admin";
         if (err instanceof AxiosError) {
           // Check if err is an instance of AxiosError
           errorMessage = err.response?.data?.message || errorMessage;

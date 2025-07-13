@@ -11,7 +11,7 @@ const LatestUpdate = () => {
         Updates
       </h3>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {data.map((item) => (
           <Link href={`/compliance/${item?.id}`} key={item?.id}>
             <div className="p-4 flex flex-col gap-x-4 bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px]">
@@ -20,6 +20,7 @@ const LatestUpdate = () => {
                 width={226}
                 height={162}
                 alt="uphold"
+                className="w-full"
               />
 
               <div className="mt-4">
@@ -27,7 +28,11 @@ const LatestUpdate = () => {
                   {item?.title}
                 </p>
                 <p className="text-[#71717A] text-[15px] font-Graphik mb-2">
-                  {item?.content}
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: `${item?.content.slice(0, 120)}....`,
+                    }}
+                  />{" "}
                 </p>
                 <button className="py-[6px] text-[#E37915] font-semibold">
                   Learn More
@@ -42,6 +47,7 @@ const LatestUpdate = () => {
             src="/assets/compliance/3.png"
             width={226}
             height={162}
+            className="w-full"
             alt="uphold"
           />
 
@@ -59,27 +65,6 @@ const LatestUpdate = () => {
           </div>
         </div>
 
-        <div className="p-4 flex flex-col gap-x-4 bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px]">
-          <Image
-            src="/assets/compliance/3.png"
-            width={226}
-            height={162}
-            alt="uphold"
-          />
-
-          <div className="mt-4">
-            <p className="text-base font-Graphik text-[#2F2F33] font-semibold mb-1">
-              FIRS Update
-            </p>
-            <p className="text-[#71717A] text-[15px] font-Graphik">
-              PAYE tax must be remitted by the 10th of every month. Late
-              payments attract..
-            </p>
-            <button className="py-[6px] text-[#E37915] font-semibold">
-              Learn More
-            </button>
-          </div>
-        </div>
         <div className="p-4 flex flex-col gap-x-4 bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px]">
           <Image
             src="/assets/compliance/3.png"

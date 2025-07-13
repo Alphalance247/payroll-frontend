@@ -15,7 +15,9 @@ import { IoArchiveOutline } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
 import SideDrawer from "../common/sideDrawer/sideDrawer";
 import { LiaTimesSolid } from "react-icons/lia";
-import { FaChevronDown } from "react-icons/fa";
+import QueryOverview from "../components/request-quest/queryOverview";
+import QueryDetails from "../components/request-quest/queryDetails";
+import ActionResolution from "../components/request-quest/actionsResolution";
 
 const Request = () => {
   const [activeBtn, setActiveBtn] = useState<string>("All");
@@ -138,7 +140,7 @@ const Request = () => {
 
           <div className="pb-2">
             <button className="border border-[#E3E3E5] rounded-md bg-white py-1 px-3 text-[#71717A] flex gap-x-2 items-center shadow-md">
-              <FiRefreshCw size={18} /> Refresh Table
+              <FiRefreshCw size={18} /> Refresh Tables
             </button>
           </div>
         </div>
@@ -375,21 +377,9 @@ const Request = () => {
                     </div>
 
                     {/* Query Overview */}
-                    <div className="border-t border-[E3E3E5] px-6">
-                      <h4 className="flex items-center gap-x-2 text-lg font-medium text-[#2F2F33] py-6">
-                        <span className="cursor-pointer">
-                          <FaChevronDown size={20} />
-                        </span>{" "}
-                        Request Details
-                      </h4>
-
-                      <div>
-                        <div className="py-3 flex justify-between items-center">
-                          <p className="text-sm text-[#71717A]">Query ID</p>
-                          <p>CMP-20240201</p>
-                        </div>
-                      </div>
-                    </div>
+                    <QueryOverview />
+                    <QueryDetails />
+                    <ActionResolution />
                   </div>
                 </SideDrawer>
               )}

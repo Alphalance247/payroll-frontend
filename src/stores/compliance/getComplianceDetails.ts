@@ -3,24 +3,14 @@ import { create } from "zustand";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 
-interface employeesData {
-  id: string;
-  email: string;
-  fullname: string;
-  job_role: string;
-  job_type: string;
-  country: string;
-  team: {
-    name: string;
-  };
-}
-
-interface employeeListDataStore {
-  employees: employeesData[];
+interface complianceListDataStore {
+  content: string;
+  detail_image: string;
+  title: string;
 }
 
 interface complianceDetailsStore {
-  data: employeeListDataStore | null;
+  data: complianceListDataStore | null;
   loading: boolean;
   error: string | null;
   fetchComplianceDetails: (complianceId: string) => Promise<void>;

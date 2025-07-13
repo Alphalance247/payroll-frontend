@@ -1,6 +1,21 @@
 import { FaChevronDown } from "react-icons/fa";
+import Button from "@/app/common/Button";
 
 const CurrentLoanActivity = () => {
+  const requestDetails = [
+    {
+      label: "Date Disbursed",
+      value: "15th Feb, 2025 ",
+    },
+    {
+      label: "Due Date",
+      value: "15th Oct, 2025",
+    },
+    {
+      label: "Repayment schedule",
+      value: "Installment",
+    },
+  ];
   return (
     <div className="border-t border-[#E3E3E5] mt-6">
       <h4 className="flex items-center gap-x-2 text-lg font-medium text-[#2F2F33] px-6 py-6">
@@ -18,6 +33,28 @@ const CurrentLoanActivity = () => {
             <div className="bg-[#198038] w-[70%] h-[5px] rounded-sm"></div>
           </div>
         </div>
+      </div>
+
+      <div>
+        {requestDetails.map((detail, index) => (
+          <div
+            key={index}
+            className="px-6 py-3 flex justify-between items-center"
+          >
+            <p className="text-sm font-medium text-[#71717A]">{detail.label}</p>
+            <p className="text-base font-normal text-[#2F2F33]">
+              {detail.value}
+            </p>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-x-4 mt-8 px-6 pb-8">
+        <Button variant="secondary" className="w-full">
+          Cancel
+        </Button>
+        <Button variant="primary" className="w-full">
+          Approve Request
+        </Button>
       </div>
     </div>
   );
