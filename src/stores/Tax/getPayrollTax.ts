@@ -20,7 +20,7 @@ interface payrollTaxStore {
   data: payrollTaxDataStore | null;
   loading: boolean;
   error: string | null;
-  fetchPayrollTax: () => Promise<void>;
+  fetchPayrollTax: (month?: string, year?: string) => Promise<void>;
 }
 
 export const getPayrollTax = create<payrollTaxStore>((set) => ({
@@ -28,10 +28,14 @@ export const getPayrollTax = create<payrollTaxStore>((set) => ({
   loading: false,
   error: null,
 
-  fetchPayrollTax: async () => {
+  fetchPayrollTax: async (month?: string, year?: string) => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.get("/employees/taxes");
+      let url = "/employees/taxes";
+      if (year && year) {
+        url += `?month=${month}&year=${year}`;
+      }
+      const res = await axiosInstance.get(url);
       set({ data: res.data, loading: false });
     } catch (err) {
       if (err instanceof AxiosError) {

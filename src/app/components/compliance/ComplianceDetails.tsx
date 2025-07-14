@@ -77,7 +77,7 @@ const ComplianceDetails = ({
                   />
                 </div>
                 <div className="w-[80%]">
-                  <div dangerouslySetInnerHTML={{ __html: data?.content }} />
+                  <p dangerouslySetInnerHTML={{ __html: data?.content }} />
                 </div>
               </div>
             )}

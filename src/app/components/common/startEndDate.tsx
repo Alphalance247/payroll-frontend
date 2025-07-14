@@ -20,17 +20,18 @@ const StartEndDate = ({
       <div className="relative">
         <label
           htmlFor="start_date"
-          className=" px-4 py-3 bg-white border border-[#d9d9d9] relative rounded-lg cursor-pointer w-fit"
+          className="px-4 py-3 bg-white border border-[#d9d9d9] rounded-lg cursor-pointer w-fit relative"
         >
-          {start_date ? start_date : "Start Date"}
+          {start_date || "Start Date"}
         </label>
         <input
           id="start_date"
           type="date"
           value={start_date}
-          className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer"
-          style={{ zIndex: 2 }}
           onChange={(e) => setStartDate(e.target.value)}
+          onClick={(e) => e.currentTarget.showPicker?.()}
+          className="absolute inset-0 opacity-0 cursor-pointer"
+          style={{ zIndex: 2 }}
         />
       </div>
 
@@ -40,15 +41,16 @@ const StartEndDate = ({
           className=" px-4 py-3 bg-white border border-[#d9d9d9] relative rounded-lg cursor-pointer w-fit"
         >
           {end_date ? end_date : "End Date"}
-          <input
-            id="end_date"
-            type="date"
-            value={end_date}
-            className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer"
-            style={{ zIndex: 2 }}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
         </label>
+        <input
+          id="end_date"
+          type="date"
+          value={end_date}
+          className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer"
+          style={{ zIndex: 2 }}
+          onChange={(e) => setEndDate(e.target.value)}
+          onClick={(e) => e.currentTarget.showPicker?.()}
+        />
       </div>
 
       <Button

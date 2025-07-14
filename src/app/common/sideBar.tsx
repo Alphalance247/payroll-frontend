@@ -83,17 +83,10 @@ const Sidebar: React.FC = () => {
               link: "/run-payroll",
               text: "Run Payroll",
             },
-            {
-              link: "/",
-              text: "Run Off-Cycle Payroll",
-            },
+
             {
               link: "/payroll-history",
               text: "Payroll History",
-            },
-            {
-              link: "/",
-              text: "Payroll Settings",
             },
           ],
         },

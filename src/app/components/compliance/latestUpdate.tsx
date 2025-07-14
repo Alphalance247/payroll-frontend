@@ -27,13 +27,13 @@ const LatestUpdate = () => {
                 <p className="text-base font-Graphik text-[#2F2F33] font-semibold mb-1">
                   {item?.title}
                 </p>
-                <p className="text-[#71717A] text-[15px] font-Graphik mb-2">
-                  <div
+                <div className="text-[#71717A] text-[15px] font-Graphik mb-2">
+                  <p
                     dangerouslySetInnerHTML={{
                       __html: `${item?.content.slice(0, 120)}....`,
                     }}
                   />{" "}
-                </p>
+                </div>
                 <button className="py-[6px] text-[#E37915] font-semibold">
                   Learn More
                 </button>
