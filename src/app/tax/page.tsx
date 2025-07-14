@@ -9,7 +9,7 @@ import Image from "next/image";
 import useBoolean from "../hooks/useBoolean";
 import { getPayrollTax } from "@/stores/Tax/getPayrollTax";
 import { useStore } from "zustand";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 const Tax = () => {
@@ -19,6 +19,8 @@ const Tax = () => {
     fetchPayrollTax,
     error: payrollTaxError,
   } = useStore(getPayrollTax);
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
 
   useEffect(() => {
     fetchPayrollTax();
@@ -50,9 +52,87 @@ const Tax = () => {
         </div>
 
         <div className="bg-white rounded-lg border border-[#E3E3E5] mt-10">
-          <h2 className="text-base font-semibold py-5 pl-6 text-[#2F2F33]">
-            Tax Breakdown
-          </h2>
+          <div className="flex justify-between items-center py-5 px-6">
+            <h2 className="text-base font-semibold  text-[#2F2F33]">
+              Tax Breakdown
+            </h2>
+
+            <div className="flex items-center gap-2">
+              <div>
+                <select
+                  name=""
+                  id=""
+                  className="border rounded-md px-4 py-[10px] focus:outline-none"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                >
+                  <option value="">Select year</option>
+                  <option value="2005">2005</option>
+                  <option value="2006">2006</option>
+                  <option value="2007">2007</option>
+                  <option value="2020">2020</option>
+                  <option value="2021">2021</option>
+                  <option value="2022">2022</option>
+                  <option value="2023">2023</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
+                  <option value="2028">2028</option>
+                  <option value="2029">2029</option>
+                  <option value="2030">2030</option>
+                  <option value="2031">2031</option>
+                </select>
+              </div>
+
+              <div>
+                <select
+                  name=""
+                  id=""
+                  className="border rounded-md px-4 py-[10px] focus:outline-none"
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                >
+                  <option value="">Select Month</option>
+                  <option value="1">January</option>
+                  <option value="2">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+              </div>
+
+              <Button
+                variant="primary"
+                disabled={
+                  !selectedYear ||
+                  selectedYear === "" ||
+                  !selectedMonth ||
+                  selectedMonth === ""
+                }
+                className={`w-[100px] h-[40px] ${
+                  !selectedYear ||
+                  selectedYear === "" ||
+                  !selectedMonth ||
+                  selectedMonth === ""
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
+                onButtonClick={() => {
+                  fetchPayrollTax(selectedMonth, selectedYear);
+                }}
+              >
+                Apply
+              </Button>
+            </div>
+          </div>
 
           <div>
             {payrollTaxLoading ? (

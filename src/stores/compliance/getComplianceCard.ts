@@ -9,6 +9,10 @@ interface complianceCardDataStore {
   content: string;
   list_image: string;
   id: number;
+  category: string;
+  updated_at: string;
+  updated_by: string;
+  effective_date: string;
 }
 
 interface complianceCardStore {
