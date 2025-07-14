@@ -168,7 +168,7 @@ const Sidebar: React.FC = () => {
         {
           text: "Settings",
           icons: <TbSettings2 size={20} />,
-          link: "/nil",
+          link: "/settings",
         },
       ],
     },
