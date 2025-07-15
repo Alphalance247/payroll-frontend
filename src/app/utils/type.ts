@@ -13,6 +13,7 @@ export interface Employee {
   currency: string;
   base_pay: number;
   pay_deno: string;
+  employee_id: string;
 }
 
 export interface Payslip {

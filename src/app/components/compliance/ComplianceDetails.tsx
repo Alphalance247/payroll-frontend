@@ -13,7 +13,6 @@ const ComplianceDetails = ({
   complianceTitle: string;
 }) => {
   const { data, fetchComplianceDetails, loading } = getComplianceDetails();
-  console.log(data);
 
   useEffect(() => {
     fetchComplianceDetails(complianceTitle);
@@ -32,11 +31,14 @@ const ComplianceDetails = ({
             </span>
           </div>
 
-          <div>
+          <Link
+            href={`https://real.ec2.alluvium.net/api/admin/compliance/post/${complianceTitle}/change/`}
+            target="_blank"
+          >
             <Button variant="primary" className="px-8">
               Edit
             </Button>
-          </div>
+          </Link>
         </div>
         <div className="flex items-center justify-between ">
           <Heading
