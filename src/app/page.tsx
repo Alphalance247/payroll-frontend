@@ -15,6 +15,7 @@ import Spinner from "./common/spinner";
 import ErrorFetch from "./common/errorFetch";
 import { getLastPayrollStore } from "@/stores/home/getLastPayroll";
 import { getPayrollPendingTaskStore } from "@/stores/home/pendingTask";
+import { getHolidayStore } from "@/stores/home/getHoliday";
 
 export default function Home() {
   const { user } = useAuth();
@@ -26,13 +27,18 @@ export default function Home() {
   } = getUpcomingPayrollStore();
 
   const {
+    loading: loadingHolidayData,
+    fetchPayrollHoliday,
+    data: holidayData,
+    error: holidayDataError,
+  } = getHolidayStore();
+
+  const {
     loading: pendingTaskLoading,
     fetchPayrollPendingTask,
     data: pendingTaskData,
     error: pendingTaskError,
   } = getPayrollPendingTaskStore();
-
-  console.log(pendingTaskData?.Tasks);
 
   const {
     loading: loadingLastPayroll,
@@ -45,7 +51,13 @@ export default function Home() {
     fetchUpcomingPayroll();
     fetchLastPayroll();
     fetchPayrollPendingTask();
-  }, [fetchUpcomingPayroll, fetchLastPayroll, fetchPayrollPendingTask]);
+    fetchPayrollHoliday();
+  }, [
+    fetchUpcomingPayroll,
+    fetchLastPayroll,
+    fetchPayrollPendingTask,
+    fetchPayrollHoliday,
+  ]);
 
   const [dismissed, setDismissed] = useState<number[]>([]);
   const filteredTasks =
@@ -54,12 +66,12 @@ export default function Home() {
     ) || [];
 
   const quickActions = [
-    {
-      id: "1",
-      icon: "/assets/Home/edit.svg",
-      btn: "Edit Exchange Rate",
-      link: "/",
-    },
+    // {
+    //   id: "1",
+    //   icon: "/assets/Home/edit.svg",
+    //   btn: "Edit Exchange Rate",
+    //   link: "/",
+    // },
     {
       id: "2",
       icon: "/assets/Home/calendar.svg",
@@ -240,105 +252,53 @@ export default function Home() {
                       Things to do
                     </h2>
                   </div>
-                  <a
-                    href="#"
+                  <Link
+                    href="/holiday-calendar"
                     className="text-[#009BC0] text-[15px] leading-5 flex gap-1 items-center"
                   >
                     View All
                     <ArrowHead />
-                  </a>
+                  </Link>
                 </div>
+                {loadingHolidayData ? (
+                  <Spinner spinnerSmall={true} />
+                ) : holidayDataError ? (
+                  <ErrorFetch
+                    message="error fetching holiday data"
+                    smallWindow={true}
+                    onRefetch={() => fetchPayrollHoliday()}
+                  />
+                ) : (
+                  <div className="p-6 flex flex-col gap-y-3">
+                    {holidayData?.data?.results?.slice(0, 5).map((holiday) => (
+                      <div
+                        className="flex justify-between items-center bg-[#F7F7F7] py-3 px-4 border-[#E3E3E5] border rounded-[8px]"
+                        key={holiday?.id}
+                      >
+                        <div className="flex gap-x-4">
+                          <Image
+                            width={48}
+                            height={48}
+                            src="/assets/Home/world.jpg"
+                            alt="holiday in naija"
+                          />
+                          <div>
+                            <p className="font-Graphik font-medium text-base text-[#2F2F33] mb-1">
+                              {holiday?.name}
+                            </p>
+                            <p className="font-Graphik text-[15px] leading-[21px] text-[#71717A]">
+                              {holiday?.country}
+                            </p>
+                          </div>
+                        </div>
 
-                <div className="p-6 flex flex-col gap-y-3">
-                  <div className="flex justify-between items-center bg-[#F7F7F7] py-3 px-4 border-[#E3E3E5] border rounded-[8px]">
-                    <div className="flex gap-x-4">
-                      <Image
-                        width={48}
-                        height={48}
-                        src="/assets/Home/nija.svg"
-                        alt="holiday in naija"
-                      />
-                      <div>
-                        <p className="font-Graphik font-medium text-base text-[#2F2F33] mb-1">
-                          Democracy Day
-                        </p>
-                        <p className="font-Graphik text-[15px] leading-[21px] text-[#71717A]">
-                          Nigeria
+                        <p className="font-Graphik font-medium text-[15px] leading-[21px] text-[#2F2F33]">
+                          {holiday?.date}
                         </p>
                       </div>
-                    </div>
-
-                    <p className="font-Graphik font-medium text-[15px] leading-[21px] text-[#2F2F33]">
-                      Mon, 13, Nov
-                    </p>
+                    ))}
                   </div>
-                  <div className="flex justify-between items-center bg-[#F7F7F7] py-3 px-4 border-[#E3E3E5] border rounded-[8px]">
-                    <div className="flex gap-x-4">
-                      <Image
-                        width={48}
-                        height={48}
-                        src="/assets/Home/uk.svg"
-                        alt="holiday in naija"
-                      />
-                      <div>
-                        <p className="font-Graphik font-medium text-base text-[#2F2F33] mb-1">
-                          Democracy Day
-                        </p>
-                        <p className="font-Graphik text-[15px] leading-[21px] text-[#71717A]">
-                          United States
-                        </p>
-                      </div>
-                    </div>
-
-                    <p className="font-Graphik font-medium text-[15px] leading-[21px] text-[#2F2F33]">
-                      Mon, 13, Jul
-                    </p>
-                  </div>
-                  <div className="flex justify-between items-center bg-[#F7F7F7] py-3 px-4 border-[#E3E3E5] border rounded-[8px]">
-                    <div className="flex gap-x-4">
-                      <Image
-                        width={48}
-                        height={48}
-                        src="/assets/Home/us.svg"
-                        alt="holiday in naija"
-                      />
-                      <div>
-                        <p className="font-Graphik font-medium text-base text-[#2F2F33] mb-1">
-                          Democracy Day
-                        </p>
-                        <p className="font-Graphik text-[15px] leading-[21px] text-[#71717A]">
-                          United Kingdom
-                        </p>
-                      </div>
-                    </div>
-
-                    <p className="font-Graphik font-medium text-[15px] leading-[21px] text-[#2F2F33]">
-                      Mon, 13, Nov
-                    </p>
-                  </div>
-                  <div className="flex justify-between items-center bg-[#F7F7F7] py-3 px-4 border-[#E3E3E5] border rounded-[8px]">
-                    <div className="flex gap-x-4">
-                      <Image
-                        width={48}
-                        height={48}
-                        src="/assets/Home/kenya.svg"
-                        alt="holiday in naija"
-                      />
-                      <div>
-                        <p className="font-Graphik font-medium text-base text-[#2F2F33] mb-1">
-                          Democracy Day
-                        </p>
-                        <p className="font-Graphik text-[15px] leading-[21px] text-[#71717A]">
-                          Kenya
-                        </p>
-                      </div>
-                    </div>
-
-                    <p className="font-Graphik font-medium text-[15px] leading-[21px] text-[#2F2F33]">
-                      Mon, 13, Nov
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -496,13 +456,13 @@ export default function Home() {
                       Employees on Leave
                     </h2>
                   </div>
-                  <a
-                    href="#"
+                  <Link
+                    href="/leave-management"
                     className="text-[#009BC0] text-[15px] leading-5 flex gap-1 items-center"
                   >
                     View All
                     <ArrowHead />
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="p-6 flex flex-col gap-y-6">

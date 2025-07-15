@@ -74,7 +74,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
         </h2>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1650px] border-b border-[#E3E3E5]">
+          <table className="w-full min-w-[1750px] border-b border-[#E3E3E5]">
             <thead className="bg-[#F7F7F7]">
               <tr>
                 <th className="px-6 py-[14px] w-[40px]">
@@ -98,6 +98,9 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Salary (NGN/USD)
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  Employee ID
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
                   Bonus
@@ -155,6 +158,9 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     {emp?.employee?.base_pay?.toLocaleString() || 0}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {emp?.employee?.employee_id}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {emp?.bonus?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
@@ -183,6 +189,9 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ₦ {payroll?.total_salary.toLocaleString()}
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ----
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ----
