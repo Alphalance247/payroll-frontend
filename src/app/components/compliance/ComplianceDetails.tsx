@@ -13,7 +13,6 @@ const ComplianceDetails = ({
   complianceTitle: string;
 }) => {
   const { data, fetchComplianceDetails, loading } = getComplianceDetails();
-  console.log(data);
 
   useEffect(() => {
     fetchComplianceDetails(complianceTitle);
