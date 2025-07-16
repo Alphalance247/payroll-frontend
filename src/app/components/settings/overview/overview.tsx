@@ -8,22 +8,18 @@ const Overview = () => {
     {
       heading: "Profile Settings",
       subhead: "you",
-      btnLink: "",
+      btnLink: "/settings/account",
     },
     {
       heading: "Notifications",
       subhead: "you",
-      btnLink: "",
+      btnLink: "/settings/notifications",
     },
-    {
-      heading: "Preferences",
-      subhead: "you",
-      btnLink: "",
-    },
+
     {
       heading: "Payroll Settings",
       subhead: "you",
-      btnLink: "",
+      btnLink: "/settings/payroll-settings",
     },
     {
       heading: "Integrations",
@@ -47,6 +43,11 @@ const Overview = () => {
     },
     {
       heading: "Company Information",
+      subhead: "you",
+      btnLink: "",
+    },
+    {
+      heading: "Preferences",
       subhead: "you",
       btnLink: "",
     },
