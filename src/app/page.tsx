@@ -206,9 +206,8 @@ export default function Home() {
                                 {task?.task}
                               </p>
                               <p className="text-base font-normal text-[#2F2F33] py-1">
-                                {task?.due_in}
-                                Three pending employee loan requests need
-                                review.
+                                {` Review and finalize salary calculations for this
+                                month's payroll.`}
                               </p>
                               <div>
                                 <span
