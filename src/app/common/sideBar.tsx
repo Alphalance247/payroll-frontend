@@ -118,9 +118,9 @@ const Sidebar: React.FC = () => {
           ],
         },
         {
-          text: "Documents",
+          text: "Storage",
           icons: <IoDocumentTextOutline size={20} />,
-          link: "/nil",
+          link: "/storage",
         },
         {
           text: "Request",
