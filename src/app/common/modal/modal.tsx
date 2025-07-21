@@ -17,7 +17,7 @@ const ModalOverlay = ({
     >
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black opacity-50 z-40"
+        className="absolute inset-0 bg-[black] opacity-50 z-40"
         onClick={onClose}
       ></div>
       {children}
