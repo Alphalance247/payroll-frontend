@@ -9,6 +9,7 @@ import { getComplianceCategoryStore } from "@/stores/compliance/getComplianceCat
 import { useEffect } from "react";
 import Button from "../common/Button";
 import Spinner from "../common/spinner";
+import Link from "next/link";
 
 const Compliance = () => {
   const { data, fetchComplianceCard, error, loading } =
@@ -34,8 +35,12 @@ const Compliance = () => {
                 user={"Compliance"}
               />
             </div>
-
-            <Button variant="primary">Upload Document</Button>
+            <Link
+              href={"https://real.ec2.alluvium.net/api/admin/compliance/post/"}
+              target="_blank"
+            >
+              <Button variant="primary">Upload Document</Button>
+            </Link>
           </div>
 
           {loading ? (

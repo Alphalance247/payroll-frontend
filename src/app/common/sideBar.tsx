@@ -4,10 +4,7 @@ import { HiOutlineHome } from "react-icons/hi2";
 import { MdOutlinePayment } from "react-icons/md";
 import { FaMoneyCheckAlt, FaUserFriends } from "react-icons/fa";
 import { HiOutlineReceiptTax } from "react-icons/hi";
-import {
-  IoDocumentTextOutline,
-  IoGitPullRequestOutline,
-} from "react-icons/io5";
+import { IoDocumentTextOutline } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
 import { BsBarChartLine } from "react-icons/bs";
 import { TbSettings2 } from "react-icons/tb";
@@ -121,9 +118,9 @@ const Sidebar: React.FC = () => {
           ],
         },
         {
-          text: "Documents",
+          text: "Storage",
           icons: <IoDocumentTextOutline size={20} />,
-          link: "/nil",
+          link: "/storage",
         },
         {
           text: "Request",
@@ -160,11 +157,6 @@ const Sidebar: React.FC = () => {
           ],
         },
 
-        {
-          text: "Integrations",
-          icons: <IoGitPullRequestOutline size={20} />,
-          link: "/nil",
-        },
         {
           text: "Settings",
           icons: <TbSettings2 size={20} />,
