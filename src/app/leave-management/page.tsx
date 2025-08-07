@@ -4,13 +4,18 @@ import DashboardLayout from "../common/DashBoardLayout";
 import Heading from "../common/heading";
 import Button from "../common/Button";
 import { BiPlus } from "react-icons/bi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LeaveRequest from "../components/leave-management/leaveRequest";
 import LeaveBalance from "../components/leave-management/leaveBalance";
 import { TfiExport } from "react-icons/tfi";
+import { getLeaveRequestStore } from "@/stores/leave-request/leaveRequestList";
 
 const LeaveManagement = () => {
   const [activeBtn, setActiveBtn] = useState<string>("Leave Requests");
+  const { fetchLeaveRequest } = getLeaveRequestStore();
+  useEffect(() => {
+    fetchLeaveRequest();
+  }, [fetchLeaveRequest]);
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "Leave Requests" },
     { id: 2, name: "Leave Balance" },

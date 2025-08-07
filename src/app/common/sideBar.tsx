@@ -1,17 +1,30 @@
 "use client";
 import Link from "next/link";
 import { HiOutlineHome } from "react-icons/hi2";
-import { MdOutlinePayment } from "react-icons/md";
+import {
+  MdOutlinePayment,
+  MdOutlineGavel,
+  MdOutlineBusiness,
+} from "react-icons/md";
 import { FaMoneyCheckAlt, FaUserFriends } from "react-icons/fa";
 import { HiOutlineReceiptTax } from "react-icons/hi";
-import { IoDocumentTextOutline } from "react-icons/io5";
+import {
+  IoDocumentTextOutline,
+  IoRocketOutline,
+  IoNotificationsOutline,
+  IoChevronBack,
+  IoShieldHalf,
+} from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
 import { BsBarChartLine } from "react-icons/bs";
 import { TbSettings2 } from "react-icons/tb";
 import { usePathname } from "next/navigation";
-import { MdOutlineGavel } from "react-icons/md";
 import { IoIosArrowDown } from "react-icons/io";
 import { useCallback, useState } from "react";
+import { FaRegUser } from "react-icons/fa6";
+import { HiOutlineClipboardCheck } from "react-icons/hi";
+import { Search } from "lucide-react";
+import { useFilter } from "../hooks/useFilter";
 
 interface dropDownText {
   link: string;
@@ -37,7 +50,6 @@ const Sidebar: React.FC = () => {
     section: number;
     sub: number;
   } | null>(null);
-
   const handleDropDown = useCallback(
     (sectionIdx: number, subIdx: number) => {
       if (
@@ -166,19 +178,125 @@ const Sidebar: React.FC = () => {
     },
   ];
 
+  const settingsSideBar: sideBarData[] = [
+    {
+      subHeadings: [
+        {
+          text: "Overview",
+          icons: <IoRocketOutline fill="white" size={20} />,
+          link: "/settings",
+        },
+      ],
+    },
+    {
+      heading: "Personal settings",
+      subHeadings: [
+        {
+          text: "Your Account",
+          link: "/settings/account",
+          icons: <FaRegUser size={20} />,
+        },
+        {
+          text: "Notifications",
+          link: "/settings/notifications",
+          icons: <IoNotificationsOutline size={20} />,
+        },
+      ],
+    },
+
+    {
+      heading: "System Settings",
+      subHeadings: [
+        {
+          text: "Payroll Settings",
+          link: "/settings/payroll-settings",
+          icons: <MdOutlinePayment size={20} />,
+        },
+        {
+          text: "Integrations",
+          link: "/settings/integrations",
+          icons: <BsBarChartLine size={20} />,
+        },
+      ],
+    },
+
+    {
+      heading: "Organization Settings",
+      subHeadings: [
+        {
+          text: "Company Information",
+          link: "/settings/company-info",
+          icons: <MdOutlineBusiness size={20} />,
+        },
+        {
+          text: "Billing Info",
+          link: "/settings/billing-info",
+          icons: <BsBarChartLine size={20} />,
+        },
+        {
+          text: "Permissions",
+          link: "/settings/permissions",
+          icons: <IoShieldHalf size={20} />,
+        },
+        {
+          text: "Audit Logs",
+          link: "/settings/audit-logs",
+          icons: <HiOutlineClipboardCheck size={20} />,
+        },
+      ],
+    },
+  ];
+
+  const { filteredData, setSearchQuery, searchQuery } = useFilter(
+    settingsSideBar || [],
+    ["heading"]
+  );
+
+  const SidebarToShow = pathname.startsWith("/settings")
+    ? filteredData
+    : sideBarData;
+
   return (
     <div className=" bg-[#11202D] border-r border-gray-200 overflow-y-auto">
       {/* Logo / Brand Name */}
       <div className="flex flex-col justify-between mb-24">
         {/* Navigation Menu */}
-        <div className="mt-4 px-3">
+        <div className="mt-6 px-3">
+          {pathname.startsWith("/settings") && (
+            <>
+              <Link href={"/"}>
+                <div className="flex gap-x-3 items-center py-[10px] pl-3 text-white font-medium text-sm mb-3">
+                  <span>
+                    <IoChevronBack size={20} />
+                  </span>{" "}
+                  <button>Settings</button>
+                </div>
+              </Link>
+              <div className="relative ">
+                <input
+                  type="text"
+                  placeholder="Search settings"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                  }}
+                  className="w-full outline-none bg-transparent text-[#BEBEC2] pl-10 p-2 border border-[#606A72] rounded-lg text-base"
+                />
+                <Search
+                  size={20}
+                  color="#71717A"
+                  className="absolute left-3 top-1/2 -translate-y-1/2"
+                />
+              </div>
+            </>
+          )}
           <nav className="mt-4">
             <ul className="flex flex-col gap-y-4">
-              {sideBarData.map((item, sectionIdx) => {
+              {SidebarToShow.map((item, sectionIdx) => {
                 return (
                   <div key={sectionIdx}>
                     {item?.heading && (
-                      <h3 className="mb-3 pl-3 text-xs font-medium text-[white] uppercase font-Graphik ">
+                      <h3 className="mb-3 pl-3 text-xs font-medium text-[#71717A] uppercase font-Graphik ">
                         {item?.heading}
                       </h3>
                     )}
@@ -197,7 +315,7 @@ const Sidebar: React.FC = () => {
                               {items?.link && !isDropdown ? (
                                 <Link href={items?.link || "/"} passHref>
                                   <div
-                                    className={`flex justify-between py-[10px] pl-3 rounded-lg ${
+                                    className={`flex justify-between py-[14px] pl-3 rounded-lg ${
                                       pathname === items?.link
                                         ? "bg-[#414D57] text-white"
                                         : "bg-transparent text-[white]"

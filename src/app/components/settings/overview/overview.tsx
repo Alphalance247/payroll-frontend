@@ -24,32 +24,27 @@ const Overview = () => {
     {
       heading: "Integrations",
       subhead: "you",
-      btnLink: "",
+      btnLink: "/settings/integrations",
     },
     {
       heading: "Company Information",
       subhead: "you",
-      btnLink: "",
+      btnLink: "/settings/company-info",
     },
     {
       heading: "Permissons",
       subhead: "you",
-      btnLink: "",
+      btnLink: "/settings/permissions",
     },
     {
       heading: "Audit Logs",
       subhead: "you",
-      btnLink: "",
+      btnLink: "/settings/audit-logs",
     },
     {
-      heading: "Company Information",
+      heading: "Billing Info",
       subhead: "you",
-      btnLink: "",
-    },
-    {
-      heading: "Preferences",
-      subhead: "you",
-      btnLink: "",
+      btnLink: "/settings/billing-info",
     },
   ];
   return (

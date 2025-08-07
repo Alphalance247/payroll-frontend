@@ -5,7 +5,8 @@ type buttonVariant =
   | "secondary"
   | "tertiary"
   | "danger"
-  | "primaryWhite";
+  | "primaryWhite"
+  | "pluginDisconnect";
 
 // type buttonSize = "small" | "medium" | "large" | "switch";
 
@@ -31,6 +32,7 @@ const Button: React.FC<buttonProps> = ({
     secondary: "bg-[#F1F1F2] text-[#2F2F33] border border-[#E3E3E5]",
     tertiary: "bg-[#FCF2E8] text-[#CF6E13]",
     danger: "bg-[#EC221F] text-[#FEE9E7]",
+    pluginDisconnect: "bg-[white] border-[#E3E3E5] border text-[#EF4444]",
   };
   return (
     <button

@@ -158,7 +158,7 @@ const Login = () => {
                 className="lg:px-[32px] py-4 lg:py-3 bg-orange-600 rounded-[5px] justify-center items-start flex w-full"
               >
                 <span className="text-white text-sm font-semibold leading-tight">
-                  {loading ? <LoadingScreen message="Loading..." /> : "Log In"}
+                  {loading ? <LoadingScreen message="Loading..." /> : ""}Log In
                 </span>
               </button>
             </div>

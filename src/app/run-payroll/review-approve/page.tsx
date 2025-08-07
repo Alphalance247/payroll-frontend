@@ -27,32 +27,6 @@ export default function RunPayrollPage() {
 
   console.log(initialValue);
 
-  // useEffect(() => {
-  //   const fetchPayroll = async () => {
-  //     // setLoading(true);
-  //     try {
-  //       const res = await axios.get(
-  //         `https://real.ec2.alluvium.net/api/employees/generate-payroll`
-  //       );
-  //       const { data } = res.data; // response.data.data
-  //       console.log("data from the backend", data);
-  //       if (res.status === 200) {
-  //         // setPayroll(res.data);
-  //         toast.success("Payroll data loaded");
-  //       } else {
-  //         toast.error("Failed to fetch payroll");
-  //       }
-  //     } catch (err) {
-  //       // console.error("Failed to fetch payroll:", err);
-  //       toast.error("Failed to fetch payroll");
-  //     } finally {
-  //       // setLoading(false);
-  //     }
-  //   };
-
-  //   fetchPayroll();
-  // }, []);
-
   const handleOpen = () => {
     if (
       user?.uid === payroll?.run_by?.id &&

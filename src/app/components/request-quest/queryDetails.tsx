@@ -1,19 +1,23 @@
 import { FaChevronDown } from "react-icons/fa";
 import Image from "next/image";
+import { getQueryDetails } from "@/stores/request/getRequestDetails";
 
 const QueryDetails = () => {
+  const { data: detailsData } = getQueryDetails();
+  const details = detailsData?.query;
+  console.log(details?.assigned_to);
   const data = [
     {
       label: "Payroll Cycle Affected",
-      value: "July 2024 Payroll",
+      value: details?.payroll_lifecycle_affected,
     },
     {
       label: "Amount in Dispute",
-      value: "NGN 200,000",
+      value: "NGN " + details?.amount_in_dispute || 0,
     },
     {
       label: "Payment Method",
-      value: "Bank Transfer",
+      value: details?.payment_method,
     },
   ];
   return (
@@ -27,16 +31,10 @@ const QueryDetails = () => {
 
       <div className="py-3">
         <h5 className="mb-2 text-sm font-medium text-[#71717A]">
-          Employee Concern
+          {details?.title}
         </h5>
 
-        <p className="text-sm text-[#2F2F33]">
-          I noticed that my salary for July 2024 is lower than expected. My
-          payslip shows a deduction of ₦200,000, but I wasn’t informed about any
-          deductions. Additionally, my usual bonus wasn’t included. Could you
-          please clarify the reason for these deductions and whether my bonus
-          will be paid separately? I`ve attached my payslip for reference.
-        </p>
+        <p className="text-sm text-[#2F2F33]">{details?.description}</p>
       </div>
 
       <div className="py-3">

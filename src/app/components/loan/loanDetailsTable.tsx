@@ -5,43 +5,28 @@ import { LiaTimesSolid } from "react-icons/lia";
 import RequestDetails from "./requestDetails";
 import LoanHistory from "./loanHistory";
 import CurrentLoanActivity from "./currentLoanActivity";
+import { getLoanDetails } from "@/stores/loan/getLoanDetails";
+import Spinner from "@/app/common/spinner";
 
-const LoanDetailsTable = () => {
-  const filteredEmployees = [
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-    {
-      id: "",
-      fullname: "Moshood Azeez",
-    },
-  ];
+interface loadData {
+  data: {
+    amount: string;
+    category: string;
+    date_disburse: string;
+    due_date: string;
+    employee: string;
+    id: string;
+    repayment_schedule: string;
+    status: string;
+  }[];
+}
+
+const LoanDetailsTable = ({ data }: { data: loadData }) => {
+  // const { data } = getLoanRequestList();
+
   const [isOpen, setIsOpen] = useState(false);
+  const { fetchLoanDetails, loading } = getLoanDetails();
+
   return (
     <div className="bg-white rounded-lg border border-[#E3E3E5] mt-10">
       <h2 className="text-base font-semibold py-5 pl-6 text-[#2F2F33]">
@@ -84,42 +69,62 @@ const LoanDetailsTable = () => {
               </th>
             </tr>
           </thead>
-          <tbody>
-            {filteredEmployees.map((emp, i) => (
-              <tr key={i} className="border-b border-[#E3E3E5] last:border-b-0">
-                <td className="px-6 py-4">
-                  <input type="checkbox" className="rounded border-gray-300" />
-                </td>
-                <td
-                  className="px-6 py-4 text-[#2F2F33] text-base cursor-pointer"
-                  onClick={() => setIsOpen(true)}
-                >
-                  LR-20240401-001
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#2F2F33] text-base">
-                      Adetomiwa Suulola
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-[#2F2F33] text-base">
-                  Fixed Period
-                </td>
-                <td className="px-6 py-4 text-base text-[#2F2F33]">
-                  ₦ 500,000
-                </td>
 
-                <td className="px-6 py-4 text-base text-[#2F2F33]">
-                  {" "}
-                  January 24, 2024
-                </td>
-                <td className="px-6 py-4 text-sm text-[#2F2F33] text-center">
-                  <BsThreeDotsVertical />
+          {data?.data?.length === 0 ? (
+            <tbody>
+              <tr>
+                <td colSpan={6} className="text-center py-8">
+                  No Loan Request found
                 </td>
               </tr>
-            ))}
-          </tbody>
+            </tbody>
+          ) : (
+            <tbody>
+              {data?.data.map((emp, i) => (
+                <tr
+                  key={i}
+                  className="border-b border-[#E3E3E5] last:border-b-0"
+                >
+                  <td className="px-6 py-4">
+                    <input
+                      type="checkbox"
+                      className="rounded border-gray-300"
+                    />
+                  </td>
+                  <td
+                    className="px-6 py-4 text-[#2F2F33] text-base cursor-pointer hover:underline"
+                    onClick={() => {
+                      fetchLoanDetails(emp?.id);
+                      setIsOpen(true);
+                    }}
+                  >
+                    LR-20240401-0{emp?.id}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#2F2F33] text-base">
+                        {emp?.employee}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-[#2F2F33] text-base">
+                    {emp?.repayment_schedule}
+                  </td>
+                  <td className="px-6 py-4 text-base text-[#2F2F33]">
+                    ₦ {emp?.amount}
+                  </td>
+
+                  <td className="px-6 py-4 text-base text-[#2F2F33]">
+                    {" "}
+                    {emp?.date_disburse || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33] text-center">
+                    <BsThreeDotsVertical />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          )}
         </table>
       </div>
 
@@ -141,10 +146,15 @@ const LoanDetailsTable = () => {
                 }}
               />
             </div>
-
-            <RequestDetails />
-            <LoanHistory />
-            <CurrentLoanActivity />
+            {loading ? (
+              <Spinner />
+            ) : (
+              <>
+                <RequestDetails />
+                <LoanHistory />
+                <CurrentLoanActivity setIsOpen={setIsOpen} />
+              </>
+            )}
           </div>
         </SideDrawer>
       )}
