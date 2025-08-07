@@ -1,28 +1,31 @@
 import { FaChevronDown } from "react-icons/fa";
 import Image from "next/image";
+import { getQueryDetails } from "@/stores/request/getRequestDetails";
 
 const QueryOverview = () => {
+  const { data: detailsData } = getQueryDetails();
+  const details = detailsData?.query;
   const data = [
     {
       label: " Query ID",
-      value: "CMP-20240201",
+      value: `CMP-2024020${details?.id}`,
     },
     {
       label: "Date Raised",
-      value: "15th Feb, 2025 09:20:00 PM",
+      value: details?.created_at,
     },
     {
       label: "Raised by",
-      value: "Samuel Johnson",
+      value: details?.created_by,
       img: "i",
     },
     {
       label: "Query Type",
-      value: "Missing Payment",
+      value: details?.query_type,
     },
     {
       label: "Status",
-      value: "Missing Payment",
+      value: details?.status,
       status: "Not Resolved",
     },
   ];
@@ -56,7 +59,7 @@ const QueryOverview = () => {
                 <p
                   className={`inline-block px-3 py-1 rounded-full text-sm border border-[#414D57] bg-[#E7E9EA] text-[#0C1720] font-medium`}
                 >
-                  Resolved
+                  {details?.status}
                 </p>
               )}
             </div>

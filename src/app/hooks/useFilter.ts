@@ -1,5 +1,5 @@
 // hooks/useFilter.ts
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export interface FilterState {
   [key: string]: string;
@@ -22,6 +22,14 @@ export function useFilter<T>(
         ([key, value]) => {
           if (!value) return true;
           const field = getNestedValue(item, key);
+          if (key === "status") {
+            // Use exact match for status
+            return (
+              typeof field === "string" &&
+              field.toLowerCase() === value.toLowerCase()
+            );
+          }
+          // Default: substring match
           return (
             typeof field === "string" &&
             field.toLowerCase().includes(value.toLowerCase())
@@ -43,9 +51,9 @@ export function useFilter<T>(
     });
   }, [data, filters, searchQuery]);
 
-  const setFilter = (key: string, value: string) => {
+  const setFilter = useCallback((key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-  };
+  }, []);
 
   return {
     filteredData,

@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { BiSearch } from "react-icons/bi";
@@ -5,10 +6,12 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import { FaChevronDown } from "react-icons/fa";
 import { useAuth } from "../context/authContext";
 import Link from "next/link";
+import NotificationModal from "../components/notification/notificationModal";
 
 const TopBar = () => {
   const { user, logout, isLoggingOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [openNotification, setOpenNofication] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -54,13 +57,20 @@ const TopBar = () => {
               placeholder="Search for people and payroll"
             />
           </div>
-
-          <div className="bg-[#F6F6F6] flex items-center justify-center relative cursor-pointer ">
-            <p className="w-4 h-4 text-[10px] flex flex-col items-center justify-center rounded-full absolute bg-[#EA5455] text-white top-3 right-1">
-              6+
-            </p>
-            <IoNotificationsOutline size={38} color="#4E4E4E" />
+          <div className="relative">
+            <div
+              className="bg-[#F6F6F6] flex items-center justify-center relative cursor-pointer "
+              onClick={() => setOpenNofication(!openNotification)}
+            >
+              <p className="w-4 h-4 text-[10px] flex flex-col items-center justify-center rounded-full absolute bg-[#EA5455] text-white top-3 right-1">
+                6+
+              </p>
+              <IoNotificationsOutline size={38} color="#4E4E4E" />
+            </div>
+            {/* Notification Modal */}
+            {openNotification && <NotificationModal />}
           </div>
+
           <div className="relative" ref={dropdownRef}>
             <div
               className="flex justify-between gap-x-4 items-center bg-[#F6F6F6] cursor-pointer border-l border-l-[#D3D3D6] pl-4"

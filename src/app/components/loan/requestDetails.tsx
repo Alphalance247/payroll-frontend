@@ -1,31 +1,34 @@
 import { FaChevronDown } from "react-icons/fa6";
 import Image from "next/image";
+import { getLoanDetails } from "@/stores/loan/getLoanDetails";
 
 const RequestDetails = () => {
+  const { data } = getLoanDetails();
+  const requestData = data?.data;
   const requestDetails = [
     {
       label: "Request ID",
-      value: "LR-20240401-001",
+      value: "LR-20240401-0" + requestData?.id,
     },
     {
       label: "Name",
-      value: "Adeola Lawal",
+      value: requestData?.employee,
     },
     {
       label: "Team",
-      value: "Quality Assurance",
+      value: requestData?.team,
     },
     {
       label: "Date Requested",
-      value: "15th Feb, 2025 ",
+      value: requestData?.due_date,
     },
     {
       label: "Loan Amount",
-      value: "N 3,000,000",
+      value: "₦" + requestData?.amount,
     },
     {
       label: "Repayment schedule",
-      value: "Installment",
+      value: requestData?.repayment_schedule,
     },
   ];
   return (
@@ -65,20 +68,47 @@ const RequestDetails = () => {
             />
             <div>
               <p className="text-base font-normal text-[#262626]">
-                {`< 50%`}{" "}
-                <span className="text-[#6F6F6F] text-[10px] tracking-[0.31px]">
-                  Low risk
+                {requestData?.loan_to_salary_ratio !== undefined
+                  ? `${Math.round(requestData.loan_to_salary_ratio * 100)}%`
+                  : "--"}
+                <span className="text-[#6F6F6F] text-[10px] tracking-[0.31px] ml-2">
+                  {requestData?.loan_to_salary_ratio !== undefined &&
+                    (requestData?.loan_to_salary_ratio < 0.5
+                      ? "Low risk"
+                      : "High risk")}
                 </span>
               </p>
-              <p className="bg-[#198038] w-[81px] h-[5px] rounded-sm"></p>
+              <p
+                className={`${
+                  requestData?.loan_to_salary_ratio !== undefined &&
+                  requestData?.loan_to_salary_ratio < 0.5
+                    ? "bg-[#198038]"
+                    : "bg-[#c52626]"
+                } w-[81px] h-[5px] rounded-sm`}
+              ></p>
             </div>
           </div>
         </div>
 
         <div className="px-6 py-3  flex justify-between items-center">
           <p className="text-sm font-medium text-[#71717A]">Status</p>
-          <p className="text-sm font-medium text-[#2F2F33] bg-[#E7E9EA] border border-[#414D57] rounded-lg px-[10px] py-1">
-            <span className="text-[#0C1720]">Approved</span>
+          <p
+            className={`text-sm font-medium text-[#2F2F33] bg-[#E7E9EA] border rounded-lg px-[10px] py-1   ${
+              requestData?.status === "approved"
+                ? "bg-[#E9F9EF] border-[#188C43] text-[#188C43]"
+                : requestData?.status === "pending"
+                ? "bg-[#FFF4E5] border-[#FFA500] text-[#FFA500]"
+                : "bg-[#FDEBEB] border-[#D42626] text-[#D42626]"
+            }`}
+          >
+            <span className="text-[#0C1720]">
+              {" "}
+              {requestData?.status === "approved"
+                ? "Approved"
+                : requestData?.status === "pending"
+                ? "Pending"
+                : "Decline"}{" "}
+            </span>
           </p>
         </div>
       </div>

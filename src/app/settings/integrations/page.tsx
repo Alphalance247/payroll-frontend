@@ -9,7 +9,8 @@ import { GoPeople } from "react-icons/go";
 import { useState } from "react";
 
 const Integrations = () => {
-  const [isSuccessFull, setIsSuccessful] = useState(true);
+  const [isSuccessFull, setIsSuccessful] = useState(false);
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const plugins = [
     {
       img: "/assets/settings/remita.svg",
@@ -75,118 +76,145 @@ const Integrations = () => {
         "Sync Google Calendar with Alluvium to track public holidays, time-off requests, and key payroll dates.",
     },
   ];
+
+  const handleConnectThirdParty = (i: number) => {
+    setIsOverlayOpen(true);
+  };
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <ModalOverlay onClose={() => {}}>
-          <div className="relative z-50 bg-[#F7F7F7] flex flex-col justify-center h-screen w-full pt-20 pb-10 overflow-y-scroll">
-            <div className="flex gap-x-6 items-center justify-center mb-14">
-              <Image
-                src="/assets/Home/alluvium.svg"
-                width={121}
-                height={25}
-                alt="alluviumlogo"
-              />
-              <Image
-                src="/assets/settings/Filter.svg"
-                width={40}
-                height={40}
-                alt="filter"
-              />
-              <Image
-                src="/assets/settings/flutterConfirm.svg"
-                width={121}
-                height={25}
-                alt="integration company logo"
-              />
-            </div>
-
-            {isSuccessFull ? (
-              <div>
-                <div className="mb-6 text-center">
-                  <h4 className="text-[#2F2F33] font-semibold text-xl text-center">
-                    {" "}
-                    You have successfully connected to Alluvium
-                  </h4>
-                  <p className="text-[#71717A] text-base">
-                    Please connect Alluvium Payroll to Flutterwave to use this
-                    app.
-                  </p>
-                </div>
-                <div className="flex flex-col items-center justify-center">
-                  <Button className="">Open Flutterwave</Button>
-                </div>
+        {isOverlayOpen && (
+          <ModalOverlay
+            onClose={() => {
+              setIsOverlayOpen(false);
+            }}
+          >
+            <div className="relative z-50 bg-[#F7F7F7] flex flex-col justify-center h-screen w-full pt-20 pb-10 overflow-y-scroll">
+              <div className="flex gap-x-6 items-center justify-center mb-14">
+                <Image
+                  src="/assets/Home/alluvium.svg"
+                  width={121}
+                  height={25}
+                  alt="alluviumlogo"
+                />
+                <Image
+                  src="/assets/settings/Filter.svg"
+                  width={40}
+                  height={40}
+                  alt="filter"
+                />
+                <Image
+                  src="/assets/settings/flutterConfirm.svg"
+                  width={121}
+                  height={25}
+                  alt="integration company logo"
+                />
               </div>
-            ) : (
-              <>
-                <div className="mb-6 text-center">
-                  <h4 className="text-[#2F2F33] font-semibold text-xl text-center">
-                    {" "}
-                    Allow Alluvium Payroll to Acess Flutterwave
-                  </h4>
-                  <p className="text-[#71717A] text-base">
-                    Please connect Alluvium Payroll to Flutterwave to use this
-                    app.
-                  </p>
-                </div>
 
-                <div className="p-6 border-[#E3E3E5] border rounded-md shadow-md w-[560px] bg-white mx-auto">
-                  <h5 className="text-[#2F2F33] text-base font-semibold mb-1">
-                    About Flutterwave
-                  </h5>
-                  <p className="text-base text-[#71717A]">
-                    Lorem ipsum dolor sit amet consectetur. Consectetur habitant
-                    porta ultrices nunc dolor. Semper vel et viverra scelerisque
-                    orci morbi risus tincidunt. Volutpat quam sit dignissim
-                    etiam non sit dolor dictum aliquam. Pulvinar amet mi mauris
-                    cursus.
-                  </p>
-
-                  <div className="mt-6 flex flex-col gap-y-4 pb-6 border-[#E3E3E5] border-b">
-                    <div className="flex gap-x-6">
-                      <GoPeople size={24} color="#595959" />
-                      <p className="text-[#595959] text-base">
-                        Lorem ipsum dolor sit amet consectetur. Consectetur
-                        habitant porta ultrices nunc dolor. Semper vel et
-                        viverra{" "}
-                      </p>
-                    </div>
-                    <div className="flex gap-x-6">
-                      <GoPeople size={24} color="#595959" />
-                      <p className="text-[#595959] text-base">
-                        Lorem ipsum dolor sit amet consectetur. Consectetur
-                        habitant porta ultrices nunc dolor. Semper vel et
-                        viverra{" "}
-                      </p>
-                    </div>
-                    <div className="flex gap-x-6">
-                      <GoPeople size={24} color="#595959" />
-                      <p className="text-[#595959] text-base">
-                        Lorem ipsum dolor sit amet consectetur. Consectetur
-                        habitant porta ultrices nunc dolor. Semper vel et
-                        viverra{" "}
-                      </p>
-                    </div>
+              {isSuccessFull ? (
+                <div>
+                  <div className="mb-6 text-center">
+                    <h4 className="text-[#2F2F33] font-semibold text-xl text-center">
+                      {" "}
+                      You have successfully connected to Alluvium
+                    </h4>
+                    <p className="text-[#71717A] text-base">
+                      Please connect Alluvium Payroll to Flutterwave to use this
+                      app.
+                    </p>
                   </div>
-
-                  <div className="flex pt-6 items-center gap-x-2">
-                    <Button variant="primary" className="w-full">
-                      Allow Access
-                    </Button>
-                    <Button variant="secondary" className="w-full">
-                      Cancel
+                  <div className="flex flex-col items-center justify-center">
+                    <Button
+                      className=""
+                      onButtonClick={() => {
+                        setIsSuccessful(false);
+                      }}
+                    >
+                      Open Flutterwave
                     </Button>
                   </div>
                 </div>
+              ) : (
+                <>
+                  <div className="mb-6 text-center">
+                    <h4 className="text-[#2F2F33] font-semibold text-xl text-center">
+                      {" "}
+                      Allow Alluvium Payroll to Acess Flutterwave
+                    </h4>
+                    <p className="text-[#71717A] text-base">
+                      Please connect Alluvium Payroll to Flutterwave to use this
+                      app.
+                    </p>
+                  </div>
 
-                <p className="mt-10 text-sm text-[#71717A] w-[35%] mx-auto text-center">
-                  By connecting, you agree to Alluvium’s Privacy Policy and
-                  authorize the Flutterwave to access your account.
-                </p>
-              </>
-            )}
-          </div>
-        </ModalOverlay>
+                  <div className="p-6 border-[#E3E3E5] border rounded-md shadow-md w-[560px] bg-white mx-auto">
+                    <h5 className="text-[#2F2F33] text-base font-semibold mb-1">
+                      About Flutterwave
+                    </h5>
+                    <p className="text-base text-[#71717A]">
+                      Lorem ipsum dolor sit amet consectetur. Consectetur
+                      habitant porta ultrices nunc dolor. Semper vel et viverra
+                      scelerisque orci morbi risus tincidunt. Volutpat quam sit
+                      dignissim etiam non sit dolor dictum aliquam. Pulvinar
+                      amet mi mauris cursus.
+                    </p>
+
+                    <div className="mt-6 flex flex-col gap-y-4 pb-6 border-[#E3E3E5] border-b">
+                      <div className="flex gap-x-6">
+                        <GoPeople size={24} color="#595959" />
+                        <p className="text-[#595959] text-base">
+                          Lorem ipsum dolor sit amet consectetur. Consectetur
+                          habitant porta ultrices nunc dolor. Semper vel et
+                          viverra{" "}
+                        </p>
+                      </div>
+                      <div className="flex gap-x-6">
+                        <GoPeople size={24} color="#595959" />
+                        <p className="text-[#595959] text-base">
+                          Lorem ipsum dolor sit amet consectetur. Consectetur
+                          habitant porta ultrices nunc dolor. Semper vel et
+                          viverra{" "}
+                        </p>
+                      </div>
+                      <div className="flex gap-x-6">
+                        <GoPeople size={24} color="#595959" />
+                        <p className="text-[#595959] text-base">
+                          Lorem ipsum dolor sit amet consectetur. Consectetur
+                          habitant porta ultrices nunc dolor. Semper vel et
+                          viverra{" "}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex pt-6 items-center gap-x-2">
+                      <Button
+                        variant="primary"
+                        className="w-full"
+                        onButtonClick={() => {
+                          setIsSuccessful(true);
+                        }}
+                      >
+                        Allow Access
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        className="w-full"
+                        onButtonClick={() => setIsOverlayOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+
+                  <p className="mt-10 text-sm text-[#71717A] w-[35%] mx-auto text-center">
+                    By connecting, you agree to Alluvium’s Privacy Policy and
+                    authorize the Flutterwave to access your account.
+                  </p>
+                </>
+              )}
+            </div>
+          </ModalOverlay>
+        )}
         <main className="p-4 md:p-6 lg:p-10 overflow-y-scroll">
           <HeadingSubHead
             heading="Integrations"
@@ -202,7 +230,7 @@ const Integrations = () => {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {plugins.map((el, i) => (
                 <div
-                  className="p-6 rounded-2xl border border-[#E3E3E5]"
+                  className="p-6 rounded-2xl border border-[#E3E3E5] bg-white"
                   key={i}
                 >
                   <div className="flex justify-between mb-4 items-start ">
@@ -226,7 +254,11 @@ const Integrations = () => {
                     elementum.
                   </p>
 
-                  <Button variant="pluginDisconnect" className="w-full">
+                  <Button
+                    variant="pluginDisconnect"
+                    className="w-full"
+                    onButtonClick={() => handleConnectThirdParty(i)}
+                  >
                     {el?.btnText}
                   </Button>
                 </div>

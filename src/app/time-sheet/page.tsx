@@ -40,7 +40,7 @@ const TimeTool = () => {
           />
 
           <div className="mt-6 grid  md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {cardData.map((card, i) => (
+            {cardData.map((card) => (
               <div
                 className="py-6 px-4 border border-[#E3E3E5] rounded-md"
                 key={card?.id}
