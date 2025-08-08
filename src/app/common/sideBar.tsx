@@ -24,7 +24,7 @@ import { useCallback, useState } from "react";
 import { FaRegUser } from "react-icons/fa6";
 import { HiOutlineClipboardCheck } from "react-icons/hi";
 import { Search } from "lucide-react";
-import { useFilter } from "../hooks/useFilter";
+// import { useFilter } from "../hooks/useFilter";
 
 interface dropDownText {
   link: string;
@@ -44,7 +44,29 @@ interface sideBarData {
   subHeadings: SubHeading[];
 }
 
-const Sidebar: React.FC = () => {
+interface employeeDropDownText {
+  link: string;
+  text: string;
+}
+
+interface EmployeeSubHeading {
+  text: string;
+  icons?: React.ReactNode;
+  link?: string;
+  arrowDown?: React.ReactNode;
+  dropdownText?: employeeDropDownText[];
+}
+
+interface employeeSideBarData {
+  heading?: string;
+  subHeadings: EmployeeSubHeading[];
+}
+
+interface propData {
+  isAdmin?: boolean;
+}
+
+const Sidebar: React.FC<propData> = ({ isAdmin }) => {
   const pathname = usePathname();
   const [openDropdown, setOpenDropdown] = useState<{
     section: number;
@@ -178,6 +200,33 @@ const Sidebar: React.FC = () => {
     },
   ];
 
+  const EmployeeSideBar: employeeSideBarData[] = [
+    {
+      subHeadings: [
+        {
+          text: "Employee",
+          icons: <IoRocketOutline fill="white" size={20} />,
+          link: "/employee",
+        },
+        {
+          text: "Compliance",
+          icons: <IoRocketOutline fill="white" size={20} />,
+          link: "/employee/compliance",
+        },
+        {
+          text: "Payroll",
+          icons: <IoRocketOutline fill="white" size={20} />,
+          link: "/employee/payroll",
+        },
+        {
+          text: "Settings",
+          icons: <TbSettings2 size={20} />,
+          link: "/employee/settings",
+        },
+      ],
+    },
+  ];
+
   const settingsSideBar: sideBarData[] = [
     {
       subHeadings: [
@@ -188,6 +237,7 @@ const Sidebar: React.FC = () => {
         },
       ],
     },
+
     {
       heading: "Personal settings",
       subHeadings: [
@@ -247,17 +297,19 @@ const Sidebar: React.FC = () => {
     },
   ];
 
-  const { filteredData, setSearchQuery, searchQuery } = useFilter(
-    settingsSideBar || [],
-    ["heading"]
-  );
+  // const { filteredData, setSearchQuery, searchQuery } = useFilter(
+  //   settingsSideBar || [],
+  //   [""]
+  // );
 
   const SidebarToShow = pathname.startsWith("/settings")
-    ? filteredData
+    ? settingsSideBar
     : sideBarData;
 
+  const sideBarType = isAdmin ? SidebarToShow : EmployeeSideBar;
+
   return (
-    <div className=" bg-[#11202D] border-r border-gray-200 overflow-y-auto">
+    <div className=" bg-[#11202D] h-screen border-r border-gray-200 overflow-y-auto">
       {/* Logo / Brand Name */}
       <div className="flex flex-col justify-between mb-24">
         {/* Navigation Menu */}
@@ -276,10 +328,10 @@ const Sidebar: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Search settings"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                  }}
+                  // value={searchQuery}
+                  // onChange={(e) => {
+                  //   setSearchQuery(e.target.value);
+                  // }}
                   className="w-full outline-none bg-transparent text-[#BEBEC2] pl-10 p-2 border border-[#606A72] rounded-lg text-base"
                 />
                 <Search
@@ -292,7 +344,7 @@ const Sidebar: React.FC = () => {
           )}
           <nav className="mt-4">
             <ul className="flex flex-col gap-y-4">
-              {SidebarToShow.map((item, sectionIdx) => {
+              {sideBarType.map((item, sectionIdx) => {
                 return (
                   <div key={sectionIdx}>
                     {item?.heading && (
@@ -311,7 +363,6 @@ const Sidebar: React.FC = () => {
                             openDropdown.sub === subIdx;
                           return (
                             <div key={subIdx}>
-                              {/* Top-level nav link (not a dropdown parent) */}
                               {items?.link && !isDropdown ? (
                                 <Link href={items?.link || "/"} passHref>
                                   <div
@@ -334,7 +385,6 @@ const Sidebar: React.FC = () => {
                                 </Link>
                               ) : (
                                 <>
-                                  {/* Dropdown parent: never active */}
                                   <div
                                     className={`flex items-center py-[10px] pl-3 cursor-pointer rounded-lg justify-between bg-transparent text-[white]`}
                                     onClick={() =>
@@ -362,7 +412,7 @@ const Sidebar: React.FC = () => {
                                           >
                                             <li
                                               className={`text-sm font-medium rounded-lg py-[10px] pl-4 ${
-                                                pathname === item?.link
+                                                pathname?.startsWith(item?.link)
                                                   ? "bg-[#414D57] text-white"
                                                   : "bg-transparent text-[white]"
                                               }`}

@@ -16,6 +16,7 @@ const Storage = () => {
     [],
     ["created_by"]
   );
+  console.log(filteredData);
   const [selectedTeam, setSelectedTeam] = useState("");
   const [requestType, setRequestType] = useState("");
   const requestOption = ["All", "Salary", "Tax"];
