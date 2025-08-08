@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 
 import {
   createContext,
@@ -32,6 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isTokenExpired, setIsTokenExpired] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Read user info from localStorage
@@ -73,7 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("refresh");
       localStorage.removeItem("user");
       setUser(null);
-      window.location.href = "/login";
+      router.push("/login");
     } finally {
       setIsLoggingOut(false);
     }

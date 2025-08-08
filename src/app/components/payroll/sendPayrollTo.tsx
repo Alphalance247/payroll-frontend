@@ -28,17 +28,6 @@ interface SendPayrollToProps {
   onSend: (selectedAdmins: number[]) => void;
 }
 
-//   { id: "1", name: "Wale Olojo", role: "super admin" },
-//   { id: "2", name: "Taiwo Ojo", role: "super admin" },
-//   { id: "3", name: "Temilade Adelabu", role: "super admin" },
-//   { id: "4", name: "Chinedu Chuwukere", role: "admin" },
-//   { id: "5", name: "Adesina Oluwapelu", role: "admin" },
-//   { id: "6", name: "Adesina Oluwapelu", role: "admin" },
-//   { id: "7", name: "Adesina Oluwapelu", role: "admin" },
-//   { id: "8", name: "Adesina Oluwapelu", role: "admin" },
-//   { id: "9", name: "Adesina Oluwapelu", role: "admin" },
-// ];
-
 export default function SendPayrollTo({
   isOpen,
   onClose,
@@ -49,7 +38,8 @@ export default function SendPayrollTo({
   const [payrollAdmin, setPayrollAdmin] = useState<PayrollAdmin | null>(null);
   const [loading, setLoading] = useState(false);
   const [isNoteModalOpen, openNoteModal, closeNoteModal] = useBoolean(false);
-  const { payroll } = usePayrollContext();
+  const { payrollD } = usePayrollContext();
+  const payroll = payrollD?.data;
 
   useEffect(() => {
     const fetchPayrollAdmin = async () => {
@@ -59,8 +49,6 @@ export default function SendPayrollTo({
         if (res.status === 200) {
           setPayrollAdmin(res?.data);
           toast.success(payrollAdmin?.statusmessage || "Payroll Admin fetched");
-        } else {
-          toast.error(res?.data?.message || "Failed to fetch payroll");
         }
       } catch (err) {
         let errorMessage =
@@ -69,7 +57,8 @@ export default function SendPayrollTo({
           // Check if err is an instance of AxiosError
           errorMessage = err.response?.data?.message || errorMessage;
         }
-        toast.error(errorMessage);
+        console.log(errorMessage);
+        // toast.error(errorMessage);
       } finally {
         closeNoteModal();
       }

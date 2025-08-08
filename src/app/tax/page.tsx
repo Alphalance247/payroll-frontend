@@ -205,48 +205,58 @@ const Tax = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {payrollTax?.data?.map((emp, i) => (
-                      <tr
-                        key={i}
-                        className="border-b border-[#E3E3E5] last:border-b-0"
-                      >
-                        <td className="px-6 py-4">{i + 1}</td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                              {emp?.payslip?.employee?.fullname
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </div>
-                            <span className="text-[#2F2F33] text-sm font-medium">
-                              {emp?.payslip?.employee?.fullname}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
-                          >
-                            ₦ {emp.tax_amount_monthly.toLocaleString()}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          ₦ {emp.tax_amount_yearly.toLocaleString()}
-                        </td>
-
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {" "}
-                          {emp.remmited ? "Yes" : "No"}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {" "}
-                          ₦ 0
+                  {payrollTax?.data?.length === 0 ? (
+                    <tbody>
+                      <tr>
+                        <td colSpan={6} className="text-center py-8">
+                          No Details found for the selected month
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
+                    </tbody>
+                  ) : (
+                    <tbody>
+                      {payrollTax?.data?.map((emp, i) => (
+                        <tr
+                          key={i}
+                          className="border-b border-[#E3E3E5] last:border-b-0"
+                        >
+                          <td className="px-6 py-4">{i + 1}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
+                                {emp?.payslip?.employee?.fullname
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
+                              </div>
+                              <span className="text-[#2F2F33] text-sm font-medium">
+                                {emp?.payslip?.employee?.fullname}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
+                            >
+                              ₦ {emp.tax_amount_monthly.toLocaleString()}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            ₦ {emp.tax_amount_yearly.toLocaleString()}
+                          </td>
+
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            {" "}
+                            {emp.remmited ? "Yes" : "No"}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            {" "}
+                            ₦ 0
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  )}
                 </table>
               </div>
             )}
