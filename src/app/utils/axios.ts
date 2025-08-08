@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create axios instance
 const axiosInstance = axios.create({
-  baseURL: "https://real.ec2.alluvium.net/api",
+  baseURL: "https://yen.ec2.alluvium.net/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -40,23 +40,22 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle forbidden error (403) - Account already logged in elsewhere
     if (error.response?.status === 403) {
-      // Clear all auth data
-      localStorage.removeItem("access");
-      localStorage.removeItem("refresh");
-      localStorage.removeItem("user");
-
-      // Dispatch the session conflict event
-      window.dispatchEvent(new CustomEvent("sessionConflict"));
-
-      // Redirect to login page
-      window.location.href = "/login";
+      // Show a toast notification for permission denied
+      if (typeof window !== "undefined") {
+        // Import toast dynamically to avoid SSR issues
+        const { default: toast } = await import("react-hot-toast");
+        toast.error("You don't have permission to perform this action");
+        return;
+      }
       return Promise.reject(error);
     }
 
-    // If the error is 401 and we haven't retried yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      originalRequest.url !== "/account/login/token"
+    ) {
       originalRequest._retry = true;
 
       try {
@@ -67,7 +66,7 @@ axiosInstance.interceptors.response.use(
         }
 
         const response = await axios.post(
-          "https://real.ec2.alluvium.net/api/account/login/token/refresh",
+          "https://yen.ec2.alluvium.net/api/account/login/token/refresh",
           {
             refresh: refreshToken,
           }
@@ -81,7 +80,13 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         // If refresh token fails, trigger logout
-        window.dispatchEvent(new CustomEvent("tokenExpired"));
+        // Clear all auth data
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        localStorage.removeItem("user");
+        window.dispatchEvent(new CustomEvent("sessionConflict"));
+        // Redirect to login page
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }

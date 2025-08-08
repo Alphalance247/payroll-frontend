@@ -7,7 +7,8 @@ import { usePayrollContext } from "@/app/context/payrollContext";
 import Link from "next/link";
 
 export default function PaymentConfirmationPage() {
-  const { payroll } = usePayrollContext();
+  const { payrollD } = usePayrollContext();
+  const payroll = payrollD?.data;
 
   return (
     <ProtectedRoute>

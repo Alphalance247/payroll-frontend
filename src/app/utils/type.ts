@@ -60,6 +60,7 @@ export interface PayrollData {
 export interface PayrollResponse {
   message: string;
   data: PayrollData;
+  task_id: string;
 }
 
 export interface TeamData {

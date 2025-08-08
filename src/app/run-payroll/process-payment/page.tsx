@@ -12,13 +12,14 @@ import { AxiosError } from "axios";
 import useBoolean from "@/app/hooks/useBoolean";
 
 export default function RunPayrollPage() {
-  const { payroll } = usePayrollContext();
+  const { payrollD } = usePayrollContext();
   const [getPaystackBalance, setGetPaystackBalance] = useState<{
     status: string;
     payout_required: number;
     balance: number;
   } | null>(null);
   const [isLoading, setIsLoading, resetIsLoading] = useBoolean(false);
+  const payroll = payrollD?.data;
 
   useEffect(() => {
     const fetchPayrollAdmin = async () => {

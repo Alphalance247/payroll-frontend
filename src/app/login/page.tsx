@@ -4,9 +4,9 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import LoadingScreen from "../common/loading";
 import { useAuth } from "../context/authContext";
-import axiosInstance from "../utils/axios";
 import Image from "next/image";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
+import { environment } from "../env/env.local";
 
 interface LoginFormData {
   email: string;
@@ -35,10 +35,12 @@ const Login = () => {
       event.preventDefault();
       setLoading(true);
       try {
-        const response = await axiosInstance.post(
-          `/account/login/token`,
+        const response = await axios.post(
+          `${environment?.baseUrl}/account/login/token`,
           userData
         );
+
+        console.log("Response from backend:", response);
 
         if (response.status >= 200 && response.status < 300) {
           const { refresh, access, email, fullname, is_payroll_staff, uid } =
@@ -51,7 +53,9 @@ const Login = () => {
           // Use the login function from auth context
           login({ email, fullname, is_payroll_staff, uid });
 
-          toast.success("Login successful Redirecting...");
+          toast.success(
+            response?.data?.statusmessage || "Login successful Redirecting..."
+          );
 
           // Clear form
           setUserData({ email: "", password: "" });
@@ -67,12 +71,11 @@ const Login = () => {
           } else {
             router.push("/"); // Default to home if no redirect path is specified
           }
-        } else {
-          toast.error(`Sign in failed: ${response?.data?.statusmessage}`);
         }
       } catch (err) {
         let errorMessage =
           "Something went wrong please try again or contact Admin";
+
         if (err instanceof AxiosError) {
           // Check if err is an instance of AxiosError
           errorMessage = err.response?.data?.message || errorMessage;
