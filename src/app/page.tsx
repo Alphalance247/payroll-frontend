@@ -64,6 +64,33 @@ export default function Home() {
     pendingTaskData?.Tasks?.filter(
       (task, index) => !dismissed.includes(index)
     ) || [];
+  const date = new Date();
+  date.getUTCDay();
+  const [greeting, setGreeting] = useState("");
+  const [dateTime, setDayTime] = useState("");
+
+  useEffect(() => {
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+
+    const today = new Date();
+    const fullDate = today.toLocaleDateString("en-US", {
+      weekday: "long", // e.g., Monday
+      year: "numeric", // e.g., 2025
+      month: "long", // e.g., August
+      day: "numeric", // e.g., 5
+    });
+    const currentDay = days[today.getDay()];
+    setDayTime(fullDate);
+    setGreeting(`${currentDay}`);
+  }, []);
 
   // const quickActions = [
   //   // {
@@ -90,9 +117,10 @@ export default function Home() {
             flexDirection=""
             user={
               user?.fullname
-                ? `Good afternoon, ${user.fullname}`
+                ? `Welcome, ${user.fullname}`
                 : "Good afternoon, James"
             }
+            subHead={dateTime}
           />
           <div className="grid grid-cols-6 gap-6 mt-11">
             {/* Left Section */}
