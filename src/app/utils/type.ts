@@ -89,8 +89,11 @@ export interface dataDetails {
   phone: string;
   country: string;
   postal_code: string;
+  status: string;
   street_address: string;
+  base_pay: string;
   city: string;
+  pay_deno: string;
   state: string;
   nok_name: string;
   nok_phone: string;

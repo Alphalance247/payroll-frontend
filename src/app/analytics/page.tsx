@@ -82,7 +82,7 @@ const PayrollAnalytics = () => {
           <div className="flex justify-between items-center">
             <Heading
               flexDirection="column"
-              subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+              subHead="Analyze payroll trends, team spending, and workforce metrics over time."
               user={"Payroll Analysis"}
             />
 

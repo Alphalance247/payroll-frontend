@@ -70,7 +70,7 @@ const Loan = () => {
         <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
           <Heading
             flexDirection="column"
-            subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+            subHead="Track, review, and manage employee loan requests in one place."
             user={"Loan requests"}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">

@@ -9,7 +9,7 @@ import {
 import { FaMoneyCheckAlt, FaUserFriends } from "react-icons/fa";
 import { HiOutlineReceiptTax } from "react-icons/hi";
 import {
-  IoDocumentTextOutline,
+  // IoDocumentTextOutline,
   IoRocketOutline,
   IoNotificationsOutline,
   IoChevronBack,
@@ -17,7 +17,7 @@ import {
 } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
 import { BsBarChartLine } from "react-icons/bs";
-import { TbSettings2 } from "react-icons/tb";
+// import { TbSettings2 } from "react-icons/tb";
 import { usePathname } from "next/navigation";
 import { IoIosArrowDown } from "react-icons/io";
 import { useCallback, useState } from "react";
@@ -129,11 +129,11 @@ const Sidebar: React.FC = () => {
             },
           ],
         },
-        {
-          text: "Storage",
-          icons: <IoDocumentTextOutline size={20} />,
-          link: "/storage",
-        },
+        // {
+        //   text: "Storage",
+        //   icons: <IoDocumentTextOutline size={20} />,
+        //   link: "/storage",
+        // },
         {
           text: "Request",
           icons: <AiOutlineMessage size={20} />,
@@ -154,10 +154,10 @@ const Sidebar: React.FC = () => {
           icons: <MdOutlinePayment size={20} />,
           arrowDown: <IoIosArrowDown size={20} />,
           dropdownText: [
-            {
-              link: "/time-sheet",
-              text: "Timesheet",
-            },
+            // {
+            //   link: "/time-sheet",
+            //   text: "Timesheet",
+            // },
             {
               link: "/leave-management",
               text: "Leave Management",
@@ -169,11 +169,11 @@ const Sidebar: React.FC = () => {
           ],
         },
 
-        {
-          text: "Settings",
-          icons: <TbSettings2 size={20} />,
-          link: "/settings",
-        },
+        // {
+        //   text: "Settings",
+        //   icons: <TbSettings2 size={20} />,
+        //   link: "/settings",
+        // },
       ],
     },
   ];

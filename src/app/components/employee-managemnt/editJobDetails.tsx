@@ -22,7 +22,9 @@ const EditJobDetails = ({
     job_type: employeeInfo?.job_type || "",
     job_role: employeeInfo?.job_role || "",
     start_date: employeeInfo?.start_date || "",
-    status: "",
+    status: employeeInfo?.status || "",
+    base_pay: employeeInfo?.base_pay || "",
+    pay_deno: employeeInfo?.pay_deno || "",
   });
   const [editEmployee, setEditEmployee, resetEditEmployee] = useBoolean(false);
 
@@ -63,6 +65,17 @@ const EditJobDetails = ({
       resetEditEmployee();
     }
   };
+
+  const denominationData = [
+    {
+      id: 1,
+      code: "USD",
+    },
+    {
+      id: 2,
+      code: "NGN",
+    },
+  ];
 
   return (
     <ModalOverlay onClose={onModalClose}>
@@ -142,6 +155,47 @@ const EditJobDetails = ({
                 value={form?.start_date || ""}
                 onChange={handleChange}
               />
+            </div>
+
+            <div>
+              <Label id="base-pay" className="block mb-1">
+                Base Pay
+              </Label>
+
+              <div className="flex">
+                <input
+                  id="base-pay"
+                  type="text"
+                  name="base_pay"
+                  value={form?.base_pay || ""}
+                  placeholder="Enter Base Pay"
+                  required
+                  onChange={handleChange}
+                  className={` font-poppinsRegular outline-[#51F4A6] text-black border-[#D7DEDD] border w-full  p-3 text-sm rounded-tl-lg rounded-bl-lg rounded-tr-none rounded-br-none`}
+                />
+                <select
+                  id="pay-deno"
+                  name="pay_deno"
+                  value={form?.pay_deno || ""}
+                  onChange={handleChange}
+                  className="w-[150px] border border-[#E0E0E0] rounded-tr-lg rounded-br-lg rounded-tl-none rounded-bl-none text-sm px-3 py-[14px] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
+                >
+                  {employeeInfo?.pay_deno === "Dollars" ? (
+                    <option value={denominationData[0]?.id}>
+                      {denominationData[0]?.code}
+                    </option>
+                  ) : (
+                    <option value={denominationData[1]?.id}>
+                      {denominationData[1]?.code}
+                    </option>
+                  )}
+                  {denominationData?.map((denomination) => (
+                    <option key={denomination?.id} value={denomination?.id}>
+                      {denomination?.code}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 

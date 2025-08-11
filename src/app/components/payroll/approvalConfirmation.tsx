@@ -12,7 +12,8 @@ const ApprovalConfirmation = ({ onClose }: { onClose: () => void }) => {
     useBoolean(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [showRejectionReason, setShowRejectionReason] = useState(false);
-  const { payroll } = usePayrollContext();
+  const { payrollD } = usePayrollContext();
+  const payroll = payrollD?.data;
 
   const handleSend = async () => {
     setApproveLoading();
