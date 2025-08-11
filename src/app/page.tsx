@@ -66,20 +66,9 @@ export default function Home() {
     ) || [];
   const date = new Date();
   date.getUTCDay();
-  const [greeting, setGreeting] = useState("");
   const [dateTime, setDayTime] = useState("");
 
   useEffect(() => {
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-
     const today = new Date();
     const fullDate = today.toLocaleDateString("en-US", {
       weekday: "long", // e.g., Monday
@@ -87,9 +76,7 @@ export default function Home() {
       month: "long", // e.g., August
       day: "numeric", // e.g., 5
     });
-    const currentDay = days[today.getDay()];
     setDayTime(fullDate);
-    setGreeting(`${currentDay}`);
   }, []);
 
   // const quickActions = [
