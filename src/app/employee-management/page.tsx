@@ -28,7 +28,7 @@ const EmployeeManagement = () => {
         <div className="flex items-center justify-between">
           <Heading
             flexDirection="column"
-            subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+            subHead="Search, filter, and manage employees, teams, roles, and employment types in one place."
             user={"People"}
           />
 
@@ -56,7 +56,7 @@ const EmployeeManagement = () => {
         {loading ? (
           <Spinner />
         ) : error ? (
-          <p>error fetching data</p>
+          <p className="py-20 text-center">{error}</p>
         ) : (
           <EmployeesFullDetailsTable
             searchQuery={searchQuery}

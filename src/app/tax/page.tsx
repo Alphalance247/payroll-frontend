@@ -1,7 +1,6 @@
 "use client";
 import Button from "../common/Button";
 import DashboardLayout from "../common/DashBoardLayout";
-import HeadingSubHead from "../common/headingSubHead";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import { IoMdInformationCircle } from "react-icons/io";
 import ModalOverlay from "../common/modal/modal";
@@ -11,6 +10,7 @@ import { getPayrollTax } from "@/stores/Tax/getPayrollTax";
 import { useStore } from "zustand";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import Heading from "../common/heading";
 
 const Tax = () => {
   const {
@@ -35,7 +35,11 @@ const Tax = () => {
     <DashboardLayout>
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
         <div className="flex items-center justify-between">
-          <HeadingSubHead heading="Tax" subHead="nill" withSubHead={false} />
+          <Heading
+            user="Tax"
+            subHead="Review and export monthly payroll taxes by employee; filter by year and month."
+            flexDirection="column"
+          />
 
           <div className="flex gap-x-2">
             <Button

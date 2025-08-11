@@ -57,8 +57,7 @@ export default function SendPayrollTo({
           // Check if err is an instance of AxiosError
           errorMessage = err.response?.data?.message || errorMessage;
         }
-        console.log(errorMessage);
-        // toast.error(errorMessage);
+        toast.error(errorMessage);
       } finally {
         closeNoteModal();
       }
