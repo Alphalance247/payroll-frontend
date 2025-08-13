@@ -28,7 +28,7 @@ const LeaveManagement = () => {
             <div>
               <Heading
                 flexDirection="column"
-                subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+                subHead="Manage leave requests review, approve, and track across teams."
                 user={"Leave Management"}
               />
             </div>

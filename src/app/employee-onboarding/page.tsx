@@ -94,12 +94,7 @@ const EmployeeOnboardingPage = () => {
           setDenominationData(data);
         }
       } catch (err) {
-        // Extract the error message from the response
-        // let errorMessage =
-        //   "An error occurred please try again or contact Admin";
         if (err instanceof AxiosError) {
-          // Check if err is an instance of AxiosError
-          // errorMessage = err.response?.data?.message || errorMessage;
         }
       }
     };
@@ -431,7 +426,7 @@ const EmployeeOnboardingPage = () => {
                     id="country"
                     name="country"
                     placeholder="Enter Country"
-                    value={form?.country || "Nigeria"}
+                    value={form?.country || ""}
                     onChange={handleChange}
                   />
                 </div>

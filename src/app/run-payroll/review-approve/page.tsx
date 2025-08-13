@@ -11,7 +11,6 @@ import { usePayrollContext } from "@/app/context/payrollContext";
 import ProtectedRoute from "@/app/common/protectedRoute";
 import ApprovalConfirmation from "@/app/components/payroll/approvalConfirmation";
 import { useAuth } from "@/app/context/authContext";
-import { toast } from "react-hot-toast";
 
 export default function RunPayrollPage() {
   const [isNoteModalOpen, closeNoteModal] = useBoolean();
@@ -22,7 +21,8 @@ export default function RunPayrollPage() {
     setIsApprovalConfirmationClose,
   ] = useBoolean();
   const [initialValue, sendpayrollAproval] = useBoolean();
-  const { payroll, loading } = usePayrollContext();
+  const { payrollD, loading } = usePayrollContext();
+  const payroll = payrollD?.data;
   const { user } = useAuth();
 
   console.log(initialValue);
@@ -41,8 +41,6 @@ export default function RunPayrollPage() {
       setIsApprovalConfirmationOpen();
       // Logic to open ApprovalConfirmation modal
       // You might need to set a different state or directly control the modal visibility
-    } else {
-      toast.error("You are not part of the payroll reviewer or admin");
     }
   };
 

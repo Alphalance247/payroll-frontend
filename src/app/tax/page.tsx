@@ -1,7 +1,6 @@
 "use client";
 import Button from "../common/Button";
 import DashboardLayout from "../common/DashBoardLayout";
-import HeadingSubHead from "../common/headingSubHead";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import { IoMdInformationCircle } from "react-icons/io";
 import ModalOverlay from "../common/modal/modal";
@@ -11,6 +10,7 @@ import { getPayrollTax } from "@/stores/Tax/getPayrollTax";
 import { useStore } from "zustand";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import Heading from "../common/heading";
 
 const Tax = () => {
   const {
@@ -35,7 +35,11 @@ const Tax = () => {
     <DashboardLayout>
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
         <div className="flex items-center justify-between">
-          <HeadingSubHead heading="Tax" subHead="nill" withSubHead={false} />
+          <Heading
+            user="Tax"
+            subHead="Review and export monthly payroll taxes by employee; filter by year and month."
+            flexDirection="column"
+          />
 
           <div className="flex gap-x-2">
             <Button
@@ -205,48 +209,58 @@ const Tax = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {payrollTax?.data?.map((emp, i) => (
-                      <tr
-                        key={i}
-                        className="border-b border-[#E3E3E5] last:border-b-0"
-                      >
-                        <td className="px-6 py-4">{i + 1}</td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                              {emp?.payslip?.employee?.fullname
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </div>
-                            <span className="text-[#2F2F33] text-sm font-medium">
-                              {emp?.payslip?.employee?.fullname}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
-                          >
-                            ₦ {emp.tax_amount_monthly.toLocaleString()}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          ₦ {emp.tax_amount_yearly.toLocaleString()}
-                        </td>
-
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {" "}
-                          {emp.remmited ? "Yes" : "No"}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {" "}
-                          ₦ 0
+                  {payrollTax?.data?.length === 0 ? (
+                    <tbody>
+                      <tr>
+                        <td colSpan={6} className="text-center py-8">
+                          No Details found for the selected month
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
+                    </tbody>
+                  ) : (
+                    <tbody>
+                      {payrollTax?.data?.map((emp, i) => (
+                        <tr
+                          key={i}
+                          className="border-b border-[#E3E3E5] last:border-b-0"
+                        >
+                          <td className="px-6 py-4">{i + 1}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
+                                {emp?.payslip?.employee?.fullname
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
+                              </div>
+                              <span className="text-[#2F2F33] text-sm font-medium">
+                                {emp?.payslip?.employee?.fullname}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
+                            >
+                              ₦ {emp.tax_amount_monthly.toLocaleString()}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            ₦ {emp.tax_amount_yearly.toLocaleString()}
+                          </td>
+
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            {" "}
+                            {emp.remmited ? "Yes" : "No"}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            {" "}
+                            ₦ 0
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  )}
                 </table>
               </div>
             )}

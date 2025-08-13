@@ -27,7 +27,7 @@ const Heading: React.FC<subHeadProps> = ({
       <p
         className={`font-Graphik text-base text-[#71717A] tracking-[-0.5px] ${subHeadClassName}`}
       >
-        {subHead || "Wednesday, 20 February, 2024"}
+        {subHead}
       </p>
     </div>
   );

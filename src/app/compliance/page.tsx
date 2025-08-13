@@ -31,7 +31,7 @@ const Compliance = () => {
             <div>
               <Heading
                 flexDirection="column"
-                subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+                subHead="Review laws, policies, and updates to keep your organization compliant."
                 user={"Compliance"}
               />
             </div>

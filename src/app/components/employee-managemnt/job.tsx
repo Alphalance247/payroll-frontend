@@ -30,11 +30,18 @@ const Job = ({
     },
     {
       heading: "Status",
-      subhead: "Active",
+      subhead: employeeInfo?.status,
     },
     {
       heading: "Coontract End Day",
       subhead: "21st February, 2025",
+    },
+
+    {
+      heading: "Salary",
+      subhead: ` ${employeeInfo?.pay_deno === "Dollars" ? "$ " : "₦ "} ${
+        employeeInfo?.base_pay
+      }`,
     },
   ];
 

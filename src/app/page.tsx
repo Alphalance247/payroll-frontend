@@ -64,21 +64,35 @@ export default function Home() {
     pendingTaskData?.Tasks?.filter(
       (task, index) => !dismissed.includes(index)
     ) || [];
+  const date = new Date();
+  date.getUTCDay();
+  const [dateTime, setDayTime] = useState("");
 
-  const quickActions = [
-    // {
-    //   id: "1",
-    //   icon: "/assets/Home/edit.svg",
-    //   btn: "Edit Exchange Rate",
-    //   link: "/",
-    // },
-    {
-      id: "2",
-      icon: "/assets/Home/calendar.svg",
-      btn: "Download Pay slip",
-      link: "/",
-    },
-  ];
+  useEffect(() => {
+    const today = new Date();
+    const fullDate = today.toLocaleDateString("en-US", {
+      weekday: "long", // e.g., Monday
+      year: "numeric", // e.g., 2025
+      month: "long", // e.g., August
+      day: "numeric", // e.g., 5
+    });
+    setDayTime(fullDate);
+  }, []);
+
+  // const quickActions = [
+  //   // {
+  //   //   id: "1",
+  //   //   icon: "/assets/Home/edit.svg",
+  //   //   btn: "Edit Exchange Rate",
+  //   //   link: "/",
+  //   // },
+  //   {
+  //     id: "2",
+  //     icon: "/assets/Home/calendar.svg",
+  //     btn: "Download Pay slip",
+  //     link: "/",
+  //   },
+  // ];
 
   // Show success messag
 
@@ -90,9 +104,10 @@ export default function Home() {
             flexDirection=""
             user={
               user?.fullname
-                ? `Good afternoon, ${user.fullname}`
+                ? `Welcome, ${user.fullname}`
                 : "Good afternoon, James"
             }
+            subHead={dateTime}
           />
           <div className="grid grid-cols-6 gap-6 mt-11">
             {/* Left Section */}
@@ -243,68 +258,12 @@ export default function Home() {
                   </div>
                 )}
               </div>
-
-              <div className="rounded-2xl border border-[#E3E3E5]">
-                <div className="flex justify-between items-center py-4 px-6 border-b">
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-semibold text-[#2F2F33]">
-                      Things to do
-                    </h2>
-                  </div>
-                  <Link
-                    href="/holiday-calendar"
-                    className="text-[#009BC0] text-[15px] leading-5 flex gap-1 items-center"
-                  >
-                    View All
-                    <ArrowHead />
-                  </Link>
-                </div>
-                {loadingHolidayData ? (
-                  <Spinner spinnerSmall={true} />
-                ) : holidayDataError ? (
-                  <ErrorFetch
-                    message="error fetching holiday data"
-                    smallWindow={true}
-                    onRefetch={() => fetchPayrollHoliday()}
-                  />
-                ) : (
-                  <div className="p-6 flex flex-col gap-y-3">
-                    {holidayData?.data?.results?.slice(0, 5).map((holiday) => (
-                      <div
-                        className="flex justify-between items-center bg-[#F7F7F7] py-3 px-4 border-[#E3E3E5] border rounded-[8px]"
-                        key={holiday?.id}
-                      >
-                        <div className="flex gap-x-4">
-                          <Image
-                            width={48}
-                            height={48}
-                            src="/assets/Home/world.jpg"
-                            alt="holiday in naija"
-                          />
-                          <div>
-                            <p className="font-Graphik font-medium text-base text-[#2F2F33] mb-1">
-                              {holiday?.name}
-                            </p>
-                            <p className="font-Graphik text-[15px] leading-[21px] text-[#71717A]">
-                              {holiday?.country}
-                            </p>
-                          </div>
-                        </div>
-
-                        <p className="font-Graphik font-medium text-[15px] leading-[21px] text-[#2F2F33]">
-                          {holiday?.date}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Right Section */}
             <div className="col-span-3 space-y-6">
               {/* {Quick ACtions} */}
-              <div className="border border-[#E3E3E5] rounded-xl">
+              {/* <div className="border border-[#E3E3E5] rounded-xl">
                 <h2 className="text-base text-[#2F2F33] font-semibold py-4 px-6 border-b border-[#E3E3E5]">
                   Quick Actions
                 </h2>
@@ -331,7 +290,7 @@ export default function Home() {
                     })}
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Last Payroll */}
               <div className="border border-[#E3E3E5] rounded-xl">
@@ -344,11 +303,9 @@ export default function Home() {
                 {loadingLastPayroll ? (
                   <Spinner spinnerSmall={true} />
                 ) : lastPayrollError ? (
-                  <ErrorFetch
-                    message="error fetching last paroll data"
-                    smallWindow={true}
-                    onRefetch={() => fetchLastPayroll()}
-                  />
+                  <p className="text-center text-gray-500 flex justify-center item-center py-8">
+                    No payroll found for last month
+                  </p>
                 ) : (
                   <div className="text-sm text-gray-700">
                     <div className="p-6">
@@ -447,8 +404,64 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Employees on leave */}
               <div className="rounded-2xl border border-[#E3E3E5]">
+                <div className="flex justify-between items-center py-4 px-6 border-b">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-semibold text-[#2F2F33]">
+                      Holiday
+                    </h2>
+                  </div>
+                  <Link
+                    href="/holiday-calendar"
+                    className="text-[#009BC0] text-[15px] leading-5 flex gap-1 items-center"
+                  >
+                    View All
+                    <ArrowHead />
+                  </Link>
+                </div>
+                {loadingHolidayData ? (
+                  <Spinner spinnerSmall={true} />
+                ) : holidayDataError ? (
+                  <ErrorFetch
+                    message="error fetching holiday data"
+                    smallWindow={true}
+                    onRefetch={() => fetchPayrollHoliday()}
+                  />
+                ) : (
+                  <div className="p-6 flex flex-col gap-y-3">
+                    {holidayData?.data?.results?.slice(0, 5).map((holiday) => (
+                      <div
+                        className="flex justify-between items-center bg-[#F7F7F7] py-3 px-4 border-[#E3E3E5] border rounded-[8px]"
+                        key={holiday?.id}
+                      >
+                        <div className="flex gap-x-4">
+                          <Image
+                            width={48}
+                            height={48}
+                            src="/assets/Home/world.jpg"
+                            alt="holiday in naija"
+                          />
+                          <div>
+                            <p className="font-Graphik font-medium text-base text-[#2F2F33] mb-1">
+                              {holiday?.name}
+                            </p>
+                            <p className="font-Graphik text-[15px] leading-[21px] text-[#71717A]">
+                              {holiday?.country}
+                            </p>
+                          </div>
+                        </div>
+
+                        <p className="font-Graphik font-medium text-[15px] leading-[21px] text-[#2F2F33]">
+                          {holiday?.date}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Employees on leave */}
+              {/* <div className="rounded-2xl border border-[#E3E3E5]">
                 <div className="flex justify-between items-center py-4 px-6 border-b">
                   <div className="flex items-center gap-2">
                     <h2 className="text-base font-semibold text-[#2F2F33]">
@@ -517,7 +530,7 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </main>

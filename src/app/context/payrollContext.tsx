@@ -1,14 +1,14 @@
 "use client";
 import React, { createContext, useState, useContext, ReactNode } from "react";
-import { PayrollData } from "../utils/type";
+import { PayrollResponse } from "../utils/type";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import axiosInstance from "../utils/axios";
 import { AxiosError } from "axios";
 
 type PayrollContextType = {
-  payroll: PayrollData | null;
-  setPayroll: React.Dispatch<React.SetStateAction<PayrollData | null>>;
+  payrollD: PayrollResponse | null;
+  setPayroll: React.Dispatch<React.SetStateAction<PayrollResponse | null>>;
   loading: boolean;
   fetchPayroll: () => void;
 };
@@ -16,14 +16,14 @@ type PayrollContextType = {
 const PayrollContext = createContext<PayrollContextType | undefined>(undefined);
 
 export const PayrollProvider = ({ children }: { children: ReactNode }) => {
-  const [payroll, setPayroll] = useState<PayrollData | null>(null);
+  const [payrollD, setPayroll] = useState<PayrollResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchPayroll = async () => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(`/employees/generate-payroll`);
-      const { data } = res.data; // response.data.data
+      const { data } = res; // response.data.data
       if (res.status === 200) {
         setPayroll(data);
       }
@@ -46,7 +46,7 @@ export const PayrollProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <PayrollContext.Provider
-      value={{ payroll, setPayroll, loading, fetchPayroll }}
+      value={{ payrollD, setPayroll, loading, fetchPayroll }}
     >
       {children}
     </PayrollContext.Provider>

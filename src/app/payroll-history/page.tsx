@@ -37,10 +37,10 @@ const PayrollHistory = () => {
           "An error occurred please try again or contact Admin";
         if (err instanceof AxiosError) {
           // Check if err is an instance of AxiosError
-          errorMessage = err.response?.data?.message || errorMessage;
+          errorMessage = err.response?.data?.statusmessage || errorMessage;
         }
-
-        toast.error(errorMessage);
+        console.log(errorMessage);
+        // toast.error(errorMessage);
       } finally {
         setIsLoading(false);
       }

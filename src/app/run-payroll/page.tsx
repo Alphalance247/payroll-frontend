@@ -10,9 +10,8 @@ import ProtectedRoute from "../common/protectedRoute";
 import Button from "../common/Button";
 
 export default function RunPayrollPage() {
-  const { payroll, loading, fetchPayroll } = usePayrollContext();
-
-  console.log(payroll);
+  const { payrollD, loading, fetchPayroll } = usePayrollContext();
+  const payroll = payrollD?.data;
 
   return (
     <ProtectedRoute>
@@ -25,51 +24,79 @@ export default function RunPayrollPage() {
             </div>
           ) : (
             <>
-              {payroll ? (
+              {!payroll ? (
                 <>
-                  <RunPayrollHeading payroll={payroll} />
-                  <EmployeeDetailsTable payroll={payroll} />
-                  <div className="flex justify-between py-4 px-12">
-                    <Link href="/employee-onboarding">
-                      <button className="px-4 py-2 text-sm text-[#2F2F33] border border-[#E3E3E5] rounded-lg">
-                        Add Employee
-                      </button>
-                    </Link>
-                    <div className="flex items-center gap-2">
-                      <button
-                        className="px-4 py-2 text-sm text-[#2F2F33] border border-[#E3E3E5] rounded-lg"
-                        onClick={() => {
-                          console.log("Save as Draft");
-                          toast.success("Save as Draft");
-                        }}
+                  {payrollD?.task_id ? (
+                    <div className="flex flex-col justify-center items-center h-full ">
+                      <p className="text-center text-2xl font-semibold mb-2">
+                        Payslips are being generated in the background.
+                        <br />
+                        <span className="text-gray-500 text-base">
+                          Please wait a moment and click refresh below.
+                        </span>
+                      </p>
+                      <Button
+                        className="flex items-center gap-x-1 mt-4"
+                        onButtonClick={() => fetchPayroll()}
                       >
-                        Save as Draft
-                      </button>
-
-                      <Link href="/run-payroll/review-approve">
-                        <button className="px-4 py-2 text-sm text-white bg-[#E37915] rounded-lg">
-                          Next
-                        </button>
-                      </Link>
+                        Refresh
+                      </Button>
                     </div>
-                  </div>
+                  ) : (
+                    <p className="text-center text-2xl font-semibold  flex justify-center items-center py-10 text-[black]">
+                      {payrollD?.message}
+                    </p>
+                  )}
                 </>
               ) : (
-                <div className="flex flex-col justify-center items-center h-full ">
-                  <p className="text-center text-2xl font-semibold mb-2">
-                    Payslips are being generated in the background.
-                    <br />
-                    <span className="text-gray-500 text-base">
-                      Please wait a moment and click refresh below.
-                    </span>
-                  </p>
-                  <Button
-                    className="flex items-center gap-x-1 mt-4"
-                    onButtonClick={() => fetchPayroll()}
-                  >
-                    Refresh
-                  </Button>
-                </div>
+                <>
+                  {payroll ? (
+                    <>
+                      <RunPayrollHeading payroll={payroll} />
+                      <EmployeeDetailsTable payroll={payroll} />
+                      <div className="flex justify-between py-4 px-12">
+                        <Link href="/employee-onboarding">
+                          <button className="px-4 py-2 text-sm text-[#2F2F33] border border-[#E3E3E5] rounded-lg">
+                            Add Employee
+                          </button>
+                        </Link>
+                        <div className="flex items-center gap-2">
+                          <button
+                            className="px-4 py-2 text-sm text-[#2F2F33] border border-[#E3E3E5] rounded-lg"
+                            onClick={() => {
+                              console.log("Save as Draft");
+                              toast.success("Save as Draft");
+                            }}
+                          >
+                            Save as Draft
+                          </button>
+
+                          <Link href="/run-payroll/review-approve">
+                            <button className="px-4 py-2 text-sm text-white bg-[#E37915] rounded-lg">
+                              Next
+                            </button>
+                          </Link>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col justify-center items-center h-full ">
+                      <p className="text-center text-2xl font-semibold mb-2">
+                        Payslips are being generated in the background.
+                        <br />
+                        <span className="text-gray-500 text-base">
+                          Please wait a moment and click refresh below.
+                        </span>
+                      </p>
+                      <Button
+                        className="flex items-center gap-x-1 mt-4"
+                        onButtonClick={() => fetchPayroll()}
+                      >
+                        Refresh
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}

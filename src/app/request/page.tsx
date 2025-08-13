@@ -86,7 +86,7 @@ const Request = () => {
           <div>
             <Heading
               flexDirection="column"
-              subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+              subHead="Track and resolve queries by status, type, team, and date—search, filter and export."
               user={"Request"}
             />
           </div>
