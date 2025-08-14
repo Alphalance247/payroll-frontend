@@ -28,11 +28,10 @@ export default function SessionConflictMessage() {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#E37915]"></div>
         </div>
         <h2 className="text-xl font-semibold text-center text-[#2F2F33] mb-2">
-          Session Conflict Detected
+          Session Time out
         </h2>
         <p className="text-center text-[#71717A]">
-          Your account is already logged in on another device. You have been
-          logged out for security reasons.
+          Your session has expired. You will be logged out automatically.
         </p>
       </div>
     </div>

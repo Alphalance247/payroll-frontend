@@ -176,10 +176,10 @@ const Sidebar: React.FC<propData> = ({ isAdmin }) => {
           icons: <MdOutlinePayment size={20} />,
           arrowDown: <IoIosArrowDown size={20} />,
           dropdownText: [
-            // {
-            //   link: "/time-sheet",
-            //   text: "Timesheet",
-            // },
+            {
+              link: "/time-sheet",
+              text: "Timesheet",
+            },
             {
               link: "/leave-management",
               text: "Leave Management",
@@ -191,11 +191,11 @@ const Sidebar: React.FC<propData> = ({ isAdmin }) => {
           ],
         },
 
-        // {
-        //   text: "Settings",
-        //   icons: <TbSettings2 size={20} />,
-        //   link: "/settings",
-        // },
+        {
+          text: "Settings",
+          icons: <TbSettings2 size={20} />,
+          link: "/settings",
+        },
       ],
     },
   ];
@@ -203,25 +203,41 @@ const Sidebar: React.FC<propData> = ({ isAdmin }) => {
   const EmployeeSideBar: employeeSideBarData[] = [
     {
       subHeadings: [
-        {
-          text: "Employee",
-          icons: <IoRocketOutline fill="white" size={20} />,
-          link: "/employee",
-        },
+        { text: "Home", link: "/employee", icons: <HiOutlineHome size={20} /> },
         {
           text: "Compliance",
-          icons: <IoRocketOutline fill="white" size={20} />,
           link: "/employee/compliance",
+          icons: <MdOutlineGavel size={20} />,
         },
         {
           text: "Payroll",
-          icons: <IoRocketOutline fill="white" size={20} />,
+          icons: <MdOutlinePayment size={20} />,
           link: "/employee/payroll",
         },
         {
-          text: "Settings",
-          icons: <TbSettings2 size={20} />,
-          link: "/employee/settings",
+          text: "Loan requests",
+          icons: <FaMoneyCheckAlt size={20} />,
+          link: "/loan",
+        },
+        {
+          text: "Request",
+          icons: <AiOutlineMessage size={20} />,
+          link: "/request",
+        },
+        {
+          icons: <AiOutlineMessage size={20} />,
+          link: "/time-sheet",
+          text: "Timesheet",
+        },
+        {
+          icons: <AiOutlineMessage size={20} />,
+          link: "/leave-management",
+          text: "Leave",
+        },
+        {
+          text: "Analytics",
+          link: "/employee/analytics",
+          icons: <BsBarChartLine size={20} />,
         },
       ],
     },

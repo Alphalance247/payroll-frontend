@@ -64,6 +64,7 @@ export default function Home() {
     pendingTaskData?.Tasks?.filter(
       (task, index) => !dismissed.includes(index)
     ) || [];
+
   const date = new Date();
   date.getUTCDay();
   const [dateTime, setDayTime] = useState("");
@@ -99,7 +100,7 @@ export default function Home() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <main className="p-10 overflow-y-scroll">
+        <main className="p-10 overflow-y-scroll h-full">
           <Heading
             flexDirection=""
             user={
