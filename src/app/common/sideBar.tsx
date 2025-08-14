@@ -325,7 +325,7 @@ const Sidebar: React.FC<propData> = ({ isAdmin }) => {
   const sideBarType = isAdmin ? SidebarToShow : EmployeeSideBar;
 
   return (
-    <div className=" bg-[#11202D] h-screen border-r border-gray-200 overflow-y-auto">
+    <div className=" bg-[#11202D] h-full border-r border-gray-200 overflow-y-auto">
       {/* Logo / Brand Name */}
       <div className="flex flex-col justify-between mb-24">
         {/* Navigation Menu */}
