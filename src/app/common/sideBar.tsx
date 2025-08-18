@@ -317,11 +317,7 @@ const Sidebar = () => {
                                 <Link href={items?.link || "/"} passHref>
                                   <div
                                     className={`flex justify-between py-[14px] pl-3 rounded-lg ${
-                                      (
-                                        items.text === "Home"
-                                          ? pathname === items?.link
-                                          : pathname.startsWith(items?.link)
-                                      )
+                                      pathname === items?.link
                                         ? "bg-[#414D57] text-white"
                                         : "bg-transparent text-[white]"
                                     }`}
