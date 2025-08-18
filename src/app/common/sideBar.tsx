@@ -9,7 +9,7 @@ import {
 import { FaMoneyCheckAlt, FaUserFriends } from "react-icons/fa";
 import { HiOutlineReceiptTax } from "react-icons/hi";
 import {
-  // IoDocumentTextOutline,
+  IoDocumentTextOutline,
   IoRocketOutline,
   IoNotificationsOutline,
   IoChevronBack,
@@ -17,14 +17,13 @@ import {
 } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
 import { BsBarChartLine } from "react-icons/bs";
-// import { TbSettings2 } from "react-icons/tb";
+import { TbSettings2 } from "react-icons/tb";
 import { usePathname } from "next/navigation";
 import { IoIosArrowDown } from "react-icons/io";
 import { useCallback, useState } from "react";
 import { FaRegUser } from "react-icons/fa6";
 import { HiOutlineClipboardCheck } from "react-icons/hi";
 import { Search } from "lucide-react";
-import { useFilter } from "../hooks/useFilter";
 
 interface dropDownText {
   link: string;
@@ -44,7 +43,7 @@ interface sideBarData {
   subHeadings: SubHeading[];
 }
 
-const Sidebar: React.FC = () => {
+const Sidebar = () => {
   const pathname = usePathname();
   const [openDropdown, setOpenDropdown] = useState<{
     section: number;
@@ -129,11 +128,11 @@ const Sidebar: React.FC = () => {
             },
           ],
         },
-        // {
-        //   text: "Storage",
-        //   icons: <IoDocumentTextOutline size={20} />,
-        //   link: "/storage",
-        // },
+        {
+          text: "Storage",
+          icons: <IoDocumentTextOutline size={20} />,
+          link: "/storage",
+        },
         {
           text: "Request",
           icons: <AiOutlineMessage size={20} />,
@@ -154,10 +153,10 @@ const Sidebar: React.FC = () => {
           icons: <MdOutlinePayment size={20} />,
           arrowDown: <IoIosArrowDown size={20} />,
           dropdownText: [
-            // {
-            //   link: "/time-sheet",
-            //   text: "Timesheet",
-            // },
+            {
+              link: "/time-sheet",
+              text: "Timesheet",
+            },
             {
               link: "/leave-management",
               text: "Leave Management",
@@ -169,11 +168,11 @@ const Sidebar: React.FC = () => {
           ],
         },
 
-        // {
-        //   text: "Settings",
-        //   icons: <TbSettings2 size={20} />,
-        //   link: "/settings",
-        // },
+        {
+          text: "Settings",
+          icons: <TbSettings2 size={20} />,
+          link: "/settings",
+        },
       ],
     },
   ];
@@ -188,6 +187,7 @@ const Sidebar: React.FC = () => {
         },
       ],
     },
+
     {
       heading: "Personal settings",
       subHeadings: [
@@ -247,14 +247,16 @@ const Sidebar: React.FC = () => {
     },
   ];
 
-  const { filteredData, setSearchQuery, searchQuery } = useFilter(
-    settingsSideBar || [],
-    ["heading"]
-  );
+  // const { filteredData, setSearchQuery, searchQuery } = useFilter(
+  //   settingsSideBar || [],
+  //   [""]
+  // );
 
   const SidebarToShow = pathname.startsWith("/settings")
-    ? filteredData
+    ? settingsSideBar
     : sideBarData;
+
+  const sideBarType = SidebarToShow;
 
   return (
     <div className=" bg-[#11202D] border-r border-gray-200 overflow-y-auto">
@@ -276,10 +278,10 @@ const Sidebar: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Search settings"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                  }}
+                  // value={searchQuery}
+                  // onChange={(e) => {
+                  //   setSearchQuery(e.target.value);
+                  // }}
                   className="w-full outline-none bg-transparent text-[#BEBEC2] pl-10 p-2 border border-[#606A72] rounded-lg text-base"
                 />
                 <Search
@@ -292,7 +294,7 @@ const Sidebar: React.FC = () => {
           )}
           <nav className="mt-4">
             <ul className="flex flex-col gap-y-4">
-              {SidebarToShow.map((item, sectionIdx) => {
+              {sideBarType.map((item, sectionIdx) => {
                 return (
                   <div key={sectionIdx}>
                     {item?.heading && (
@@ -311,7 +313,6 @@ const Sidebar: React.FC = () => {
                             openDropdown.sub === subIdx;
                           return (
                             <div key={subIdx}>
-                              {/* Top-level nav link (not a dropdown parent) */}
                               {items?.link && !isDropdown ? (
                                 <Link href={items?.link || "/"} passHref>
                                   <div
@@ -334,7 +335,6 @@ const Sidebar: React.FC = () => {
                                 </Link>
                               ) : (
                                 <>
-                                  {/* Dropdown parent: never active */}
                                   <div
                                     className={`flex items-center py-[10px] pl-3 cursor-pointer rounded-lg justify-between bg-transparent text-[white]`}
                                     onClick={() =>
@@ -362,7 +362,7 @@ const Sidebar: React.FC = () => {
                                           >
                                             <li
                                               className={`text-sm font-medium rounded-lg py-[10px] pl-4 ${
-                                                pathname === item?.link
+                                                pathname?.startsWith(item?.link)
                                                   ? "bg-[#414D57] text-white"
                                                   : "bg-transparent text-[white]"
                                               }`}

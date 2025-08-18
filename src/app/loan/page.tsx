@@ -49,8 +49,6 @@ const Loan = () => {
     ["employee"]
   );
 
-  // Apply team filter using nested key:
-
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "All requests" },
     { id: 2, name: "Pending Requests" },
