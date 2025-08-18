@@ -1,8 +1,10 @@
 "use client";
 import ProtectedRoute from "@/app/common/protectedRoute";
-import DashboardLayout from "@/app/common/DashBoardLayout";
 import HeadingSubHead from "@/app/common/headingSubHead";
 import { CgSoftwareDownload } from "react-icons/cg";
+import { GoChevronRight } from "react-icons/go";
+import Link from "next/link";
+import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 
 const TransactionHistory = () => {
   const data = [
@@ -39,20 +41,31 @@ const TransactionHistory = () => {
   ];
   return (
     <ProtectedRoute>
-      <DashboardLayout>
+      <EmployeeDashboardLayout>
         <main className="p-4 md:p-6 lg:p-10 overflow-y-scroll">
-          <div className="flex justify-between items-center">
-            <div>
-              <HeadingSubHead
-                subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
-                heading="Transaction History"
-                withSubHead={false}
-              />
-            </div>
+          <div className="flex items-center gap-x-2 mb-6">
+            <Link href={"/employee/analytics"}>
+              <p className="text-[#E37915] text-sm font-medium">Earnings</p>
+            </Link>
+            <span className="text-[#71717A] text-sm font-medium">
+              <GoChevronRight size={20} />
+            </span>
+            <p className="text-[#71717A] text-sm font-medium">
+              Transaction History
+            </p>
+          </div>
+          <div>
+            <HeadingSubHead
+              subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+              heading="Transaction History"
+              withSubHead={false}
+            />
           </div>
 
           <div className="bg-white rounded-lg border border-[#E3E3E5] mt-10">
-            <h3 className=" py-5 px-6">All Transactions</h3>
+            <h3 className=" py-5 px-6 text-base font-medium text-[#2F2F33]">
+              All Transactions
+            </h3>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[1000px] overflow-hidden shadow-sm ">
                 <thead className="bg-[#F7F7F7]  border-[#E3E3E5] border-b-[1px]  text-[#667085] text-[15px] leading-[1.5rem] font-medium">
@@ -94,10 +107,10 @@ const TransactionHistory = () => {
                     ></th>
                   </tr>
                 </thead>
-                <tbody className="text-gray-600 dark:text-white text-[15px] leading-[1.5rem] divide-y divide-gray-200 dark:divide-[#424E59]">
+                <tbody className="text-gray-600  dark:text-white text-[15px] leading-[1.5rem] divide-y divide-gray-200 dark:divide-[#424E59]">
                   {data?.map((data, i) => (
                     <tr
-                      className="hover:bg-gray-50 dark:hover:bg-[#424E59] transition duration-200 ease-in-out"
+                      className="hover:bg-gray-50 even:bg-[#F7F7F7] dark:hover:bg-[#424E59] transition duration-200 ease-in-out"
                       key={i}
                     >
                       <td className="px-6 py-6 text-sm text-[#2F2F33]">
@@ -155,7 +168,7 @@ const TransactionHistory = () => {
             </div>
           </div>
         </main>
-      </DashboardLayout>
+      </EmployeeDashboardLayout>
     </ProtectedRoute>
   );
 };

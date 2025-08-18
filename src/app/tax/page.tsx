@@ -26,8 +26,6 @@ const Tax = () => {
     fetchPayrollTax();
   }, [fetchPayrollTax]);
 
-  console.log(payrollTax?.data);
-
   const [showTaxClaculation, setShowTaxCalculation, resetTaxCalculation] =
     useBoolean(false);
 

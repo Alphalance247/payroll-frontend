@@ -1,15 +1,15 @@
 "use client";
 import ProtectedRoute from "@/app/common/protectedRoute";
-import DashboardLayout from "@/app/common/DashBoardLayout";
+import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 
 const EmployeeCompliance = () => {
   return (
     <ProtectedRoute>
-      <DashboardLayout isAdmin={false}>
+      <EmployeeDashboardLayout>
         <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
           <p>Compliance Dashboard</p>
         </main>
-      </DashboardLayout>
+      </EmployeeDashboardLayout>
     </ProtectedRoute>
   );
 };

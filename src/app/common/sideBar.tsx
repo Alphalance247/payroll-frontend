@@ -24,7 +24,6 @@ import { useCallback, useState } from "react";
 import { FaRegUser } from "react-icons/fa6";
 import { HiOutlineClipboardCheck } from "react-icons/hi";
 import { Search } from "lucide-react";
-// import { useFilter } from "../hooks/useFilter";
 
 interface dropDownText {
   link: string;
@@ -44,29 +43,7 @@ interface sideBarData {
   subHeadings: SubHeading[];
 }
 
-interface employeeDropDownText {
-  link: string;
-  text: string;
-}
-
-interface EmployeeSubHeading {
-  text: string;
-  icons?: React.ReactNode;
-  link?: string;
-  arrowDown?: React.ReactNode;
-  dropdownText?: employeeDropDownText[];
-}
-
-interface employeeSideBarData {
-  heading?: string;
-  subHeadings: EmployeeSubHeading[];
-}
-
-interface propData {
-  isAdmin?: boolean;
-}
-
-const Sidebar: React.FC<propData> = ({ isAdmin }) => {
+const Sidebar = () => {
   const pathname = usePathname();
   const [openDropdown, setOpenDropdown] = useState<{
     section: number;
@@ -200,49 +177,6 @@ const Sidebar: React.FC<propData> = ({ isAdmin }) => {
     },
   ];
 
-  const EmployeeSideBar: employeeSideBarData[] = [
-    {
-      subHeadings: [
-        { text: "Home", link: "/employee", icons: <HiOutlineHome size={20} /> },
-        {
-          text: "Compliance",
-          link: "/employee/compliance",
-          icons: <MdOutlineGavel size={20} />,
-        },
-        {
-          text: "Payroll",
-          icons: <MdOutlinePayment size={20} />,
-          link: "/employee/payroll",
-        },
-        {
-          text: "Loan requests",
-          icons: <FaMoneyCheckAlt size={20} />,
-          link: "/loan",
-        },
-        {
-          text: "Request",
-          icons: <AiOutlineMessage size={20} />,
-          link: "/request",
-        },
-        {
-          icons: <AiOutlineMessage size={20} />,
-          link: "/time-sheet",
-          text: "Timesheet",
-        },
-        {
-          icons: <AiOutlineMessage size={20} />,
-          link: "/leave-management",
-          text: "Leave",
-        },
-        {
-          text: "Analytics",
-          link: "/employee/analytics",
-          icons: <BsBarChartLine size={20} />,
-        },
-      ],
-    },
-  ];
-
   const settingsSideBar: sideBarData[] = [
     {
       subHeadings: [
@@ -322,10 +256,10 @@ const Sidebar: React.FC<propData> = ({ isAdmin }) => {
     ? settingsSideBar
     : sideBarData;
 
-  const sideBarType = isAdmin ? SidebarToShow : EmployeeSideBar;
+  const sideBarType = SidebarToShow;
 
   return (
-    <div className=" bg-[#11202D] h-full border-r border-gray-200 overflow-y-auto">
+    <div className=" bg-[#11202D] border-r border-gray-200 overflow-y-auto">
       {/* Logo / Brand Name */}
       <div className="flex flex-col justify-between mb-24">
         {/* Navigation Menu */}
@@ -383,7 +317,11 @@ const Sidebar: React.FC<propData> = ({ isAdmin }) => {
                                 <Link href={items?.link || "/"} passHref>
                                   <div
                                     className={`flex justify-between py-[14px] pl-3 rounded-lg ${
-                                      pathname === items?.link
+                                      (
+                                        items.text === "Home"
+                                          ? pathname === items?.link
+                                          : pathname.startsWith(items?.link)
+                                      )
                                         ? "bg-[#414D57] text-white"
                                         : "bg-transparent text-[white]"
                                     }`}
