@@ -9,7 +9,7 @@ import { BsBarChartLine } from "react-icons/bs";
 import { usePathname } from "next/navigation";
 import { useCallback, useState } from "react";
 import { Search } from "lucide-react";
-
+import { TbSettings2 } from "react-icons/tb";
 interface employeeDropDownText {
   link: string;
   text: string;
@@ -95,6 +95,11 @@ const EmployeeSideBar: React.FC<propData> = () => {
           text: "Analytics",
           link: "/employee/analytics",
           icons: <BsBarChartLine size={20} />,
+        },
+        {
+          text: "Settings",
+          link: "/employee/settings",
+          icons: <TbSettings2 size={20} />,
         },
       ],
     },

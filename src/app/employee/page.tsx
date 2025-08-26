@@ -21,26 +21,26 @@ const Storage = () => {
     },
   ];
   return (
-    <ProtectedRoute>
-      <EmployeeDashboardLayout>
-        <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
-          <Heading flexDirection="" user={"Good afternoon, James"} />
+    // <ProtectedRoute>
+    <EmployeeDashboardLayout>
+      <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
+        <Heading flexDirection="" user={"Good afternoon, James"} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 mb-8">
-            {cardData.map((card, index) => (
-              <OverviewCard
-                key={index}
-                image={"/assets/employee-dashboard/home/people.svg"}
-                label={card?.label}
-                value={card?.value}
-              />
-            ))}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 mb-8">
+          {cardData.map((card, index) => (
+            <OverviewCard
+              key={index}
+              image={"/assets/employee-dashboard/home/people.svg"}
+              label={card?.label}
+              value={card?.value}
+            />
+          ))}
+        </div>
 
-          <QuickActions />
-        </main>
-      </EmployeeDashboardLayout>
-    </ProtectedRoute>
+        <QuickActions />
+      </main>
+    </EmployeeDashboardLayout>
+    // </ProtectedRoute>
   );
 };
 
