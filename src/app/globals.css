@@ -6,13 +6,13 @@
   --background: #ffffff !important;
   --foreground: #171717 !important;
 }
-@font-face {
+/* @font-face {
   font-family: "Nunito";
   src: url("/assets/fonts/Nunito/Nunito-Black.tff") format("opentype");
   font-weight: 700;
   font-style: normal;
   font-display: fallback;
-}
+} */
 /* @font-face {
   font-family: "Nunito";
   src: url("/assets/fonts/Nunito/Nunito-Black.tff") format("opentype");
