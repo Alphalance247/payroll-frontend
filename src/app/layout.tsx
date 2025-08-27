@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-Graphik">
+      <body className="{font-Graphik font-Nunito}">
         <AuthProvider>
           <Notification />
           <TokenExpiredMessage />

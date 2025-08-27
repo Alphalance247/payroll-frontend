@@ -133,8 +133,8 @@ const pages = () => {
                     tabName="Personal Details"
                     className={
                       activeTab === "personal details"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />
                   <EmployeeSidebar
@@ -143,8 +143,8 @@ const pages = () => {
                     tabName="job Details"
                     className={
                       activeTab === "job details"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />
                   {/* <div className="pt-[37px] h-[461px] w-[217px] ">
@@ -153,8 +153,8 @@ const pages = () => {
                     onClick={() => setactiveTab("personal details")}
                     className={
                       activeTab === "personal details"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   >
                     personal details
@@ -163,8 +163,8 @@ const pages = () => {
                     onClick={() => setactiveTab("job details")}
                     className={
                       activeTab === "job details"
-                        ? "grid gap-2.5  py-[8px]  px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize"
-                        : "grid gap-2.5 py-[8px]  px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize"
+                        ? "grid gap-2.5  py-[8px]  px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px]  px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   >
                     job details
@@ -173,8 +173,8 @@ const pages = () => {
                     onClick={() => setactiveTab("bank details")}
                     className={
                       activeTab === "bank details"
-                        ? "grid gap-2.5  py-[8px]  px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize "
-                        : "grid gap-2.5 py-[8px]  px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize "
+                        ? "grid gap-2.5  py-[8px]  px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito "
+                        : "grid gap-2.5 py-[8px]  px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito "
                     }
                   >
                     Bank details
@@ -183,8 +183,8 @@ const pages = () => {
                     onClick={() => setactiveTab("next of kin")}
                     className={
                       activeTab === "next of kin"
-                        ? "grid gap-2.5  py-[8px]  px-3   bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] text-start capitalize"
-                        : "grid gap-2.5 py-[8px]  px-3   w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] text-start capitalize "
+                        ? "grid gap-2.5  py-[8px]  px-3   bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] text-start capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px]  px-3   w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] text-start capitalize font-Nunito "
                     }
                   >
                     next of kin
@@ -193,8 +193,8 @@ const pages = () => {
                     onClick={() => setactiveTab("uploads")}
                     className={
                       activeTab === "uploads"
-                        ? "grid gap-2.5  py-[8px]  px-3 items-center  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] text-start capitalize"
-                        : "grid gap-2.5 py-[8px]  px-3  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] text-start capitalize"
+                        ? "grid gap-2.5  py-[8px]  px-3 items-center  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] text-start capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px]  px-3  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] text-start capitalize font-Nunito"
                     }
                   >
                     uploads
@@ -203,8 +203,8 @@ const pages = () => {
                     onClick={() => setactiveTab("payslips")}
                     className={
                       activeTab === "payslips"
-                        ? "grid gap-2.5  py-[8px]  px-3 items-center  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] text-start capitalize"
-                        : "grid gap-2.5 py-[8px]  px-3  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] text-start capitalize"
+                        ? "grid gap-2.5  py-[8px]  px-3 items-center  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] text-start capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px]  px-3  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] text-start capitalize font-Nunito"
                     }
                   >
                     payslips
@@ -217,8 +217,8 @@ const pages = () => {
                     tabName="bank Details"
                     className={
                       activeTab === "bank details"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />
                   <EmployeeSidebar
@@ -227,8 +227,8 @@ const pages = () => {
                     tabName="next of kin"
                     className={
                       activeTab === "next of kin"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />
                   <EmployeeSidebar
@@ -237,8 +237,8 @@ const pages = () => {
                     tabName="uploads"
                     className={
                       activeTab === "uploads"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />
                   <EmployeeSidebar
@@ -247,8 +247,8 @@ const pages = () => {
                     tabName="payslips"
                     className={
                       activeTab === "payslips"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />
                 </div>
