@@ -15,8 +15,16 @@ import NextOfKin from "@/app/components/Employee-Profile/NextOfKin";
 import { useState } from "react";
 import Uploads from "@/app/components/Employee-Profile/Uploads";
 import PaySlips from "@/app/components/Employee-Profile/PaySlips";
+import EditPersonalDetails from "@/app/components/Employee-Profile/EditPersonalDetails";
+import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress";
+import EditBankDetails from "@/app/components/Employee-Profile/EditBankDetails";
+import EditNextOfKin from "@/app/components/Employee-Profile/EditNextOfKin";
 const pages = () => {
   const [activeTab, setactiveTab] = useState("personal details");
+  const [openPDModal, setOpenPDModal] = useState(false);
+  const [openBDModal, setOpenBDModal] = useState(false);
+  const [openNOKModal, setOpenPNOKDModal] = useState(false);
+  const [openHousingModal, setOpenHousingModal] = useState(false);
   const renderTabContent = () => {
     switch (activeTab) {
       case "personal details":
@@ -31,21 +39,35 @@ const pages = () => {
               birthdate="29th September"
               nationality="Nigerian"
             >
-              <button className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 ">
+              <button
+                className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
+                onClick={() => setOpenPDModal(true)}
+              >
                 <div> edit</div>
                 <Pencil className="text-[#E37915] w-[13.5px] h-[13.5px]" />
               </button>
             </PersonalDetails>
+            {openPDModal && (
+              <EditPersonalDetails onModalClose={() => setOpenPDModal(false)} />
+            )}
             <HomeAddress
               address="2, Abraham Adesanya"
               city=" Lagos"
               title="House Address"
             >
-              <button className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 ">
+              <button
+                className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
+                onClick={() => setOpenHousingModal(true)}
+              >
                 <div> edit</div>
                 <Pencil className="text-[#E37915] w-[13.5px] h-[13.5px]" />
               </button>
             </HomeAddress>
+            {openHousingModal && (
+              <EditHouseAddress
+                onModalClose={() => setOpenHousingModal(false)}
+              />
+            )}
           </div>
         );
 
@@ -64,37 +86,48 @@ const pages = () => {
 
       case "bank details":
         return (
-          <BankDetails
-            title="Bank Details"
-            bankName="access"
-            accountName="Ajibola  Joyner Judas"
-            accountNo="8134490207"
-            bvn="8134490207"
-          >
-            {" "}
-            <button className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 ">
-              <div> edit</div>
-              <Pencil className="text-[#E37915] w-[13.5px] h-[13.5px]" />
-            </button>
-          </BankDetails>
+          <div>
+            <BankDetails
+              title="Bank Details"
+              bankName="access"
+              accountName="Ajibola  Joyner Judas"
+              accountNo="8134490207"
+              bvn="8134490207"
+            >
+              {" "}
+              <button
+                className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
+                onClick={() => setOpenBDModal(true)}
+              >
+                <div> edit</div>
+                <Pencil className="text-[#E37915] w-[13.5px] h-[13.5px]" />
+              </button>
+            </BankDetails>
+            {openBDModal && (
+              <EditBankDetails onModalClose={() => setOpenBDModal(false)} />
+            )}
+          </div>
         );
       case "next of kin":
         return (
-          <NextOfKin
-            title="next of kin"
-            fullName="Ajibola  Joyner Judas"
-            relationship="0123456789"
-            email="08134490207"
-            mobileNo="08134490207"
-            city="lagos"
-            country="Nigerian"
-          >
-            {" "}
-            <button className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 ">
-              <div> edit</div>
-              <Pencil className="text-[#E37915] w-[13.5px] h-[13.5px]" />
-            </button>
-          </NextOfKin>
+          <div>
+            <NextOfKin
+              title="next of kin"
+              fullName="Ajibola  Joyner Judas"
+              relationship="0123456789"
+              email="08134490207"
+              mobileNo="08134490207"
+              city="lagos"
+              country="Nigerian"
+            >
+              {" "}
+              <button className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 ">
+                <div> edit</div>
+                <Pencil className="text-[#E37915] w-[13.5px] h-[13.5px]" />
+              </button>
+            </NextOfKin>
+            {openNOKModal && <EditNextOfKin />}
+          </div>
         );
       case "uploads":
         return <Uploads name={""} document={""} fileSize={""}></Uploads>;
@@ -143,91 +176,27 @@ const pages = () => {
                     tabName="job Details"
                     className={
                       activeTab === "job details"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[107px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
                         : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />
-                  {/* <div className="pt-[37px] h-[461px] w-[217px] ">
-                <div className="grid gap-y-[10px]  border-r-[2px] border-[#E8EAEE66] ">
-                  <button
-                    onClick={() => setactiveTab("personal details")}
-                    className={
-                      activeTab === "personal details"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
-                    }
-                  >
-                    personal details
-                  </button>
-                  <button
-                    onClick={() => setactiveTab("job details")}
-                    className={
-                      activeTab === "job details"
-                        ? "grid gap-2.5  py-[8px]  px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px]  px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
-                    }
-                  >
-                    job details
-                  </button>
-                  <button
-                    onClick={() => setactiveTab("bank details")}
-                    className={
-                      activeTab === "bank details"
-                        ? "grid gap-2.5  py-[8px]  px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito "
-                        : "grid gap-2.5 py-[8px]  px-3 text-start  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito "
-                    }
-                  >
-                    Bank details
-                  </button>
-                  <button
-                    onClick={() => setactiveTab("next of kin")}
-                    className={
-                      activeTab === "next of kin"
-                        ? "grid gap-2.5  py-[8px]  px-3   bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] text-start capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px]  px-3   w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] text-start capitalize font-Nunito "
-                    }
-                  >
-                    next of kin
-                  </button>
-                  <button
-                    onClick={() => setactiveTab("uploads")}
-                    className={
-                      activeTab === "uploads"
-                        ? "grid gap-2.5  py-[8px]  px-3 items-center  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] text-start capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px]  px-3  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] text-start capitalize font-Nunito"
-                    }
-                  >
-                    uploads
-                  </button>
-                  <button
-                    onClick={() => setactiveTab("payslips")}
-                    className={
-                      activeTab === "payslips"
-                        ? "grid gap-2.5  py-[8px]  px-3 items-center  bg-[#E379153B] w-[146px] h-10 font-medium font-Graphik text-[#2F2F33] text-base rounded-[8px] text-start capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px]  px-3  w-[185px] h-[44px]  font-Graphik bg-none text-[#71717A] font-bold text-base rounded-[8px] text-start capitalize font-Nunito"
-                    }
-                  >
-                    payslips
-                  </button>
-                </div>
-              </div> */}
                   <EmployeeSidebar
                     onClick={() => setactiveTab("bank details")}
                     activeTab="bank details"
                     tabName="bank Details"
                     className={
                       activeTab === "bank details"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[118px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
                         : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />
                   <EmployeeSidebar
                     onClick={() => setactiveTab("next of kin")}
                     activeTab="next of kin"
-                    tabName="next of kin"
+                    tabName="next of kin details"
                     className={
                       activeTab === "next of kin"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[164px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
                         : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />
@@ -237,7 +206,7 @@ const pages = () => {
                     tabName="uploads"
                     className={
                       activeTab === "uploads"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[87px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
                         : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />

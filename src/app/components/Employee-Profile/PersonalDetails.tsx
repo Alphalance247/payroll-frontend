@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 // import ProfileSidebar from "../Employee-Dashboard/Home/profileSidebar";
 import { Pencil } from "lucide-react";
 interface PersonalDetailsProp {
@@ -11,6 +11,8 @@ interface PersonalDetailsProp {
   birthdate: string;
   nationality: string;
 }
+// const [openModal, setOpenModal] = useState(false);
+
 const PersonalDetails = ({
   title,
   children,

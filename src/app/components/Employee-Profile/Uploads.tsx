@@ -1,4 +1,3 @@
-import ThreeDotsIcon from "@/assets/icons/ThreeDotsIcon";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React from "react";
 import { RiArrowDropDownFill } from "react-icons/ri";
@@ -53,8 +52,8 @@ const Uploads = ({ name, document, fileSize }: tableContentsProps) => {
           </tr>
         </thead>
         <tbody className="capitalize text-[#71717A] text-[16px] font-normal w-full h-[72px]">
-          {tableContents.map((tableContent) => (
-            <tr key={tableContent.name} className=" border-[1px]">
+          {tableContents.map((tableContent, index) => (
+            <tr key={index} className=" border-[1px]">
               <td className="h-[60px] px-6">{tableContent.document}</td>
               <td className="h-[60px] px-6">{tableContent.name}</td>
               <td className="h-[60px] px-6">
