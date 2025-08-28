@@ -1,11 +1,11 @@
 "use client";
-import Image from "next/image";
 import { useState } from "react";
 import EditExchange from "./editExchange";
 import { PayrollData } from "../../utils/type";
 import { toast } from "react-hot-toast";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
+import PayrollCardMain from "./payrollCard";
 
 interface OverviewItem {
   id: string;
@@ -119,29 +119,14 @@ const RunPayrollHeading: React.FC<PayrollSummaryProps> = ({ payroll }) => {
       {/* Overview Items */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-[90%]">
         {overviewItems.map((item) => (
-          <div key={item.id} className="flex gap-4 items-start border-r">
-            <Image src={item.icon} alt={item.label} width={40} height={40} />
-            <div className="">
-              <p className="text-sm text-[#71717A] font-medium mb-2">
-                {item.label}
-              </p>
-              <p className="text-lg font-medium text-[#2F2F33] tracking-[-0.5px] mb-2">
-                {item.value}
-                {item.unit && (
-                  <span className="font-normal text-base"> {item.unit}</span>
-                )}
-              </p>
-
-              {/* {item.hasEdit && (
-                <button
-                  onClick={item.onEdit}
-                  className="text-orange-500 text-sm flex items-center gap-1 hover:text-orange-600 transition-colors"
-                >
-                  Edit <FaEdit size={14} />
-                </button>
-              )} */}
-            </div>
-          </div>
+          <PayrollCardMain
+            key={item?.id}
+            icon={item?.icon}
+            label={item?.label}
+            value={item?.value}
+            unit={item?.unit || ""}
+            id={item?.id}
+          />
         ))}
       </div>
 

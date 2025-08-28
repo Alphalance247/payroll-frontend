@@ -1,7 +1,11 @@
 "use client";
 import Link from "next/link";
 import { HiOutlineHome } from "react-icons/hi2";
-import { MdOutlinePayment, MdOutlineGavel } from "react-icons/md";
+import {
+  MdOutlinePayment,
+  MdOutlineGavel,
+  MdOutlineLuggage,
+} from "react-icons/md";
 import { FaMoneyCheckAlt } from "react-icons/fa";
 import { IoChevronBack } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
@@ -9,6 +13,7 @@ import { BsBarChartLine } from "react-icons/bs";
 import { usePathname } from "next/navigation";
 import { useCallback, useState } from "react";
 import { Search } from "lucide-react";
+import { IoMdTime } from "react-icons/io";
 
 interface employeeDropDownText {
   link: string;
@@ -74,20 +79,20 @@ const EmployeeSideBar: React.FC<propData> = () => {
         {
           text: "Loan requests",
           icons: <FaMoneyCheckAlt size={20} />,
-          link: "/loan",
+          link: "/employee/loan-request",
         },
         {
           text: "Request",
           icons: <AiOutlineMessage size={20} />,
-          link: "/request",
+          link: "/employee/query",
         },
         {
-          icons: <AiOutlineMessage size={20} />,
-          link: "/time-sheet",
+          icons: <IoMdTime size={20} />,
+          link: "/employee/time-sheet",
           text: "Timesheet",
         },
         {
-          icons: <AiOutlineMessage size={20} />,
+          icons: <MdOutlineLuggage size={20} />,
           link: "/employee/leave-request",
           text: "Leave",
         },
@@ -101,7 +106,7 @@ const EmployeeSideBar: React.FC<propData> = () => {
   ];
 
   return (
-    <div className=" bg-[#11202D] border-r border-gray-200 overflow-y-auto">
+    <div className=" bg-[#11202D] h-full border-r border-gray-200 overflow-y-auto">
       {/* Logo / Brand Name */}
       <div className="flex flex-col justify-between mb-24">
         {/* Navigation Menu */}

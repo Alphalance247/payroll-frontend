@@ -36,9 +36,9 @@ const Account = () => {
 
         // Check which channels are enabled for this notification type
         pref.channels.forEach((channel: any) => {
-          if (channel.code === "email") {
+          if (channel?.channel?.code === "email") {
             emailPrefs.push(notificationTypeId);
-          } else if (channel.code === "slack") {
+          } else if (channel?.channel?.code === "slack") {
             slackPrefs.push(notificationTypeId);
           }
         });
@@ -82,7 +82,7 @@ const Account = () => {
     );
   };
 
-  const handleNotificationToggle = async (notificationId: string) => {
+  const handleEmailToggle = async (notificationId: string) => {
     // Toggle the selection in local state
     const isCurrentlySelected =
       selectedNotificationTypes.includes(notificationId);
@@ -93,26 +93,32 @@ const Account = () => {
     setSelectedNotificationTypes(newSelectedTypes);
 
     try {
-      const res = await axiosInstance.post(
-        `/company/notifications/preferences/`,
-        {
-          channels: ["1"],
-          notification_type: parseInt(notificationId),
-        }
-      );
+      const req = isCurrentlySelected
+        ? axiosInstance.post(
+            `/company/notifications/delete-preferences/
+`,
+            { channel: 1, notification_type: parseInt(notificationId) }
+          )
+        : axiosInstance.post(`/company/notifications/preferences/`, {
+            channel: 1,
+            notification_type: parseInt(notificationId),
+          });
+
+      const res = await req;
 
       if (res.status === 201) {
-        toast.success("Update email successfully");
+        toast.success("Email preference updated successfully");
       }
     } catch (err) {
-      // Extract the error message from the response
+      setSelectedNotificationTypes((prev) =>
+        isCurrentlySelected
+          ? [...prev, notificationId]
+          : prev.filter((id) => id !== notificationId)
+      );
       let errorMessage = "An error occurred please try again or contact Admin";
-      setSelectedNotificationTypes(selectedNotificationTypes);
       if (err instanceof AxiosError) {
-        // Check if err is an instance of AxiosError
         errorMessage = err.response?.data?.message || errorMessage;
       }
-
       toast.error(errorMessage);
     } finally {
       // resetAddNewTeam();
@@ -132,26 +138,32 @@ const Account = () => {
     setSelectedSlackChannelNotificationTypes(newSelectedTypes);
 
     try {
-      const res = await axiosInstance.post(
-        `/company/notifications/preferences/`,
-        {
-          channels: ["2"],
-          notification_type: parseInt(notificationId),
-        }
-      );
+      const req = isCurrentlySelected
+        ? axiosInstance.post(
+            `/company/notifications/delete-preferences/
+`,
+            { channel: 2, notification_type: parseInt(notificationId) }
+          )
+        : axiosInstance.post(`/company/notifications/preferences/`, {
+            channel: 2,
+            notification_type: parseInt(notificationId),
+          });
+
+      const res = await req;
 
       if (res.status === 201) {
-        toast.success("Update email successfully");
+        toast.success("Slack preference updated successfully");
       }
     } catch (err) {
-      // Extract the error message from the response
+      setSelectedNotificationTypes((prev) =>
+        isCurrentlySelected
+          ? [...prev, notificationId]
+          : prev.filter((id) => id !== notificationId)
+      );
       let errorMessage = "An error occurred please try again or contact Admin";
-      setSelectedNotificationTypes(selectedNotificationTypes);
       if (err instanceof AxiosError) {
-        // Check if err is an instance of AxiosError
         errorMessage = err.response?.data?.message || errorMessage;
       }
-
       toast.error(errorMessage);
     } finally {
       // resetAddNewTeam();
@@ -205,7 +217,7 @@ const Account = () => {
                         </td>
                         <CheckBox
                           onSelectChannel={() =>
-                            handleNotificationToggle(item?.id?.toString())
+                            handleEmailToggle(item?.id?.toString())
                           }
                           checked={selectedNotificationTypes.includes(
                             item?.id?.toString()
