@@ -126,13 +126,13 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
                     </svg>
                     {/* <Images className="text-[#A3A3A3]" /> */}
                     <div>
-                      <p className="text-[16px] font-Inter text-[#525252]">
+                      <p className="text-[18px] font-Inter text-[#525252] text-center">
                         <span className="text-[#CF6E13] pr-1 ">
                           Click to upload
                         </span>
                         or drag and drop
                       </p>
-                      <p className="text-[#A3A3A3] text-[16.5px]">
+                      <p className="text-[#A3A3A3] text-[16.5px] text-center">
                         JPG, JPEG, PNG less than 1MB
                       </p>
                     </div>
