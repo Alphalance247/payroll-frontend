@@ -24,7 +24,7 @@ const PersonalDetails = ({
   nationality,
 }: PersonalDetailsProp) => {
   return (
-    <div className="grid gap-[10px]   border-[1px] rounded-[10px] p-10">
+    <div className="grid gap-[10px] border-[1px] rounded-[10px] p-10 ">
       <div className="flex justify-between items-center pb-6  ">
         <h1 className="text-xl text-[#4D4D4D] font-semibold font-Graphik capitalize">
           {title}

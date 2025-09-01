@@ -156,10 +156,10 @@ const pages = () => {
             </div>
           </EmployeeDp>
           {/* sidebar tabs */}
-          <div className="flex  px-[72px] space-x-10">
+          <div className="flex  px-[72px] space-x-10 ">
             <div className="w-1/4">
-              <div className="pt-[37px] h-[461px] w-[217px] ">
-                <div className="grid gap-y-[10px]  border-r-[2px] border-[#E8EAEE66] ">
+              <div className="pt-[37px] h-[461px] w-[217px] border-r-[2px] border-[#E8EAEE66]">
+                <div className="grid gap-y-[10px]   ">
                   <EmployeeSidebar
                     onClick={() => setactiveTab("personal details")}
                     activeTab="personal details"
@@ -224,7 +224,7 @@ const pages = () => {
               </div>
             </div>
             {/* personal details */}
-            <div className="w-3/4 ">
+            <div className="w-3/4  h-[700px] overflow-auto">
               <div className="grid gap-y-8">{renderTabContent()}</div>
             </div>
           </div>

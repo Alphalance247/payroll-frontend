@@ -42,7 +42,8 @@ const tableContents = [
 
 const Uploads = ({ name, document, fileSize }: tableContentsProps) => {
   return (
-    <div className=" rounded-[10px] overflow-hidden border-[1px] table-auto ">
+    // <div className="">
+    <div className=" rounded-[10px]  border-[1px] table-auto overflow-auto h-auto">
       <table className="  w-full  font-Graphik">
         <thead className=" bg-[#E3E3E5] h-[60px] text-sm text-[#71717A] capitalize font-medium w-full ">
           <tr className=" ">
@@ -51,7 +52,7 @@ const Uploads = ({ name, document, fileSize }: tableContentsProps) => {
             <th className="text-start px-6">file size</th>
           </tr>
         </thead>
-        <tbody className="capitalize text-[#71717A] text-[16px] font-normal w-full h-[72px]">
+        <tbody className="capitalize text-[#71717A] text-[16px] font-normal w-full h-[72px] ">
           {tableContents.map((tableContent, index) => (
             <tr key={index} className=" border-[1px]">
               <td className="h-[60px] px-6">{tableContent.document}</td>
@@ -107,6 +108,7 @@ const Uploads = ({ name, document, fileSize }: tableContentsProps) => {
         </tfoot>
       </table>
     </div>
+    // </div>
   );
 };
 

@@ -1,10 +1,37 @@
+import Label from "@/app/common/label";
 import ModalOverlay from "@/app/common/modal/modal";
+import { useState } from "react";
 const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
+  const [bankForm, setBankForm] = useState({
+    bankName: "Access bank",
+    accountNo: "08134490207",
+    accountName: "Adeola Lawal",
+    bvn: "8134490207",
+    reason: "Tell us why you are requesting this changes",
+  });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setBankForm((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+  const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("submit edit");
+    onModalClose();
+  };
   return (
-    <ModalOverlay onClose={onModalClose} className="relative">
-      <div className="w-[528px] h-[708px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white absolute z-50 right-[615px] shadow-lg mt-20   ">
+    <ModalOverlay onClose={onModalClose} className="">
+      <div className="w-[528px] h-[708px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative z-50 shadow-lg mt-20   ">
         {" "}
-        <form action="submit" className="absolute z-50 w-[528px]">
+        <form
+          action="submit"
+          onSubmit={handleSubmit}
+          className="absolute z-50 w-[528px]"
+        >
           <div className="pt-6  pl-6 border-b border-[#E3E3E5]  ">
             <h2 id="" className="text-lg font-semibold mb-2">
               Edit Bank Address
@@ -12,81 +39,86 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
           </div>
           <div className="grid gap-y-4 p-6">
             <div className="">
-              <label
-                htmlFor="Bankname"
+              <Label
+                id="Bankname"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
                 Bank Name
-              </label>
+              </Label>
               <br />
               <input
                 type="text"
                 name="bankname"
-                value="Access bank"
+                value={bankForm.bankName}
+                onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
             <div className="">
-              <label
-                htmlFor="accountnumber"
+              <Label
+                id="accountnumber"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
                 Account Number
-              </label>
+              </Label>
               <br />
               <input
                 type="text"
                 name="accountnumber"
-                value="08134490207"
+                value={bankForm.accountNo}
+                onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
             <div className="">
-              <label
-                htmlFor="accountname"
+              <Label
+                id="accountname"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
                 Account Name
-              </label>
+              </Label>
               <br />
               <input
                 type="text"
                 name="accountname"
-                value="Adeola Lawal"
+                value={bankForm.accountName}
+                onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
             <div className="">
-              <label
-                htmlFor="bvn"
+              <Label
+                id="bvn"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
                 BVN
-              </label>
+              </Label>
               <br />
               <input
                 type="text"
                 name="bvn"
-                value="8134490207"
+                value={bankForm.bvn}
+                onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
             <div className="">
-              <label
-                htmlFor=" Upload proof "
+              <Label
+                id=" Upload proof "
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
                 Reason For Update
-              </label>
+              </Label>
               <br />
               <textarea
                 name="reason"
-                value={"Tell us why you are requesting this changes"}
+                value={bankForm.reason}
+                onChange={handleChange}
                 // placeholder="Tell us why you are requesting this changes"
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-[132px] w-full mt-2  text[16px] font-medium pl-4 font-Graphik text-[#BEBEC2] pt-3 resize-none"
               ></textarea>

@@ -2,11 +2,14 @@
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 import OverviewCard from "@/app/common/employee-dashboard/common/overviewCard";
 import Heading from "@/app/common/heading";
+import EmployeeBarChart from "../../components/charts/employeeBarChart";
+import LeavePieChart from "../../components/charts/LeavePieChart";
 import ProtectedRoute from "@/app/common/protectedRoute";
 import Link from "next/link";
 import { useState } from "react";
 import { GoArrowRight } from "react-icons/go";
 import { MdOutlinePayment } from "react-icons/md";
+import { IoMdArrowDropdown } from "react-icons/io";
 
 const EmployeeAnalytics = () => {
   const [activeBtn, setActiveBtn] = useState<string>("My Earnings");
@@ -33,31 +36,107 @@ const EmployeeAnalytics = () => {
       value: "12",
     },
   ];
+  const chartData = [
+    { year: "2020", bonus: 12.5, baseSalary: 1, deduction: 5 },
+    {
+      year: "2021",
+      bonus: 22.5,
+      baseSalary: 1,
+      deduction: 5,
+    },
+    { year: "2022", bonus: 30, baseSalary: 1, deduction: 5 },
+    { year: "2023", bonus: 30, baseSalary: 1, deduction: 5 },
+    {
+      year: "2024",
+      bonus: 12.5,
+      baseSalary: 1,
+      deduction: 5,
+    },
+    {
+      year: "2025",
+      bonus: 30,
+      baseSalary: 1,
+      deduction: 5,
+    },
+  ];
+  const actualLeaveChartData = [
+    {
+      leaveType: "remainingLeave:",
+      daysTaken: 87,
+      fill: "#F8F8F8",
+    },
+    { leaveType: "carryOverLeave", daysTaken: 173, fill: "#78D6E0" },
+    { leaveType: "daysTaken", daysTaken: 100, fill: "#F8F8F8" },
+  ];
+  const sickLeaveChartData = [
+    {
+      leaveType: "remainingLeave:",
+      daysTaken: 100,
+      fill: "#F8F8F8",
+    },
+    { leaveType: "carryOverLeave", daysTaken: 183, fill: "#78D6E0" },
+    { leaveType: "daysTaken", daysTaken: 77, fill: "#F8F8F8" },
+  ];
   return (
-    <ProtectedRoute>
-      <EmployeeDashboardLayout>
-        <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
-          <Heading flexDirection="" user={"Analytics"} />
+    // <ProtectedRoute>
+    <EmployeeDashboardLayout>
+      <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
+        <Heading flexDirection="" user={"Analytics"} />
 
-          <div className={`flex gap-x-4 items-center border-b mt-8 mb-10`}>
-            {tabs.map((el, i) => (
-              <button
-                className={`${
-                  activeBtn === el.name
-                    ? "text-[#E37915] border-x-[1px] border-t border-b-[0px] border-[#E37915] bg-transparent"
-                    : "text-[#71717A] border border-b-[0px] bg-[#F7F7F7]"
-                }   font-semibold text-base px-2 py-3 border-b-[1px] cursor-pointer rounded-tl-lg rounded-tr-lg `}
-                onClick={() => {
-                  setActiveBtn(el?.name);
-                }}
-                key={i}
-              >
-                {el.name}
-              </button>
-            ))}
-          </div>
+        <div className={`flex gap-x-4 items-center border-b mt-8 mb-10`}>
+          {tabs.map((el, i) => (
+            <button
+              className={`${
+                activeBtn === el.name
+                  ? "text-[#E37915] border-x-[1px] border-t border-b-[0px] border-[#E37915] bg-transparent"
+                  : "text-[#71717A] border border-b-[0px] bg-[#F7F7F7]"
+              }   font-semibold text-base px-2 py-3 border-b-[1px] cursor-pointer rounded-tl-lg rounded-tr-lg `}
+              onClick={() => {
+                setActiveBtn(el?.name);
+              }}
+              key={i}
+            >
+              {el.name}
+            </button>
+          ))}
+        </div>
 
-          {activeBtn === "My Earnings" && (
+        {activeBtn === "My Earnings" && (
+          <div>
+            <div className="h-[882px] border border-[#E3E3E5] rounded-[8px]  my-8  ">
+              <div className="h-[76px] border-b border-[#E3E3E5] px-6 flex justify-between items-center ">
+                <div className=" items-center ">
+                  <div className="text-base text-[#2F2F33] font-medium font-Graphik">
+                    Payroll Insights
+                  </div>
+                </div>
+                <button className="h-[44px] w-[177px] border border-[#E3E3E5] rounded-[8px] flex justify-between items-center px-[17.5px] font-Graphik">
+                  <p className="text-[#2F2F33] text-base">Last 12 months</p>
+                  <IoMdArrowDropdown />
+                </button>
+              </div>
+              <div className="my-8 flex space-x-5 items-center px-20">
+                <div className="flex space-x-2 items-center">
+                  <div className="h-4 w-4 rounded-sm bg-[#009BC0]"></div>
+                  <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
+                    Base salary
+                  </div>
+                </div>
+                <div className="flex space-x-2 items-center">
+                  <div className="h-4 w-4 rounded-sm bg-[#E37915]"></div>
+                  <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
+                    Bonus
+                  </div>
+                </div>
+                <div className="flex space-x-2 items-center">
+                  <div className="h-4 w-4 rounded-sm bg-[#11202D]"></div>
+                  <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
+                    Deduction
+                  </div>
+                </div>
+              </div>
+              <EmployeeBarChart chartData={chartData} />
+            </div>
             <div className="grid md:grid-cols-[2fr_1fr] gap-6">
               <div className="border border-[#E3E3E5] rounded-xl pb-3">
                 <div className="py-4 px-4 border-b border-[#E3E3E5] flex items-center justify-between">
@@ -184,14 +263,16 @@ const EmployeeAnalytics = () => {
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {activeBtn === "Timesheet" && (
-            <div className="grid md:grid-cols-[2fr_1fr] gap-6">
-              <h1>Timesheet</h1>
-            </div>
-          )}
-          {activeBtn === "Leave Calendar" && (
+        {activeBtn === "Timesheet" && (
+          <div className="grid md:grid-cols-[2fr_1fr] gap-6">
+            <h1>Timesheet</h1>
+          </div>
+        )}
+        {activeBtn === "Leave Calendar" && (
+          <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 mb-8">
               {cardData.map((card, index) => (
                 <OverviewCard
@@ -202,10 +283,17 @@ const EmployeeAnalytics = () => {
                 />
               ))}
             </div>
-          )}
-        </main>
-      </EmployeeDashboardLayout>
-    </ProtectedRoute>
+
+            <LeavePieChart
+              title="Annual leave"
+              chartData={actualLeaveChartData}
+            />
+            <LeavePieChart title="sick leave" chartData={sickLeaveChartData} />
+          </div>
+        )}
+      </main>
+    </EmployeeDashboardLayout>
+    // </ProtectedRoute>
   );
 };
 

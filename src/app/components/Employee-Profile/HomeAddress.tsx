@@ -8,8 +8,8 @@ interface HomeAdressProps {
 }
 const HomeAddress = ({ children, address, city, title }: HomeAdressProps) => {
   return (
-    <div className="grid gap-[10px] border-[1px] rounded-[10px] h-[436px]  p-10">
-      <div className="h-[396px] w-[615px]">
+    <div className="grid gap-[10px] border-[1px] rounded-[10px] p-10 mb-20 h-[436px]">
+      <div className="h-[396px]">
         <div className="flex justify-between items-center pb-6  ">
           <h1 className="text-xl text-[#4D4D4D] font-semibold font-Graphik">
             {title}
@@ -53,8 +53,6 @@ const HomeAddress = ({ children, address, city, title }: HomeAdressProps) => {
               </div>
             </div>
           </div>
-
-          {/* </div> */}
         </div>
       </div>
     </div>
