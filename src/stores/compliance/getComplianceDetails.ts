@@ -7,6 +7,10 @@ interface complianceListDataStore {
   content: string;
   detail_image: string;
   title: string;
+  effective_date: string;
+  id: string;
+  updated_at: string;
+  category: string;
 }
 
 interface complianceDetailsStore {

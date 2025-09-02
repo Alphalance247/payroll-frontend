@@ -5,14 +5,21 @@ import ProtectedRoute from "@/app/common/protectedRoute";
 import ActiveLoan from "@/app/components/Employee-Dashboard/loan/activeLoan";
 import LoanOverviewCard from "@/app/components/Employee-Dashboard/loan/loanCard";
 import LoanTable from "@/app/components/Employee-Dashboard/loan/loanTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoanRequestModal from "@/app/components/Employee-Dashboard/loan/loanRequestModal";
 import Button from "@/app/common/Button";
 import LoanSideBar from "@/app/components/Employee-Dashboard/loan/loanSideBar";
+import { getEmployeeLoanList } from "@/stores/employee-dashboard/loan/loanList";
 
 const EmployeeLoanRequest = () => {
   const [loanModal, setLoanModal] = useState(false);
   const [isOpenSideBar, setIsOpenSideBar] = useState(false);
+
+  const { fetchEmployeeLoanList } = getEmployeeLoanList();
+
+  useEffect(() => {
+    fetchEmployeeLoanList();
+  }, [fetchEmployeeLoanList]);
 
   return (
     <ProtectedRoute>
@@ -33,7 +40,7 @@ const EmployeeLoanRequest = () => {
           <LoanOverviewCard />
 
           <ActiveLoan setIsOpenSideBar={setIsOpenSideBar} />
-          <LoanTable />
+          <LoanTable setIsOpenSideBar={setIsOpenSideBar} />
 
           {loanModal && (
             <LoanRequestModal

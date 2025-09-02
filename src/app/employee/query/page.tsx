@@ -12,21 +12,21 @@ import { IoCheckmarkOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa6";
 import { IoArchiveOutline } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
-import { getQueryList } from "@/stores/request/getQueryList";
 import Spinner from "../../common/spinner";
 import { getQueryDetails } from "@/stores/request/getRequestDetails";
 import { useFilter } from "../../hooks/useFilter";
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 import Image from "next/image";
+import { getEmployeeQueryList } from "@/stores/employee-dashboard/query/queryList";
 
 const EmployeeRequest = () => {
   const [activeBtn, setActiveBtn] = useState<string>("All");
   const [isOpen, setIsOpen] = useState(false);
-  const { data, fetchQueryList, loading } = getQueryList();
+  const { data, fetchEmployeeQueryList, loading } = getEmployeeQueryList();
   const { fetchQueryDetails } = getQueryDetails();
   useEffect(() => {
-    fetchQueryList();
-  }, [fetchQueryList]);
+    fetchEmployeeQueryList();
+  }, [fetchEmployeeQueryList]);
 
   const statusList = [
     { id: 1, name: "All" },
@@ -139,7 +139,7 @@ const EmployeeRequest = () => {
           <div className="pb-2">
             <button
               className="border border-[#E3E3E5] rounded-md bg-white py-1 px-3 text-[#71717A] flex gap-x-2 items-center shadow-md"
-              onClick={() => fetchQueryList()}
+              onClick={() => fetchEmployeeQueryList()}
             >
               <FiRefreshCw size={18} /> Refresh Tables
             </button>

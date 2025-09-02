@@ -3,11 +3,32 @@ import ProtectedRoute from "@/app/common/protectedRoute";
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 import Heading from "@/app/common/heading";
 import { Search } from "lucide-react";
-import { useState } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
+import { getComplianceCardStore } from "@/stores/compliance/getComplianceCard";
+import { getComplianceDetails } from "@/stores/compliance/getComplianceDetails";
+import Spinner from "@/app/common/spinner";
+import ErrorFetch from "@/app/common/errorFetch";
 
 const EmployeeCompliance = () => {
   const [searchQuery, setSearchQuery] = useState("");
+
+  const { fetchComplianceCard, error, loading, data } =
+    getComplianceCardStore();
+
+  useEffect(() => {
+    fetchComplianceCard();
+  }, [fetchComplianceCard]);
+
+  const {
+    data: complianceDetails,
+    error: errorDetails,
+    fetchComplianceDetails,
+    loading: detailsLoading,
+  } = getComplianceDetails();
+
+  useEffect(() => {
+    fetchComplianceDetails(data[0]?.id.toString() || "");
+  }, [fetchComplianceDetails, data]);
 
   return (
     <ProtectedRoute>
@@ -34,117 +55,117 @@ const EmployeeCompliance = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
               </div>
 
-              <div className="flex flex-col gap-y-5">
-                <div className="py-5 px-4 grid grid-cols-2 gap-x-4 items-center bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px]">
-                  <Image
-                    src="/assets/employee-dashboard/compliance/pension.png"
-                    width={226}
-                    height={162}
-                    alt="uphold"
-                    className="w-full"
-                  />
-
-                  <div className="">
-                    <p className="text-base font-Graphik text-[#2F2F33] font-semibold mb-1">
-                      PAYE (Pay-As-You-Earn) Tax Update
+              {loading ? (
+                <Spinner />
+              ) : error ? (
+                <ErrorFetch
+                  onRefetch={fetchComplianceCard}
+                  message="Error Fetching compliance"
+                />
+              ) : (
+                <>
+                  {data?.length === 0 ? (
+                    <p className="py-20 flex flex-col justify-center">
+                      No compliance found
                     </p>
-                    <div className="text-[#71717A] leading-5 text-[13px] font-Graphik mb-2">
-                      <p className="mb-2">Effective: January 01, 2025</p>
-                      <p>Last Updated: January 01, 2025</p>
+                  ) : (
+                    <div className="flex flex-col gap-y-5">
+                      {data?.map((el, i) => (
+                        <div
+                          className="py-5 px-4 grid grid-cols-2 cursor-pointer gap-x-4 items-center bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px]"
+                          key={i}
+                          onClick={() =>
+                            fetchComplianceDetails(el?.id.toString())
+                          }
+                        >
+                          <img
+                            src={
+                              el?.list_image ||
+                              "/assets/employee-dashboard/compliance/pension.png"
+                            }
+                            width={226}
+                            height={162}
+                            alt="uphold"
+                            className="w-full h-[162px] rounded-lg"
+                          />
+
+                          <div className="">
+                            <p className="text-base font-Graphik text-[#2F2F33] font-semibold mb-1">
+                              {el?.title}
+                            </p>
+                            <div className="text-[#71717A] leading-5 text-[13px] font-Graphik mb-2">
+                              <p className="mb-2">
+                                Effective: {el?.effective_date}
+                              </p>
+                              <p>Last Updated: {el?.updated_at}</p>
+                            </div>
+                            <p className="border-[#DF900A] w-fit border text-xs font-medium px-2 py-[2px] bg-[#FEF5E7] text-[#CF6E13] rounded-2xl my-2">
+                              {el?.category}
+                            </p>
+                            <button className="text-[#E37915] font-semibold">
+                              Learn More
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <p className="border-[#DF900A] w-fit border text-xs font-medium px-2 py-[2px] bg-[#FEF5E7] text-[#CF6E13] rounded-2xl my-2">
-                      Pension
-                    </p>
-                    <button className="text-[#E37915] font-semibold">
-                      Learn More
-                    </button>
-                  </div>
-                </div>
-
-                <div className="py-5 px-4 grid grid-cols-2 gap-x-4 items-center bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px]">
-                  <Image
-                    src="/assets/employee-dashboard/compliance/Image.png"
-                    width={226}
-                    height={162}
-                    alt="uphold"
-                    className="w-full"
-                  />
-
-                  <div className="">
-                    <p className="text-base font-Graphik text-[#2F2F33] font-semibold mb-1">
-                      PAYE (Pay-As-You-Earn) Tax Update
-                    </p>
-                    <div className="text-[#71717A] leading-5 text-[13px] font-Graphik mb-2">
-                      <p className="mb-2">Effective: January 01, 2025</p>
-                      <p>Last Updated: January 01, 2025</p>
-                    </div>
-                    <p className="border-[#DF900A] w-fit border text-xs font-medium px-2 py-[2px] bg-[#FEF5E7] text-[#CF6E13] rounded-2xl my-2">
-                      Pension
-                    </p>
-                    <button className="text-[#E37915] font-semibold">
-                      Learn More
-                    </button>
-                  </div>
-                </div>
-              </div>
+                  )}
+                </>
+              )}
             </div>
 
             <div className="">
               <div className="py-5 px-4 grid bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px] h-[550px] overflow-y-auto">
-                <p className="text-base font-Graphik text-[#2F2F33] font-semibold mb-1">
-                  PAYE (Pay-As-You-Earn) Tax Update
-                </p>
-
-                <div className="text-[#71717A] leading-5 text-[13px] font-Graphik mb-2">
-                  <p className="mb-2">Effective: January 01, 2025</p>
-                </div>
-
-                <Image
-                  src="/assets/employee-dashboard/compliance/2.png"
-                  width={505}
-                  height={253}
-                  alt="uphold"
-                />
-
-                <div className="mt-2">
-                  <div className="flex gap-x-4 items-center">
-                    <p className="text-[#71717A] leading-5 text-[13px] font-Graphik">
-                      Last Updated: January 01, 2025
+                {detailsLoading ? (
+                  <Spinner />
+                ) : errorDetails ? (
+                  <ErrorFetch
+                    onRefetch={() =>
+                      fetchComplianceDetails(complianceDetails?.id || "")
+                    }
+                    message="Error Fetching compliance"
+                  />
+                ) : (
+                  <>
+                    <p className="text-base font-Graphik text-[#2F2F33] font-semibold mb-1">
+                      {complianceDetails?.title}
                     </p>
-                    <p className="border-[#DF900A] w-fit border text-xs font-medium px-2 py-[2px] bg-[#FEF5E7] text-[#CF6E13] rounded-2xl my-2">
-                      Pension
-                    </p>
-                  </div>
 
-                  <p className="text-base font-Graphik text-[#2F2F33] font-semibold mt-4">
-                    Overview of PAYE Tax in Nigeria{" "}
-                  </p>
+                    <div className="text-[#71717A] leading-5 text-[13px] font-Graphik mb-2">
+                      <p className="mb-2">
+                        Effective Date: {complianceDetails?.effective_date}
+                      </p>
+                    </div>
 
-                  <p className="text-base text-[#71717A] mt-4 mb-4">
-                    PAYE (Pay-As-You-Earn) is a system of income tax withholding
-                    by employers on behalf of employees. It ensures that income
-                    taxes are collected at source and remitted to the
-                    appropriate tax authority.
-                  </p>
-                  <p className="text-base text-[#71717A] mt-4 mb-4">
-                    PAYE (Pay-As-You-Earn) is a system of income tax withholding
-                    by employers on behalf of employees. It ensures that income
-                    taxes are collected at source and remitted to the
-                    appropriate tax authority.
-                  </p>
-                  <p className="text-base text-[#71717A] mt-4 mb-4">
-                    PAYE (Pay-As-You-Earn) is a system of income tax withholding
-                    by employers on behalf of employees. It ensures that income
-                    taxes are collected at source and remitted to the
-                    appropriate tax authority.
-                  </p>
-                  <p className="text-base text-[#71717A] mt-4 mb-4">
-                    PAYE (Pay-As-You-Earn) is a system of income tax withholding
-                    by employers on behalf of employees. It ensures that income
-                    taxes are collected at source and remitted to the
-                    appropriate tax authority.
-                  </p>
-                </div>
+                    <img
+                      src={
+                        complianceDetails?.detail_image ||
+                        "/assets/employee-dashboard/compliance/2.png"
+                      }
+                      width={505}
+                      height={253}
+                      alt="uphold"
+                      className="w-[full] h-[253px] rounded-lg"
+                    />
+
+                    <div className="mt-2">
+                      <div className="flex gap-x-4 items-center">
+                        <p className="text-[#71717A] leading-5 text-[13px] font-Graphik">
+                          Last Updated: {complianceDetails?.updated_at}
+                        </p>
+                        <p className="border-[#DF900A] w-fit border text-xs font-medium px-2 py-[2px] bg-[#FEF5E7] text-[#CF6E13] rounded-2xl my-2">
+                          {complianceDetails?.category}
+                        </p>
+                      </div>
+
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: complianceDetails?.content || "",
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

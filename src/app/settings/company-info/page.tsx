@@ -142,7 +142,7 @@ const CompanyInfo = () => {
             <div className="flex gap-x-4">
               <div className="flex gap-x-4 items-center mb-12">
                 {preview ? (
-                  <img
+                  <Image
                     src={preview || ""}
                     height={84}
                     width={84}
@@ -302,6 +302,7 @@ const CompanyInfo = () => {
                     }
                   />
                 </div>
+
                 <div>
                   <Label id="city" className="block mb-1">
                     City/Region

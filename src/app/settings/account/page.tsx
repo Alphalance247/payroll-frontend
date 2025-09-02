@@ -1,6 +1,6 @@
 "use client";
 import HeadingSubHead from "@/app/common/headingSubHead";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Input from "@/app/common/input";
 import Label from "@/app/common/label";
 import PhoneInput from "react-phone-number-input";
@@ -14,6 +14,9 @@ import axiosInstance from "@/app/utils/axios";
 import { environment } from "@/app/env/env.local";
 import { AxiosError } from "axios";
 import { getCompanyProfile } from "@/stores/settings/account/profile";
+import { FaRegEyeSlash } from "react-icons/fa";
+import { IoEye } from "react-icons/io5";
+import Image from "next/image";
 
 const Account = () => {
   const [loading, setLoading] = useState(false);
@@ -21,15 +24,72 @@ const Account = () => {
   useEffect(() => {
     fetchCompanyProfle();
   }, [fetchCompanyProfle]);
-
+  const passwordRegex = useMemo(
+    () =>
+      new RegExp(
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=[\\]{};':\"\\\\|,.<>/?]).{8,}$"
+      ),
+    []
+  );
+  const [error, setError] = useState<{ [key: string]: string }>({});
   const [form, setForm] = useState({
     fullname: "",
     phone: "",
     email: "",
     role: "",
-    new_password: "",
+    password: "",
+    old_password: "AbdulAzeezAdminNew009",
     confirm_password: "",
   });
+  const [preview, setPreview] = useState<string | null | undefined>(
+    preferenceData?.data?.prof_im
+  );
+  const [file, setFile] = useState<File | null>(null);
+  const [isPasswordloading, setIsPasswordLoading] = useState(false);
+
+  const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile && selectedFile.size <= 5 * 1024 * 1024) {
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile));
+    } else {
+      alert("File must be less than 5MB");
+    }
+  };
+  const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>({
+    password: false,
+    confirm__password: false,
+    old_password: false,
+  });
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      setError((prev) => ({ ...prev, [name]: "" }));
+      if (name === "password" && !passwordRegex.test(value)) {
+        setError((prev) => ({
+          ...prev,
+          [name]:
+            "Password must contain at least 8 characters and must must be alphanumeric.",
+        }));
+      }
+      // Check password match for both fields
+      if (name === "confirm_password") {
+        if (value !== form.password) {
+          setError((prev) => ({
+            ...prev,
+            [name]: "Passwords don't match.",
+          }));
+        }
+      }
+
+      setForm((prev) => ({ ...prev, [name]: value }));
+    },
+    [passwordRegex, form]
+  );
+
+  const togglePasswordVisibility = (field: string) => {
+    setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
 
   useEffect(() => {
     if (preferenceData?.data) {
@@ -94,19 +154,47 @@ const Account = () => {
     }
   };
 
-  const [preview, setPreview] = useState<string | null | undefined>(
-    preferenceData?.data?.prof_im
-  );
-  const [file, setFile] = useState<File | null>(null);
+  const handlePasswordUpdate = async () => {
+    try {
+      setIsPasswordLoading(true);
+      const res = await axiosInstance.post(`/account/change-password`, {
+        form,
+      });
 
-  const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile && selectedFile.size <= 5 * 1024 * 1024) {
-      setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
-    } else {
-      alert("File must be less than 5MB");
+      if (res.status === 200) {
+        toast.success("Password Updated successfully");
+      }
+
+      setIsPasswordLoading(false);
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+
+      toast.error(errorMessage);
+      setIsPasswordLoading(false);
     }
+  };
+
+  const PasswordEye = ({
+    onToggle,
+    showPasswordType,
+  }: {
+    onToggle: () => void;
+    showPasswordType: boolean;
+  }) => {
+    return (
+      <div className="absolute top-10 right-4">
+        <div onClick={onToggle}>
+          {showPasswordType ? (
+            <FaRegEyeSlash size={24} className="text-[#7C7C7C]" />
+          ) : (
+            <IoEye size={24} className="text-[#7C7C7C]" />
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -128,7 +216,7 @@ const Account = () => {
               <div className="">
                 <div className="flex gap-x-4 items-center mb-12">
                   {preview ? (
-                    <img
+                    <Image
                       src={preview || ""}
                       height={84}
                       width={84}
@@ -283,60 +371,94 @@ const Account = () => {
                 </p>
 
                 <div className="mt-8">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {/* <div>
-                      <Label
-                        //   htmlFor="first-name"
-                        id="current_password"
-                        className="block mb-1"
-                      >
-                        Current Password
-                      </Label>
-                      <Input
-                        type="password"
-                        id="current_password"
-                        name="current_password"
-                        value={form?.current_password || ""}
-                        onChange={(e) =>
-                          setForm({ ...form, current_password: e.target.value })
-                        }
-                      />
-                    </div> */}
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="relative">
+                      <div>
+                        <Label
+                          //   htmlFor="first-name"
+                          id="current_password"
+                          className="block mb-1"
+                        >
+                          Current Password
+                        </Label>
+                        <Input
+                          type="password"
+                          id="old_password"
+                          readonly
+                          name="old_password"
+                          className=" cursor-not-allowed"
+                          value={form?.old_password || ""}
+                          onChange={
+                            // (e) =>
+                            handleChange
+                            // setForm({ ...form, old_password: e.target.value })
+                          }
+                        />
+                      </div>
 
-                    <div>
-                      <Label
-                        //   htmlFor="first-name"
-                        id="new_password"
-                        className="block mb-1"
-                      >
-                        New Password
-                      </Label>
-                      <Input
-                        type="password"
-                        id="new_password"
-                        name="new_password"
-                        value={form?.new_password || ""}
-                        onChange={(e) =>
-                          setForm({ ...form, new_password: e.target.value })
+                      <PasswordEye
+                        onToggle={() =>
+                          togglePasswordVisibility("old_password")
                         }
+                        showPasswordType={showPassword?.old_password}
                       />
                     </div>
-                    <div>
-                      <Label
-                        //   htmlFor="first-name"
-                        id="confirm_password"
-                        className="block mb-1"
-                      >
-                        Confirm Password
-                      </Label>
-                      <Input
-                        type="password"
-                        id="confirm_password"
-                        name="confirm_password"
-                        value={form?.confirm_password || ""}
-                        onChange={(e) =>
-                          setForm({ ...form, confirm_password: e.target.value })
+
+                    <div className="relative">
+                      <div>
+                        <Label id="password" className="block mb-1">
+                          New Password
+                        </Label>
+                        <Input
+                          type={showPassword?.password ? "password" : "text"}
+                          id="password"
+                          name="password"
+                          value={form?.password || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <span className="text-red-800 text-sm font-normal leading-tight">
+                        {error?.password}
+                      </span>
+
+                      <PasswordEye
+                        onToggle={() => togglePasswordVisibility("password")}
+                        showPasswordType={showPassword?.password}
+                      />
+                    </div>
+
+                    <div className="relative">
+                      <div>
+                        <Label
+                          //   htmlFor="first-name"
+                          id="confirm_password"
+                          className="block mb-1"
+                        >
+                          Confirm Password
+                        </Label>
+                        <Input
+                          type={
+                            showPassword?.confirm__password
+                              ? "password"
+                              : "text"
+                          }
+                          id="confirm_password"
+                          name="confirm_password"
+                          value={form?.confirm_password || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <span className="text-red-800 text-sm font-normal leading-tight">
+                        {error?.confirm_password}
+                      </span>
+
+                      <PasswordEye
+                        onToggle={() =>
+                          togglePasswordVisibility("confirm__password")
                         }
+                        showPasswordType={showPassword?.confirm__password}
                       />
                     </div>
                   </div>
@@ -345,8 +467,13 @@ const Account = () => {
                     <Button className="w-fit" variant="secondary">
                       Cancel
                     </Button>
-                    <Button className="w-fit" variant="primary">
-                      Change Password
+                    <Button
+                      className="w-fit"
+                      variant="primary"
+                      onButtonClick={handlePasswordUpdate}
+                      btnType="button"
+                    >
+                      {isPasswordloading ? "Updating...." : "Change Password"}
                     </Button>
                   </div>
                 </div>

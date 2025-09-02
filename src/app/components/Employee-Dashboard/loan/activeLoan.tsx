@@ -1,4 +1,7 @@
 import Button from "@/app/common/Button";
+import { getActiveLoan } from "@/stores/employee-dashboard/loan/activeLoan";
+import { getEmployeeLoanDetails } from "@/stores/employee-dashboard/loan/loanDetails";
+import { useEffect } from "react";
 
 const ActiveLoan = ({
   setIsOpenSideBar,
@@ -31,6 +34,13 @@ const ActiveLoan = ({
       value: "May 10, 2025",
     },
   ];
+  const { fetchActiveLoan } = getActiveLoan();
+  const { fetchEmployeeLoanDetails } = getEmployeeLoanDetails();
+
+  useEffect(() => {
+    fetchActiveLoan();
+  }, [fetchActiveLoan]);
+
   return (
     <section className="mt-6 px-6 py-4 border border-[#E3E3E5] rounded-lg">
       <div className="flex justify-between items-center">
@@ -38,7 +48,13 @@ const ActiveLoan = ({
           Active Loan
         </p>
 
-        <Button variant="primary" onButtonClick={() => setIsOpenSideBar(true)}>
+        <Button
+          variant="primary"
+          onButtonClick={() => {
+            setIsOpenSideBar(true);
+            fetchEmployeeLoanDetails("");
+          }}
+        >
           View Details
         </Button>
       </div>

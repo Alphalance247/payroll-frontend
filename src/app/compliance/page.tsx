@@ -12,16 +12,12 @@ import Spinner from "../common/spinner";
 import Link from "next/link";
 
 const Compliance = () => {
-  const { data, fetchComplianceCard, error, loading } =
-    getComplianceCardStore();
-  const { data: categoryData, fetchComplianceCategory } =
-    getComplianceCategoryStore();
+  const { fetchComplianceCard, error, loading } = getComplianceCardStore();
+  const { fetchComplianceCategory } = getComplianceCategoryStore();
   useEffect(() => {
     fetchComplianceCard();
     fetchComplianceCategory();
   }, [fetchComplianceCard, fetchComplianceCategory]);
-
-  console.log(data, categoryData);
 
   return (
     <ProtectedRoute>
