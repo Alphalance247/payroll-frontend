@@ -1,5 +1,5 @@
 "use client";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Legend } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
@@ -37,7 +37,7 @@ export default function DashboardLayout({
     <div className="">
       <ChartContainer
         config={chartConfig}
-        className="h-min-[200px]  overflow-x-scroll"
+        className="h-min-[200px]  overflow-x-scroll px-6"
       >
         <BarChart accessibilityLayer data={chartData}>
           <CartesianGrid vertical={false} />
@@ -54,8 +54,24 @@ export default function DashboardLayout({
             tickMargin={1}
             axisLine={false}
             width={40}
+            label={{
+              value: "Total Amount (NGN)",
+              angle: -90,
+              position: "insideLeft",
+              textAnchor: "middle",
+            }}
             // tickFormatter={}
           />
+          {/* <Legend>
+            {chartData.map((item) => (
+              <div key={item.name} style={{ color: item.color }}>
+                <span style={{ marginRight: "8px" }}>{item.icon}</span>
+                {item.name}: {item.value}
+              </div>
+            ))}
+          </Legend> */}
+          {/* <Legend verticalAlign="top" height={36} align="left" iconSize={20} /> */}
+
           <ChartTooltip content={<ChartTooltipContent />} />
           <Bar dataKey="baseSalary" fill="var(--color-baseSalary)" radius={4} />
           <Bar dataKey="bonus" fill="var(--color-bonus" radius={4} />

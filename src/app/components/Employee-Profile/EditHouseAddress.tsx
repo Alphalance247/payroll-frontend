@@ -8,11 +8,12 @@ import { BsImage, BsImages } from "react-icons/bs";
 import { FaImages } from "react-icons/fa";
 import { FaImagePortrait } from "react-icons/fa6";
 import { LuImages } from "react-icons/lu";
-import { URL } from "url";
+import Image from "next/image";
+// import { URL } from "url";
 
 const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewImage, setPreviewImage] = useState<null>(null);
+  const [preview, setPreview] = useState<string | null | undefined>(null);
+  const [file, setFile] = useState<File | null>(null);
   const MAX_FILE_SIZE_BYTES = 1 * 1024 * 1024; // 1MB
   const [form, setForm] = useState({
     country: "Nigeria",
@@ -43,25 +44,34 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
     onModalClose();
   };
   // Process the file (e.g., upload)
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const fileList = event.target.files;
-    if (fileList && fileList.length > 0) {
-      setSelectedFile(fileList[0]);
-      console.log(fileList);
-      const obj = URL.createObjectURL(selectedFile as any);
-      console.log(obj);
-      // if (fileList instanceof Blob) {
-      //   const objectUrl = URL.createObjectURL(fileList);
-      //   console.log(objectUrl);
-      //   setPreviewImage(objectUrl);
-      // }
-      // setPreviewImage(objectUrl);
-    } else {
-      setSelectedFile(null);
-    }
-    return;
-  };
+  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const fileList = event.target.files;
+  //   if (fileList && fileList.length > 0) {
+  //     setSelectedFile(fileList[0]);
+  //     console.log(fileList);
+  //     const obj = URL.createObjectURL(selectedFile as any);
+  //     console.log(obj);
+  //     // if (fileList instanceof Blob) {
+  //     //   const objectUrl = URL.createObjectURL(fileList);
+  //     //   console.log(objectUrl);
+  //     //   setPreviewImage(objectUrl);
+  //     // }
+  //     // setPreviewImage(objectUrl);
+  //   } else {
+  //     setSelectedFile(null);
+  //   }
+  //   return;
+  // };
+  const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadFile = e.target.files?.[0];
+    if (uploadFile && uploadFile.size <= 5 * 1024 * 1024) {
+      setFile(uploadFile);
 
+      setPreview(URL.createObjectURL(uploadFile));
+    } else {
+      alert("File must be less than 5MB");
+    }
+  };
   return (
     <ModalOverlay onClose={onModalClose} className="">
       <div className="w-[528px] h-[820px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative z-50  shadow-lg mt-20   ">
@@ -175,9 +185,21 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
                 >
                   <div className=" flex flex-col items-center justify-center h-[120px]  ">
                     {" "}
-                    {previewImage ? (
-                      <img src={previewImage} alt="" className="" />
+                    {preview ? (
+                      <img
+                        src={preview || ""}
+                        height={84}
+                        width={84}
+                        alt="profileImage"
+                        className="h-[84px] w-[84px] rounded-full"
+                      />
                     ) : (
+                      // <Image
+                      //   src="/assets/settings/Content.png"
+                      //   width={100}
+                      //   height={88}
+                      //   alt="company logo"
+                      // />
                       <svg
                         className="mb-4"
                         width="44"
@@ -193,6 +215,56 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
                       </svg>
                     )}
                     {/* <Images className="text-[#A3A3A3]" /> */}
+                    {/* <div className="mt-10">
+            <p className="text-base font-medium text-[#2F2F33] mb-5">
+              Company Logo
+            </p>
+
+            <div className="flex gap-x-4">
+              <div className="flex gap-x-4 items-center mb-12">
+                {preview ? (
+                  <Image
+                    src={preview || ""}
+                    height={84}
+                    width={84}
+                    alt="profileImage"
+                    className="h-[84px] w-[84px] rounded-full"
+                  />
+                ) : (
+                  <Image
+                    src="/assets/settings/Content.png"
+                    width={100}
+                    height={88}
+                    alt="company logo"
+                  />
+                )}
+                <label
+                  className="rounded-md font-poppinsSemiBold text-sm text-[#282A03] block w-fit lg:w-fit lg:text-left cursor-pointer"
+                  id="image-upload"
+                >
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePictureUpload}
+                    className="hidden"
+                  />
+
+                  <p className="text-sm text-[#4D4D4D] mb-2">
+                    Your company logo will reflect on employee invites and
+                    payslips.
+                  </p>
+                  <p className="text-xs font-medium text-[#4D4D4D] mb-4">
+                    Jpegs and PNGs allowed. Max size: 1mb
+                  </p>
+                  <p className="text-sm px-3 py-2 font-Graphik font-semibold rounded-md bg-[#F1F1F2] text-[#2F2F33] border border-[#E3E3E5] w-fit">
+                    {" "}
+                    Upload Logo
+                  </p>
+                </label>
+              </div>
+            </div>
+          </div> */}
                     <div>
                       <p className="text-[18px] font-Inter text-[#525252] text-center">
                         <span className="text-[#CF6E13] pr-1 ">
@@ -201,19 +273,16 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
                         or drag and drop
                       </p>
                       <p className="text-[#A3A3A3] text-[16.5px] text-center">
-                        {selectedFile
-                          ? `${selectedFile.name}`
-                          : "JPG, JPEG, PNG less than 1MB"}
+                        {file ? `${file.name}` : "JPG, JPEG, PNG less than 1MB"}
                       </p>
                     </div>
                   </div>
                   <input
                     type="file"
-                    name="reason"
                     id="image-upload"
                     accept="image/*"
                     className="hidden"
-                    onChange={handleFileChange}
+                    onChange={handlePictureUpload}
                   />
                 </label>
               </div>

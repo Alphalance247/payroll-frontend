@@ -49,7 +49,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
               <br />
               <input
                 type="text"
-                name="bankname"
+                name="bankName"
                 value={bankForm.bankName}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
@@ -66,7 +66,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
               <br />
               <input
                 type="text"
-                name="accountnumber"
+                name="accountNo"
                 value={bankForm.accountNo}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
@@ -83,7 +83,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
               <br />
               <input
                 type="text"
-                name="accountname"
+                name="accountName"
                 value={bankForm.accountName}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"

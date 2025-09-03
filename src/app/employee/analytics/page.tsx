@@ -59,24 +59,26 @@ const EmployeeAnalytics = () => {
       deduction: 5,
     },
   ];
+  const totalLeaveDays = 360;
   const actualLeaveChartData = [
     {
-      leaveType: "remainingLeave:",
+      leaveType: "remaining Leave:",
       daysTaken: 87,
       fill: "#F8F8F8",
     },
-    { leaveType: "carryOverLeave", daysTaken: 173, fill: "#78D6E0" },
-    { leaveType: "daysTaken", daysTaken: 100, fill: "#F8F8F8" },
+    { leaveType: "carry Over Leave", daysTaken: 173, fill: "#78D6E0" },
+    { leaveType: "days Taken", daysTaken: 100, fill: "#F8F8F8" },
   ];
   const sickLeaveChartData = [
     {
-      leaveType: "remainingLeave:",
+      leaveType: "remaining Leave",
       daysTaken: 100,
       fill: "#F8F8F8",
     },
-    { leaveType: "carryOverLeave", daysTaken: 183, fill: "#78D6E0" },
-    { leaveType: "daysTaken", daysTaken: 77, fill: "#F8F8F8" },
+    { leaveType: "carry Over Leave", daysTaken: 77, fill: "#78D6E0" },
+    { leaveType: "days Taken", daysTaken: 183, fill: "#F8F8F8" },
   ];
+
   return (
     // <ProtectedRoute>
     <EmployeeDashboardLayout>
@@ -287,8 +289,90 @@ const EmployeeAnalytics = () => {
             <LeavePieChart
               title="Annual leave"
               chartData={actualLeaveChartData}
-            />
-            <LeavePieChart title="sick leave" chartData={sickLeaveChartData} />
+            >
+              <div className="border border-[#E3E3E5] rounded-[8px] ">
+                <table className="h-[264px] w-[502px]  table-auto font-Graphik text-sm ">
+                  <thead className="bg-[#E3E3E5] h-[44px]">
+                    <tr className="">
+                      <th className="text-left text-[#71717A]  font-medium  px-6 capitalize ">
+                        annual leave
+                      </th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody className=" divide-y divide-[#EAECF0] capitalize">
+                    <tr>
+                      {" "}
+                      <td className="px-6 capitalize bg-[#F1F1F2] ">
+                        total Leave Days
+                      </td>
+                      <td className="px-6 capitalize bg-[#F1F1F2] ">
+                        {totalLeaveDays}
+                      </td>
+                    </tr>
+                    {actualLeaveChartData.map((leave, index) => (
+                      <tr
+                        key={index}
+                        className={
+                          index % 2 ? " bg-[#F1F1F2] " : "bg-[#F7F7F7]"
+                        }
+                      >
+                        <td className="px-6">{leave.leaveType}</td>
+                        <td className="px-6">{leave.daysTaken}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="h-[44px] bg-[#E3E3E5] text-[#2F2F33]">
+                    <tr className="">
+                      <td className="px-6  font-medium ">Leave Cycle Ends</td>
+                      <td className="px-6  font-medium ">Dec 31, 2025</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>{" "}
+            </LeavePieChart>
+            <LeavePieChart title="sick leave" chartData={sickLeaveChartData}>
+              <div className="border border-[#E3E3E5] rounded-[8px] ">
+                <table className="h-[264px] w-[502px]  table-auto font-Graphik text-sm ">
+                  <thead className="bg-[#E3E3E5] h-[44px]">
+                    <tr className="">
+                      <th className="text-left text-[#71717A]  font-medium  px-6 capitalize ">
+                        sick Leave
+                      </th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody className=" divide-y divide-[#EAECF0]">
+                    <tr>
+                      {" "}
+                      <td className="px-6 capitalize bg-[#F1F1F2] ">
+                        total Leave Days
+                      </td>
+                      <td className="px-6 capitalize bg-[#F1F1F2] ">
+                        {totalLeaveDays}
+                      </td>
+                    </tr>
+                    {sickLeaveChartData.map((leave, index) => (
+                      <tr
+                        key={index}
+                        className={index % 2 ? "bg-[#F7F7F7] " : "bg-[#F1F1F2]"}
+                      >
+                        <td className="px-6 capitalize">{leave.leaveType}</td>
+                        <td className="px-6 capitalize">{leave.daysTaken}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="h-[44px] bg-[#E3E3E5] text-[#2F2F33]">
+                    <tr className="">
+                      <td className="px-6  font-medium capitalize ">
+                        Leave Cycle Ends
+                      </td>
+                      <td className="px-6  font-medium ">Dec 31, 2025</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>{" "}
+            </LeavePieChart>
           </div>
         )}
       </main>

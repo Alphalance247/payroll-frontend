@@ -13,10 +13,10 @@ const EditPersonalDetails = ({
   const [form, setForm] = useState({
     fullName: "Adeola Lawal",
     email: "Adeola@gmail.com",
-    phoneNumber: "(+234) 000-0000",
+    phoneNumber: "+23480000000",
     reason: "Tell us why you are requesting this changes",
     nationality: "Nigerian",
-    dob: "21-Mar-1980",
+    dob: "21-09-1980",
   });
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -66,7 +66,7 @@ const EditPersonalDetails = ({
               <br />
               <input
                 type="text"
-                name="fullname"
+                name="fullName"
                 value={form.fullName}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
@@ -135,7 +135,7 @@ const EditPersonalDetails = ({
               <br />
               <input
                 type="date"
-                name="dateofbirth"
+                name="dob"
                 value={form.dob}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
