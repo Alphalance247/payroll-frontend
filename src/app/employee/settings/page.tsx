@@ -19,11 +19,13 @@ import EditPersonalDetails from "@/app/components/Employee-Profile/EditPersonalD
 import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress";
 import EditBankDetails from "@/app/components/Employee-Profile/EditBankDetails";
 import EditNextOfKin from "@/app/components/Employee-Profile/EditNextOfKin";
-const pages = () => {
+import { dataDetails } from "@/app/utils/type";
+
+const pages = (employeeInfo: dataDetails) => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);
   const [openBDModal, setOpenBDModal] = useState(false);
-  const [openNOKModal, setOpenPNOKDModal] = useState(false);
+  const [openNOKModal, setOpenNOKDModal] = useState(false);
   const [openHousingModal, setOpenHousingModal] = useState(false);
   const renderTabContent = () => {
     switch (activeTab) {
@@ -32,12 +34,12 @@ const pages = () => {
           <div className="grid gap-y-6">
             <PersonalDetails
               title="Personal details"
-              fullName="Ajibola Joyner Judas"
-              employeeID="0123456789"
-              email="Adetomiwa@Alluvium.net"
-              mobileNo="08134490207"
-              birthdate="29th September"
-              nationality="Nigerian"
+              fullName={employeeInfo.fullname || "Ajibola  Joyner Judas"}
+              employeeID={employeeInfo.employee_id || "0123456789"}
+              email={employeeInfo.email || "Adetomiwa@Alluvium.net"}
+              mobileNo={employeeInfo.nok_phone || "Adeola Lawal"}
+              birthdate={employeeInfo.dob || "29th September"}
+              nationality={employeeInfo.country || "Nigerian"}
             >
               <button
                 className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
@@ -48,7 +50,10 @@ const pages = () => {
               </button>
             </PersonalDetails>
             {openPDModal && (
-              <EditPersonalDetails onModalClose={() => setOpenPDModal(false)} />
+              <EditPersonalDetails
+                onModalClose={() => setOpenPDModal(false)}
+                employeeInfo={employeeInfo}
+              />
             )}
             <HomeAddress
               address="2, Abraham Adesanya"
@@ -70,7 +75,6 @@ const pages = () => {
             )}
           </div>
         );
-
       case "job details":
         return (
           <JobDetails
@@ -83,7 +87,6 @@ const pages = () => {
             contractEndDate="29th September"
           ></JobDetails>
         );
-
       case "bank details":
         return (
           <div>
@@ -121,12 +124,17 @@ const pages = () => {
               country="Nigerian"
             >
               {" "}
-              <button className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 ">
+              <button
+                className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
+                onClick={() => setOpenNOKDModal(true)}
+              >
                 <div> edit</div>
                 <Pencil className="text-[#E37915] w-[13.5px] h-[13.5px]" />
               </button>
             </NextOfKin>
-            {openNOKModal && <EditNextOfKin />}
+            {openNOKModal && (
+              <EditNextOfKin onModalClose={() => setOpenNOKDModal(false)} />
+            )}
           </div>
         );
       case "uploads":

@@ -9,6 +9,7 @@ import { FaImages } from "react-icons/fa";
 import { FaImagePortrait } from "react-icons/fa6";
 import { LuImages } from "react-icons/lu";
 import Image from "next/image";
+import Label from "@/app/common/label";
 // import { URL } from "url";
 
 const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
@@ -74,7 +75,7 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
   };
   return (
     <ModalOverlay onClose={onModalClose} className="">
-      <div className="w-[528px] h-[820px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative z-50  shadow-lg mt-20   ">
+      <div className="w-[528px] h-[604px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative z-50  shadow-lg mt-20   ">
         {" "}
         <form
           action="submit"
@@ -88,13 +89,13 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
           </div>
           <div className="grid gap-y-4 p-6">
             <div className="">
-              <label
-                htmlFor="country"
+              <Label
+                id="country"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
                 Country
-              </label>
+              </Label>
               <br />
               <input
                 type="text"
@@ -105,13 +106,13 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
               />
             </div>
             <div className="">
-              <label
-                htmlFor="state"
+              <Label
+                id="state"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
                 State
-              </label>
+              </Label>
               <br />
               <input
                 type="text"
@@ -122,13 +123,13 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
               />
             </div>
             <div className="">
-              <label
-                htmlFor="city"
+              <Label
+                id="city"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
                 City
-              </label>
+              </Label>
               <br />
               <input
                 type="text"
@@ -172,7 +173,7 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
-            <div className="">
+            {/* <div className="">
               <p className="text-[#2F2F33] text-sm font-medium font-Graphik ">
                 {" "}
                 Upload Proof of Address
@@ -194,12 +195,7 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
                         className="h-[84px] w-[84px] rounded-full"
                       />
                     ) : (
-                      // <Image
-                      //   src="/assets/settings/Content.png"
-                      //   width={100}
-                      //   height={88}
-                      //   alt="company logo"
-                      // />
+                     
                       <svg
                         className="mb-4"
                         width="44"
@@ -214,57 +210,7 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
                         />
                       </svg>
                     )}
-                    {/* <Images className="text-[#A3A3A3]" /> */}
-                    {/* <div className="mt-10">
-            <p className="text-base font-medium text-[#2F2F33] mb-5">
-              Company Logo
-            </p>
-
-            <div className="flex gap-x-4">
-              <div className="flex gap-x-4 items-center mb-12">
-                {preview ? (
-                  <Image
-                    src={preview || ""}
-                    height={84}
-                    width={84}
-                    alt="profileImage"
-                    className="h-[84px] w-[84px] rounded-full"
-                  />
-                ) : (
-                  <Image
-                    src="/assets/settings/Content.png"
-                    width={100}
-                    height={88}
-                    alt="company logo"
-                  />
-                )}
-                <label
-                  className="rounded-md font-poppinsSemiBold text-sm text-[#282A03] block w-fit lg:w-fit lg:text-left cursor-pointer"
-                  id="image-upload"
-                >
-                  <input
-                    id="image-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePictureUpload}
-                    className="hidden"
-                  />
-
-                  <p className="text-sm text-[#4D4D4D] mb-2">
-                    Your company logo will reflect on employee invites and
-                    payslips.
-                  </p>
-                  <p className="text-xs font-medium text-[#4D4D4D] mb-4">
-                    Jpegs and PNGs allowed. Max size: 1mb
-                  </p>
-                  <p className="text-sm px-3 py-2 font-Graphik font-semibold rounded-md bg-[#F1F1F2] text-[#2F2F33] border border-[#E3E3E5] w-fit">
-                    {" "}
-                    Upload Logo
-                  </p>
-                </label>
-              </div>
-            </div>
-          </div> */}
+                   
                     <div>
                       <p className="text-[18px] font-Inter text-[#525252] text-center">
                         <span className="text-[#CF6E13] pr-1 ">
@@ -286,7 +232,7 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
                   />
                 </label>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="flex items-center justify-end gap-x-4 px-6 border-t-[1px] h-[68px]  border-[#E3E3E5] bg-[#F7F7F7] rounded-b-[8px]">
             <button

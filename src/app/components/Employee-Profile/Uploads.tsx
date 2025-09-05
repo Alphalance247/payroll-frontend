@@ -1,46 +1,70 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { RiArrowDropDownFill } from "react-icons/ri";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import axios from "axios";
+import axiosInstance from "@/app/utils/axios";
+import { dataDetails } from "@/app/utils/type";
 interface tableContentsProps {
   name: string;
   document: string;
   fileSize: string;
 }
-const tableContents = [
-  {
-    name: "application",
-    document: "resume",
-    fileSize: "2.5mb",
-  },
-  {
-    name: "legal",
-    document: "contract",
-    fileSize: "2.5mb",
-  },
-  {
-    name: "identification",
-    document: "passport",
-    fileSize: "2.5mb",
-  },
-  {
-    name: "education",
-    document: "transcript",
-    fileSize: "2.5mb",
-  },
-  {
-    name: "application",
-    document: "resume",
-    fileSize: "2.5mb",
-  },
-  {
-    name: "legal",
-    document: "contract",
-    fileSize: "2.5mb",
-  },
-];
 
 const Uploads = ({ name, document, fileSize }: tableContentsProps) => {
+  // const tableContents = [
+  //   {
+  //     name: "application",
+  //     document: "resume",
+  //     fileSize: "2.5mb",
+  //   },
+  //   {
+  //     name: "legal",
+  //     document: "contract",
+  //     fileSize: "2.5mb",
+  //   },
+  //   {
+  //     name: "identification",
+  //     document: "passport",
+  //     fileSize: "2.5mb",
+  //   },
+  //   {
+  //     name: "education",
+  //     document: "transcript",
+  //     fileSize: "2.5mb",
+  //   },
+  //   {
+  //     name: "application",
+  //     document: "resume",
+  //     fileSize: "2.5mb",
+  //   },
+  //   {
+  //     name: "legal",
+  //     document: "contract",
+  //     fileSize: "2.5mb",
+  //   },
+  // ];
+  const [tableContents, setTableContents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchContents = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/employees/employee/my-employee-documents`
+        );
+        setTableContents(response.data);
+        console.log(response.data);
+      } catch (err: any) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContents();
+  }, []);
   return (
     // <div className="">
     <div className=" rounded-[10px]  border-[1px] table-auto overflow-auto h-auto">
@@ -55,11 +79,11 @@ const Uploads = ({ name, document, fileSize }: tableContentsProps) => {
         <tbody className="capitalize text-[#71717A] text-[16px] font-normal w-full h-[72px] ">
           {tableContents.map((tableContent, index) => (
             <tr key={index} className=" border-[1px]">
-              <td className="h-[60px] px-6">{tableContent.document}</td>
-              <td className="h-[60px] px-6">{tableContent.name}</td>
+              {/* <td className="h-[60px] px-6">{tableContent.document}</td> */}
+              {/* <td className="h-[60px] px-6">{tableContent.name}</td> */}
               <td className="h-[60px] px-6">
                 <div className="flex justify-between items-center">
-                  <div> {tableContent.fileSize}</div>
+                  {/* <div> {tableContent.fileSize}</div> */}
                   <div>
                     <BsThreeDotsVertical />
                   </div>

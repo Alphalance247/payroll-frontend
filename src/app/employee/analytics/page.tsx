@@ -72,11 +72,11 @@ const EmployeeAnalytics = () => {
   const sickLeaveChartData = [
     {
       leaveType: "remaining Leave",
-      daysTaken: 100,
+      daysTaken: 200,
       fill: "#F8F8F8",
     },
-    { leaveType: "carry Over Leave", daysTaken: 77, fill: "#78D6E0" },
-    { leaveType: "days Taken", daysTaken: 183, fill: "#F8F8F8" },
+    { leaveType: "carry Over Leave", daysTaken: 60, fill: "#78D6E0 " },
+    { leaveType: "days Taken", daysTaken: 100, fill: "#F8F8F8" },
   ];
 
   return (

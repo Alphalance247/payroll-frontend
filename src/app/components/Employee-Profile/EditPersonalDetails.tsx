@@ -4,20 +4,31 @@ import PhoneInput from "react-phone-number-input";
 import styles from "../../../styles/phone.module.scss";
 import "react-phone-number-input/style.css";
 import Label from "@/app/common/label";
+import useBoolean from "@/app/hooks/useBoolean";
+import toast from "react-hot-toast";
+import axiosInstance from "@/app/utils/axios";
+import { AxiosError } from "axios";
+import { dataDetails } from "@/app/utils/type";
 
 const EditPersonalDetails = ({
   onModalClose,
 }: {
   onModalClose: () => void;
 }) => {
+  const [showPopup, setShowPopup] = useState(false);
   const [form, setForm] = useState({
-    fullName: "Adeola Lawal",
-    email: "Adeola@gmail.com",
-    phoneNumber: "+23480000000",
-    reason: "Tell us why you are requesting this changes",
-    nationality: "Nigerian",
-    dob: "21-09-1980",
+    fullname: "halima",
+    email: "",
+    phoneNumber: "+234",
+    // reason: "Tell us why you are requesting this changes",
+    nationality: "",
+    dob: "",
   });
+  const [
+    editemployeeDetails,
+    setEditEmployeeDetails,
+    resetEditEmployeeDetails,
+  ] = useBoolean(false);
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -27,22 +38,49 @@ const EditPersonalDetails = ({
       [name]: value,
     }));
   };
-  const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = new FormData();
-    data.append("fullName", form.fullName);
-    data.append("email", form.email);
-    data.append("dob", form.dob);
-    data.append("phoneNumber", form.phoneNumber);
-    data.append("reason", form.reason);
-    data.append("nationality", form.nationality);
+    try {
+      setEditEmployeeDetails();
+      const response = await axiosInstance.patch(
+        `/employees/employee/update-profile`,
+        {
+          ...form,
+        }
+      );
+      if (response.status === 200 || 201) {
+        console.log(response.data);
+        toast.success("Employee Dtails updated successfully");
+        console.log(response.data);
+      }
+      setForm({
+        fullname: "",
+        email: "",
+        dob: "",
+        phoneNumber: "",
+        nationality: "",
+      });
 
-    console.log("submit");
-    onModalClose();
+      onModalClose();
+      resetEditEmployeeDetails();
+    } catch (error) {
+      toast.error("there is an error");
+      console.log(error);
+      onModalClose();
+      resetEditEmployeeDetails();
+    }
+
+    // const data = new FormData();
+    // data.append("fullName", form.fullName);
+    // data.append("email", form.email);
+    // data.append("dob", form.dob);
+    // data.append("phoneNumber", form.phoneNumber);
+    // data.append("reason", form.reason);
+    // data.append("nationality", form.nationality);
   };
   return (
     <ModalOverlay onClose={onModalClose} className=" ">
-      <div className="w-[528px] h-[796px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative  z-50   shadow-lg mt-20  ">
+      <div className="w-[528px] h-[610px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative  z-50   shadow-lg mt-20  ">
         {" "}
         <form
           action="submit"
@@ -66,8 +104,8 @@ const EditPersonalDetails = ({
               <br />
               <input
                 type="text"
-                name="fullName"
-                value={form.fullName}
+                name="fullname"
+                value={form.fullname}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
@@ -86,6 +124,7 @@ const EditPersonalDetails = ({
                 name="email"
                 value={form.email}
                 onChange={handleChange}
+                readOnly
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
@@ -103,6 +142,7 @@ const EditPersonalDetails = ({
                 international
                 defaultCountry="NG"
                 required
+                readOnly
                 value={form.phoneNumber || ""}
                 onChange={(value) =>
                   setForm({
@@ -110,7 +150,7 @@ const EditPersonalDetails = ({
                     phoneNumber: value || "",
                   })
                 }
-                className={`${styles.PhoneInput} outline-green-400 mt-2 h-10`}
+                className={`${styles.PhoneInput} outline-none rounded-md border-none mt-2 h-10`}
                 numberInputProps={{
                   className: `outline-none border-[#E0E0E0] border-[1px] text-[black] rounded-tr-md rounded-br-md rounded-tl-none rounded-bl-none text-sm w-[100%] px-3 py-[14px] h-10`,
                 }}
@@ -126,7 +166,7 @@ const EditPersonalDetails = ({
             </div>
             <div className="">
               <Label
-                id="date of birth"
+                id="dob"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
@@ -135,11 +175,23 @@ const EditPersonalDetails = ({
               <br />
               <input
                 type="date"
+                id="dob"
                 name="dob"
+                readOnly
                 value={form.dob}
                 onChange={handleChange}
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+                onMouseOver={() => setShowPopup(true)}
+                onMouseLeave={() => setShowPopup(false)}
+                className="relative rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
+              {showPopup && (
+                <div className="absolute text-center right-24 left-24 z-20 w-[60%] transition bg-white shadow-md  h-[100px] rounded-md font-Graphik text-sm text[#2F2F33]">
+                  <p className="flex justify-center items-center  my-10">
+                    {" "}
+                    Date of birth can not be edited
+                  </p>
+                </div>
+              )}
             </div>
             <div className="">
               <Label
@@ -154,11 +206,12 @@ const EditPersonalDetails = ({
                 type="text"
                 name="nationality"
                 value={form.nationality}
+                readOnly
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
-            <div className="">
+            {/* <div className="">
               <Label
                 id=" Reason For Update"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
@@ -174,7 +227,7 @@ const EditPersonalDetails = ({
                 // placeholder="Tell us why you are requesting this changes"
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-[132px] w-full mt-2  text[16px] font-medium pl-4 font-Graphik text-[#BEBEC2] pt-3 resize-none"
               ></textarea>
-            </div>
+            </div> */}
           </div>
           <div className="flex items-center justify-end gap-x-4 mt-2 px-6 border-t-[1px] h-[68px] border-[#E3E3E5] bg-[#F7F7F7] rounded-b-[8px]">
             <button
@@ -184,7 +237,7 @@ const EditPersonalDetails = ({
               Cancel
             </button>
             <button className="bg-[#E37915] w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm">
-              Submit Request{" "}
+              {editemployeeDetails ? "Updated" : "Submit Request"}
             </button>
           </div>
         </form>

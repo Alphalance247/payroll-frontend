@@ -7,7 +7,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
     accountNo: "08134490207",
     accountName: "Adeola Lawal",
     bvn: "8134490207",
-    reason: "Tell us why you are requesting this changes",
+    // reason: "Tell us why you are requesting this changes",
   });
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -25,7 +25,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
   };
   return (
     <ModalOverlay onClose={onModalClose} className="">
-      <div className="w-[528px] h-[708px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative z-50 shadow-lg mt-20   ">
+      <div className="w-[528px] h-[524px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative z-50 shadow-lg mt-20   ">
         {" "}
         <form
           action="submit"
@@ -50,6 +50,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
               <input
                 type="text"
                 name="bankName"
+                readOnly
                 value={bankForm.bankName}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
@@ -67,6 +68,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
               <input
                 type="text"
                 name="accountNo"
+                readOnly
                 value={bankForm.accountNo}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
@@ -84,6 +86,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
               <input
                 type="text"
                 name="accountName"
+                readOnly
                 value={bankForm.accountName}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
@@ -106,7 +109,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
-            <div className="">
+            {/* <div className="">
               <Label
                 id=" Upload proof "
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
@@ -119,10 +122,9 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
                 name="reason"
                 value={bankForm.reason}
                 onChange={handleChange}
-                // placeholder="Tell us why you are requesting this changes"
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-[132px] w-full mt-2  text[16px] font-medium pl-4 font-Graphik text-[#BEBEC2] pt-3 resize-none"
               ></textarea>
-            </div>
+            </div> */}
           </div>
           <div className="flex items-center justify-end gap-x-4 mt-2 px-6 border-t-[1px] h-[68px] border-[#E3E3E5] bg-[#F7F7F7] rounded-b-[8px]">
             <button
