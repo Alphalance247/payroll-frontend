@@ -19,9 +19,8 @@ import EditPersonalDetails from "@/app/components/Employee-Profile/EditPersonalD
 import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress";
 import EditBankDetails from "@/app/components/Employee-Profile/EditBankDetails";
 import EditNextOfKin from "@/app/components/Employee-Profile/EditNextOfKin";
-import { dataDetails } from "@/app/utils/type";
 
-const pages = (employeeInfo: dataDetails) => {
+const pages = () => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);
   const [openBDModal, setOpenBDModal] = useState(false);
@@ -32,15 +31,7 @@ const pages = (employeeInfo: dataDetails) => {
       case "personal details":
         return (
           <div className="grid gap-y-6">
-            <PersonalDetails
-              title="Personal details"
-              fullName={employeeInfo.fullname || "Ajibola  Joyner Judas"}
-              employeeID={employeeInfo.employee_id || "0123456789"}
-              email={employeeInfo.email || "Adetomiwa@Alluvium.net"}
-              mobileNo={employeeInfo.nok_phone || "Adeola Lawal"}
-              birthdate={employeeInfo.dob || "29th September"}
-              nationality={employeeInfo.country || "Nigerian"}
-            >
+            <PersonalDetails title="Personal details">
               <button
                 className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
                 onClick={() => setOpenPDModal(true)}
@@ -50,16 +41,9 @@ const pages = (employeeInfo: dataDetails) => {
               </button>
             </PersonalDetails>
             {openPDModal && (
-              <EditPersonalDetails
-                onModalClose={() => setOpenPDModal(false)}
-                employeeInfo={employeeInfo}
-              />
+              <EditPersonalDetails onModalClose={() => setOpenPDModal(false)} />
             )}
-            <HomeAddress
-              address="2, Abraham Adesanya"
-              city=" Lagos"
-              title="House Address"
-            >
+            <HomeAddress title="House Address">
               <button
                 className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
                 onClick={() => setOpenHousingModal(true)}
@@ -76,27 +60,11 @@ const pages = (employeeInfo: dataDetails) => {
           </div>
         );
       case "job details":
-        return (
-          <JobDetails
-            title="job Details"
-            hiredType="employee"
-            jobTitle="graphics designer"
-            team="Design team"
-            mobileNo="08134490207"
-            contractStartDate="29th September"
-            contractEndDate="29th September"
-          ></JobDetails>
-        );
+        return <JobDetails title="job Details"></JobDetails>;
       case "bank details":
         return (
           <div>
-            <BankDetails
-              title="Bank Details"
-              bankName="access"
-              accountName="Ajibola  Joyner Judas"
-              accountNo="8134490207"
-              bvn="8134490207"
-            >
+            <BankDetails title="Bank Details">
               {" "}
               <button
                 className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
@@ -114,15 +82,7 @@ const pages = (employeeInfo: dataDetails) => {
       case "next of kin":
         return (
           <div>
-            <NextOfKin
-              title="next of kin"
-              fullName="Ajibola  Joyner Judas"
-              relationship="0123456789"
-              email="08134490207"
-              mobileNo="08134490207"
-              city="lagos"
-              country="Nigerian"
-            >
+            <NextOfKin title="next of kin">
               {" "}
               <button
                 className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
@@ -138,7 +98,7 @@ const pages = (employeeInfo: dataDetails) => {
           </div>
         );
       case "uploads":
-        return <Uploads name={""} document={""} fileSize={""}></Uploads>;
+        return <Uploads />;
       case "payslips":
         return <PaySlips></PaySlips>;
 
@@ -151,18 +111,7 @@ const pages = (employeeInfo: dataDetails) => {
       <EmployeeDashboardLayout>
         {/* the employee DP */}
         <div className="grid  ">
-          <EmployeeDp
-            name={"Ajibola Joyner Judas"}
-            role={"Graphic Designer"}
-            dp={"/assets/employee-dashboard/home/DP.png"}
-          >
-            {" "}
-            <div className="w-[61.8px]">
-              <button className=" font-Graphik font-medium text[14.11px] leading[21.17px]  text-[#188C43] bg-[#E9F9EF] px-[9.41px] p-y[2.35px] border-[1.18px] rounded-[18.82px] ">
-                Active
-              </button>{" "}
-            </div>
-          </EmployeeDp>
+          <EmployeeDp dp={"/assets/employee-dashboard/home/DP.png"} />{" "}
           {/* sidebar tabs */}
           <div className="flex  px-[72px] space-x-10 ">
             <div className="w-1/4">

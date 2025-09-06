@@ -2,16 +2,15 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { RiArrowDropDownFill } from "react-icons/ri";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import axios from "axios";
-import axiosInstance from "@/app/utils/axios";
-import { dataDetails } from "@/app/utils/type";
+import { useDocumentsUploaded } from "@/stores/employeeDetails/UploadDocument";
+import Spinner from "@/app/common/spinner";
 interface tableContentsProps {
-  name: string;
-  document: string;
-  fileSize: string;
+  // name: string;
+  // document: string;
+  // fileSize: string;
 }
 
-const Uploads = ({ name, document, fileSize }: tableContentsProps) => {
+const Uploads = ({}: tableContentsProps) => {
   // const tableContents = [
   //   {
   //     name: "application",
@@ -44,27 +43,38 @@ const Uploads = ({ name, document, fileSize }: tableContentsProps) => {
   //     fileSize: "2.5mb",
   //   },
   // ];
-  const [tableContents, setTableContents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const [tableContents, setTableContents] = useState([
+    {
+      name: "",
+      document: "",
+      fileSize: "",
+    },
+  ]);
+  const { document, loading, fetchDocument } = useDocumentsUploaded();
+  // console.log(document?.document_name);
   useEffect(() => {
-    const fetchContents = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `/employees/employee/my-employee-documents`
-        );
-        setTableContents(response.data);
-        console.log(response.data);
-      } catch (err: any) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchDocument();
+  }, [fetchDocument]);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
 
-    fetchContents();
-  }, []);
+  // useEffect(() => {
+  //   const fetchContents = async () => {
+  //     try {
+  //       const response = await axiosInstance.get(
+  //         `/employees/employee/my-employee-documents`
+  //       );
+  //       setTableContents(response.data);
+  //       console.log(response.data);
+  //     } catch (err: any) {
+  //       setError(err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchContents();
+  // }, []);
   return (
     // <div className="">
     <div className=" rounded-[10px]  border-[1px] table-auto overflow-auto h-auto">
@@ -77,20 +87,34 @@ const Uploads = ({ name, document, fileSize }: tableContentsProps) => {
           </tr>
         </thead>
         <tbody className="capitalize text-[#71717A] text-[16px] font-normal w-full h-[72px] ">
-          {tableContents.map((tableContent, index) => (
-            <tr key={index} className=" border-[1px]">
-              {/* <td className="h-[60px] px-6">{tableContent.document}</td> */}
-              {/* <td className="h-[60px] px-6">{tableContent.name}</td> */}
-              <td className="h-[60px] px-6">
-                <div className="flex justify-between items-center">
-                  {/* <div> {tableContent.fileSize}</div> */}
-                  <div>
-                    <BsThreeDotsVertical />
-                  </div>
+          {loading ? (
+            <Spinner />
+          ) : (
+            <>
+              {document ? (
+                <>
+                  {document.map((info, index) => (
+                    <tr key={index} className=" border-[1px]">
+                      <td className="h-[60px] px-6">{}</td>
+                      <td className="h-[60px] px-6">{}</td>
+                      <td className="h-[60px] px-6">
+                        <div className="flex justify-between items-center">
+                          {/* <div> {tableContent.fileSize}</div> */}
+                          <div>
+                            <BsThreeDotsVertical />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : (
+                <div className="px-6 text-[#4D4D4D] font-Graphik pt-6">
+                  No documents is available
                 </div>
-              </td>
-            </tr>
-          ))}
+              )}
+            </>
+          )}
         </tbody>
         <tfoot className="">
           <tr className="w-full h-[72px] ">

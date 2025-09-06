@@ -8,7 +8,6 @@ import useBoolean from "@/app/hooks/useBoolean";
 import toast from "react-hot-toast";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
-import { dataDetails } from "@/app/utils/type";
 
 const EditPersonalDetails = ({
   onModalClose,
@@ -17,12 +16,12 @@ const EditPersonalDetails = ({
 }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [form, setForm] = useState({
-    fullname: "halima",
-    email: "",
-    phoneNumber: "+234",
+    fullname: "",
+    email: "adeolalawal@gmail.com",
+    phoneNumber: "+23480536740",
     // reason: "Tell us why you are requesting this changes",
-    nationality: "",
-    dob: "",
+    nationality: "nigerian",
+    dob: "2005-09-28",
   });
   const [
     editemployeeDetails,
@@ -49,7 +48,6 @@ const EditPersonalDetails = ({
         }
       );
       if (response.status === 200 || 201) {
-        console.log(response.data);
         toast.success("Employee Dtails updated successfully");
         console.log(response.data);
       }
@@ -64,6 +62,11 @@ const EditPersonalDetails = ({
       onModalClose();
       resetEditEmployeeDetails();
     } catch (error) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (error instanceof AxiosError) {
+        // Check if err is an instance of AxiosError
+        errorMessage = error.response?.data?.message || errorMessage;
+      }
       toast.error("there is an error");
       console.log(error);
       onModalClose();
