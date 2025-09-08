@@ -12,6 +12,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
     acct_num: employeeData?.data.acct_num || "",
     acct_name: employeeData?.data.acct_num || "",
     bvn: employeeData?.data.bank_code || "",
+
     // reason: "Tell us why you are requesting this changes",
   });
   const [editForm, setEditForm, resetForm] = useBoolean();
@@ -61,7 +62,8 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
           <div className="grid gap-y-4 p-6">
             <div className="">
               <Label
-                id="bank_name"
+                // id="bank_name"
+                id="fullname"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
@@ -104,15 +106,22 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
                 Account Name
               </Label>
               <br />
-
               <input
+                type="text"
+                name="acct_name"
+                id=""
+                onChange={handleChange}
+                value={form.acct_name}
+                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+              />
+              {/* <input
                 type="text"
                 name="acct_name"
                 readOnly
                 value={form.acct_name}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              />
+              /> */}
             </div>
             <div className="">
               <Label

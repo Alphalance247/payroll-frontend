@@ -148,6 +148,14 @@ const EditPersonalDetails = ({
                   className: `outline-none border-[#E0E0E0] border-[1px] text-[black] rounded-tr-md rounded-br-md rounded-tl-none rounded-bl-none text-sm w-[100%] px-3 py-[14px] h-10`,
                 }}
               />
+              {showPopup && (
+                <div className="absolute text-center right-24 left-24 z-20 w-[60%] transition bg-white shadow-md  h-[50px] rounded-md font-Graphik text-sm ]">
+                  <p className="flex justify-center items-center text-[#E37915] my-4">
+                    {" "}
+                    Phone number can not be edited
+                  </p>
+                </div>
+              )}
 
               {/* <input
                 type="tel"
@@ -177,14 +185,14 @@ const EditPersonalDetails = ({
                 onMouseLeave={() => setShowPopup(false)}
                 className="relative rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
-              {showPopup && (
-                <div className="absolute text-center right-24 left-24 z-20 w-[60%] transition bg-white shadow-md  h-[100px] rounded-md font-Graphik text-sm text[#2F2F33]">
-                  <p className="flex justify-center items-center  my-10">
+              {/* {showPopup && (
+                <div className="absolute text-center right-24 left-24 z-20 w-[60%] transition bg-white shadow-md  h-[50px] rounded-md font-Graphik text-sm ]">
+                  <p className="flex justify-center items-center text-[#E37915] my-4">
                     {" "}
                     Date of birth can not be edited
                   </p>
                 </div>
-              )}
+              )} */}
             </div>
             <div className="">
               <Label

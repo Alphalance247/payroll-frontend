@@ -20,7 +20,7 @@ import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress
 import EditBankDetails from "@/app/components/Employee-Profile/EditBankDetails";
 import EditNextOfKin from "@/app/components/Employee-Profile/EditNextOfKin";
 import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
-
+import { useDocumentsUploaded } from "@/stores/employeeDetails/UploadDocument";
 const pages = () => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);
@@ -32,6 +32,10 @@ const pages = () => {
     useEffect(() => {
       fetchPersonalDetails();
     }, [fetchPersonalDetails]);
+    const { fetchDocument } = useDocumentsUploaded();
+    useEffect(() => {
+      fetchDocument();
+    }, [fetchDocument]);
     switch (activeTab) {
       case "personal details":
         return (

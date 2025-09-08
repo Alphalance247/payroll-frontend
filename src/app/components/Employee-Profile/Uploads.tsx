@@ -1,79 +1,11 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useEffect, useState } from "react";
 import { RiArrowDropDownFill } from "react-icons/ri";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDocumentsUploaded } from "@/stores/employeeDetails/UploadDocument";
 import Spinner from "@/app/common/spinner";
-interface tableContentsProps {
-  // name: string;
-  // document: string;
-  // fileSize: string;
-}
 
-const Uploads = ({}: tableContentsProps) => {
-  // const tableContents = [
-  //   {
-  //     name: "application",
-  //     document: "resume",
-  //     fileSize: "2.5mb",
-  //   },
-  //   {
-  //     name: "legal",
-  //     document: "contract",
-  //     fileSize: "2.5mb",
-  //   },
-  //   {
-  //     name: "identification",
-  //     document: "passport",
-  //     fileSize: "2.5mb",
-  //   },
-  //   {
-  //     name: "education",
-  //     document: "transcript",
-  //     fileSize: "2.5mb",
-  //   },
-  //   {
-  //     name: "application",
-  //     document: "resume",
-  //     fileSize: "2.5mb",
-  //   },
-  //   {
-  //     name: "legal",
-  //     document: "contract",
-  //     fileSize: "2.5mb",
-  //   },
-  // ];
-  const [tableContents, setTableContents] = useState([
-    {
-      name: "",
-      document: "",
-      fileSize: "",
-    },
-  ]);
-  const { document, loading, fetchDocument } = useDocumentsUploaded();
-  useEffect(() => {
-    fetchDocument();
-  }, [fetchDocument]);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
-
-  // useEffect(() => {
-  //   const fetchContents = async () => {
-  //     try {
-  //       const response = await axiosInstance.get(
-  //         `/employees/employee/my-employee-documents`
-  //       );
-  //       setTableContents(response.data);
-  //       console.log(response.data);
-  //     } catch (err: any) {
-  //       setError(err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchContents();
-  // }, []);
+const Uploads = () => {
+  const { documents, loading } = useDocumentsUploaded();
   return (
     <div className=" rounded-[10px]  border-[1px] table-auto overflow-auto h-fit">
       <table className="  w-full  font-Graphik">
@@ -89,15 +21,15 @@ const Uploads = ({}: tableContentsProps) => {
             <Spinner />
           ) : (
             <>
-              {document ? (
+              {documents?.data.length ? (
                 <>
-                  {document.map((info, index) => (
+                  {documents?.data.map((document, index) => (
                     <tr key={index} className=" border-[1px]">
-                      <td className="h-[60px] px-6">{}</td>
-                      <td className="h-[60px] px-6">{}</td>
+                      <td className="h-[60px] px-6">{document.document}</td>
+                      <td className="h-[60px] px-6">{document.doc_name}</td>
                       <td className="h-[60px] px-6">
                         <div className="flex justify-between items-center">
-                          {/* <div> {tableContent.fileSize}</div> */}
+                          <div> {document.file_size}</div>
                           <div>
                             <BsThreeDotsVertical />
                           </div>
