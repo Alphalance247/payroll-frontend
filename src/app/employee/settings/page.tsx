@@ -12,13 +12,14 @@ import HomeAddress from "@/app/components/Employee-Profile/HomeAddress";
 import JobDetails from "@/app/components/Employee-Profile/JobDetails";
 import BankDetails from "@/app/components/Employee-Profile/BankDetails";
 import NextOfKin from "@/app/components/Employee-Profile/NextOfKin";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Uploads from "@/app/components/Employee-Profile/Uploads";
 import PaySlips from "@/app/components/Employee-Profile/PaySlips";
 import EditPersonalDetails from "@/app/components/Employee-Profile/EditPersonalDetails";
 import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress";
 import EditBankDetails from "@/app/components/Employee-Profile/EditBankDetails";
 import EditNextOfKin from "@/app/components/Employee-Profile/EditNextOfKin";
+import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
 
 const pages = () => {
   const [activeTab, setactiveTab] = useState("personal details");
@@ -27,6 +28,10 @@ const pages = () => {
   const [openNOKModal, setOpenNOKDModal] = useState(false);
   const [openHousingModal, setOpenHousingModal] = useState(false);
   const renderTabContent = () => {
+    const { fetchPersonalDetails } = useEmployeeStore();
+    useEffect(() => {
+      fetchPersonalDetails();
+    }, [fetchPersonalDetails]);
     switch (activeTab) {
       case "personal details":
         return (

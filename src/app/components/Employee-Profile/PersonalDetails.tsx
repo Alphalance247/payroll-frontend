@@ -6,13 +6,9 @@ interface PersonalDetailsProp {
   children: any;
 }
 const PersonalDetails = ({ title, children }: PersonalDetailsProp) => {
-  const { employee, loading, fetchPersonalDetails } = useEmployeeStore();
-  // console.log(employee?.data);
-  useEffect(() => {
-    fetchPersonalDetails();
-  }, [fetchPersonalDetails]);
+  const { employeeData, loading } = useEmployeeStore();
   return (
-    <div className="grid gap-[10px] border-[1px] rounded-[10px] p-10 ">
+    <div className="grid gap-[10px] border-[1px] rounded-[10px] p-10 h-fit">
       <div className="flex justify-between items-center pb-6  ">
         <h1 className="text-xl text-[#4D4D4D] font-semibold font-Graphik capitalize">
           {title}
@@ -23,7 +19,7 @@ const PersonalDetails = ({ title, children }: PersonalDetailsProp) => {
         <Spinner />
       ) : (
         <>
-          {!employee ? (
+          {!employeeData ? (
             <div className="font-Graphik text-[#4D4D4D] px-6 pt-6">
               No details found
             </div>
@@ -37,7 +33,7 @@ const PersonalDetails = ({ title, children }: PersonalDetailsProp) => {
                         Full Name
                       </div>
                       <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                        {employee.data.fullname}
+                        {employeeData.data.fullname}
                       </div>
                     </div>
                   </div>
@@ -47,7 +43,7 @@ const PersonalDetails = ({ title, children }: PersonalDetailsProp) => {
                         Employment ID
                       </div>
                       <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                        {employee.data.employee_id}
+                        {employeeData.data.employee_id}
                       </div>
                     </div>
                   </div>
@@ -59,7 +55,7 @@ const PersonalDetails = ({ title, children }: PersonalDetailsProp) => {
                         Email
                       </div>
                       <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                        {employee.data.email}
+                        {employeeData.data.email}
                       </div>
                     </div>
                   </div>
@@ -69,7 +65,7 @@ const PersonalDetails = ({ title, children }: PersonalDetailsProp) => {
                         Mobile Number
                       </div>
                       <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                        {employee.data.phone}
+                        {employeeData.data.phone}
                       </div>
                     </div>
                   </div>
@@ -81,7 +77,7 @@ const PersonalDetails = ({ title, children }: PersonalDetailsProp) => {
                         Birthdate
                       </div>
                       <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                        {employee.data.dob}{" "}
+                        {employeeData.data.dob}{" "}
                       </div>
                     </div>
                   </div>
@@ -91,7 +87,7 @@ const PersonalDetails = ({ title, children }: PersonalDetailsProp) => {
                         Nationality
                       </div>
                       <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                        {employee.data.country}{" "}
+                        {employeeData.data.country}{" "}
                       </div>
                     </div>
                   </div>

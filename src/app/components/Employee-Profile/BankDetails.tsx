@@ -1,29 +1,15 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 interface BankDetailsProps {
   title: string;
   children: any;
-  // accountNo: string;
-  // accountName: string;
-  // bankName: string;
-  // bvn: string;
 }
-const BankDetails = ({
-  title,
-  children,
-}: // accountName,
-// accountNo,
-// bvn,
-// bankName,
-BankDetailsProps) => {
-  const { employee, loading, fetchPersonalDetails } = useEmployeeStore();
-  useEffect(() => {
-    fetchPersonalDetails();
-  }, [fetchPersonalDetails]);
+const BankDetails = ({ title, children }: BankDetailsProps) => {
+  const { employeeData, loading } = useEmployeeStore();
   return (
-    <div className="grid gap-[10px]  h-[436px] border-[1px] rounded-[10px] px-10">
-      <div className="flex justify-between items-center  ">
+    <div className="grid gap-[10px]  h-fit border-[1px] rounded-[10px] p-10">
+      <div className="flex justify-between items-center  pb-6">
         <h1 className="text-xl text-[#4D4D4D] font-semibold font-Graphik">
           {title}
         </h1>
@@ -33,8 +19,8 @@ BankDetailsProps) => {
         <Spinner />
       ) : (
         <>
-          {employee ? (
-            <div className="grid  pt-0 mb-36">
+          {employeeData ? (
+            <div className="grid gap-y-10 ">
               <div className="flex ">
                 <div className="w-2/3">
                   <div className="w-[266.33px] h-[60px] flex flex-col space-y-4">
@@ -42,7 +28,7 @@ BankDetailsProps) => {
                       account name
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                      {employee.data.acct_name}
+                      {employeeData.data.acct_name}
                     </div>
                   </div>
                 </div>
@@ -52,7 +38,7 @@ BankDetailsProps) => {
                       Bank name
                     </div>
                     <div className="font-normal text-base font-Graphik text-[#4D4D4D]">
-                      {employee.data.bank_name}
+                      {employeeData.data.bank_name}
                     </div>
                   </div>
                 </div>
@@ -64,7 +50,7 @@ BankDetailsProps) => {
                       Account number
                     </div>
                     <div className="font-normal text-base font-Graphik text-[#4D4D4D]">
-                      {employee.data.acct_num}
+                      {employeeData.data.acct_num}
                     </div>
                   </div>
                 </div>
@@ -74,7 +60,7 @@ BankDetailsProps) => {
                       Bvn
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                      {employee.data.bank_code}
+                      {employeeData.data.bank_code}
                     </div>
                   </div>
                 </div>

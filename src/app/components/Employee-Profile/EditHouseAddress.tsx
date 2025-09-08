@@ -1,29 +1,28 @@
 import ModalOverlay from "@/app/common/modal/modal";
-import { Blob } from "buffer";
-import { url } from "inspector";
-import { ImagesIcon } from "lucide-react";
-import { useRef, useState } from "react";
-import { BiImages } from "react-icons/bi";
-import { BsImage, BsImages } from "react-icons/bs";
-import { FaImages } from "react-icons/fa";
-import { FaImagePortrait } from "react-icons/fa6";
-import { LuImages } from "react-icons/lu";
-import Image from "next/image";
+import { useState } from "react";
+import useBoolean from "@/app/hooks/useBoolean";
+import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
 import Label from "@/app/common/label";
+import axiosInstance from "@/app/utils/axios";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
 // import { URL } from "url";
 
 const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
-  const [preview, setPreview] = useState<string | null | undefined>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const MAX_FILE_SIZE_BYTES = 1 * 1024 * 1024; // 1MB
+  // const [preview, setPreview] = useState<string | null | undefined>(null);
+  // const [file, setFile] = useState<File | null>(null);
+  // const MAX_FILE_SIZE_BYTES = 1 * 1024 * 1024; // 1MB
+  const { employeeData, fetchPersonalDetails } = useEmployeeStore();
   const [form, setForm] = useState({
-    country: "Nigeria",
-    state: "lagos",
-    city: "ikeja",
-    streetAddress: "2, Abraham Adesanya",
-    postalCode: "100000001",
-    addressProof: "",
+    country: employeeData?.data.country || "",
+    state: employeeData?.data.state || "",
+    city: employeeData?.data.city || "",
+    street_address: employeeData?.data.street_address || "",
+    postal_code: employeeData?.data.postal_code || "",
+    // addressProof: "",
   });
+  const [editHouseDetails, setEditHouseDetails, resetEditHouseDetails] =
+    useBoolean(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prevData) => ({
@@ -34,15 +33,40 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
   // handle form submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Create FormData
-    const data = new FormData();
-    data.append("country", form.country);
-    data.append("city", form.city);
-    data.append("state", form.state);
-    data.append("address", form.streetAddress);
-    console.log(data);
-
-    onModalClose();
+    try {
+      setEditHouseDetails();
+      const response = await axiosInstance.patch(
+        `/employees/employee/update-profile`,
+        {
+          country: form.country,
+          state: form.state,
+          city: form.city,
+          street_address: form.street_address,
+          postal_code: form.postal_code,
+        }
+      );
+      if (response.status === 200 || 201) {
+        toast.success("House Address updated successfully!");
+      }
+      setForm({
+        country: "",
+        state: "",
+        city: "",
+        street_address: "",
+        postal_code: "",
+      });
+      onModalClose();
+      resetEditHouseDetails();
+      fetchPersonalDetails();
+    } catch (error) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (error instanceof AxiosError) {
+        errorMessage = error.response?.data?.message || errorMessage;
+      }
+      toast.error(errorMessage);
+      onModalClose();
+      resetEditHouseDetails();
+    }
   };
   // Process the file (e.g., upload)
   // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,16 +87,16 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
   //   }
   //   return;
   // };
-  const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadFile = e.target.files?.[0];
-    if (uploadFile && uploadFile.size <= 5 * 1024 * 1024) {
-      setFile(uploadFile);
+  // const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const uploadFile = e.target.files?.[0];
+  //   if (uploadFile && uploadFile.size <= 5 * 1024 * 1024) {
+  //     setFile(uploadFile);
 
-      setPreview(URL.createObjectURL(uploadFile));
-    } else {
-      alert("File must be less than 5MB");
-    }
-  };
+  //     setPreview(URL.createObjectURL(uploadFile));
+  //   } else {
+  //     alert("File must be less than 5MB");
+  //   }
+  // };
   return (
     <ModalOverlay onClose={onModalClose} className="">
       <div className="w-[528px] h-[604px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative z-50  shadow-lg mt-20   ">
@@ -141,7 +165,7 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
             </div>
             <div className="">
               <label
-                htmlFor="streetAddress"
+                htmlFor="street_address"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
@@ -150,15 +174,15 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
               <br />
               <input
                 type="text"
-                name="streetAddress"
-                value={form.streetAddress}
+                name="street_address"
+                value={form.street_address}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
             <div className="">
               <label
-                htmlFor="postal code"
+                htmlFor="postal_code"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
@@ -167,8 +191,8 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
               <br />
               <input
                 type="text"
-                name="postalCode"
-                value={form.postalCode}
+                name="postal_code"
+                value={form.postal_code}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
@@ -242,7 +266,7 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
               Cancel
             </button>
             <button className="bg-[#E37915] w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm">
-              Submit Request{" "}
+              {editHouseDetails ? "Updated" : "Submit Request"}
             </button>
           </div>
         </form>

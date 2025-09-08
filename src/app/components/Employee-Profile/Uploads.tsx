@@ -51,7 +51,6 @@ const Uploads = ({}: tableContentsProps) => {
     },
   ]);
   const { document, loading, fetchDocument } = useDocumentsUploaded();
-  // console.log(document?.document_name);
   useEffect(() => {
     fetchDocument();
   }, [fetchDocument]);
@@ -76,8 +75,7 @@ const Uploads = ({}: tableContentsProps) => {
   //   fetchContents();
   // }, []);
   return (
-    // <div className="">
-    <div className=" rounded-[10px]  border-[1px] table-auto overflow-auto h-auto">
+    <div className=" rounded-[10px]  border-[1px] table-auto overflow-auto h-fit">
       <table className="  w-full  font-Graphik">
         <thead className=" bg-[#E3E3E5] h-[60px] text-sm text-[#71717A] capitalize font-medium w-full ">
           <tr className=" ">
@@ -109,9 +107,11 @@ const Uploads = ({}: tableContentsProps) => {
                   ))}
                 </>
               ) : (
-                <div className="px-6 text-[#4D4D4D] font-Graphik pt-6">
-                  No documents is available
-                </div>
+                <tr className="px-6 text-[#4D4D4D] font-Graphik pt-6">
+                  <td>
+                    <div className="px-6">No documents is available</div>
+                  </td>
+                </tr>
               )}
             </>
           )}
@@ -156,7 +156,6 @@ const Uploads = ({}: tableContentsProps) => {
         </tfoot>
       </table>
     </div>
-    // </div>
   );
 };
 

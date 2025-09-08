@@ -1,26 +1,47 @@
 import Label from "@/app/common/label";
 import ModalOverlay from "@/app/common/modal/modal";
 import { useState } from "react";
+import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import toast from "react-hot-toast";
+import useBoolean from "@/app/hooks/useBoolean";
+import axiosInstance from "@/app/utils/axios";
 const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
-  const [bankForm, setBankForm] = useState({
-    bankName: "Access bank",
-    accountNo: "08134490207",
-    accountName: "Adeola Lawal",
-    bvn: "8134490207",
+  const { employeeData, fetchPersonalDetails } = useEmployeeStore();
+  const [form, setForm] = useState({
+    bank_name: employeeData?.data.bank_name || "",
+    acct_num: employeeData?.data.acct_num || "",
+    acct_name: employeeData?.data.acct_num || "",
+    bvn: employeeData?.data.bank_code || "",
     // reason: "Tell us why you are requesting this changes",
   });
+  const [editForm, setEditForm, resetForm] = useBoolean();
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setBankForm((prevData) => ({
+    setForm((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
-  const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submit edit");
+    try {
+      setEditForm();
+      const response = await axiosInstance.patch(
+        `/employees/employee/update-profile`,
+        {
+          ...form,
+        }
+      );
+      onModalClose();
+      resetForm();
+      fetchPersonalDetails();
+    } catch (error) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      toast.error(errorMessage);
+    }
+
     onModalClose();
   };
   return (
@@ -40,7 +61,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
           <div className="grid gap-y-4 p-6">
             <div className="">
               <Label
-                id="Bankname"
+                id="bank_name"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
@@ -49,16 +70,16 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
               <br />
               <input
                 type="text"
-                name="bankName"
+                name="bank_name"
                 readOnly
-                value={bankForm.bankName}
+                value={form.bank_name}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
             <div className="">
               <Label
-                id="accountnumber"
+                id="acct_num"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
@@ -67,27 +88,28 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
               <br />
               <input
                 type="text"
-                name="accountNo"
+                name="acct_num"
                 readOnly
-                value={bankForm.accountNo}
+                value={form.acct_num}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
             </div>
             <div className="">
               <Label
-                id="accountname"
+                id="acct_name"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
                 Account Name
               </Label>
               <br />
+
               <input
                 type="text"
-                name="accountName"
+                name="acct_name"
                 readOnly
-                value={bankForm.accountName}
+                value={form.acct_name}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
@@ -104,7 +126,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
               <input
                 type="text"
                 name="bvn"
-                value={bankForm.bvn}
+                value={form.bvn}
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
@@ -133,8 +155,8 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
             >
               Cancel
             </button>
-            <button className="bg-[#E37915] w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm">
-              Submit Request{" "}
+            <button className="bg-[#E37915] w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm capitalize">
+              {editForm ? "updated" : "Submit Request"}
             </button>
           </div>
         </form>

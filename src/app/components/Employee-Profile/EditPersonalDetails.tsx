@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalOverlay from "@/app/common/modal/modal";
 import PhoneInput from "react-phone-number-input";
 import styles from "../../../styles/phone.module.scss";
@@ -8,20 +8,21 @@ import useBoolean from "@/app/hooks/useBoolean";
 import toast from "react-hot-toast";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
-
+import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
 const EditPersonalDetails = ({
   onModalClose,
 }: {
   onModalClose: () => void;
 }) => {
+  const { employeeData, fetchPersonalDetails } = useEmployeeStore();
   const [showPopup, setShowPopup] = useState(false);
   const [form, setForm] = useState({
-    fullname: "",
-    email: "adeolalawal@gmail.com",
-    phoneNumber: "+23480536740",
+    fullname: employeeData?.data.fullname || "",
+    email: employeeData?.data.email || "",
+    phoneNumber: employeeData?.data.phone || "",
+    nationality: employeeData?.data.country || "",
+    dob: employeeData?.data.dob || "",
     // reason: "Tell us why you are requesting this changes",
-    nationality: "nigerian",
-    dob: "2005-09-28",
   });
   const [
     editemployeeDetails,
@@ -44,12 +45,11 @@ const EditPersonalDetails = ({
       const response = await axiosInstance.patch(
         `/employees/employee/update-profile`,
         {
-          ...form,
+          fullname: form.fullname,
         }
       );
       if (response.status === 200 || 201) {
-        toast.success("Employee Dtails updated successfully");
-        console.log(response.data);
+        toast.success("Employee Details updated successfully!");
       }
       setForm({
         fullname: "",
@@ -58,28 +58,18 @@ const EditPersonalDetails = ({
         phoneNumber: "",
         nationality: "",
       });
-
       onModalClose();
       resetEditEmployeeDetails();
+      fetchPersonalDetails();
     } catch (error) {
       let errorMessage = "An error occurred please try again or contact Admin";
       if (error instanceof AxiosError) {
-        // Check if err is an instance of AxiosError
         errorMessage = error.response?.data?.message || errorMessage;
       }
-      toast.error("there is an error");
-      console.log(error);
+      toast.error(errorMessage);
       onModalClose();
       resetEditEmployeeDetails();
     }
-
-    // const data = new FormData();
-    // data.append("fullName", form.fullName);
-    // data.append("email", form.email);
-    // data.append("dob", form.dob);
-    // data.append("phoneNumber", form.phoneNumber);
-    // data.append("reason", form.reason);
-    // data.append("nationality", form.nationality);
   };
   return (
     <ModalOverlay onClose={onModalClose} className=" ">

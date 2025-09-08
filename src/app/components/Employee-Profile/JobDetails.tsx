@@ -5,13 +5,11 @@ interface JobDetailProps {
   title: string;
 }
 const JobDetails = ({ title }: JobDetailProps) => {
-  const { employee, loading, fetchPersonalDetails } = useEmployeeStore();
-  useEffect(() => {
-    fetchPersonalDetails();
-  }, [fetchPersonalDetails]);
+  const { employeeData, loading } = useEmployeeStore();
+
   return (
-    <div className="grid gap-[10px] border-[1px] rounded-[10px] h-[436px]  p-10">
-      <div className="h-[396px] w-[615px]">
+    <div className="grid gap-[10px] border-[1px] rounded-[10px] h-fit  p-10">
+      <div className=" w-[615px]">
         <div className="flex justify-between items-center pb-6  ">
           <h1 className="text-xl text-[#4D4D4D] font-semibold font-Graphik capitalize">
             {title}
@@ -24,7 +22,7 @@ const JobDetails = ({ title }: JobDetailProps) => {
             </div>
           ) : (
             <>
-              {employee ? (
+              {employeeData ? (
                 <>
                   <div className="flex ">
                     <div className="w-2/3">
@@ -33,7 +31,7 @@ const JobDetails = ({ title }: JobDetailProps) => {
                           Hired Type
                         </div>
                         <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                          {employee.data.job_type}{" "}
+                          {employeeData.data.job_type}{" "}
                         </div>
                       </div>
                     </div>
@@ -43,7 +41,7 @@ const JobDetails = ({ title }: JobDetailProps) => {
                           job title
                         </div>
                         <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                          {employee.data.job_role}
+                          {employeeData.data.job_role}
                         </div>
                       </div>
                     </div>
@@ -55,7 +53,7 @@ const JobDetails = ({ title }: JobDetailProps) => {
                           Team
                         </div>
                         <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                          {employee.data.team.name}
+                          {employeeData.data.team.name}
                         </div>
                       </div>
                     </div>
@@ -65,7 +63,7 @@ const JobDetails = ({ title }: JobDetailProps) => {
                           mobile number
                         </div>
                         <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                          {employee.data.phone}
+                          {employeeData.data.phone}
                         </div>
                       </div>
                     </div>
@@ -77,7 +75,7 @@ const JobDetails = ({ title }: JobDetailProps) => {
                           contract start date
                         </div>
                         <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                          {employee.data.start_date}{" "}
+                          {employeeData.data.start_date}{" "}
                         </div>
                       </div>
                     </div>

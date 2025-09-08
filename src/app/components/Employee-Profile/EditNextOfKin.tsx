@@ -1,29 +1,51 @@
 import Label from "@/app/common/label";
 import ModalOverlay from "@/app/common/modal/modal";
 import { useState } from "react";
+import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import useBoolean from "@/app/hooks/useBoolean";
+import axiosInstance from "@/app/utils/axios";
+import toast from "react-hot-toast";
 const EditNextOfKin = ({ onModalClose }: { onModalClose: () => void }) => {
-  const [nextOfkin, setNextOfKin] = useState({
-    fullname: "Adeola Halima",
-    relationship: "sister",
-    email: "Adeola@gmail.com",
-    mobile_no: "08134490207",
-    city: "Lagos",
-    country: "Nigeria",
+  const { employeeData, fetchPersonalDetails } = useEmployeeStore();
+  const [editNok, setEditNok, resetEditNok] = useBoolean(false);
+  const [form, setForm] = useState({
+    fullname: employeeData?.data.nok_name || "",
+    relationship: "",
+    email: "",
+    city: "",
+    mobile_no: employeeData?.data.nok_phone || "",
+    country: "",
     // reason: "Tell us why you are requesting this changes",
   });
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setNextOfKin((prevData) => ({
+    setForm((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
-  const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submit edit");
+    try {
+      setEditNok();
+      const response = await axiosInstance.patch(
+        `/employees/employee/update-profile`,
+        {
+          ...form,
+        }
+      );
+      onModalClose();
+      resetEditNok();
+      fetchPersonalDetails();
+    } catch (error) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      toast.error(errorMessage);
+    }
     onModalClose();
+    onModalClose();
+    resetEditNok();
   };
   return (
     <div>
@@ -45,7 +67,7 @@ const EditNextOfKin = ({ onModalClose }: { onModalClose: () => void }) => {
               <div className="">
                 <Label
                   id="fullname"
-                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik capitalize "
                 >
                   {" "}
                   Full Name
@@ -54,8 +76,7 @@ const EditNextOfKin = ({ onModalClose }: { onModalClose: () => void }) => {
                 <input
                   type="text"
                   name="fullname"
-                  readOnly
-                  value={nextOfkin.fullname}
+                  value={form.fullname}
                   onChange={handleChange}
                   className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
                 />
@@ -72,8 +93,7 @@ const EditNextOfKin = ({ onModalClose }: { onModalClose: () => void }) => {
                 <input
                   type="text"
                   name="relationship"
-                  readOnly
-                  value={nextOfkin.relationship}
+                  value={form.relationship}
                   onChange={handleChange}
                   className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
                 />
@@ -81,24 +101,23 @@ const EditNextOfKin = ({ onModalClose }: { onModalClose: () => void }) => {
               <div className="">
                 <Label
                   id="email"
-                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik capitalize "
                 >
                   {" "}
-                  Account Name
+                  Email
                 </Label>
                 <br />
                 <input
                   type="email"
                   name="email"
-                  readOnly
-                  value={nextOfkin.email}
+                  value={form.email}
                   onChange={handleChange}
                   className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
                 />
               </div>
               <div className="">
                 <Label
-                  id="mobileno"
+                  id="mobile_no"
                   className="text-[#2F2F33] text-sm font-medium font-Graphik capitalize "
                 >
                   {" "}
@@ -107,8 +126,8 @@ const EditNextOfKin = ({ onModalClose }: { onModalClose: () => void }) => {
                 <br />
                 <input
                   type="text"
-                  name="mobileno"
-                  value={nextOfkin.mobile_no}
+                  name="mobile_no"
+                  value={form.mobile_no}
                   onChange={handleChange}
                   className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
                 />
@@ -125,7 +144,7 @@ const EditNextOfKin = ({ onModalClose }: { onModalClose: () => void }) => {
                 <input
                   type="text"
                   name="city"
-                  value={nextOfkin.city}
+                  value={form.city}
                   onChange={handleChange}
                   className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
                 />
@@ -141,8 +160,8 @@ const EditNextOfKin = ({ onModalClose }: { onModalClose: () => void }) => {
                 <br />
                 <input
                   type="text"
-                  name=""
-                  value={nextOfkin.country}
+                  name="country"
+                  value={form.country}
                   onChange={handleChange}
                   className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
                 />
@@ -171,8 +190,8 @@ const EditNextOfKin = ({ onModalClose }: { onModalClose: () => void }) => {
               >
                 Cancel
               </button>
-              <button className="bg-[#E37915] w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm">
-                Submit Request{" "}
+              <button className="bg-[#E37915] w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm capitalize">
+                {editNok ? "Updated" : "Submit Request"}
               </button>
             </div>
           </form>

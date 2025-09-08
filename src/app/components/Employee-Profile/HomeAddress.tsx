@@ -8,16 +8,11 @@ interface HomeAdressProps {
   title: string;
 }
 const HomeAddress = ({ children, title }: HomeAdressProps) => {
-  const { employee, loading, fetchPersonalDetails } = useEmployeeStore();
-  console.log(employee?.data);
-
-  useEffect(() => {
-    fetchPersonalDetails();
-  }, [fetchPersonalDetails]);
-
+  const { employeeData, loading } = useEmployeeStore();
+  console.log(employeeData?.data);
   return (
-    <div className="grid gap-[10px] border-[1px] rounded-[10px] p-10 mb-20 h-[436px]">
-      <div className="h-[396px]">
+    <div className="grid gap-[10px] border-[1px] rounded-[10px] p-10 mb-20 h-fit">
+      <div className="">
         <div className="flex justify-between items-center pb-6  ">
           <h1 className="text-xl text-[#4D4D4D] font-semibold font-Graphik">
             {title}
@@ -29,7 +24,7 @@ const HomeAddress = ({ children, title }: HomeAdressProps) => {
           <Spinner />
         ) : (
           <>
-            {!employee ? (
+            {!employeeData ? (
               <div>address not available</div>
             ) : (
               <div className="grid gap-y-10">
@@ -39,8 +34,8 @@ const HomeAddress = ({ children, title }: HomeAdressProps) => {
                       <div className="text-[#4D4D4D] text-sm font-normal ">
                         Street Address
                       </div>
-                      <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                        {employee?.data.street_address}
+                      <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
+                        {employeeData?.data.street_address}
                       </div>
                     </div>
                   </div>
@@ -49,8 +44,8 @@ const HomeAddress = ({ children, title }: HomeAdressProps) => {
                       <div className="text-sm font-normal font-Graphik text-[#4D4D4D]">
                         City
                       </div>
-                      <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                        {employee.data.city}{" "}
+                      <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
+                        {employeeData.data.city}{" "}
                       </div>
                     </div>
                   </div>
@@ -61,8 +56,8 @@ const HomeAddress = ({ children, title }: HomeAdressProps) => {
                       <div className="text-[#4D4D4D] text-sm font-normal ">
                         State
                       </div>
-                      <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                        {employee.data.state}{" "}
+                      <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
+                        {employeeData.data.state}{" "}
                       </div>
                     </div>
                   </div>
@@ -71,8 +66,8 @@ const HomeAddress = ({ children, title }: HomeAdressProps) => {
                       <div className="text-sm font-normal font-Graphik text-[#4D4D4D]">
                         Country
                       </div>
-                      <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                        {employee.data.country}{" "}
+                      <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
+                        {employeeData.data.country}{" "}
                       </div>
                     </div>
                   </div>

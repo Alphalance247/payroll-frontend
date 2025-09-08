@@ -4,29 +4,12 @@ import Spinner from "@/app/common/spinner";
 interface NOKProps {
   children: any;
   title: string;
-  // fullName: string;
-  // relationship: string;
-  // email: string;
-  // mobileNo: string;
-  // city: string;
-  // country: string;
 }
-const NextOfKin = ({
-  children,
-  title,
-}: // fullName,
-// relationship,
-// email,
-// mobileNo,
-// city,
-// country,
-NOKProps) => {
-  const { employee, loading, fetchPersonalDetails } = useEmployeeStore();
-  useEffect(() => {
-    fetchPersonalDetails();
-  }, [fetchPersonalDetails]);
+const NextOfKin = ({ children, title }: NOKProps) => {
+  const { employeeData, loading } = useEmployeeStore();
+
   return (
-    <div className="grid gap-[10px]  border-[1px] rounded-[10px] p-10">
+    <div className="grid gap-[10px]  border-[1px] rounded-[10px] p-10 h-fit">
       <div className="flex justify-between items-center pb-6  ">
         <h1 className="text-xl text-[#4D4D4D] font-semibold font-Graphik capitalize">
           {title}
@@ -37,8 +20,8 @@ NOKProps) => {
         <Spinner />
       ) : (
         <>
-          {employee ? (
-            <div className="grid gap-y-10  mb-28 ">
+          {employeeData ? (
+            <div className="grid gap-y-10">
               <div className="flex ">
                 <div className="w-2/3">
                   <div className="w-[266.33px] h-[60px] flex flex-col space-y-4">
@@ -46,7 +29,7 @@ NOKProps) => {
                       Full Name
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                      {employee.data.nok_name}
+                      {employeeData.data.nok_name}
                     </div>
                   </div>
                 </div>
@@ -78,7 +61,7 @@ NOKProps) => {
                       Mobile Number
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                      {employee.data.nok_phone}
+                      {employeeData.data.nok_phone}
                     </div>
                   </div>
                 </div>

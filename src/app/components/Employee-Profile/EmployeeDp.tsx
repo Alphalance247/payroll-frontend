@@ -6,7 +6,7 @@ interface DpProps {
   dp: string;
 }
 const EmployeeDp = ({ dp }: DpProps) => {
-  const { employee, loading, fetchPersonalDetails } = useEmployeeStore();
+  const { employeeData, loading, fetchPersonalDetails } = useEmployeeStore();
   useEffect(() => {
     fetchPersonalDetails();
   }, [fetchPersonalDetails]);
@@ -27,7 +27,7 @@ const EmployeeDp = ({ dp }: DpProps) => {
               <TiCamera className=" h-6 w-6 text-white" />
             </div>
           </div>
-          {!employee ? (
+          {!employeeData ? (
             <div>Employee profile is not available</div>
           ) : (
             <div className="grid gap-2 w-[181px]">
@@ -35,23 +35,23 @@ const EmployeeDp = ({ dp }: DpProps) => {
                 className="font-Graphik font-bold text-lg text-[#4D4D4D] capitalize
     "
               >
-                {employee.data.fullname}
+                {employeeData.data.fullname}
               </h1>
               <p className="font-Graphik font-medium text-base capitalize text-[#4D4D4D]">
-                {employee.data.job_type}
+                {employeeData.data.job_role}
               </p>
             </div>
           )}
         </div>
       )}
-      {employee?.data.status === "active" ? (
+      {employeeData?.data.status === "active" ? (
         <div className="w-[61.8px]">
-          <button className=" font-Graphik font-medium text[14.11px] leading[21.17px]  text-[#188C43] bg-[#E9F9EF] px-[9.41px] p-y[2.35px] border-[1.18px] rounded-[18.82px] ">
-            {employee?.data.status}
+          <button className=" font-Graphik font-medium text[14.11px] leading[21.17px]  text-[#188C43] bg-[#E9F9EF] px-[9.41px] p-y[2.35px] border-[1.18px] rounded-[18.82px] capitalize">
+            {employeeData?.data.status}
           </button>{" "}
         </div>
       ) : (
-        <button className=" font-Graphik font-medium text[14.11px] leading[21.17px]  text-[#188C43] bg-[#E9F9EF] px-[9.41px] p-y[2.35px] border-[1.18px] rounded-[18.82px] ">
+        <button className=" font-Graphik font-medium text[14.11px] leading[21.17px]  text-red-500 bg-red-100 px-[9.41px] p-y[2.35px] border-[1.18px] rounded-[18.82px] capitalize ">
           {"inactive"}
         </button>
       )}
