@@ -5,6 +5,7 @@ import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
 import toast from "react-hot-toast";
 import useBoolean from "@/app/hooks/useBoolean";
 import axiosInstance from "@/app/utils/axios";
+import { AxiosError } from "axios";
 const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
   const { employeeData, fetchPersonalDetails } = useEmployeeStore();
   const [form, setForm] = useState({
@@ -12,7 +13,6 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
     acct_num: employeeData?.data.acct_num || "",
     acct_name: employeeData?.data.acct_num || "",
     bvn: employeeData?.data.bank_code || "",
-
     // reason: "Tell us why you are requesting this changes",
   });
   const [editForm, setEditForm, resetForm] = useBoolean();
@@ -35,15 +35,27 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
           ...form,
         }
       );
+      if (response.status === 200 || 201) {
+        toast.success("Bank Details updated successfully!");
+      }
+      setForm({
+        bank_name: "",
+        acct_num: "",
+        acct_name: "",
+        bvn: "",
+      });
       onModalClose();
       resetForm();
       fetchPersonalDetails();
     } catch (error) {
       let errorMessage = "An error occurred please try again or contact Admin";
+      if (error instanceof AxiosError) {
+        errorMessage = error.response?.data?.message || errorMessage;
+      }
       toast.error(errorMessage);
+      onModalClose();
+      resetForm();
     }
-
-    onModalClose();
   };
   return (
     <ModalOverlay onClose={onModalClose} className="">
@@ -62,8 +74,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
           <div className="grid gap-y-4 p-6">
             <div className="">
               <Label
-                // id="bank_name"
-                id="fullname"
+                id="bank_name"
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
@@ -110,18 +121,11 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
                 type="text"
                 name="acct_name"
                 id=""
+                readOnly
                 onChange={handleChange}
                 value={form.acct_name}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />
-              {/* <input
-                type="text"
-                name="acct_name"
-                readOnly
-                value={form.acct_name}
-                onChange={handleChange}
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              /> */}
             </div>
             <div className="">
               <Label
@@ -136,6 +140,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
                 type="text"
                 name="bvn"
                 value={form.bvn}
+                readOnly
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
               />

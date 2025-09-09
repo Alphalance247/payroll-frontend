@@ -7,6 +7,7 @@ interface DocumentState {
         doc_name: string,
         file_size: string,
         document: string
+        id: string
     }]
 
 }

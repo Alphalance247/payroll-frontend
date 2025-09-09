@@ -1,7 +1,7 @@
 "use client";
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 // import ProfileSidebar from "@/app/components/Employee-Dashboard/Home/profileSidebar";
-import { BsCameraFill } from "react-icons/bs";
+import { BsCameraFill, BsThreeDotsVertical } from "react-icons/bs";
 import { Pen } from "lucide-react";
 import { PenIcon } from "lucide-react";
 import { Pencil } from "lucide-react";
@@ -21,18 +21,21 @@ import EditBankDetails from "@/app/components/Employee-Profile/EditBankDetails";
 import EditNextOfKin from "@/app/components/Employee-Profile/EditNextOfKin";
 import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
 import { useDocumentsUploaded } from "@/stores/employeeDetails/UploadDocument";
+import EditUploadedDoc from "@/app/components/Employee-Profile/EditUploadedDoc";
 const pages = () => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);
-  const [openBDModal, setOpenBDModal] = useState(false);
-  const [openNOKModal, setOpenNOKDModal] = useState(false);
+  const [openUploadModal, setOpenUploadModal] = useState(false);
+  // const [openBDModal, setOpenBDModal] = useState(false);
+  // const [openNOKModal, setOpenNOKDModal] = useState(false);
   const [openHousingModal, setOpenHousingModal] = useState(false);
   const renderTabContent = () => {
     const { fetchPersonalDetails } = useEmployeeStore();
     useEffect(() => {
       fetchPersonalDetails();
     }, [fetchPersonalDetails]);
-    const { fetchDocument } = useDocumentsUploaded();
+
+    const { documents, fetchDocument } = useDocumentsUploaded();
     useEffect(() => {
       fetchDocument();
     }, [fetchDocument]);
@@ -73,9 +76,8 @@ const pages = () => {
       case "bank details":
         return (
           <div>
-            <BankDetails title="Bank Details">
-              {" "}
-              <button
+            <BankDetails title="Bank Details" />{" "}
+            {/* <button
                 className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
                 onClick={() => setOpenBDModal(true)}
               >
@@ -85,29 +87,37 @@ const pages = () => {
             </BankDetails>
             {openBDModal && (
               <EditBankDetails onModalClose={() => setOpenBDModal(false)} />
-            )}
+            )} */}
           </div>
         );
       case "next of kin":
         return (
           <div>
-            <NextOfKin title="next of kin">
-              {" "}
-              <button
+            <NextOfKin title="next of kin" />{" "}
+            {/* <button
                 className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
                 onClick={() => setOpenNOKDModal(true)}
               >
                 <div> edit</div>
                 <Pencil className="text-[#E37915] w-[13.5px] h-[13.5px]" />
-              </button>
-            </NextOfKin>
-            {openNOKModal && (
+              </button> */}
+            {/* {openNOKModal && (
               <EditNextOfKin onModalClose={() => setOpenNOKDModal(false)} />
-            )}
+            )} */}
           </div>
         );
       case "uploads":
-        return <Uploads />;
+        return (
+          <Uploads
+            onClick={() => {
+              setOpenUploadModal(true);
+            }}
+          >
+            {openUploadModal && (
+              <EditUploadedDoc onModalClose={() => setOpenUploadModal(false)} />
+            )}
+          </Uploads>
+        );
       case "payslips":
         return <PaySlips></PaySlips>;
 

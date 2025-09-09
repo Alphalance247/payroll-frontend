@@ -1,11 +1,21 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { RiArrowDropDownFill } from "react-icons/ri";
-import { BsThreeDotsVertical } from "react-icons/bs";
+// import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDocumentsUploaded } from "@/stores/employeeDetails/UploadDocument";
 import Spinner from "@/app/common/spinner";
-
-const Uploads = () => {
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { useState } from "react";
+interface Uploads {
+  children: any;
+  onClick: any;
+}
+const Uploads = ({ children, onClick }: Uploads) => {
   const { documents, loading } = useDocumentsUploaded();
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+  const toggleDropdown = (id: any) => {
+    setOpenDropdownId(openDropdownId === id ? null : id);
+  };
+
   return (
     <div className=" rounded-[10px]  border-[1px] table-auto overflow-auto h-fit">
       <table className="  w-full  font-Graphik">
@@ -23,15 +33,49 @@ const Uploads = () => {
             <>
               {documents?.data.length ? (
                 <>
-                  {documents?.data.map((document, index) => (
-                    <tr key={index} className=" border-[1px]">
+                  {documents?.data.map((document) => (
+                    <tr key={document.id} className=" border-[1px]">
                       <td className="h-[60px] px-6">{document.document}</td>
                       <td className="h-[60px] px-6">{document.doc_name}</td>
                       <td className="h-[60px] px-6">
                         <div className="flex justify-between items-center">
                           <div> {document.file_size}</div>
-                          <div>
-                            <BsThreeDotsVertical />
+                          <div className="relative">
+                            <BsThreeDotsVertical
+                              className="cursor-pointer"
+                              onClick={() => {
+                                toggleDropdown(document.id);
+                              }}
+                            />
+                            {openDropdownId === document.id && (
+                              <div className="absolute top-4 right-0 bg-white shadow-lg h-fit rounded-md w-28 z-20">
+                                <div className="grid gap-y-2 p-4">
+                                  <button
+                                    className="outline-none text-[#E37915] capitalize font-Graphik font-normal text-start"
+                                    onClick={onClick}
+                                  >
+                                    upload
+                                  </button>
+                                  <button
+                                    className="outline-none text-[#E37915] capitalize font-Graphik font-normal text-start"
+                                    onClick={onClick}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                            {children}
+                            {/* <div className="absolute top-4 right-10 bg-white shadow-lg h-fit rounded-md w-28">
+                              <div className="grid gap-y-2 p-4">
+                                <button className="outline-none text-[#E37915] capitalize font-Graphik font-normal text-start">
+                                  upload
+                                </button>
+                                <button className="outline-none text-[#E37915] capitalize font-Graphik font-normal text-start">
+                                  Delete
+                                </button>
+                              </div>
+                            </div> */}
                           </div>
                         </div>
                       </td>
@@ -64,10 +108,10 @@ const Uploads = () => {
                 </div>
               </div>
             </td>
-            <td className="h-10 px-6"></td>
-            <td className="h-10 px-6">
-              <div className="flex justify-between items-center space-x-2">
-                <div className="text-[#71717A] font-normal tex-[16px] pl-6">
+            {/* <td className="h-10 px-6"></td> */}
+            <td className="h-10 px-6" colSpan={2}>
+              <div className="flex justify-between  items-center space-x-2 shrink-0">
+                <div className="text-[#71717A] font-normal tex-[16px] ">
                   Page 1 of <span className="text-[#2F2F33]">2</span>
                 </div>
                 <div className="flex space-x-2 items-center">

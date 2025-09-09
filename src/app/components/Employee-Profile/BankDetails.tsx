@@ -3,9 +3,9 @@ import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 interface BankDetailsProps {
   title: string;
-  children: any;
+  // children: any;
 }
-const BankDetails = ({ title, children }: BankDetailsProps) => {
+const BankDetails = ({ title }: BankDetailsProps) => {
   const { employeeData, loading } = useEmployeeStore();
   return (
     <div className="grid gap-[10px]  h-fit border-[1px] rounded-[10px] p-10">
@@ -13,7 +13,7 @@ const BankDetails = ({ title, children }: BankDetailsProps) => {
         <h1 className="text-xl text-[#4D4D4D] font-semibold font-Graphik">
           {title}
         </h1>
-        {children}
+        {/* {children} */}
       </div>
       {loading ? (
         <Spinner />

@@ -9,6 +9,7 @@ interface EmployeeDetailsState {
         phone: string,
         dob: string,
         country: string,
+        prof_img: string,
         street_address: string,
         city: string,
         state: string,

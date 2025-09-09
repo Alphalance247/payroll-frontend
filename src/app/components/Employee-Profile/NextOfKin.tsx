@@ -2,10 +2,10 @@ import React, { useEffect } from "react";
 import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 interface NOKProps {
-  children: any;
+  // children: any;
   title: string;
 }
-const NextOfKin = ({ children, title }: NOKProps) => {
+const NextOfKin = ({ title }: NOKProps) => {
   const { employeeData, loading } = useEmployeeStore();
 
   return (
@@ -14,7 +14,7 @@ const NextOfKin = ({ children, title }: NOKProps) => {
         <h1 className="text-xl text-[#4D4D4D] font-semibold font-Graphik capitalize">
           {title}
         </h1>
-        {children}
+        {/* {children} */}
       </div>
       {loading ? (
         <Spinner />
