@@ -6,16 +6,16 @@ interface DocumentState {
     data: [{
         doc_name: string,
         file_size: string,
-        document: string
-        id: string
+        document: string,
+        id: string,
     }]
 
 }
 interface DocumentInfo {
     documents: DocumentState | null,
     error: string | null,
-    loading: false
-    fetchDocument: () => Promise<void>
+    loading: false,
+    fetchDocument: () => Promise<void>,
 }
 export const useDocumentsUploaded = create<DocumentInfo>((set) => ({
     documents: null,
@@ -35,6 +35,7 @@ export const useDocumentsUploaded = create<DocumentInfo>((set) => ({
             }
         }
 
-    }
+    },
+
 })
 )

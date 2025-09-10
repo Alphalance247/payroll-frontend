@@ -29,7 +29,7 @@ const NextOfKin = ({ title }: NOKProps) => {
                       Full Name
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                      {employeeData.data.nok_name}
+                      {employeeData.data.nok.name}
                     </div>
                   </div>
                 </div>
@@ -39,7 +39,7 @@ const NextOfKin = ({ title }: NOKProps) => {
                       relationship
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                      {}
+                      {employeeData.data.nok.relationship}
                     </div>
                   </div>
                 </div>
@@ -51,7 +51,7 @@ const NextOfKin = ({ title }: NOKProps) => {
                       Email
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
-                      {}
+                      {employeeData.data.nok.email}
                     </div>
                   </div>
                 </div>
@@ -61,7 +61,7 @@ const NextOfKin = ({ title }: NOKProps) => {
                       Mobile Number
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                      {employeeData.data.nok_phone}
+                      {employeeData.data.nok.phone}
                     </div>
                   </div>
                 </div>
@@ -73,7 +73,7 @@ const NextOfKin = ({ title }: NOKProps) => {
                       city
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                      {}{" "}
+                      {employeeData.data.nok.city}{" "}
                     </div>
                   </div>
                 </div>
@@ -83,7 +83,7 @@ const NextOfKin = ({ title }: NOKProps) => {
                       country
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D] capitalize">
-                      {}{" "}
+                      {employeeData.data.nok.country}{" "}
                     </div>
                   </div>
                 </div>

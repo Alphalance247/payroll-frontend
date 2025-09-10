@@ -14,7 +14,10 @@ const Uploads = ({ children, onClick }: Uploads) => {
   const toggleDropdown = (id: any) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
-
+  const deleteDocument = (id: any) => {
+    documents?.data.filter((item) => item.id !== id);
+    console.log("delete");
+  };
   return (
     <div className=" rounded-[10px]  border-[1px] table-auto overflow-auto h-fit">
       <table className="  w-full  font-Graphik">
@@ -64,7 +67,7 @@ const Uploads = ({ children, onClick }: Uploads) => {
                                   </button>
                                   <button
                                     className="outline-none text-[#E37915] capitalize font-Graphik font-normal text-start"
-                                    onClick={onClick}
+                                    onClick={() => deleteDocument(document.id)}
                                   >
                                     <div className="flex space-x-2 items-ceter">
                                       {" "}
@@ -78,16 +81,6 @@ const Uploads = ({ children, onClick }: Uploads) => {
                               </div>
                             )}
                             {children}
-                            {/* <div className="absolute top-4 right-10 bg-white shadow-lg h-fit rounded-md w-28">
-                              <div className="grid gap-y-2 p-4">
-                                <button className="outline-none text-[#E37915] capitalize font-Graphik font-normal text-start">
-                                  upload
-                                </button>
-                                <button className="outline-none text-[#E37915] capitalize font-Graphik font-normal text-start">
-                                  Delete
-                                </button>
-                              </div>
-                            </div> */}
                           </div>
                         </div>
                       </td>

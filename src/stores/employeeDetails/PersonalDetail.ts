@@ -18,6 +18,14 @@ interface EmployeeDetailsState {
         team: {
             name: string,
         },
+        nok: {
+            name: string,
+            phone: string,
+            country: string,
+            relationship: string,
+            city: string,
+            email: string
+        },
         status: string,
         start_date: string,
         bank_name: string,
@@ -61,13 +69,6 @@ export const useEmployeeStore = create<EmployeePersonalDetails>((set) => ({
             }
         }
     },
-    // updatePersonalDetails: async (id, data) => {
-    //     try {
-    //         const response = await axiosInstance.patch(`/employees/employee/update-profile`, data);
-    //         return response.data;
-    //     } catch (error) {
-    //     }
-    // }
 }));
 
 
