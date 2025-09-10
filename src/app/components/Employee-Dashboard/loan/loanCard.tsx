@@ -1,25 +1,27 @@
+import { getEmployeeLoanList } from "@/stores/employee-dashboard/loan/loanList";
 import Image from "next/image";
 
 const LoanOverviewCard = () => {
+  const { data } = getEmployeeLoanList();
   const cardData = [
     {
       label: "Loan Limit",
-      value: `NGN 1,000,000`,
+      value: "N " + data?.loan_limit.toLocaleString(),
       details: "Eligible Amount:",
-      subdetails: "N600,000",
+      subdetails: "N " + data?.eligibility.toLocaleString(),
       detailsColor: "text-[#04CE00]",
     },
     {
       label: "Outstanding Balance",
-      value: "NGN 100,000",
+      value: "N " + data?.outstanding_balance.toLocaleString(),
       details: "Repayment in progrees -2 months remaining",
       detailsColor: "text-[#71717A]",
     },
     {
       label: "Next Repayment",
-      value: "NGN 100,000",
+      value: "N " + data?.proposed_next_repayment.toLocaleString(),
       details: " Due date",
-      subdetails: "July 5, 2025",
+      subdetails: data?.next_repayment_date,
       detailsColor: "text-[#C00F0C]",
     },
   ];

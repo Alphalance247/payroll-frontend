@@ -27,7 +27,9 @@ const EmployeeCompliance = () => {
   } = getComplianceDetails();
 
   useEffect(() => {
-    fetchComplianceDetails(data[0]?.id.toString() || "");
+    if (data) {
+      fetchComplianceDetails(data[0]?.id.toString() || "");
+    }
   }, [fetchComplianceDetails, data]);
 
   return (
@@ -114,60 +116,62 @@ const EmployeeCompliance = () => {
               )}
             </div>
 
-            <div className="">
-              <div className="py-5 px-4 grid bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px] h-[550px] overflow-y-auto">
-                {detailsLoading ? (
-                  <Spinner />
-                ) : errorDetails ? (
-                  <ErrorFetch
-                    onRefetch={() =>
-                      fetchComplianceDetails(complianceDetails?.id || "")
-                    }
-                    message="Error Fetching compliance"
-                  />
-                ) : (
-                  <>
-                    <p className="text-base font-Graphik text-[#2F2F33] font-semibold mb-1">
-                      {complianceDetails?.title}
-                    </p>
-
-                    <div className="text-[#71717A] leading-5 text-[13px] font-Graphik mb-2">
-                      <p className="mb-2">
-                        Effective Date: {complianceDetails?.effective_date}
-                      </p>
-                    </div>
-
-                    <img
-                      src={
-                        complianceDetails?.detail_image ||
-                        "/assets/employee-dashboard/compliance/2.png"
+            {data && (
+              <div className="">
+                <div className="py-5 px-4 grid bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px] h-[550px] overflow-y-auto">
+                  {detailsLoading ? (
+                    <Spinner />
+                  ) : errorDetails ? (
+                    <ErrorFetch
+                      onRefetch={() =>
+                        fetchComplianceDetails(complianceDetails?.id || "")
                       }
-                      width={505}
-                      height={253}
-                      alt="uphold"
-                      className="w-[full] h-[253px] rounded-lg"
+                      message="Error Fetching compliance"
                     />
+                  ) : (
+                    <>
+                      <p className="text-base font-Graphik text-[#2F2F33] font-semibold mb-1">
+                        {complianceDetails?.title}
+                      </p>
 
-                    <div className="mt-2">
-                      <div className="flex gap-x-4 items-center">
-                        <p className="text-[#71717A] leading-5 text-[13px] font-Graphik">
-                          Last Updated: {complianceDetails?.updated_at}
-                        </p>
-                        <p className="border-[#DF900A] w-fit border text-xs font-medium px-2 py-[2px] bg-[#FEF5E7] text-[#CF6E13] rounded-2xl my-2">
-                          {complianceDetails?.category}
+                      <div className="text-[#71717A] leading-5 text-[13px] font-Graphik mb-2">
+                        <p className="mb-2">
+                          Effective Date: {complianceDetails?.effective_date}
                         </p>
                       </div>
 
-                      <p
-                        dangerouslySetInnerHTML={{
-                          __html: complianceDetails?.content || "",
-                        }}
+                      <img
+                        src={
+                          complianceDetails?.detail_image ||
+                          "/assets/employee-dashboard/compliance/2.png"
+                        }
+                        width={505}
+                        height={253}
+                        alt="uphold"
+                        className="w-[full] h-[253px] rounded-lg"
                       />
-                    </div>
-                  </>
-                )}
+
+                      <div className="mt-2">
+                        <div className="flex gap-x-4 items-center">
+                          <p className="text-[#71717A] leading-5 text-[13px] font-Graphik">
+                            Last Updated: {complianceDetails?.updated_at}
+                          </p>
+                          <p className="border-[#DF900A] w-fit border text-xs font-medium px-2 py-[2px] bg-[#FEF5E7] text-[#CF6E13] rounded-2xl my-2">
+                            {complianceDetails?.category}
+                          </p>
+                        </div>
+
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: complianceDetails?.content || "",
+                          }}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </main>
       </EmployeeDashboardLayout>

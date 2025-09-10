@@ -4,13 +4,13 @@ import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 
 interface employeeLoansDetailsDataStore {
-  content: string;
-  detail_image: string;
-  title: string;
-  effective_date: string;
-  id: string;
-  updated_at: string;
+  amount: string;
   category: string;
+  created: string;
+  date_disburse: string;
+  disburse: string;
+  due_date: string;
+  employee: string;
 }
 
 interface employeeLoansDetailsStore {

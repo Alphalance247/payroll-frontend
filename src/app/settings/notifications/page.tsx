@@ -8,10 +8,16 @@ import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { getAdminNotificationPreferences } from "@/stores/settings/notifications/notificationPrefences";
+import Spinner from "@/app/common/spinner";
+import ErrorFetch from "@/app/common/errorFetch";
 
 const Account = () => {
-  const { data: preferenceData, fetchAdminNoticationPreferences } =
-    getAdminNotificationPreferences();
+  const {
+    data: preferenceData,
+    fetchAdminNoticationPreferences,
+    loading,
+    error,
+  } = getAdminNotificationPreferences();
 
   useEffect(() => {
     fetchAdminNoticationPreferences();
@@ -184,62 +190,70 @@ const Account = () => {
             <HeadingSubHead heading="Notifications" withSubHead={false} />
           </div>
 
-          <div className="flex flex-col gap-y-8">
-            {/* Access & Security */}
+          {loading ? (
+            <Spinner spinnerSmall={true} />
+          ) : error ? (
+            <ErrorFetch
+              message="Error Fetching leave request"
+              onRefetch={() => fetchNotificationCategory()}
+            />
+          ) : (
+            <div className="flex flex-col gap-y-8">
+              {/* Access & Security */}
 
-            {data?.data?.map((item, i) => (
-              <div className="border border-[#E3E3E5] rounded-xl" key={i}>
-                <HeadingSubHeadInner
-                  heading={item?.name}
-                  subhead={
-                    item?.description ||
-                    "Choose which notifications you'd like to receive and stay updated on your data requests."
-                  }
-                />
+              {data?.data?.map((item, i) => (
+                <div className="border border-[#E3E3E5] rounded-xl" key={i}>
+                  <HeadingSubHeadInner
+                    heading={item?.name}
+                    subhead={
+                      item?.description ||
+                      "Choose which notifications you'd like to receive and stay updated on your data requests."
+                    }
+                  />
 
-                <table className="w-full min-w-[1000px]">
-                  <thead>
-                    <tr>
-                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[600px]"></th>
-                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] w-[50px]">
-                        EMAIL
-                      </th>
-                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] w-[50px]">
-                        SLACK
-                      </th>
-                    </tr>
-                  </thead>
-                  {item?.notification_types?.map((item, i) => (
-                    <tbody key={i}>
-                      <tr className="border-y border-[#E3E3E5] last:border-b-0">
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {item?.description}
-                        </td>
-                        <CheckBox
-                          onSelectChannel={() =>
-                            handleEmailToggle(item?.id?.toString())
-                          }
-                          checked={selectedNotificationTypes.includes(
-                            item?.id?.toString()
-                          )}
-                        />
-                        <CheckBox
-                          onSelectChannel={() =>
-                            handleSlackChannelToggle(item?.id?.toString())
-                          }
-                          checked={selectedSlackChannelNotificationTypes.includes(
-                            item?.id?.toString()
-                          )}
-                        />
+                  <table className="w-full min-w-[1000px]">
+                    <thead>
+                      <tr>
+                        <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[600px]"></th>
+                        <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] w-[50px]">
+                          EMAIL
+                        </th>
+                        <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] w-[50px]">
+                          SLACK
+                        </th>
                       </tr>
-                    </tbody>
-                  ))}
-                </table>
-              </div>
-            ))}
+                    </thead>
+                    {item?.notification_types?.map((item, i) => (
+                      <tbody key={i}>
+                        <tr className="border-y border-[#E3E3E5] last:border-b-0">
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            {item?.description}
+                          </td>
+                          <CheckBox
+                            onSelectChannel={() =>
+                              handleEmailToggle(item?.id?.toString())
+                            }
+                            checked={selectedNotificationTypes.includes(
+                              item?.id?.toString()
+                            )}
+                          />
+                          <CheckBox
+                            onSelectChannel={() =>
+                              handleSlackChannelToggle(item?.id?.toString())
+                            }
+                            checked={selectedSlackChannelNotificationTypes.includes(
+                              item?.id?.toString()
+                            )}
+                          />
+                        </tr>
+                      </tbody>
+                    ))}
+                  </table>
+                </div>
+              ))}
 
-            {/* Payroll */}
-            {/* <div className="border border-[#E3E3E5] rounded-xl">
+              {/* Payroll */}
+              {/* <div className="border border-[#E3E3E5] rounded-xl">
               <HeadingSubHeadInner
                 heading="Payroll"
                 subhead="Choose which notifications you'd like to receive and stay updated on your data requests."
@@ -303,8 +317,8 @@ const Account = () => {
               </table>
             </div> */}
 
-            {/* Employee Management */}
-            {/* <div className="border border-[#E3E3E5] rounded-xl">
+              {/* Employee Management */}
+              {/* <div className="border border-[#E3E3E5] rounded-xl">
               <HeadingSubHeadInner
                 heading="Employee Management"
                 subhead="Choose which notifications you'd like to receive and stay updated on your data requests."
@@ -359,8 +373,8 @@ const Account = () => {
               </table>
             </div> */}
 
-            {/* Time & Leave*/}
-            {/* <div className="border border-[#E3E3E5] rounded-xl">
+              {/* Time & Leave*/}
+              {/* <div className="border border-[#E3E3E5] rounded-xl">
               <HeadingSubHeadInner
                 heading="Time & Leave"
                 subhead="Choose which notifications you'd like to receive and stay updated on your data requests."
@@ -416,8 +430,8 @@ const Account = () => {
               </table>
             </div> */}
 
-            {/* Loan Management*/}
-            {/* <div className="border border-[#E3E3E5] rounded-xl">
+              {/* Loan Management*/}
+              {/* <div className="border border-[#E3E3E5] rounded-xl">
               <HeadingSubHeadInner
                 heading="Loan Management"
                 subhead="Choose which notifications you'd like to receive and stay updated on your data requests."
@@ -473,8 +487,8 @@ const Account = () => {
               </table>
             </div> */}
 
-            {/* System & General*/}
-            {/* <div className="border border-[#E3E3E5] rounded-xl">
+              {/* System & General*/}
+              {/* <div className="border border-[#E3E3E5] rounded-xl">
               <HeadingSubHeadInner
                 heading="System & General"
                 subhead="Choose which notifications you'd like to receive and stay updated on your data requests."
@@ -530,7 +544,8 @@ const Account = () => {
                 </tbody>
               </table>
             </div> */}
-          </div>
+            </div>
+          )}
         </main>
       </DashboardLayout>
     </ProtectedRoute>

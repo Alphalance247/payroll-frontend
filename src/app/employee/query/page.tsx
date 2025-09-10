@@ -18,6 +18,7 @@ import { useFilter } from "../../hooks/useFilter";
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 import Image from "next/image";
 import { getEmployeeQueryList } from "@/stores/employee-dashboard/query/queryList";
+import QueryModal from "@/app/components/Employee-Dashboard/query/queryModal";
 
 const EmployeeRequest = () => {
   const [activeBtn, setActiveBtn] = useState<string>("All");
@@ -54,6 +55,7 @@ const EmployeeRequest = () => {
   const [requestType, setRequestType] = useState("");
   const [markAll, setMarkAll] = useState(false);
   const requestOption = ["All", "Salary", "Tax"];
+  const [requestModal, setRequestModal] = useState(false);
 
   useEffect(() => {
     setFilter("team", selectedTeam);
@@ -74,7 +76,11 @@ const EmployeeRequest = () => {
             />
           </div>
 
-          <Button variant="primary" className="flex items-center gap-x-2">
+          <Button
+            variant="primary"
+            className="flex items-center gap-x-2"
+            onButtonClick={() => setRequestModal(true)}
+          >
             {" "}
             New Requests
           </Button>
@@ -98,7 +104,11 @@ const EmployeeRequest = () => {
                 </p>
               </div>
             </div>
-            <Button variant="primary" className="flex items-center gap-x-2">
+            <Button
+              variant="primary"
+              className="flex items-center gap-x-2"
+              onButtonClick={() => setRequestModal(true)}
+            >
               {" "}
               New Requests
             </Button>
@@ -145,6 +155,14 @@ const EmployeeRequest = () => {
             </button>
           </div>
         </div>
+
+        {requestModal && (
+          <QueryModal
+            onModalClose={() => {
+              setRequestModal(!requestModal);
+            }}
+          />
+        )}
 
         <section className="mt-4">
           <div className="flex items-center gap-x-3 justify-between">

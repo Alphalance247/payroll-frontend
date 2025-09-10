@@ -3,13 +3,28 @@ import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/empl
 import OverviewCard from "@/app/common/employee-dashboard/common/overviewCard";
 import Heading from "@/app/common/heading";
 import ProtectedRoute from "@/app/common/protectedRoute";
+import { getEmployeeTransactionHistory } from "@/stores/employee-dashboard/analytics/transactionHistory";
+import { getEmployeeYearlyPayroll } from "@/stores/employee-dashboard/analytics/yearlyPayroll";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GoArrowRight } from "react-icons/go";
 import { MdOutlinePayment } from "react-icons/md";
 
 const EmployeeAnalytics = () => {
   const [activeBtn, setActiveBtn] = useState<string>("My Earnings");
+  const { data, fetchEmployeeTransactionHistory, loading, error } =
+    getEmployeeTransactionHistory();
+
+  const { data: yearlyPayroll, fetchEmployeeYearlyPayroll } =
+    getEmployeeYearlyPayroll();
+
+  console.log(yearlyPayroll?.data[0]?.months);
+
+  useEffect(() => {
+    fetchEmployeeTransactionHistory();
+    fetchEmployeeYearlyPayroll();
+  }, [fetchEmployeeTransactionHistory, fetchEmployeeYearlyPayroll]);
+
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "My Earnings" },
     { id: 2, name: "Timesheet" },
@@ -76,88 +91,54 @@ const EmployeeAnalytics = () => {
                 </div>
 
                 {/* Transaction Date */}
-                <div className="border-b border-[#E3E3E5]">
-                  <div className="py-4 px-6 bg-[#F7F7F7] border-[#E3E3E5]">
-                    <p className="text-sm font-medium text-[#71717A]">
-                      May 25, 2025
-                    </p>
-                  </div>
-                  <div className="flex justify-between py-4 px-6 items-center border-t border-[#E3E3E5]">
-                    <div className="flex gap-x-2 items-center text-base">
-                      <div className="bg-[#E6F5F9] border-[#B0E0EB] border-[1.2px] p-[10px] items-center flex justify-center rounded-full w-8 h-8">
-                        <span>
-                          <MdOutlinePayment size={20} fill="#009BC0" />
-                        </span>
-                      </div>
-                      <p className="text-[#71717A] ">Salary</p>
+                {yearlyPayroll?.data[0]?.months?.map((el, i) => (
+                  <div className="border-b border-[#E3E3E5]" key={i}>
+                    <div className="py-4 px-6 bg-[#F7F7F7] border-[#E3E3E5]">
+                      <p className="text-sm font-medium text-[#71717A]">
+                        {el?.month}
+                      </p>
                     </div>
-                    <p className="text-[#2F2F33] font-medium">N 10,000,000</p>
-                  </div>
-                  <div className="flex justify-between py-4 px-6 items-center border-t border-[#E3E3E5]">
-                    <div className="flex gap-x-2 items-center text-base">
-                      <div className="bg-[#E6F5F9] border-[#B0E0EB] border-[1.2px] p-[10px] items-center flex justify-center rounded-full w-8 h-8">
-                        <span>
-                          <MdOutlinePayment size={20} fill="#009BC0" />
-                        </span>
+                    <div className="flex justify-between py-4 px-6 items-center border-t border-[#E3E3E5]">
+                      <div className="flex gap-x-2 items-center text-base">
+                        <div className="bg-[#E6F5F9] border-[#B0E0EB] border-[1.2px] p-[10px] items-center flex justify-center rounded-full w-8 h-8">
+                          <span>
+                            <MdOutlinePayment size={20} fill="#009BC0" />
+                          </span>
+                        </div>
+                        <p className="text-[#71717A] ">Salary</p>
                       </div>
-                      <p className="text-[#71717A] ">Bonus</p>
+                      <p className="text-[#2F2F33] font-medium">
+                        N {el?.total_base_salary}
+                      </p>
                     </div>
-                    <p className="text-[#2F2F33] font-medium">N 10,000,000</p>
-                  </div>
-                  <div className="flex justify-between py-4 px-6 items-center border-t border-[#E3E3E5]">
-                    <div className="flex gap-x-2 items-center text-base">
-                      <div className="bg-[#E6F5F9] border-[#B0E0EB] border-[1.2px] p-[10px] items-center flex justify-center rounded-full w-8 h-8">
-                        <span>
-                          <MdOutlinePayment size={20} fill="#009BC0" />
-                        </span>
+                    <div className="flex justify-between py-4 px-6 items-center border-t border-[#E3E3E5]">
+                      <div className="flex gap-x-2 items-center text-base">
+                        <div className="bg-[#E6F5F9] border-[#B0E0EB] border-[1.2px] p-[10px] items-center flex justify-center rounded-full w-8 h-8">
+                          <span>
+                            <MdOutlinePayment size={20} fill="#009BC0" />
+                          </span>
+                        </div>
+                        <p className="text-[#71717A] ">Bonus</p>
                       </div>
-                      <p className="text-[#71717A] ">Loan</p>
+                      <p className="text-[#2F2F33] font-medium">
+                        N {el?.total_bonus}
+                      </p>
                     </div>
-                    <p className="text-[#2F2F33] font-medium">N 10,000,000</p>
-                  </div>
-                </div>
-
-                {/* 2nd Transaction */}
-                <div className="border-b border-[#E3E3E5]">
-                  <div className="py-4 px-6 bg-[#F7F7F7] border-[#E3E3E5]">
-                    <p className="text-sm font-medium text-[#71717A]">
-                      April 26, 2025
-                    </p>
-                  </div>
-                  <div className="flex justify-between py-4 px-6 items-center border-t border-[#E3E3E5]">
-                    <div className="flex gap-x-2 items-center text-base">
-                      <div className="bg-[#E6F5F9] border-[#B0E0EB] border-[1.2px] p-[10px] items-center flex justify-center rounded-full w-8 h-8">
-                        <span>
-                          <MdOutlinePayment size={20} fill="#009BC0" />
-                        </span>
+                    <div className="flex justify-between py-4 px-6 items-center border-t border-[#E3E3E5]">
+                      <div className="flex gap-x-2 items-center text-base">
+                        <div className="bg-[#E6F5F9] border-[#B0E0EB] border-[1.2px] p-[10px] items-center flex justify-center rounded-full w-8 h-8">
+                          <span>
+                            <MdOutlinePayment size={20} fill="#009BC0" />
+                          </span>
+                        </div>
+                        <p className="text-[#71717A] ">Loan</p>
                       </div>
-                      <p className="text-[#71717A] ">Salary</p>
+                      <p className="text-[#2F2F33] font-medium">
+                        N {el?.total_deductions}
+                      </p>
                     </div>
-                    <p className="text-[#2F2F33] font-medium">N 10,000,000</p>
                   </div>
-                  <div className="flex justify-between py-4 px-6 items-center border-t border-[#E3E3E5]">
-                    <div className="flex gap-x-2 items-center text-base">
-                      <div className="bg-[#E6F5F9] border-[#B0E0EB] border-[1.2px] p-[10px] items-center flex justify-center rounded-full w-8 h-8">
-                        <span>
-                          <MdOutlinePayment size={20} fill="#009BC0" />
-                        </span>
-                      </div>
-                      <p className="text-[#71717A] ">Bonus</p>
-                    </div>
-                    <p className="text-[#2F2F33] font-medium">N 10,000,000</p>
-                  </div>
-                  <div className="flex justify-between py-4 px-6 items-center border-t border-[#E3E3E5]">
-                    <div className="flex gap-x-2 items-center text-base">
-                      <div className="bg-[#E6F5F9] border-[#B0E0EB] border-[1.2px] p-[10px] items-center flex justify-center rounded-full w-8 h-8">
-                        <span>
-                          <MdOutlinePayment size={20} fill="#009BC0" />
-                        </span>
-                      </div>
-                      <p className="text-[#71717A] ">Loan</p>
-                    </div>
-                    <p className="text-[#2F2F33] font-medium">N 10,000,000</p>
-                  </div>
-                </div>
+                ))}
               </div>
 
               <div className="h-fit">
@@ -191,6 +172,7 @@ const EmployeeAnalytics = () => {
               <h1>Timesheet</h1>
             </div>
           )}
+
           {activeBtn === "Leave Calendar" && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 mb-8">
               {cardData.map((card, index) => (

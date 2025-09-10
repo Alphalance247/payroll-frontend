@@ -8,14 +8,17 @@ const ActiveLoan = ({
 }: {
   setIsOpenSideBar: (isOpenSideBar: boolean) => void;
 }) => {
+  const { fetchActiveLoan, data: activeLoanData } = getActiveLoan();
+  const { fetchEmployeeLoanDetails } = getEmployeeLoanDetails();
+
   const data = [
     {
       label: "Loan Amount",
-      value: "NGN 1000,000",
+      value: "NGN " + activeLoanData?.data?.loan_amount.toLocaleString(),
     },
     {
       label: "Repayment Due Date",
-      value: "July 5, 2025",
+      value: activeLoanData?.data?.next_repayment_date,
     },
     {
       label: "Duration",
@@ -23,19 +26,17 @@ const ActiveLoan = ({
     },
     {
       label: "Loan Id",
-      value: "LN-2025-00023",
+      value: "LN-2025-000" + activeLoanData?.data?.loan_id,
     },
     {
       label: "Monthly Repayment",
-      value: "NGN 55,000",
+      value: activeLoanData?.data?.monthly_repayement + "%",
     },
     {
       label: "Approval Date",
-      value: "May 10, 2025",
+      value: activeLoanData?.data?.approval_date || "Not specified",
     },
   ];
-  const { fetchActiveLoan } = getActiveLoan();
-  const { fetchEmployeeLoanDetails } = getEmployeeLoanDetails();
 
   useEffect(() => {
     fetchActiveLoan();
@@ -52,7 +53,7 @@ const ActiveLoan = ({
           variant="primary"
           onButtonClick={() => {
             setIsOpenSideBar(true);
-            fetchEmployeeLoanDetails("");
+            fetchEmployeeLoanDetails(activeLoanData?.data?.loan_id || "0");
           }}
         >
           View Details
@@ -68,11 +69,13 @@ const ActiveLoan = ({
 
             <p className="text-base text-[#23BD33] font-semibold">
               {" "}
-              15% Completed
+              {activeLoanData?.data?.repayment_progress}% Completed
             </p>
           </div>
           <div className="w-full bg-[#E9EAF0] h-3 mt-2 rounded-2xl">
-            <p className="w-[70%] bg-[#23BD33] h-3 rounded-2xl"></p>
+            <p
+              className={`w-[${activeLoanData?.data?.repayment_progress}%] bg-[#23BD33] h-3 rounded-2xl`}
+            ></p>
           </div>
         </div>
 

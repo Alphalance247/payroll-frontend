@@ -11,6 +11,11 @@ interface employeeLoanListDataStore {
     status: string;
     due_date: string;
   }[];
+  eligibility: number;
+  loan_limit: number;
+  next_repayment_date: string;
+  outstanding_balance: number;
+  proposed_next_repayment: number;
 }
 
 interface employeeLoanListStore {

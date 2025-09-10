@@ -7,6 +7,19 @@ interface payrollSummaryDataStore {
   total_base_salary: string;
   total_net_pay: string;
   total_time_booked: string;
+  latest_net_pay: number;
+  latest_payroll_date: string;
+  total_taxes: number;
+
+  payslips: {
+    id: string;
+    pay_date: string;
+    gross_pay: number;
+    debt: number;
+    tax: number;
+    net_pay: number;
+    paid: boolean;
+  }[];
 }
 
 interface employeePayrollSummaryDetailsStore {

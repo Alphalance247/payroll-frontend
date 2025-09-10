@@ -4,7 +4,7 @@ import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 
 interface employeeLeaveListDataStore {
-  results: {
+  leaves: {
     id: string;
     start_date: string;
     reason: string;
@@ -13,6 +13,12 @@ interface employeeLeaveListDataStore {
     duration: string;
     leave_type: string;
   }[];
+  remaining: string;
+  summary: {
+    approved: string;
+    pending: string;
+    rejected: string;
+  };
 }
 
 interface employeeLeaveListStore {

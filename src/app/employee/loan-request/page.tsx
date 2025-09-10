@@ -10,12 +10,14 @@ import LoanRequestModal from "@/app/components/Employee-Dashboard/loan/loanReque
 import Button from "@/app/common/Button";
 import LoanSideBar from "@/app/components/Employee-Dashboard/loan/loanSideBar";
 import { getEmployeeLoanList } from "@/stores/employee-dashboard/loan/loanList";
+import Spinner from "@/app/common/spinner";
+import ErrorFetch from "@/app/common/errorFetch";
 
 const EmployeeLoanRequest = () => {
   const [loanModal, setLoanModal] = useState(false);
   const [isOpenSideBar, setIsOpenSideBar] = useState(false);
 
-  const { fetchEmployeeLoanList } = getEmployeeLoanList();
+  const { fetchEmployeeLoanList, error, loading } = getEmployeeLoanList();
 
   useEffect(() => {
     fetchEmployeeLoanList();
@@ -37,7 +39,16 @@ const EmployeeLoanRequest = () => {
             </Button>
           </div>
 
-          <LoanOverviewCard />
+          {loading ? (
+            <Spinner spinnerSmall={true} />
+          ) : error ? (
+            <ErrorFetch
+              onRefetch={fetchEmployeeLoanList}
+              message="Error fetching Loan Overview"
+            />
+          ) : (
+            <LoanOverviewCard />
+          )}
 
           <ActiveLoan setIsOpenSideBar={setIsOpenSideBar} />
           <LoanTable setIsOpenSideBar={setIsOpenSideBar} />

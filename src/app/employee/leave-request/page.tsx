@@ -28,15 +28,15 @@ const EmployeeLeaveRequest = () => {
   const cardData = [
     {
       label: "Approved",
-      value: `15`,
+      value: leaveData?.summary?.approved,
     },
     {
       label: "Awaiting Approval",
-      value: "2",
+      value: leaveData?.summary?.pending,
     },
     {
       label: "Remaining",
-      value: "30",
+      value: leaveData?.summary?.rejected,
     },
     {
       label: "National Holidays",
@@ -57,7 +57,7 @@ const EmployeeLeaveRequest = () => {
               <OverviewCard
                 image="/assets/employee-dashboard/home/people.svg"
                 label={card?.label}
-                value={card?.value}
+                value={card?.value || "0"}
                 key={index}
               />
             ))}
@@ -145,7 +145,7 @@ const EmployeeLeaveRequest = () => {
                     </tr>
                   </thead>
 
-                  {leaveData?.results?.length === 0 ? (
+                  {leaveData?.leaves?.length === 0 ? (
                     <tbody>
                       <tr>
                         <td colSpan={6} className="text-center py-8">
@@ -155,7 +155,7 @@ const EmployeeLeaveRequest = () => {
                     </tbody>
                   ) : (
                     <tbody className="text-gray-600  dark:text-white text-[15px] leading-[1.5rem] divide-y divide-gray-200 dark:divide-[#424E59]">
-                      {leaveData?.results.map((data, i) => (
+                      {leaveData?.leaves.map((data, i) => (
                         <tr
                           className="hover:bg-gray-50 even:bg-[#F7F7F7] dark:hover:bg-[#424E59] transition duration-200 ease-in-out"
                           key={i}

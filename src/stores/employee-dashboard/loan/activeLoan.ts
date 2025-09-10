@@ -5,8 +5,13 @@ import { AxiosError } from "axios";
 
 interface activeLoanListDataStore {
   data: {
-    id: string;
-  }[];
+    loan_id: string;
+    approval_date: string;
+    loan_amount: number;
+    monthly_repayement: string;
+    next_repayment_date: string;
+    repayment_progress: string;
+  };
 }
 
 interface activeLoanListStore {
