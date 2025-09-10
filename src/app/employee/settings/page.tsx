@@ -129,10 +129,10 @@ const pages = () => {
     <div>
       <EmployeeDashboardLayout>
         {/* the employee DP */}
-        <div className="grid  ">
+        <div className="grid overflow-auto ">
           <EmployeeDp dp={"/assets/employee-dashboard/home/DP.png"} />{" "}
           {/* sidebar tabs */}
-          <div className="flex  px-[72px] space-x-10 ">
+          <div className="flex  px-[72px] space-x-10  ">
             <div className="w-1/4">
               <div className="pt-[37px] h-[461px] w-[217px] border-r-[2px] border-[#E8EAEE66]">
                 <div className="grid gap-y-[10px]   ">
@@ -172,7 +172,7 @@ const pages = () => {
                     tabName="next of kin details"
                     className={
                       activeTab === "next of kin"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[164px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[166px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
                         : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
                     }
                   />
@@ -200,7 +200,7 @@ const pages = () => {
               </div>
             </div>
             {/* personal details */}
-            <div className="w-3/4  h-[700px] overflow-auto">
+            <div className="w-3/4  h-[700px] ">
               <div className="grid gap-y-8">{renderTabContent()}</div>
             </div>
           </div>

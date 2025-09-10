@@ -1,6 +1,5 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trash2Icon, Upload } from "lucide-react";
 import { RiArrowDropDownFill } from "react-icons/ri";
-// import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDocumentsUploaded } from "@/stores/employeeDetails/UploadDocument";
 import Spinner from "@/app/common/spinner";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -19,9 +18,9 @@ const Uploads = ({ children, onClick }: Uploads) => {
   return (
     <div className=" rounded-[10px]  border-[1px] table-auto overflow-auto h-fit">
       <table className="  w-full  font-Graphik">
-        <thead className=" bg-[#E3E3E5] h-[60px] text-sm text-[#71717A] capitalize font-medium w-full ">
+        <thead className=" bg-[#E3E3E5] h-[60px] text-sm text-[#71717A] capitalize font-medium w-full  ">
           <tr className=" ">
-            <th className="text-start px-6">document</th>
+            <th className="text-start px-6 ">document</th>
             <th className="text-start px-6">name</th>
             <th className="text-start px-6">file size</th>
           </tr>
@@ -50,17 +49,30 @@ const Uploads = ({ children, onClick }: Uploads) => {
                             {openDropdownId === document.id && (
                               <div className="absolute top-4 right-0 bg-white shadow-lg h-fit rounded-md w-28 z-20">
                                 <div className="grid gap-y-2 p-4">
+                                  {" "}
                                   <button
                                     className="outline-none text-[#E37915] capitalize font-Graphik font-normal text-start"
                                     onClick={onClick}
                                   >
-                                    upload
+                                    <div className="flex space-x-2 items-ceter">
+                                      {" "}
+                                      <div className=" items-center">
+                                        <Upload className="text-[#E37915] w-[13.5px] " />
+                                      </div>
+                                      <div>upload</div>
+                                    </div>
                                   </button>
                                   <button
                                     className="outline-none text-[#E37915] capitalize font-Graphik font-normal text-start"
                                     onClick={onClick}
                                   >
-                                    Delete
+                                    <div className="flex space-x-2 items-ceter">
+                                      {" "}
+                                      <div className=" items-center">
+                                        <Trash2Icon className="text-[#E37915] w-[13.5px] " />
+                                      </div>
+                                      <div>Delete</div>
+                                    </div>
                                   </button>
                                 </div>
                               </div>

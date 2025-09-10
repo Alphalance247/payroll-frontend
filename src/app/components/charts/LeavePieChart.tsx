@@ -72,7 +72,12 @@ PieChartProps) => {
               <PieChart>
                 <ChartTooltip
                   cursor={false}
-                  content={<ChartTooltipContent hideLabel />}
+                  content={
+                    <ChartTooltipContent
+                      hideLabel
+                      className="bg-black opacity-80"
+                    />
+                  }
                 />
                 <Pie
                   data={chartData}

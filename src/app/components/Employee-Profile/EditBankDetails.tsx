@@ -12,7 +12,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
     bank_name: employeeData?.data.bank_name || "",
     acct_num: employeeData?.data.acct_num || "",
     acct_name: employeeData?.data.acct_num || "",
-    bvn: employeeData?.data.bank_code || "",
+    bank_code: employeeData?.data.bank_code || "",
     // reason: "Tell us why you are requesting this changes",
   });
   const [editForm, setEditForm, resetForm] = useBoolean();
@@ -42,7 +42,7 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
         bank_name: "",
         acct_num: "",
         acct_name: "",
-        bvn: "",
+        bank_code: "",
       });
       onModalClose();
       resetForm();
@@ -130,16 +130,16 @@ const EditBankDetails = ({ onModalClose }: { onModalClose: () => void }) => {
             <div className="">
               <Label
                 id="bvn"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                className="text-[#2F2F33] text-sm font-medium font-Graphik  "
               >
                 {" "}
-                BVN
+                Bank Code
               </Label>
               <br />
               <input
                 type="text"
                 name="bvn"
-                value={form.bvn}
+                value={form.bank_code}
                 readOnly
                 onChange={handleChange}
                 className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"

@@ -57,7 +57,7 @@ const BankDetails = ({ title }: BankDetailsProps) => {
                 <div className="w-1/3">
                   <div className="w-[211px] h-[60px] flex flex-col space-y-4">
                     <div className="text-sm font-normal font-Graphik text-[#4D4D4D]capitalize">
-                      Bvn
+                      Bank code
                     </div>
                     <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
                       {employeeData.data.bank_code}
