@@ -8,6 +8,8 @@ import { getEmployeePayrollSummary } from "@/stores/employee-dashboard/employee/
 import { useEffect } from "react";
 import ErrorFetch from "../common/errorFetch";
 import Spinner from "../common/spinner";
+import EmployeeBarChart from "../components/charts/employeeBarChart";
+import { IoMdArrowDropdown } from "react-icons/io";
 
 const Storage = () => {
   const { fetchEmployeePayrollSummary, error, loading, data } =
@@ -29,6 +31,29 @@ const Storage = () => {
     {
       label: "Total Time Booked",
       value: data?.total_net_pay || "0",
+    },
+  ];
+  const chartData = [
+    { year: "2020", bonus: 12.5, baseSalary: 1, deduction: 5 },
+    {
+      year: "2021",
+      bonus: 22.5,
+      baseSalary: 1,
+      deduction: 5,
+    },
+    { year: "2022", bonus: 30, baseSalary: 1, deduction: 5 },
+    { year: "2023", bonus: 30, baseSalary: 1, deduction: 5 },
+    {
+      year: "2024",
+      bonus: 12.5,
+      baseSalary: 1,
+      deduction: 5,
+    },
+    {
+      year: "2025",
+      bonus: 30,
+      baseSalary: 1,
+      deduction: 5,
     },
   ];
   return (
@@ -58,6 +83,41 @@ const Storage = () => {
           )}
 
           <QuickActions />
+          <div className="h-[882px] border border-[#E3E3E5] rounded-[8px]  mt-8  ">
+            <div className="h-[76px] border-b border-[#E3E3E5] px-6 flex justify-between items-center ">
+              <div className=" items-center ">
+                <div className="text-base text-[#2F2F33] font-medium font-Graphik">
+                  Payroll Insights
+                </div>
+              </div>
+              <button className="h-[44px] w-[177px] border border-[#E3E3E5] rounded-[8px] flex justify-between items-center px-[17.5px] font-Graphik">
+                <p className="text-[#2F2F33] text-base">Last 12 months</p>
+                <IoMdArrowDropdown />
+              </button>
+            </div>
+            <div className="my-8 flex space-x-5 items-center px-20">
+              <div className="flex space-x-2 items-center">
+                <div className="h-4 w-4 rounded-sm bg-[#009BC0]"></div>
+                <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
+                  Base salary
+                </div>
+              </div>
+              <div className="flex space-x-2 items-center">
+                <div className="h-4 w-4 rounded-sm bg-[#E37915]"></div>
+                <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
+                  Bonus
+                </div>
+              </div>
+              <div className="flex space-x-2 items-center">
+                <div className="h-4 w-4 rounded-sm bg-[#11202D]"></div>
+                <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
+                  Deduction
+                </div>
+              </div>
+            </div>
+            <EmployeeBarChart chartData={chartData} />
+          </div>
+          {/* <EmployeeBarChart chartData={} /> */}
         </main>
       </EmployeeDashboardLayout>
     </ProtectedRoute>

@@ -10,33 +10,13 @@ const LoanSideBar = ({
 }: {
   setIsOpenSideBar: (isOpenSideBar: boolean) => void;
 }) => {
-  const statusInfo = [
-    {
-      label: "Request ID",
-      value: "LR-20240401-001",
-      type: "status",
-    },
-    {
-      label: "Current Balance",
-      value: "NGN 168,000",
-      type: "text",
-    },
-    {
-      label: "Next Repayment Date",
-      value: "July 5, 2025",
-      type: "text",
-    },
-    {
-      label: "Payment Progress",
-      value: "6 Months",
-      type: "progress",
-    },
-  ];
+  const { error, data: loanDetailsData, loading } = getEmployeeLoanDetails();
+  const detailsData = loanDetailsData?.data;
 
   const approvalDetails = [
     {
       label: "Requested On ",
-      value: "January 20, 2026",
+      value: detailsData?.created,
     },
     {
       label: "Approved On",
@@ -52,25 +32,41 @@ const LoanSideBar = ({
     },
   ];
 
-  const {
-    error,
-    data: detailsData,
-    loading,
-    fetchEmployeeLoanDetails,
-  } = getEmployeeLoanDetails();
+  const statusInfo = [
+    {
+      label: "Status",
+      value: detailsData?.status,
+      type: "status",
+    },
+    {
+      label: "Current Balance",
+      value: "NGN 168,000",
+      type: "text",
+    },
+    {
+      label: detailsData?.next_repayment,
+      value: "July 5, 2025",
+      type: "text",
+    },
+    {
+      label: "Payment Progress",
+      value: "6 Months",
+      type: "progress",
+    },
+  ];
 
   const data = [
     {
       label: "Loan Amount",
-      value: "₦3,000,000",
+      value: "₦" + detailsData?.amount || 0,
     },
     {
       label: "Request ID",
-      value: "LR-20240401-001",
+      value: ` LR-20240401-00${detailsData?.id}`,
     },
     {
       label: "Repayment schedule",
-      value: "Installment",
+      value: detailsData?.repayment_schedule,
     },
     {
       label: "Tenure",
@@ -78,17 +74,17 @@ const LoanSideBar = ({
     },
     {
       label: "Monthly repayment",
-      value: "NGN 56,000",
+      value: "NGN " + detailsData?.monthly_repayment,
     },
-    {
-      label: "Interest Rate",
-      value: "10%",
-    },
+    // {
+    //   label: "Interest Rate",
+    //   value: "10%",
+    // },
 
-    {
-      label: "Repayable Amount",
-      value: "NGN 3,100,000",
-    },
+    // {
+    //   label: "Repayable Amount",
+    //   value: "NGN 3,100,000",
+    // },
   ];
 
   return (
@@ -145,7 +141,7 @@ const LoanSideBar = ({
                     <p
                       className={`text-sm font-medium  bg-[#E9F9EF] border-[#188C43] text-[#188C43] border rounded-2xl px-[10px] py-1`}
                     >
-                      Approved
+                      {item?.value}
                     </p>
                   ) : (
                     <div className="bg-[#E0E0E0] w-[50%] rounded-2xl h-[5px]">
@@ -156,7 +152,7 @@ const LoanSideBar = ({
               ))}
             </div>
 
-            <div>
+            {/* <div>
               <CollapseHeading text="Repayment Schedule" withOutline={true} />
 
               <div className="overflow-x-auto">
@@ -214,7 +210,7 @@ const LoanSideBar = ({
                   </tbody>
                 </table>
               </div>
-            </div>
+            </div> */}
 
             <div>
               <CollapseHeading text="Approval Details" withOutline={true} />

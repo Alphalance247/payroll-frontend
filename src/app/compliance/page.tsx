@@ -32,7 +32,7 @@ const Compliance = () => {
               />
             </div>
             <Link
-              href={"https://real.ec2.alluvium.net/api/admin/compliance/post/"}
+              href={"https://yen.ec2.alluvium.net/api/admin/compliance/post/"}
               target="_blank"
             >
               <Button variant="primary">Upload Document</Button>

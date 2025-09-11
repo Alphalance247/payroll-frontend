@@ -30,7 +30,7 @@ const ActiveLoan = ({
     },
     {
       label: "Monthly Repayment",
-      value: activeLoanData?.data?.monthly_repayement + "%",
+      value: activeLoanData?.data?.monthly_repayment + " %",
     },
     {
       label: "Approval Date",

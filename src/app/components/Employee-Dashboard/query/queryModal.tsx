@@ -37,7 +37,7 @@ const QueryModal = ({ onModalClose }: { onModalClose: () => void }) => {
         ...form,
       });
 
-      if (res.status === 200 || res.status === 201) {
+      if (res.status === 200 || res.status === 201 || res.status === 206) {
         toast.success(res?.data?.message || "Loan request added successfully");
         // Refresh loan details after loan request
         fetchLoanRequestList();

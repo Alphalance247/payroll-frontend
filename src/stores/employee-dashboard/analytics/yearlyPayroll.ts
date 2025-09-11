@@ -5,6 +5,12 @@ import { AxiosError } from "axios";
 
 interface employeeYearlyPayrollDataStore {
   data: {
+    totals: {
+      total_base_salary: number;
+      total_bonus: number;
+      total_deductions: number;
+    };
+    year: string;
     months: {
       total_base_salary: string;
       total_bonus: string;
@@ -12,6 +18,21 @@ interface employeeYearlyPayrollDataStore {
       month: string;
     }[];
   }[];
+
+  current_data: {
+    months: {
+      month: string;
+      total_base_salary: string;
+      total_bonus: string;
+      total_deductions: string;
+    }[];
+
+    totals: {
+      total_base_salary: number;
+      total_bonus: number;
+      last_payment: string;
+    };
+  };
 }
 
 interface employeeYearlyPayrollListStore {

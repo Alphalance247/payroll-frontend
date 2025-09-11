@@ -194,7 +194,7 @@ const Account = () => {
             <Spinner spinnerSmall={true} />
           ) : error ? (
             <ErrorFetch
-              message="Error Fetching leave request"
+              message="Error Notification Preferences"
               onRefetch={() => fetchNotificationCategory()}
             />
           ) : (

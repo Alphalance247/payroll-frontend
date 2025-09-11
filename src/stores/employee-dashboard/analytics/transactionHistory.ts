@@ -4,17 +4,16 @@ import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 
 interface employeeTransactionDataStore {
-  data: {
-    id: string;
-    amount: string;
-    repayment_schedule: string;
-    status: string;
-    due_date: string;
-  }[];
+  transaction_id: string;
+  amount: string;
+  created: string;
+  related_file: string;
+  status: string;
+  tran_type: string;
 }
 
 interface employeeTransactionHistoryListStore {
-  data: employeeTransactionDataStore | null;
+  data: employeeTransactionDataStore[] | null;
   loading: boolean;
   error: string | null;
   fetchEmployeeTransactionHistory: () => Promise<void>;

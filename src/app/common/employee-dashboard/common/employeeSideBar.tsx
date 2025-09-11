@@ -13,8 +13,8 @@ import { BsBarChartLine } from "react-icons/bs";
 import { usePathname } from "next/navigation";
 import { useCallback, useState } from "react";
 import { Search } from "lucide-react";
-import { IoMdTime } from "react-icons/io";
-
+import { TbSettings2 } from "react-icons/tb";
+import { IoIosArrowDown, IoMdTime } from "react-icons/io";
 interface employeeDropDownText {
   link: string;
   text: string;
@@ -101,6 +101,21 @@ const EmployeeSideBar: React.FC<propData> = () => {
           link: "/employee/analytics",
           icons: <BsBarChartLine size={20} />,
         },
+        {
+          text: "Settings",
+          arrowDown: <IoIosArrowDown size={20} />,
+          icons: <TbSettings2 size={20} />,
+          dropdownText: [
+            {
+              link: "/employee/settings",
+              text: "Profile Settings",
+            },
+            {
+              link: "/employee/settings/notifications",
+              text: "Notification settings",
+            },
+          ],
+        },
       ],
     },
   ];
@@ -108,7 +123,7 @@ const EmployeeSideBar: React.FC<propData> = () => {
   return (
     <div className=" bg-[#11202D] h-full border-r border-gray-200 overflow-y-auto">
       {/* Logo / Brand Name */}
-      <div className="flex flex-col justify-between mb-24">
+      <div className="flex flex-col justify-between mb-12">
         {/* Navigation Menu */}
         <div className="mt-6 px-3">
           {pathname.startsWith("/settings") && (

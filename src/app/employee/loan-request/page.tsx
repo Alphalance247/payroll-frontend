@@ -29,7 +29,7 @@ const EmployeeLoanRequest = () => {
         <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
           <div className="flex justify-between items-center">
             <Heading
-              user={"My Leave Request"}
+              user={"My Loan Request"}
               subHead="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Consequuntur, "
               flexDirection="column"
             />
