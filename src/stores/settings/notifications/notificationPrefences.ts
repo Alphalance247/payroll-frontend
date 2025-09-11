@@ -5,11 +5,16 @@ import { AxiosError } from "axios";
 interface adminNotificationPreferenceDataStore {
   data: {
     channels: {
-      name: string;
-      description: string;
-      code: string;
-      id: number;
+      channel: {
+        name: string;
+        description: string;
+        code: string;
+        id: number;
+      };
     }[];
+    notification_type: {
+      id: number;
+    };
   }[];
 }
 

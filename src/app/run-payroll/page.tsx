@@ -64,7 +64,6 @@ export default function RunPayrollPage() {
                           <button
                             className="px-4 py-2 text-sm text-[#2F2F33] border border-[#E3E3E5] rounded-lg"
                             onClick={() => {
-                              console.log("Save as Draft");
                               toast.success("Save as Draft");
                             }}
                           >

@@ -259,9 +259,9 @@ const Sidebar = () => {
   const sideBarType = SidebarToShow;
 
   return (
-    <div className=" bg-[#11202D] border-r border-gray-200 overflow-y-auto">
+    <div className=" bg-[#11202D] h-full border-r border-gray-200 overflow-y-auto">
       {/* Logo / Brand Name */}
-      <div className="flex flex-col justify-between mb-24">
+      <div className="flex flex-col justify-between mb-12">
         {/* Navigation Menu */}
         <div className="mt-6 px-3">
           {pathname.startsWith("/settings") && (

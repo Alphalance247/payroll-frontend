@@ -1,12 +1,12 @@
 "use client";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Legend } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
+  // ChartLegend,
+  // ChartLegendContent,
 } from "@/components/ui/chart";
 const chartConfig = {
   baseSalary: {
@@ -28,9 +28,11 @@ export default function DashboardLayout({
 }: {
   chartData: {
     year: string;
-    baseSalary: number;
-    bonus: number;
-    deduction: number;
+    totals: {
+      total_base_salary: number;
+      total_bonus: number;
+      total_deductions: number;
+    };
   }[];
 }) {
   return (
@@ -46,7 +48,7 @@ export default function DashboardLayout({
             tickLine={false}
             tickMargin={10}
             axisLine={false}
-            tickFormatter={(value) => value.slice(0, 4)}
+            // tickFormatter={(value) => value.slice(0, 4)}
           />
           <YAxis
             domain={[0, 40]}

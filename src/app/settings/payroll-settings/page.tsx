@@ -13,8 +13,19 @@ import { GoPlus } from "react-icons/go";
 
 const PayrollSettings = () => {
   const [selectedPlan, setSeledtedPLan] = useState("Monthly");
-  const [date, setDate] = useState("");
-  const [checked, setChecked] = useState("");
+  const [deliveryMethod, setDeliveryMethod] = useState("Manual Delivery");
+  const [checkedi, setCheckedi] = useState("");
+  const [form, setForm] = useState({
+    pay_day: "",
+    send_payslip_to: "",
+    leave_allowance: "",
+    loan_repayment_percentage: "",
+    loan_repayment_freq: "",
+    payment_pipeline: "",
+  });
+
+  console.log(form);
+
   const data = [
     {
       payType: "Monthly",
@@ -108,28 +119,32 @@ const PayrollSettings = () => {
 
                 <div className="mt-8 flex flex-col gap-y-8">
                   <div>
-                    <Label id="firstname" className="block mb-[6px]">
+                    <Label id="date" className="block mb-[6px]">
                       Date
                     </Label>
                     <Input
                       type="date"
-                      id="firstname"
-                      name="fullname"
-                      value={date || ""}
-                      onChange={(e) => setDate(e.target.value)}
+                      id="pay_day"
+                      name="pay_day"
+                      value={form?.pay_day || ""}
+                      onChange={(e) =>
+                        setForm({ ...form, pay_day: e.target.value })
+                      }
                     />
                   </div>
 
                   <div>
-                    <Label id="firstname" className="block mb-[6px]">
+                    <Label id="payment_pipeline" className="block mb-[6px]">
                       Cut-off Date
                     </Label>
                     <Input
                       type="date"
-                      id="firstname"
-                      name="fullname"
-                      value={date || ""}
-                      onChange={(e) => setDate(e.target.value)}
+                      id="payment_pipeline"
+                      name="payment_pipeline"
+                      value={form?.payment_pipeline || ""}
+                      onChange={(e) =>
+                        setForm({ ...form, payment_pipeline: e.target.value })
+                      }
                     />
 
                     <p className="text-sm text-[#8D8D95] mt-[6px]">
@@ -209,8 +224,8 @@ const PayrollSettings = () => {
                           <input
                             type="radio"
                             id="email"
-                            checked={checked === "email"}
-                            onChange={() => setChecked("email")}
+                            checked={checkedi === "email"}
+                            onChange={() => setCheckedi("email")}
                             className="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                           />
                           <label
@@ -224,9 +239,9 @@ const PayrollSettings = () => {
                         <div className="flex items-center gap-3">
                           <input
                             type="radio"
-                            checked={checked === "slack"}
+                            checked={checkedi === "slack"}
                             id="Slack"
-                            onChange={() => setChecked("slack")}
+                            onChange={() => setCheckedi("slack")}
                             className="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                           />
                           <label
@@ -241,9 +256,9 @@ const PayrollSettings = () => {
                           <input
                             type="radio"
                             id="Both"
-                            checked={checked === "both"}
+                            checked={checkedi === "both"}
                             onChange={() => {
-                              setChecked("both");
+                              setCheckedi("both");
                             }}
                             className="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                           />
@@ -276,10 +291,10 @@ const PayrollSettings = () => {
                     <div
                       className="p-4 border border-[#E3E3E5] cursor-pointer rounded-md flex gap-x-1 items-start"
                       key={i}
-                      onClick={() => setSeledtedPLan(type?.payType)}
+                      onClick={() => setDeliveryMethod(type?.payType)}
                     >
                       <div className="">
-                        {selectedPlan === type?.payType ? (
+                        {deliveryMethod === type?.payType ? (
                           <FaRegDotCircle
                             size={24}
                             color="#FCF2E8"
@@ -306,33 +321,40 @@ const PayrollSettings = () => {
                   </p>
 
                   <div className="flex flex-col gap-y-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="radio"
                         id="email"
-                        checked={checked === "email"}
-                        onChange={() => setChecked("email")}
-                        className="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                        name="send_payslip_to"
+                        value={"email"}
+                        checked={form?.send_payslip_to === "email"}
+                        onChange={(e) =>
+                          setForm({ ...form, send_payslip_to: e.target.value })
+                        }
+                        className="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
                       />
                       <label
                         htmlFor="email"
-                        className="text-sm font-medium text-[#374151]"
+                        className="text-sm font-medium text-[#374151]  cursor-pointer"
                       >
                         Email
                       </label>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 ">
                       <input
                         type="radio"
-                        checked={checked === "slack"}
-                        id="Slack"
-                        onChange={() => setChecked("slack")}
-                        className="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                        checked={form?.send_payslip_to === "slack"}
+                        name="send_payslip_to"
+                        value={"slack"}
+                        onChange={(e) =>
+                          setForm({ ...form, send_payslip_to: e.target.value })
+                        }
+                        className="h-5 w-5 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                       />
                       <label
                         htmlFor="Slack"
-                        className="text-sm font-medium text-[#374151]"
+                        className="text-sm font-medium text-[#374151] cursor-pointer"
                       >
                         Slack
                       </label>
@@ -342,15 +364,17 @@ const PayrollSettings = () => {
                       <input
                         type="radio"
                         id="Both"
-                        checked={checked === "both"}
-                        onChange={() => {
-                          setChecked("both");
-                        }}
-                        className="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                        name="send_payslip_to"
+                        value={"both"}
+                        checked={form?.send_payslip_to === "both"}
+                        onChange={(e) =>
+                          setForm({ ...form, send_payslip_to: e.target.value })
+                        }
+                        className="h-5 w-5 rounded border-gray-300 cursor-pointer text-orange-600 focus:ring-orange-500"
                       />
                       <label
                         htmlFor="Both"
-                        className="text-sm font-medium text-[#374151]"
+                        className="text-sm font-medium text-[#374151] cursor-pointer"
                       >
                         Both
                       </label>
@@ -371,13 +395,18 @@ const PayrollSettings = () => {
                 />
 
                 <div>
-                  <Label className="mb-[6px] block">Allowance amount</Label>
+                  <Label id="leave_allowance" className="mb-[6px] block">
+                    Allowance amount
+                  </Label>
                   <Input
                     type="number"
                     placeholder="0"
-                    id="amount"
-                    name=""
-                    value=""
+                    id="leave_allowance"
+                    name="leave_allowance"
+                    value={form?.leave_allowance}
+                    onChange={(e) =>
+                      setForm({ ...form, leave_allowance: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -391,6 +420,43 @@ const PayrollSettings = () => {
                 <HeadingSubHeadInner
                   heading="Payroll Bonus (13th month)"
                   subhead="This allows you to add a percentage of the employees' salary as a 13th month bonus to be paid in the selected month."
+                />
+
+                <div className="grid grid-cols-2 gap-x-[10px]">
+                  <div>
+                    <Label className="mb-[6px] block">Percentage</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      id="amount"
+                      name=""
+                      value=""
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="mb-[6px] block">Payout month</Label>
+
+                    <select
+                      name=""
+                      id=""
+                      className="w-full border outline-none text-[#BEBEC2] border-[#E3E3E5] p-4 text-sm rounded-lg"
+                    >
+                      <option value=""></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-[#F7F7F7] p-4 flex justify-end border-t border-[#E3E3E5] rounded-bl-lg rounded-br-lg">
+                <Button className="w-[100px]">Update</Button>
+              </div>
+            </div>
+
+            <div className="border-[#E3E3E5] border rounded-lg">
+              <div className="p-6">
+                <HeadingSubHeadInner
+                  heading="Loan Repayment"
+                  subhead="Set a percentage of the employee’s salary to be deducted as loan repayment and specify the month it should be applied."
                 />
 
                 <div className="grid grid-cols-2 gap-x-[10px]">
