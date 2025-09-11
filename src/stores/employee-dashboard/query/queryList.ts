@@ -38,7 +38,7 @@ export const getEmployeeQueryList = create<employeeQueryListStore>((set) => ({
   fetchEmployeeQueryList: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.get("/employees/queries");
+      const res = await axiosInstance.get("/employees/my-queries");
       set({ data: res.data, loading: false });
     } catch (err) {
       if (err instanceof AxiosError) {
