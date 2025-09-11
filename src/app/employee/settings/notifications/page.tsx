@@ -11,6 +11,7 @@ import { getAdminNotificationPreferences } from "@/stores/settings/notifications
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
+import { getEmployeesNotificationCategories } from "@/stores/employee-dashboard/settings/notifications/categories";
 
 const Account = () => {
   const {
@@ -182,6 +183,13 @@ const Account = () => {
   useEffect(() => {
     fetchNotificationCategory();
   }, [fetchNotificationCategory]);
+
+  const { fetchEmployeesNotificationCategory } =
+    getEmployeesNotificationCategories();
+
+  useEffect(() => {
+    fetchEmployeesNotificationCategory();
+  }, [fetchEmployeesNotificationCategory]);
 
   return (
     <ProtectedRoute>
