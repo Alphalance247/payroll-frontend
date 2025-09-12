@@ -298,7 +298,10 @@ const queryDetailsModal = ({
               </div>
             </div>
             <div className="flex justify-between items-center">
-              <button className="bg-[#F1F1F2] border border-[#E3E3E5] h-10 w-[275px] rounded-[6px] text-[#2F2F33] text-sm font-medium font-Graphik">
+              <button
+                onClick={onDrawerClose}
+                className="bg-[#F1F1F2] border border-[#E3E3E5] h-10 w-[275px] rounded-[6px] text-[#2F2F33] text-sm font-medium font-Graphik"
+              >
                 Cancel
               </button>
               <button className="bg-[#E37915]  h-10 w-[275px] rounded-[6px] text-sm font-medium font-Graphik text-[#F7F7F7]">
