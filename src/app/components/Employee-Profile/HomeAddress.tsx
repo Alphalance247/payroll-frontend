@@ -1,6 +1,6 @@
 import { title } from "process";
 import React, { useEffect } from "react";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 import { log } from "console";
 interface HomeAdressProps {

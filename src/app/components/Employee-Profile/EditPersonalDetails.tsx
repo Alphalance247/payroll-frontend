@@ -8,7 +8,7 @@ import useBoolean from "@/app/hooks/useBoolean";
 import toast from "react-hot-toast";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 const EditPersonalDetails = ({
   onModalClose,
 }: {

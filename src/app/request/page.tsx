@@ -22,6 +22,8 @@ import { getQueryList } from "@/stores/request/getQueryList";
 import Spinner from "../common/spinner";
 import { getQueryDetails } from "@/stores/request/getRequestDetails";
 import { useFilter } from "../hooks/useFilter";
+import EmployeeSideBar from "../common/employee-dashboard/common/employeeSideBar";
+import EmployeeDashboardLayout from "../common/employee-dashboard/common/employeeLayout";
 
 const Request = () => {
   const [activeBtn, setActiveBtn] = useState<string>("All");
@@ -80,7 +82,8 @@ const Request = () => {
   }, [selectedTeam, requestType, setFilter]);
 
   return (
-    <DashboardLayout>
+    // <DashboardLayout>
+    <EmployeeDashboardLayout>
       <main className="p-4 md:p-6 lg:p-10 overflow-y-scroll">
         <div className="flex justify-between items-center">
           <div>
@@ -409,7 +412,8 @@ const Request = () => {
           )}
         </section>
       </main>
-    </DashboardLayout>
+    </EmployeeDashboardLayout>
+    // </DashboardLayout>
   );
 };
 

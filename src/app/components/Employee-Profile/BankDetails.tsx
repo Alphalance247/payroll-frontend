@@ -1,5 +1,5 @@
 import React from "react";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 interface BankDetailsProps {
   title: string;

@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, Trash2Icon, Upload } from "lucide-react";
 import { RiArrowDropDownFill } from "react-icons/ri";
-import { useDocumentsUploaded } from "@/stores/employeeDetails/UploadDocument";
+import { useDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
 import Spinner from "@/app/common/spinner";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useState } from "react";

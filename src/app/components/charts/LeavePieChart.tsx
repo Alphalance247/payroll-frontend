@@ -75,7 +75,7 @@ PieChartProps) => {
                   content={
                     <ChartTooltipContent
                       hideLabel
-                      className="bg-black opacity-80"
+                      className="bg-black opacity-95 capitalize shadow-md  font-medium "
                     />
                   }
                 />

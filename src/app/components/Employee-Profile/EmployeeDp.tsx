@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { TiCamera } from "react-icons/ti";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 import Label from "@/app/common/label";
 interface DpProps {

@@ -1,7 +1,7 @@
 import ModalOverlay from "@/app/common/modal/modal";
 import { useState } from "react";
 import useBoolean from "@/app/hooks/useBoolean";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Label from "@/app/common/label";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
