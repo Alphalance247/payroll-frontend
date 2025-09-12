@@ -19,6 +19,7 @@ import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/empl
 import Image from "next/image";
 import { getEmployeeQueryList } from "@/stores/employee-dashboard/query/queryList";
 import QueryModal from "@/app/components/Employee-Dashboard/query/queryModal";
+import QueryDetailsModal from "@/app/components/Employee-Dashboard/query/queryDetailsModal";
 
 const EmployeeRequest = () => {
   const [activeBtn, setActiveBtn] = useState<string>("All");
@@ -56,6 +57,7 @@ const EmployeeRequest = () => {
   const [markAll, setMarkAll] = useState(false);
   const requestOption = ["All", "Salary", "Tax"];
   const [requestModal, setRequestModal] = useState(false);
+  const [queryModal, setQueryModal] = useState(false);
 
   useEffect(() => {
     setFilter("team", selectedTeam);
@@ -339,6 +341,7 @@ const EmployeeRequest = () => {
                               onClick={() => {
                                 fetchQueryDetails(emp?.id);
                                 setIsOpen(true);
+                                setQueryModal(true);
                               }}
                             >
                               CMP-2024020{emp?.id}
@@ -381,6 +384,12 @@ const EmployeeRequest = () => {
                             </td>
                           </tr>
                         ))}
+                        {queryModal && (
+                          <QueryDetailsModal
+                            onDrawerClose={() => setQueryModal(!queryModal)}
+                          />
+                        )}
+                        {/*  */}
                       </tbody>
                     )}
                   </table>
