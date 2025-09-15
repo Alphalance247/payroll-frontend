@@ -11,6 +11,7 @@ interface activeLoanListDataStore {
     monthly_repayment: number;
     next_repayment_date: string;
     repayment_progress: string;
+    total_duration_months: string;
   };
 }
 

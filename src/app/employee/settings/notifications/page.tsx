@@ -1,29 +1,27 @@
 "use client";
 import HeadingSubHead from "@/app/common/headingSubHead";
 import ProtectedRoute from "@/app/common/protectedRoute";
-import DashboardLayout from "@/app/common/DashBoardLayout";
-import { getNotificationCategories } from "@/stores/settings/notifications/categories";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
-import { getAdminNotificationPreferences } from "@/stores/settings/notifications/notificationPrefences";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 import { getEmployeesNotificationCategories } from "@/stores/employee-dashboard/settings/notifications/categories";
+import { getEmployeeNotificationPreferences } from "@/stores/employee-dashboard/settings/notifications/preferences";
 
 const Account = () => {
   const {
+    fetchEmployeeNoticationPreferences,
     data: preferenceData,
-    fetchAdminNoticationPreferences,
     loading,
     error,
-  } = getAdminNotificationPreferences();
+  } = getEmployeeNotificationPreferences();
 
   useEffect(() => {
-    fetchAdminNoticationPreferences();
-  }, [fetchAdminNoticationPreferences]);
+    fetchEmployeeNoticationPreferences();
+  }, [fetchEmployeeNoticationPreferences]);
 
   const [
     selectedSlackChannelNotificationTypes,
@@ -102,12 +100,11 @@ const Account = () => {
 
     try {
       const req = isCurrentlySelected
-        ? axiosInstance.post(
-            `/company/notifications/delete-preferences/
-`,
-            { channel: 1, notification_type: parseInt(notificationId) }
-          )
-        : axiosInstance.post(`/company/notifications/preferences/`, {
+        ? axiosInstance.post(`/employees/notifications/delete-preferences/`, {
+            channel: 1,
+            notification_type: parseInt(notificationId),
+          })
+        : axiosInstance.post(`/employees/notifications/preferences/`, {
             channel: 1,
             notification_type: parseInt(notificationId),
           });
@@ -147,12 +144,11 @@ const Account = () => {
 
     try {
       const req = isCurrentlySelected
-        ? axiosInstance.post(
-            `/company/notifications/delete-preferences/
-`,
-            { channel: 2, notification_type: parseInt(notificationId) }
-          )
-        : axiosInstance.post(`/company/notifications/preferences/`, {
+        ? axiosInstance.post(`/employees/notifications/delete-preferences/`, {
+            channel: 2,
+            notification_type: parseInt(notificationId),
+          })
+        : axiosInstance.post(`/employees/notifications/preferences/`, {
             channel: 2,
             notification_type: parseInt(notificationId),
           });
@@ -178,13 +174,7 @@ const Account = () => {
     }
   };
 
-  const { data, fetchNotificationCategory } = getNotificationCategories();
-
-  useEffect(() => {
-    fetchNotificationCategory();
-  }, [fetchNotificationCategory]);
-
-  const { fetchEmployeesNotificationCategory } =
+  const { data, fetchEmployeesNotificationCategory } =
     getEmployeesNotificationCategories();
 
   useEffect(() => {
@@ -204,7 +194,7 @@ const Account = () => {
           ) : error ? (
             <ErrorFetch
               message="Error Fetching leave request"
-              onRefetch={() => fetchNotificationCategory()}
+              onRefetch={() => fetchEmployeesNotificationCategory()}
             />
           ) : (
             <div className="flex flex-col gap-y-8">
@@ -232,7 +222,7 @@ const Account = () => {
                         </th>
                       </tr>
                     </thead>
-                    {item?.notification_types?.map((item, i) => (
+                    {item?.emp_notification_types?.map((item, i) => (
                       <tbody key={i}>
                         <tr className="border-y border-[#E3E3E5] last:border-b-0">
                           <td className="px-6 py-4 text-sm text-[#2F2F33]">

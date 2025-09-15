@@ -20,11 +20,11 @@ const LoanSideBar = ({
     },
     {
       label: "Approved On",
-      value: "January 20, 2026",
+      value: detailsData?.approval_date || "Not Specified",
     },
     {
       label: "Approved By",
-      value: "Oluwatishe Yemisi",
+      value: detailsData?.approved_by || "Not Specified",
     },
     {
       label: "Disbursed To",
@@ -40,12 +40,12 @@ const LoanSideBar = ({
     },
     {
       label: "Current Balance",
-      value: "NGN 168,000",
+      value: "NGN " + detailsData?.amount,
       type: "text",
     },
     {
-      label: detailsData?.next_repayment,
-      value: "July 5, 2025",
+      label: "Next Repayment Date",
+      value: detailsData?.next_repayment,
       type: "text",
     },
     {
@@ -70,7 +70,7 @@ const LoanSideBar = ({
     },
     {
       label: "Tenure",
-      value: "6 Months",
+      value: detailsData?.total_duration + " Months",
     },
     {
       label: "Monthly repayment",
@@ -145,7 +145,12 @@ const LoanSideBar = ({
                     </p>
                   ) : (
                     <div className="bg-[#E0E0E0] w-[50%] rounded-2xl h-[5px]">
-                      <p className="bg-[#198038] w-[20%]  h-[5px] rounded-2xl"></p>
+                      <p
+                        className={`bg-[#198038]  h-[5px] rounded-2xl`}
+                        style={{
+                          width: detailsData?.repayment_progress + "%",
+                        }}
+                      ></p>
                     </div>
                   )}
                 </div>

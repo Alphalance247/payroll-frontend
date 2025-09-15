@@ -22,7 +22,7 @@ const ActiveLoan = ({
     },
     {
       label: "Duration",
-      value: "6 Months",
+      value: activeLoanData?.data?.total_duration_months + " Months",
     },
     {
       label: "Loan Id",
@@ -30,7 +30,7 @@ const ActiveLoan = ({
     },
     {
       label: "Monthly Repayment",
-      value: activeLoanData?.data?.monthly_repayment + " %",
+      value: "N " + activeLoanData?.data?.monthly_repayment.toLocaleString(),
     },
     {
       label: "Approval Date",
@@ -74,7 +74,10 @@ const ActiveLoan = ({
           </div>
           <div className="w-full bg-[#E9EAF0] h-3 mt-2 rounded-2xl">
             <p
-              className={`w-[${activeLoanData?.data?.repayment_progress}%] bg-[#23BD33] h-3 rounded-2xl`}
+              className={`bg-[#23BD33] h-3 rounded-2xl`}
+              style={{
+                width: activeLoanData?.data?.repayment_progress + "%",
+              }}
             ></p>
           </div>
         </div>
