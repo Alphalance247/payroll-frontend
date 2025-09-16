@@ -12,7 +12,7 @@ const LatestUpdate = () => {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {data.map((item) => (
-          <Link href={`/compliance/${item?.id}`} key={item?.id}>
+          <Link href={`/admin/compliance/${item?.id}`} key={item?.id}>
             <div className="p-4 flex flex-col gap-x-4 bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px]">
               <img
                 src={item?.list_image}

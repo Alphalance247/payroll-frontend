@@ -8,43 +8,43 @@ const Overview = () => {
     {
       heading: "Profile Settings",
       subhead: "you",
-      btnLink: "/settings/account",
+      btnLink: "/admin/settings/account",
     },
     {
       heading: "Notifications",
       subhead: "you",
-      btnLink: "/settings/notifications",
+      btnLink: "/admin/settings/notifications",
     },
 
     {
       heading: "Payroll Settings",
       subhead: "you",
-      btnLink: "/settings/payroll-settings",
+      btnLink: "/admin/settings/payroll-settings",
     },
     {
       heading: "Integrations",
       subhead: "you",
-      btnLink: "/settings/integrations",
+      btnLink: "/admin/settings/integrations",
     },
     {
       heading: "Company Information",
       subhead: "you",
-      btnLink: "/settings/company-info",
+      btnLink: "/admin/settings/company-info",
     },
     {
       heading: "Permissons",
       subhead: "you",
-      btnLink: "/settings/permissions",
+      btnLink: "/admin/settings/permissions",
     },
     {
       heading: "Audit Logs",
       subhead: "you",
-      btnLink: "/settings/audit-logs",
+      btnLink: "/admin/settings/audit-logs",
     },
     {
       heading: "Billing Info",
       subhead: "you",
-      btnLink: "/settings/billing-info",
+      btnLink: "/admin/settings/billing-info",
     },
   ];
   return (
@@ -72,7 +72,7 @@ const Overview = () => {
               Lorem ipsum dolor sit amet consectetur. Sit dignissim elementum
               faucibus habitasse at nunc.
             </p>
-            <Link href={data?.btnLink || "/settings"}>
+            <Link href={data?.btnLink || "/admin/settings"}>
               <Button variant="secondary" className="w-full">
                 View
               </Button>

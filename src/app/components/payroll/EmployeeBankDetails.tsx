@@ -66,7 +66,7 @@ export default function EmployeeBankDetails({
         const res = await axiosInstance.get(`/employees/disburse-salary`);
         if (res.status === 200) {
           toast.success("Payroll disbursement successful");
-          router.push("/run-payroll/payment-confirmation");
+          router.push("/admin/run-payroll/payment-confirmation");
         } else {
           toast.error(res?.data?.message);
         }
@@ -185,7 +185,7 @@ export default function EmployeeBankDetails({
         </div>
 
         <div className="flex justify-end items-center py-4 px-6 gap-x-2">
-          <Link href="/run-payroll/review-approve">
+          <Link href="/admin/run-payroll/review-approve">
             <button className="px-6 py-[10px] text-sm text-[#2F2F33] font-semibold bg-[#F1F1F2] border border-[#E3E3E5] rounded-lg">
               Previous
             </button>

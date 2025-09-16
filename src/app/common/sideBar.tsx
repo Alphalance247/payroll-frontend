@@ -71,10 +71,10 @@ const Sidebar = () => {
   const sideBarData: sideBarData[] = [
     {
       subHeadings: [
-        { text: "Home", link: "/", icons: <HiOutlineHome size={20} /> },
+        { text: "Home", link: "/admin", icons: <HiOutlineHome size={20} /> },
         {
           text: "Compliance",
-          link: "/compliance",
+          link: "/admin/compliance",
           icons: <MdOutlineGavel size={20} />,
         },
       ],
@@ -88,12 +88,12 @@ const Sidebar = () => {
           arrowDown: <IoIosArrowDown size={20} />,
           dropdownText: [
             {
-              link: "/run-payroll",
+              link: "/admin/run-payroll",
               text: "Run Payroll",
             },
 
             {
-              link: "/payroll-history",
+              link: "/admin/payroll-history",
               text: "Payroll History",
             },
           ],
@@ -101,12 +101,12 @@ const Sidebar = () => {
         {
           text: "Tax",
           icons: <HiOutlineReceiptTax size={20} />,
-          link: "/tax",
+          link: "/admin/tax",
         },
         {
           text: "Loan requests",
           icons: <FaMoneyCheckAlt size={20} />,
-          link: "/loan",
+          link: "/admin/loan",
         },
       ],
     },
@@ -119,11 +119,11 @@ const Sidebar = () => {
           arrowDown: <IoIosArrowDown size={20} />,
           dropdownText: [
             {
-              link: "/employee-management",
+              link: "/admin/employee-management",
               text: "Employee Management",
             },
             {
-              link: "/employee-management/team-management",
+              link: "/admin/employee-management/team-management",
               text: "Team Management",
             },
           ],
@@ -131,12 +131,12 @@ const Sidebar = () => {
         {
           text: "Storage",
           icons: <IoDocumentTextOutline size={20} />,
-          link: "/storage",
+          link: "/admin/storage",
         },
         {
           text: "Request",
           icons: <AiOutlineMessage size={20} />,
-          link: "/request",
+          link: "/admin/request",
         },
       ],
     },
@@ -145,7 +145,7 @@ const Sidebar = () => {
       subHeadings: [
         {
           text: "Analytics",
-          link: "/analytics",
+          link: "/admin/analytics",
           icons: <BsBarChartLine size={20} />,
         },
         {
@@ -154,15 +154,15 @@ const Sidebar = () => {
           arrowDown: <IoIosArrowDown size={20} />,
           dropdownText: [
             {
-              link: "/time-sheet",
+              link: "/admin/time-sheet",
               text: "Timesheet",
             },
             {
-              link: "/leave-management",
+              link: "/admin/leave-management",
               text: "Leave Management",
             },
             {
-              link: "/holiday-calendar",
+              link: "/admin/holiday-calendar",
               text: "Holiday Calendar",
             },
           ],
@@ -171,7 +171,7 @@ const Sidebar = () => {
         {
           text: "Settings",
           icons: <TbSettings2 size={20} />,
-          link: "/settings",
+          link: "/admin/settings",
         },
       ],
     },
@@ -183,7 +183,7 @@ const Sidebar = () => {
         {
           text: "Overview",
           icons: <IoRocketOutline fill="white" size={20} />,
-          link: "/settings",
+          link: "/admin/settings",
         },
       ],
     },
@@ -193,12 +193,12 @@ const Sidebar = () => {
       subHeadings: [
         {
           text: "Your Account",
-          link: "/settings/account",
+          link: "/admin/settings/account",
           icons: <FaRegUser size={20} />,
         },
         {
           text: "Notifications",
-          link: "/settings/notifications",
+          link: "/admin/settings/notifications",
           icons: <IoNotificationsOutline size={20} />,
         },
       ],
@@ -209,12 +209,12 @@ const Sidebar = () => {
       subHeadings: [
         {
           text: "Payroll Settings",
-          link: "/settings/payroll-settings",
+          link: "/admin/settings/payroll-settings",
           icons: <MdOutlinePayment size={20} />,
         },
         {
           text: "Integrations",
-          link: "/settings/integrations",
+          link: "/admin/settings/integrations",
           icons: <BsBarChartLine size={20} />,
         },
       ],
@@ -225,22 +225,22 @@ const Sidebar = () => {
       subHeadings: [
         {
           text: "Company Information",
-          link: "/settings/company-info",
+          link: "/admin/settings/company-info",
           icons: <MdOutlineBusiness size={20} />,
         },
         {
           text: "Billing Info",
-          link: "/settings/billing-info",
+          link: "/admin/settings/billing-info",
           icons: <BsBarChartLine size={20} />,
         },
         {
           text: "Permissions",
-          link: "/settings/permissions",
+          link: "/admin/settings/permissions",
           icons: <IoShieldHalf size={20} />,
         },
         {
           text: "Audit Logs",
-          link: "/settings/audit-logs",
+          link: "/admin/settings/audit-logs",
           icons: <HiOutlineClipboardCheck size={20} />,
         },
       ],
@@ -252,7 +252,7 @@ const Sidebar = () => {
   //   [""]
   // );
 
-  const SidebarToShow = pathname.startsWith("/settings")
+  const SidebarToShow = pathname.startsWith("/admin/settings")
     ? settingsSideBar
     : sideBarData;
 
@@ -314,7 +314,7 @@ const Sidebar = () => {
                           return (
                             <div key={subIdx}>
                               {items?.link && !isDropdown ? (
-                                <Link href={items?.link || "/"} passHref>
+                                <Link href={items?.link || "/admin"} passHref>
                                   <div
                                     className={`flex justify-between py-[14px] pl-3 rounded-lg ${
                                       pathname === items?.link
@@ -356,7 +356,7 @@ const Sidebar = () => {
                                       {items?.dropdownText?.map(
                                         (item, dropIdx) => (
                                           <Link
-                                            href={item?.link || "/"}
+                                            href={item?.link || "/admin"}
                                             passHref
                                             key={dropIdx}
                                           >

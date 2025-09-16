@@ -81,7 +81,7 @@ const EmployeesFullDetailsTable = ({
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/employee-management/${emp?.id}`}
+                      href={`/admin/employee-management/${emp?.id}`}
                       className="flex items-center gap-x-2"
                     >
                       <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">

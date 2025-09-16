@@ -15,7 +15,7 @@ interface companyInfoStoreDataStore {
     state: string;
     zip_code: string;
     country: string;
-  }[];
+  };
 }
 
 interface companyInfoStore {

@@ -40,8 +40,6 @@ const Login = () => {
           userData
         );
 
-        console.log("Response from backend:", response);
-
         if (response.status >= 200 && response.status < 300) {
           const { refresh, access, email, fullname, is_payroll_staff, uid } =
             response.data;
@@ -57,7 +55,6 @@ const Login = () => {
             response?.data?.statusmessage || "Login successful Redirecting..."
           );
 
-          // Clear form
           setUserData({ email: "", password: "" });
 
           // After successful login
@@ -69,7 +66,11 @@ const Login = () => {
           if (redirectPath) {
             router.push(decodeURIComponent(redirectPath));
           } else {
-            router.push("/"); // Default to home if no redirect path is specified
+            if (is_payroll_staff) {
+              router.push("/admin");
+            } else {
+              router.push("/employee");
+            }
           }
         }
       } catch (err) {

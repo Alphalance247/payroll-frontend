@@ -3,10 +3,10 @@ import { usePathname } from "next/navigation";
 import { IoCheckmarkOutline } from "react-icons/io5";
 
 const steps = [
-  { label: "Run Payroll", path: "/run-payroll" },
-  { label: "Review & Approve", path: "/run-payroll/review-approve" },
-  { label: "Process Payment", path: "/run-payroll/process-payment" },
-  { label: "Confirmation", path: "/run-payroll/payment-confirmation" },
+  { label: "Run Payroll", path: "/admin/run-payroll" },
+  { label: "Review & Approve", path: "/admin/run-payroll/review-approve" },
+  { label: "Process Payment", path: "/admin/run-payroll/process-payment" },
+  { label: "Confirmation", path: "/admin/run-payroll/payment-confirmation" },
 ];
 
 export default function PayrollStepper() {

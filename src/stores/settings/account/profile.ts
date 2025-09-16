@@ -6,7 +6,7 @@ interface companyProfileDataStore {
   data: {
     email: string;
     fullname: string;
-    prof_im: string;
+    prof_img: string;
     employee_data: {
       phone: string;
     };
