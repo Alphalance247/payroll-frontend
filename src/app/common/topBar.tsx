@@ -7,13 +7,18 @@ import { FaChevronDown } from "react-icons/fa";
 import { useAuth } from "../context/authContext";
 import Link from "next/link";
 import NotificationModal from "../components/notification/notificationModal";
+import { useNotificationStore } from "@/stores/employee-dashboard/notification/AllNotification";
+import { useMemo } from "react";
 
 const TopBar = () => {
   const { user, logout, isLoggingOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [openNotification, setOpenNofication] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const { notifications, fetchNotifications } = useNotificationStore();
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -24,11 +29,10 @@ const TopBar = () => {
         setIsDropdownOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
+  const unreadNotification = notifications?.unread.length;
   return (
     <header className="sticky top-0 z-10 w-full bg-[#F7F7F7] border-b border-[#E3E3E5]">
       <div className="flex items-center justify-between px-6 py-5 max-w-[1440px] mx-auto">
@@ -63,7 +67,9 @@ const TopBar = () => {
               onClick={() => setOpenNofication(!openNotification)}
             >
               <p className="w-4 h-4 text-[10px] flex flex-col items-center justify-center rounded-full absolute bg-[#EA5455] text-white top-3 right-1">
-                6+
+                {notifications?.unread.length
+                  ? notifications.unread.length
+                  : ""}
               </p>
               <IoNotificationsOutline size={38} color="#4E4E4E" />
             </div>

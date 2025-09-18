@@ -13,19 +13,21 @@ import { FaRegUser } from "react-icons/fa6";
 import { IoArchiveOutline } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
 import Spinner from "../../common/spinner";
-import { getQueryDetails } from "@/stores/request/getRequestDetails";
 import { useFilter } from "../../hooks/useFilter";
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 import Image from "next/image";
 import { getEmployeeQueryList } from "@/stores/employee-dashboard/query/queryList";
 import QueryModal from "@/app/components/Employee-Dashboard/query/queryModal";
 import QueryDetailsModal from "@/app/components/Employee-Dashboard/query/queryDetailsModal";
+import { useQueryStore } from "@/stores/employee-dashboard/settings/Query/QueryDetail";
 
 const EmployeeRequest = () => {
   const [activeBtn, setActiveBtn] = useState<string>("All");
   const [isOpen, setIsOpen] = useState(false);
   const { data, fetchEmployeeQueryList, loading } = getEmployeeQueryList();
-  const { fetchQueryDetails } = getQueryDetails();
+  const { fetchQuery, loading: query } = useQueryStore();
+  console.log(query);
+
   useEffect(() => {
     fetchEmployeeQueryList();
   }, [fetchEmployeeQueryList]);
@@ -339,7 +341,7 @@ const EmployeeRequest = () => {
                             <td
                               className="px-6 py-4 text-sm text-[#2F2F33] hover:underline hover:underline-offset-1 cursor-pointer"
                               onClick={() => {
-                                fetchQueryDetails(emp?.id);
+                                fetchQuery(emp?.id);
                                 setIsOpen(true);
                                 setQueryModal(true);
                               }}

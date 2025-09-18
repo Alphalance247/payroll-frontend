@@ -12,11 +12,8 @@ import BankDetails from "@/app/components/Employee-Profile/BankDetails";
 import NextOfKin from "@/app/components/Employee-Profile/NextOfKin";
 import { useEffect, useState } from "react";
 import Uploads from "@/app/components/Employee-Profile/Uploads";
-import PaySlips from "@/app/components/Employee-Profile/PaySlips";
 import EditPersonalDetails from "@/app/components/Employee-Profile/EditPersonalDetails";
 import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress";
-import EditBankDetails from "@/app/components/Employee-Profile/EditBankDetails";
-import EditNextOfKin from "@/app/components/Employee-Profile/EditNextOfKin";
 import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import { useDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
 import EditUploadedDoc from "@/app/components/Employee-Profile/EditUploadedDoc";
@@ -24,8 +21,6 @@ const pages = () => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);
   const [openUploadModal, setOpenUploadModal] = useState(false);
-  // const [openBDModal, setOpenBDModal] = useState(false);
-  // const [openNOKModal, setOpenNOKDModal] = useState(false);
   const [openHousingModal, setOpenHousingModal] = useState(false);
   const renderTabContent = () => {
     const { fetchPersonalDetails } = useEmployeeStore();
@@ -116,9 +111,6 @@ const pages = () => {
             )}
           </Uploads>
         );
-      case "payslips":
-        return <PaySlips></PaySlips>;
-
       default:
         return null;
     }
@@ -182,16 +174,6 @@ const pages = () => {
                       activeTab === "uploads"
                         ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-fit h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Graphik "
                         : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px] bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className} `
-                    }
-                  />
-                  <EmployeeSidebar
-                    onClick={() => setactiveTab("payslips")}
-                    activeTab="payslips"
-                    tabName="payslips"
-                    className={
-                      activeTab === "payslips"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-fit h-10 font-medium text-[#2F2F33] text-base rounded-[8px] capitalize font-Graphik "
-                        : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className} `
                     }
                   />
                 </div>

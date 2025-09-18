@@ -145,7 +145,7 @@ const EditPersonalDetails = ({
                 }
                 className={`${styles.PhoneInput} outline-none rounded-md border-none mt-2 h-10`}
                 numberInputProps={{
-                  className: `outline-none border-[#E0E0E0] border-[1px] text-[black] rounded-tr-md rounded-br-md rounded-tl-none rounded-bl-none text-sm w-[100%] px-3 py-[14px] h-10`,
+                  className: `outline-none border-[#E0E0E0] border-[1px] text-[black] rounded-tr-md rounded-br-md rounded-tl-none rounded-bl-none text-sm w-[100%] px-3 py-[14px] h-10  font-normal font-Graphik`,
                 }}
               />
               {showPopup && (
