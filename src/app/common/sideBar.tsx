@@ -264,9 +264,9 @@ const Sidebar = () => {
       <div className="flex flex-col justify-between mb-12">
         {/* Navigation Menu */}
         <div className="mt-6 px-3">
-          {pathname.startsWith("/settings") && (
+          {pathname.startsWith("/admin/settings") && (
             <>
-              <Link href={"/"}>
+              <Link href={"/admin"}>
                 <div className="flex gap-x-3 items-center py-[10px] pl-3 text-white font-medium text-sm mb-3">
                   <span>
                     <IoChevronBack size={20} />

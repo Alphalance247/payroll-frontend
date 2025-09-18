@@ -5,10 +5,15 @@ import DashboardLayout from "@/app/common/DashBoardLayout";
 import Button from "@/app/common/Button";
 import HeadingSubHead from "@/app/common/headingSubHead";
 import PermissionTable from "@/app/components/settings/permissions/permissionTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getAdminPermissionList } from "@/stores/settings/permissions/permissions";
 
 const Permissions = () => {
   const [showOverLay, setShowOverlay] = useState(false);
+  const { fetchAdminPermission } = getAdminPermissionList();
+  useEffect(() => {
+    fetchAdminPermission();
+  }, [fetchAdminPermission]);
   return (
     <ProtectedRoute>
       <DashboardLayout>

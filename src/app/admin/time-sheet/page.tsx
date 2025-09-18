@@ -3,30 +3,37 @@ import ProtectedRoute from "../../common/protectedRoute";
 import DashboardLayout from "../../common/DashBoardLayout";
 import Heading from "../../common/heading";
 import EmpoyeeTimeSheet from "../../components/time-sheet/employeeTimeSheet";
+import { useEffect } from "react";
+import { getAdminTimesheet } from "@/stores/admin-dashboard/timesheet/time-sheet";
 
 const TimeTool = () => {
+  const { fetchAdminTimesheet, data, loading, error } = getAdminTimesheet();
+  useEffect(() => {
+    fetchAdminTimesheet();
+  }, [fetchAdminTimesheet]);
+
   const cardData = [
     {
       id: "1",
       heading: "Total Hours Logged",
-      subhead: "1,600",
+      subhead: data?.total_hours.toFixed(),
     },
 
     {
       id: "2",
       heading: "Hours Missing",
-      subhead: "80",
+      subhead: data?.missing.toFixed(),
     },
 
     {
       id: "3",
       heading: "Total Approved",
-      subhead: "1,520",
+      subhead: data?.total_hours.toFixed(),
     },
     {
       id: "4",
       heading: "Avg Hours/Employee",
-      subhead: "40",
+      subhead: data?.avg_hours?.toFixed(),
     },
   ];
   return (

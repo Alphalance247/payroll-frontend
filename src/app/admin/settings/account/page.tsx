@@ -16,7 +16,6 @@ import { AxiosError } from "axios";
 import { getCompanyProfile } from "@/stores/settings/account/profile";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
-import Image from "next/image";
 
 const Account = () => {
   const [loading, setLoading] = useState(false);
@@ -41,9 +40,7 @@ const Account = () => {
     old_password: "AbdulAzeezAdminNew009",
     confirm_password: "",
   });
-  const [preview, setPreview] = useState<string | null | undefined>(
-    preferenceData?.data?.prof_img
-  );
+  const [preview, setPreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isPasswordloading, setIsPasswordLoading] = useState(false);
 
@@ -100,6 +97,8 @@ const Account = () => {
         role: preferenceData?.data?.payroll_staff_role?.role || "",
         phone: preferenceData?.data?.employee_data?.phone || "",
       }));
+
+      setPreview(preferenceData?.data?.prof_img);
     }
   }, [preferenceData]);
 
@@ -216,7 +215,7 @@ const Account = () => {
               <div className="">
                 <div className="flex gap-x-4 items-center mb-12">
                   {preview ? (
-                    <Image
+                    <img
                       src={preview || ""}
                       height={84}
                       width={84}

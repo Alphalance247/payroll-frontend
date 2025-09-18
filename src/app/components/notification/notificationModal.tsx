@@ -21,7 +21,7 @@ const NotificationModal = () => {
           read
         </p>
 
-        <Link href={"/notification"}>
+        <Link href={"/admin/notification"}>
           <Button variant="secondary">See all Notifications</Button>
         </Link>
       </div>

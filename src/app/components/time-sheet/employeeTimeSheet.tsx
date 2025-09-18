@@ -76,7 +76,7 @@ const EmpoyeeTimeSheet = () => {
       <div>
         <div className="bg-white rounded-lg border border-[#E3E3E5] mt-10">
           <h2 className="text-base font-semibold py-5 pl-6 text-[#2F2F33] border-b border-[#E3E3E5]">
-            Leave Requests
+            Employees Timesheet
           </h2>
           <div className="py-4 px-4 flex items-center justify-between">
             <div className="flex items-center cursor-pointer bg-[#F7F7F7] w-fit gap-x-1 rounded-sm px-1 py-1 border border-[#E3E3E5]">

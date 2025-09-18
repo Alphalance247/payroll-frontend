@@ -78,7 +78,7 @@ const CompanyInfo = () => {
       }
 
       const res = await axiosInstance.patch(
-        environment?.baseUrl + "/company/company-data/1/",
+        environment?.baseUrl + "/company/company-data/",
         formData,
         {
           headers: {
@@ -96,13 +96,10 @@ const CompanyInfo = () => {
 
       setLoading(false);
     } catch (err) {
-      // Extract the error message from the response
-      let errorMessage =
-        "Please make sure all fields are filled correctly. and try again.";
-
+      let errorMessage = "";
       if (err instanceof AxiosError) {
-        // Check if err is an instance of AxiosError
-        errorMessage = err.response?.data?.message || errorMessage;
+        errorMessage =
+          err.response?.data?.message || err.message || errorMessage;
       }
 
       toast.error(errorMessage);
@@ -142,7 +139,7 @@ const CompanyInfo = () => {
             <div className="flex gap-x-4">
               <div className="flex gap-x-4 items-center mb-12">
                 {preview ? (
-                  <Image
+                  <img
                     src={preview || ""}
                     height={84}
                     width={84}
