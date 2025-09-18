@@ -74,7 +74,11 @@ export default function DashboardLayout({
           </Legend> */}
           {/* <Legend verticalAlign="top" height={36} align="left" iconSize={20} /> */}
 
-          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent className="opacity-100 capitalize font-medium shadow-md" />
+            }
+          />
           <Bar dataKey="baseSalary" fill="var(--color-baseSalary)" radius={4} />
           <Bar dataKey="bonus" fill="var(--color-bonus" radius={4} />
           <Bar dataKey="deduction" fill="var(--color-deduction" radius={4} />

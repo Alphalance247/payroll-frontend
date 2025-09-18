@@ -1,7 +1,8 @@
 import Label from "@/app/common/label";
 import ModalOverlay from "@/app/common/modal/modal";
 import { useState } from "react";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import toast from "react-hot-toast";
 import useBoolean from "@/app/hooks/useBoolean";
 import axiosInstance from "@/app/utils/axios";

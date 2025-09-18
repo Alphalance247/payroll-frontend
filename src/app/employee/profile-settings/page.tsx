@@ -1,9 +1,7 @@
 "use client";
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 // import ProfileSidebar from "@/app/components/Employee-Dashboard/Home/profileSidebar";
-import { BsCameraFill, BsThreeDotsVertical } from "react-icons/bs";
-import { Pen } from "lucide-react";
-import { PenIcon } from "lucide-react";
+import { nunito } from "@/app/common/font";
 import { Pencil } from "lucide-react";
 import EmployeeDp from "@/app/components/Employee-Profile/EmployeeDp";
 import EmployeeSidebar from "@/app/components/Employee-Profile/EmployeeSidebar";
@@ -14,20 +12,15 @@ import BankDetails from "@/app/components/Employee-Profile/BankDetails";
 import NextOfKin from "@/app/components/Employee-Profile/NextOfKin";
 import { useEffect, useState } from "react";
 import Uploads from "@/app/components/Employee-Profile/Uploads";
-import PaySlips from "@/app/components/Employee-Profile/PaySlips";
 import EditPersonalDetails from "@/app/components/Employee-Profile/EditPersonalDetails";
 import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress";
-import EditBankDetails from "@/app/components/Employee-Profile/EditBankDetails";
-import EditNextOfKin from "@/app/components/Employee-Profile/EditNextOfKin";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
-import { useDocumentsUploaded } from "@/stores/employeeDetails/UploadDocument";
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
+import { useDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
 import EditUploadedDoc from "@/app/components/Employee-Profile/EditUploadedDoc";
 const pages = () => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);
   const [openUploadModal, setOpenUploadModal] = useState(false);
-  // const [openBDModal, setOpenBDModal] = useState(false);
-  // const [openNOKModal, setOpenNOKDModal] = useState(false);
   const [openHousingModal, setOpenHousingModal] = useState(false);
   const renderTabContent = () => {
     const { fetchPersonalDetails } = useEmployeeStore();
@@ -118,9 +111,6 @@ const pages = () => {
             )}
           </Uploads>
         );
-      case "payslips":
-        return <PaySlips></PaySlips>;
-
       default:
         return null;
     }
@@ -142,8 +132,8 @@ const pages = () => {
                     tabName="Personal Details"
                     className={
                       activeTab === "personal details"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-fit h-10 font-medium text-[#2F2F33] text-base rounded-[8px] capitalize font-Graphik "
+                        : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className}`
                     }
                   />
                   <EmployeeSidebar
@@ -152,8 +142,8 @@ const pages = () => {
                     tabName="job Details"
                     className={
                       activeTab === "job details"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[107px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-fit h-10 font-medium text-[#2F2F33] text-base rounded-[8px] capitalize font-Graphik "
+                        : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className} `
                     }
                   />
                   <EmployeeSidebar
@@ -162,8 +152,8 @@ const pages = () => {
                     tabName="bank Details"
                     className={
                       activeTab === "bank details"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[118px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-fit h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Graphik "
+                        : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className} `
                     }
                   />
                   <EmployeeSidebar
@@ -172,8 +162,8 @@ const pages = () => {
                     tabName="next of kin details"
                     className={
                       activeTab === "next of kin"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[166px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-fit h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Graphik "
+                        : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className} `
                     }
                   />
                   <EmployeeSidebar
@@ -182,18 +172,8 @@ const pages = () => {
                     tabName="uploads"
                     className={
                       activeTab === "uploads"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[87px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
-                    }
-                  />
-                  <EmployeeSidebar
-                    onClick={() => setactiveTab("payslips")}
-                    activeTab="payslips"
-                    tabName="payslips"
-                    className={
-                      activeTab === "payslips"
-                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-[146px] h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Nunito"
-                        : "grid gap-2.5 py-[8px] px-3 text-start  w-[185px] h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize font-Nunito"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-fit h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Graphik "
+                        : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px] bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className} `
                     }
                   />
                 </div>
