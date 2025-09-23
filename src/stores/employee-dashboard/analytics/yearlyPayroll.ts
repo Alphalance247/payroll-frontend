@@ -54,7 +54,7 @@ export const getEmployeeYearlyPayroll = create<employeeYearlyPayrollListStore>(
         const res = await axiosInstance.get(
           `/employees/my-yearly-employee-payroll`
         );
-        set({ data: res.data, loading: false });
+        set({ data: res.data.current_data.totals, loading: false });
       } catch (err) {
         if (err instanceof AxiosError) {
           set({ error: err.message, loading: false });

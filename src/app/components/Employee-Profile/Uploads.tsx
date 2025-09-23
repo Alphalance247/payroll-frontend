@@ -4,12 +4,13 @@ import { useDocumentsUploaded } from "@/stores/employee-dashboard/settings/emplo
 import Spinner from "@/app/common/spinner";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useState } from "react";
+import ErrorFetch from "@/app/common/errorFetch";
 interface Uploads {
   children: any;
   onClick: any;
 }
 const Uploads = ({ children, onClick }: Uploads) => {
-  const { documents, loading } = useDocumentsUploaded();
+  const { documents, loading, error, fetchDocument } = useDocumentsUploaded();
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const toggleDropdown = (id: any) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
@@ -31,9 +32,14 @@ const Uploads = ({ children, onClick }: Uploads) => {
         <tbody className="capitalize text-[#71717A] text-[16px] font-normal w-full h-[72px] ">
           {loading ? (
             <Spinner />
+          ) : error ? (
+            <ErrorFetch
+              message="Error Fetching leave request"
+              onRefetch={() => fetchDocument()}
+            />
           ) : (
             <>
-              {documents?.data.length ? (
+              {documents && (
                 <>
                   {documents?.data.map((document) => (
                     <tr key={document.id} className=" border-[1px]">
@@ -87,12 +93,6 @@ const Uploads = ({ children, onClick }: Uploads) => {
                     </tr>
                   ))}
                 </>
-              ) : (
-                <tr className="px-6 text-[#4D4D4D] font-Graphik pt-6">
-                  <td>
-                    <div className="px-6">No documents is available</div>
-                  </td>
-                </tr>
               )}
             </>
           )}

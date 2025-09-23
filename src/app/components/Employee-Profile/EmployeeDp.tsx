@@ -7,14 +7,17 @@ import useBoolean from "@/app/hooks/useBoolean";
 import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import { error } from "console";
+import ErrorFetch from "@/app/common/errorFetch";
 interface DpProps {
   dp: string;
 }
 const EmployeeDp = ({ dp }: DpProps) => {
-  const { employeeData, loading, fetchPersonalDetails } = useEmployeeStore();
+  const { employeeData, loading, fetchPersonalDetails, error } =
+    useEmployeeStore();
   const [preview, setPreview] = useState<string | null | undefined>(null);
   const [file, setFile] = useState<File | null>(null);
-
+  const [isUploading, setIsUploading] = useBoolean(false);
   const [form, setForm] = useState({
     prof_img: file || "",
   });
@@ -31,6 +34,7 @@ const EmployeeDp = ({ dp }: DpProps) => {
     e.preventDefault();
     if (!file) return;
     try {
+      setIsUploading();
       const response = await axiosInstance.patch(
         `/employees/employee/update-profile`,
         { prof_img: file },
@@ -46,6 +50,7 @@ const EmployeeDp = ({ dp }: DpProps) => {
       }
       setForm({ prof_img: "" });
       fetchPersonalDetails();
+      setIsUploading();
     } catch (error) {
       let errorMessage = "An error occurred please try again or contact Admin";
       if (error instanceof AxiosError) {
@@ -58,11 +63,16 @@ const EmployeeDp = ({ dp }: DpProps) => {
     <>
       {loading ? (
         <Spinner />
+      ) : error ? (
+        <ErrorFetch
+          message="Error Fetching leave request"
+          onRefetch={() => fetchPersonalDetails()}
+        />
       ) : (
         <>
-          {!employeeData ? (
-            <div className="px-72 py-20">Employee profile is not available</div>
-          ) : (
+          {employeeData && (
+            //   <div className="px-72 py-20">Employee profile is not available</div>
+            // ) : (
             <div className="flex justify-between items-center shrink-0  px-[72px] h-[180px] my-[40px]   ">
               <div className="flex space-x-10 items-center ">
                 <div className="relative">
@@ -80,6 +90,7 @@ const EmployeeDp = ({ dp }: DpProps) => {
                       className="h-[180px] w-[180px] rounded-full object-cover"
                     />
                   )}
+
                   <form
                     action=""
                     onSubmit={handleSubmit}
@@ -96,14 +107,12 @@ const EmployeeDp = ({ dp }: DpProps) => {
                         accept="image/*"
                         onChange={handlePictureUpload}
                         className=" hidden cursor-pointer "
-                      />
+                      />{" "}
                       <TiCamera className=" h-6 w-6 absolute text-white top-2 left-2" />
                     </Label>{" "}
-                    {file && (
-                      <button className="bg-[#E37915] text-white w-24 h-6 rounded-sm font-Graphik font-medium mt-3">
-                        Upload
-                      </button>
-                    )}
+                    <button className="bg-[#E37915] text-white w-28 h-8 rounded-sm font-Graphik font-medium mt-3 ml-10 capitalize">
+                      save image
+                    </button>
                   </form>
                 </div>
                 <div className="grid gap-2 ">
