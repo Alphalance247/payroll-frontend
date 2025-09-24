@@ -5,9 +5,12 @@ import Heading from "../../common/heading";
 import EmpoyeeTimeSheet from "../../components/time-sheet/employeeTimeSheet";
 import { useEffect } from "react";
 import { getAdminTimesheet } from "@/stores/admin-dashboard/timesheet/time-sheet";
+import ErrorFetch from "@/app/common/errorFetch";
+import Spinner from "@/app/common/spinner";
 
 const TimeTool = () => {
   const { fetchAdminTimesheet, data, loading, error } = getAdminTimesheet();
+
   useEffect(() => {
     fetchAdminTimesheet();
   }, [fetchAdminTimesheet]);
@@ -46,22 +49,30 @@ const TimeTool = () => {
             user={"Timesheet"}
           />
 
-          <div className="mt-6 grid  md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {cardData.map((card) => (
-              <div
-                className="py-6 px-4 border border-[#E3E3E5] rounded-md"
-                key={card?.id}
-              >
-                <p className="text-[#71717A] font-semibold text-sm mb-4">
-                  {card?.heading}
-                </p>
-                <h4 className="font-medium text-xl text-[#2F2F33]">
-                  {card?.subhead}
-                </h4>
-              </div>
-            ))}
-          </div>
-
+          {loading ? (
+            <Spinner spinnerSmall={true} />
+          ) : error ? (
+            <ErrorFetch
+              message="Error fetching Time Sheet"
+              onRefetch={() => fetchAdminTimesheet()}
+            />
+          ) : (
+            <div className="mt-6 grid  md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {cardData.map((card) => (
+                <div
+                  className="py-6 px-4 border border-[#E3E3E5] rounded-md"
+                  key={card?.id}
+                >
+                  <p className="text-[#71717A] font-semibold text-sm mb-4">
+                    {card?.heading}
+                  </p>
+                  <h4 className="font-medium text-xl text-[#2F2F33]">
+                    {card?.subhead}
+                  </h4>
+                </div>
+              ))}
+            </div>
+          )}
           <EmpoyeeTimeSheet />
         </main>
       </DashboardLayout>

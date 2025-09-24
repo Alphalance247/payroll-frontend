@@ -64,7 +64,20 @@ const Login = () => {
           setLoading(true);
 
           if (redirectPath) {
-            router.push(decodeURIComponent(redirectPath));
+            const decodedRedirectPath = decodeURIComponent(redirectPath);
+
+            if (is_payroll_staff) {
+              router.push(decodedRedirectPath);
+            } else {
+              if (decodedRedirectPath.startsWith("/admin")) {
+                toast.error(
+                  "Access denied. Redirecting to employee dashboard."
+                );
+                router.push("/employee");
+              } else {
+                router.push(decodedRedirectPath);
+              }
+            }
           } else {
             if (is_payroll_staff) {
               router.push("/admin");

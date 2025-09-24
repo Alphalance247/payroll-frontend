@@ -1,5 +1,4 @@
 "use client";
-import DashboardLayout from "../../common/DashBoardLayout";
 import Heading from "../../common/heading";
 import { useEffect, useState } from "react";
 import Button from "../../common/Button";
@@ -21,9 +20,8 @@ import ActionResolution from "../../components/request-quest/actionsResolution";
 import { getQueryList } from "@/stores/request/getQueryList";
 import Spinner from "../../common/spinner";
 import { getQueryDetails } from "@/stores/request/getRequestDetails";
-import { useFilter } from "../hooks/useFilter";
-import EmployeeSideBar from "../common/employee-dashboard/common/employeeSideBar";
-import EmployeeDashboardLayout from "../common/employee-dashboard/common/employeeLayout";
+import { useFilter } from "../../hooks/useFilter";
+import DashboardLayout from "@/app/common/DashBoardLayout";
 
 const Request = () => {
   const [activeBtn, setActiveBtn] = useState<string>("All");
@@ -82,8 +80,7 @@ const Request = () => {
   }, [selectedTeam, requestType, setFilter]);
 
   return (
-    // <DashboardLayout>
-    <EmployeeDashboardLayout>
+    <DashboardLayout>
       <main className="p-4 md:p-6 lg:p-10 overflow-y-scroll">
         <div className="flex justify-between items-center">
           <div>
@@ -412,8 +409,7 @@ const Request = () => {
           )}
         </section>
       </main>
-    </EmployeeDashboardLayout>
-    // </DashboardLayout>
+    </DashboardLayout>
   );
 };
 

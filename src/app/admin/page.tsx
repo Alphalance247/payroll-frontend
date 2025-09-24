@@ -98,7 +98,7 @@ export default function Home() {
   // Show success messag
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute allowedUserTypes={["admin"]}>
       <DashboardLayout>
         <main className="p-10 overflow-y-scroll h-full">
           <Heading

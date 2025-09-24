@@ -6,47 +6,41 @@ import { TiArrowSortedDown } from "react-icons/ti";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { getAdminTimesheet } from "@/stores/admin-dashboard/timesheet/time-sheet";
+import StartEndDate from "../common/startEndDate";
+import Spinner from "@/app/common/spinner";
+import ErrorFetch from "@/app/common/errorFetch";
 
 const EmpoyeeTimeSheet = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const filteredData = [
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-  ];
+  const { data, fetchAdminTimesheet, loading, error } = getAdminTimesheet();
+  const [start_date, setStartDate] = useState("");
+  const [end_date, setEndDate] = useState("");
 
   return (
     <section className="mt-6">
       <div className="flex justify-between items-center mb-10">
-        <div>
-          <Button variant="secondary">This week</Button>
+        <div className="flex gap-x-3 items-center">
+          <div>
+            <StartEndDate
+              start_date={start_date}
+              end_date={end_date}
+              setStartDate={setStartDate}
+              setEndDate={setEndDate}
+              onFetch={() => {
+                fetchAdminTimesheet(start_date, end_date);
+              }}
+            />
+          </div>
+
+          <div>
+            <Button
+              variant="secondary"
+              onButtonClick={() => fetchAdminTimesheet()}
+            >
+              This week
+            </Button>
+          </div>
         </div>
         <div className="flex gap-x-2 items-center">
           <Button variant="secondary" className="flex items-center gap-x-2">
@@ -72,8 +66,14 @@ const EmpoyeeTimeSheet = () => {
           </Button>
         </div>
       </div>
-
-      <div>
+      {loading ? (
+        <Spinner spinnerSmall={true} />
+      ) : error ? (
+        <ErrorFetch
+          message="Error fetching Time Sheet"
+          onRefetch={() => fetchAdminTimesheet()}
+        />
+      ) : (
         <div className="bg-white rounded-lg border border-[#E3E3E5] mt-10">
           <h2 className="text-base font-semibold py-5 pl-6 text-[#2F2F33] border-b border-[#E3E3E5]">
             Employees Timesheet
@@ -104,7 +104,7 @@ const EmpoyeeTimeSheet = () => {
             </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1600px] border-b border-[#E3E3E5]">
+            <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
               <thead className="bg-[#F7F7F7]">
                 <tr>
                   <th className="px-6 py-[14px] w-[40px]">
@@ -113,106 +113,106 @@ const EmpoyeeTimeSheet = () => {
                       className="rounded border-gray-300"
                     />
                   </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                     Name
                   </th>
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
-                    Mon, Aug 4
+                    Mon
                   </th>
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
-                    Tue, Aug 5
+                    Tue
                   </th>
 
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
-                    Wed, Aug 6
+                    Wed
                   </th>
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
-                    Thu, Aug 7
+                    Thu
                   </th>
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
-                    Fri, Aug 8
+                    Fri
                   </th>
 
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
-                    Total
+                    Sat
                   </th>
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
-                    Expected Hours
+                    Sun
                   </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
-                    Hours Behind
-                  </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
-                    Status
-                  </th>
+
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[50px]"></th>
                 </tr>
               </thead>
-
-              <tbody>
-                {filteredData.map((emp, i) => (
-                  <tr
-                    key={i}
-                    className="border-b border-[#E3E3E5] last:border-b-0"
-                  >
-                    <td className="px-6 py-4">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300"
-                      />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                          {emp?.fullname
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .toUpperCase()}
-                        </div>
-                        <span className="text-[#2F2F33] text-sm font-medium">
-                          {emp?.fullname}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33] text-center">
-                      3h
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33] text-center">
-                      4h
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33] text-center">
-                      3h
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33] text-center">
-                      4h
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33] text-center">
-                      3h
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33]">20hr</td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33]">40hr</td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33] text-center">
-                      10hr
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-xs border border-[#188C43] bg-[#E9F9EF] text-[#188C43] font-medium`}
-                      >
-                        Resolved
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                      {" "}
-                      <BsThreeDotsVertical />
+              {data?.current_week_data?.length === 0 ? (
+                <tbody>
+                  <tr>
+                    <td colSpan={6} className="text-center py-8">
+                      No Time logged
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                </tbody>
+              ) : (
+                <tbody>
+                  {data?.current_week_data?.map((emp, i) => (
+                    <tr
+                      key={i}
+                      className="border-b border-[#E3E3E5] last:border-b-0"
+                    >
+                      <td className="px-6 py-4">
+                        <input
+                          type="checkbox"
+                          className="rounded border-gray-300"
+                        />
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
+                            {emp?.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .toUpperCase()}
+                          </div>
+                          <span className="text-[#2F2F33] text-sm font-medium">
+                            {emp?.name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33] text-left">
+                        {emp?.week_hours?.Mon}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33] text-left">
+                        {emp?.week_hours?.Tue}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33] text-left">
+                        {emp?.week_hours?.Wed}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33] text-left">
+                        {emp?.week_hours?.Thu}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33] text-left">
+                        {emp?.week_hours?.Fri}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                        {" "}
+                        {emp?.week_hours?.Sat}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                        {emp?.week_hours?.Sun}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                        {" "}
+                        <BsThreeDotsVertical />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
             </table>
           </div>
         </div>
-      </div>
+      )}
     </section>
   );
 };

@@ -56,8 +56,9 @@ const Storage = () => {
       deduction: 5,
     },
   ];
+
   return (
-    <ProtectedRoute>
+    <ProtectedRoute allowedUserTypes={["admin", "employee"]}>
       <EmployeeDashboardLayout>
         <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
           <Heading flexDirection="" user={"Good afternoon, James"} />

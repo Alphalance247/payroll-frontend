@@ -168,6 +168,10 @@ const EmployeeRequest = () => {
           />
         )}
 
+        {queryModal && (
+          <QueryDetailsModal onDrawerClose={() => setQueryModal(!queryModal)} />
+        )}
+
         <section className="mt-4">
           <div className="flex items-center gap-x-3 justify-between">
             <div className="flex items-center gap-x-2">
@@ -386,12 +390,6 @@ const EmployeeRequest = () => {
                             </td>
                           </tr>
                         ))}
-                        {queryModal && (
-                          <QueryDetailsModal
-                            onDrawerClose={() => setQueryModal(!queryModal)}
-                          />
-                        )}
-                        {/*  */}
                       </tbody>
                     )}
                   </table>
