@@ -1,13 +1,16 @@
 "use client";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  // ChartLegend,
-  // ChartLegendContent,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/components/ui/chart";
+import { getEmployeeYearlyPayroll } from "@/stores/employee-dashboard/analytics/yearlyPayroll";
+import { useEffect } from "react";
+
 const chartConfig = {
   baseSalary: {
     label: "base salary",
@@ -28,6 +31,12 @@ export default function DashboardLayout({
 }: {
   chartData: {
     year: string;
+    months: {
+      total_base_salary: string;
+      total_bonus: string;
+      total_deductions: string;
+      month: string;
+    }[];
     totals: {
       total_base_salary: number;
       total_bonus: number;
@@ -35,13 +44,34 @@ export default function DashboardLayout({
     };
   }[];
 }) {
+  // const chartData = [{
+  // year:"2025", baseSalary:"10000",bonus:"3000", deductions:"5000"
+  // }]
+  // const chartData = [
+  //   {
+  //     year: 2025,
+  //     months: [
+  //       {
+  //         total_base_salary: "10000",
+  //         total_bonus: "2000",
+  //         total_deductions: "5000",
+  //         month: "january",
+  //       },
+  //     ],
+  //     totals: {
+  //       total_base_salary: "5000",
+  //       total_bonus: "3000",
+  //       total_deductions: "1500",
+  //     },
+  //   },
+  // ];
   return (
     <div className="">
       <ChartContainer
         config={chartConfig}
         className="h-min-[200px]  overflow-x-scroll px-6"
       >
-        <BarChart accessibilityLayer data={chartData}>
+        <BarChart accessibilityLayer data={chartData} className="mt-5">
           <CartesianGrid vertical={false} />
           <XAxis
             dataKey="year"
@@ -51,7 +81,7 @@ export default function DashboardLayout({
             // tickFormatter={(value) => value.slice(0, 4)}
           />
           <YAxis
-            domain={[0, 40]}
+            // domain={[1000, 10000]}
             tickLine={false}
             tickMargin={1}
             axisLine={false}
@@ -64,15 +94,14 @@ export default function DashboardLayout({
             }}
             // tickFormatter={}
           />
-          {/* <Legend>
-            {chartData.map((item) => (
-              <div key={item.name} style={{ color: item.color }}>
-                <span style={{ marginRight: "8px" }}>{item.icon}</span>
-                {item.name}: {item.value}
-              </div>
-            ))}
-          </Legend> */}
-          {/* <Legend verticalAlign="top" height={36} align="left" iconSize={20} /> */}
+          {/* <Legend
+            verticalAlign="top"
+            height={36}
+            align="left"
+            iconSize={20}
+            textAnchor="uppercase"
+            className="rounded-md capitalize"
+          /> */}
 
           <ChartTooltip
             content={

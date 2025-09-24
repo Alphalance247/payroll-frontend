@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
+import ErrorFetch from "@/app/common/errorFetch";
 interface JobDetailProps {
   title: string;
 }
 const JobDetails = ({ title }: JobDetailProps) => {
-  const { employeeData, loading } = useEmployeeStore();
+  const { employeeData, loading, error, fetchPersonalDetails } =
+    useEmployeeStore();
 
   return (
     <div className="grid gap-[10px] border-[1px] rounded-[10px] h-fit  p-10">
@@ -20,9 +22,16 @@ const JobDetails = ({ title }: JobDetailProps) => {
             <div>
               <Spinner />
             </div>
+          ) : error ? (
+            <ErrorFetch
+              message="Error Fetching leave request"
+              onRefetch={() => fetchPersonalDetails()}
+            />
           ) : (
             <>
-              {employeeData ? (
+              {!employeeData ? (
+                <div>Employee job Details not found</div>
+              ) : (
                 <>
                   <div className="flex ">
                     <div className="w-2/3">
@@ -82,7 +91,7 @@ const JobDetails = ({ title }: JobDetailProps) => {
                     <div className="w-1/3">
                       <div className="w-[205px] h-[60px] flex flex-col space-y-4">
                         <div className="text-sm font-normal font-Graphik text-[#4D4D4D] capitalize">
-                          contarct end date
+                          contract end date
                         </div>
                         <div className="font-medium text-base font-Graphik text-[#4D4D4D]">
                           {}
@@ -91,10 +100,6 @@ const JobDetails = ({ title }: JobDetailProps) => {
                     </div>
                   </div>
                 </>
-              ) : (
-                <div className="font-Graphik text-[#4D4D4D] px-6 pt-6">
-                  No job details availlable
-                </div>
               )}
             </>
           )}

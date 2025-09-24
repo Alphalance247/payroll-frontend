@@ -20,7 +20,8 @@ import { getEmployeeQueryList } from "@/stores/employee-dashboard/query/queryLis
 import QueryModal from "@/app/components/Employee-Dashboard/query/queryModal";
 import QueryDetailsModal from "@/app/components/Employee-Dashboard/query/queryDetailsModal";
 import { useQueryStore } from "@/stores/employee-dashboard/settings/Query/QueryDetail";
-
+import DeleteEvent from "@/app/admin/holiday-calendar-event/DeleteEvent";
+import CreateEvent from "@/app/admin/holiday-calendar-event/CreateEvent";
 const EmployeeRequest = () => {
   const [activeBtn, setActiveBtn] = useState<string>("All");
   const [isOpen, setIsOpen] = useState(false);
@@ -394,6 +395,10 @@ const EmployeeRequest = () => {
                     )}
                   </table>
                 </div>
+              </div>
+              <div className="flex space-x-20 ">
+                <DeleteEvent />
+                <CreateEvent />
               </div>
             </>
           )}

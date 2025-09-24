@@ -13,7 +13,7 @@ const queryDetailsModal = ({
 }) => {
   const [openQueryOverview, setOpenQueryOverview] = useState(false);
   const [openQueryDetails, setOpenQueryDetails] = useState(false);
-  const [openActionRes, setOpenActionRes] = useState(false);
+  // const [openActionRes, setOpenActionRes] = useState(false);
   const { data, loading } = useQueryStore();
 
   interface Activities {
@@ -102,7 +102,7 @@ const queryDetailsModal = ({
                         Query ID
                       </div>
                       <div className="text-sm font-normal font-Graphik text-[#2F2F33]">
-                        {data.query.jira_ticket_id}
+                        {"CMP-2024020" + data.query.id}
                       </div>
                     </div>
                     <div className="flex justify-between items-center h-12">
@@ -230,18 +230,18 @@ const queryDetailsModal = ({
                           </div>
                         </div>
 
-                        <div className="flex justify-between items-center h-12">
+                        {/* <div className="flex justify-between items-center h-12">
                           <div className="text-sm text-[#71717A] font-medium font-Graphik capitalize">
                             Payment Method
                           </div>
                           <div className="text-[#2F2F33] text-base font-normal font-Graphik">
                             Bank Transfer
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center  space-x-2 h-[72px]">
+                  {/* <div className="flex items-center  space-x-2 h-[72px]">
                     <button onClick={() => setOpenActionRes(!openActionRes)}>
                       {" "}
                       {!openActionRes ? (
@@ -254,8 +254,8 @@ const queryDetailsModal = ({
                     <div className="text-[#2F2F33] text-lg capitalize font-medium font-Graphik">
                       Actions & Resolution Tracking
                     </div>
-                  </div>
-                  <div className={openActionRes ? "hidden" : "grid gap-y-3"}>
+                  </div> */}
+                  {/* <div className={openActionRes ? "hidden" : "grid gap-y-3"}>
                     <div className=" border-l">
                       <div className="text-sm text-[#71717A] font-normal font-Graphik h-5 mb-5">
                         Today
@@ -330,8 +330,8 @@ const queryDetailsModal = ({
                         Bank Transfer
                       </div>
                     </div>
-                  </div>
-                  <div className="flex justify-between items-center">
+                  </div> */}
+                  {/* <div className="flex justify-between items-center">
                     <button
                       onClick={onDrawerClose}
                       className="bg-[#F1F1F2] border border-[#E3E3E5] h-10 w-[275px] rounded-[6px] text-[#2F2F33] text-sm font-medium font-Graphik"
@@ -341,7 +341,7 @@ const queryDetailsModal = ({
                     <button className="bg-[#E37915]  h-10 w-[275px] rounded-[6px] text-sm font-medium font-Graphik text-[#F7F7F7]">
                       Mark as Resolved
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               )}
             </>
