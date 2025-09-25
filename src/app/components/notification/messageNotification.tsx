@@ -16,7 +16,12 @@ interface Items {
   message: string;
   is_read: Boolean;
 }
-const MessageNotification = ({ isMobile = true }: { isMobile: boolean }) => {
+const MessageNotification = ({}: // isMobile = true,
+// children,
+{
+  // isMobile: boolean;
+  // children: any;
+}) => {
   const { loading, error, all, fetchNotifications } = useNotificationStore();
   useEffect(() => {
     fetchNotifications();
@@ -61,7 +66,7 @@ const MessageNotification = ({ isMobile = true }: { isMobile: boolean }) => {
   };
 
   return (
-    <div>
+    <div className="">
       <div className="border-b border-[#E3E3E5] flex justify-between px-6">
         <div className="flex gap-x-4 items-center">
           {tabs.map((el, i) => (
@@ -91,7 +96,7 @@ const MessageNotification = ({ isMobile = true }: { isMobile: boolean }) => {
           onRefetch={fetchNotifications}
         />
       ) : (
-        <div className={isMobile ? `overflow-y-auto h-[350px]` : ""}>
+        <div>
           {!filteredItems ? (
             <div className=" flex justify-center items-center my-96">
               Notification is not found
@@ -121,37 +126,97 @@ const MessageNotification = ({ isMobile = true }: { isMobile: boolean }) => {
                     </div>
                   </div>
                   <div>
-                    <span className="relative">
-                      <BsThreeDotsVertical
-                        className={
-                          !item.is_read
-                            ? "cursor-pointer text-[#71717A]"
-                            : "hidden"
-                        }
-                        onClick={() => toggleNotificationAction(item.id)}
-                      />
-                    </span>
-                  </div>
-
-                  {openNotificationAction === item.id && (
-                    <div className="absolute -top-4 -right-56 bg-white shadow-lg h-fit rounded-md w-fit z-auto">
-                      <div className="grid gap-y-3 p-4">
-                        {" "}
-                        <button
-                          className="outline-none text-[#71717A] capitalize font-Graphik font-normal text-start"
-                          onClick={() => markAsRead(item.id)}
-                        >
-                          Mark as read
-                        </button>
-                        <button className="outline-none text-[#71717A] capitalize font-Graphik font-normal text-start">
-                          Dismiss Notification
-                        </button>
-                      </div>
+                    <div>
+                      <span className="">
+                        <BsThreeDotsVertical
+                          className={
+                            !item.is_read
+                              ? "cursor-pointer text-[#71717A]"
+                              : "hidden"
+                          }
+                          onClick={() => toggleNotificationAction(item.id)}
+                        />
+                      </span>
                     </div>
-                  )}
+                    {openNotificationAction === item.id && (
+                      <div className="absolute -top-4 -right-56 bg-white shadow-lg h-fit rounded-md w-fit z-auto">
+                        <div className="grid gap-y-3 p-4">
+                          {" "}
+                          <button
+                            className="outline-none text-[#71717A] capitalize font-Graphik font-normal text-start"
+                            onClick={() => markAsRead(item.id)}
+                          >
+                            Mark as read
+                          </button>
+                          {/* <button className="outline-none text-[#71717A] capitalize font-Graphik font-normal text-start">
+                            Dismiss Notification
+                          </button> */}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))
+            // <div>{children}</div>
+            // (
+            // filteredItems.map((item, index) => (
+            //   <div className="px-6 pt-6 " key={index}>
+            //     <div className="relative border-b border-[#E3E3E5] pb-6 flex gap-x-5 items-center justify-between">
+            //       <div
+            //         className="flex items-start gap-x-6 cursor-pointer"
+            //         onClick={() => markAsRead(item.id)}
+            //       >
+            //         <BsBellFill
+            //           className={
+            //             item.is_read
+            //               ? "text-[#71717A] w-6 h-6"
+            //               : "text-[#E37915] w-6 h-6"
+            //           }
+            //         />
+            //         <div>
+            //           <p className="text-base font-semibold text-[#2F2F33] mb-2">
+            //             {item.message}
+            //           </p>
+            //           <p className="text-sm text-[#71717A]">
+            //             {item.created_at}
+            //           </p>
+            //         </div>
+            //       </div>
+            //       <div>
+            //         <div>
+            //           <span className="">
+            //             <BsThreeDotsVertical
+            //               className={
+            //                 !item.is_read
+            //                   ? "cursor-pointer text-[#71717A]"
+            //                   : "hidden"
+            //               }
+            //               onClick={() => toggleNotificationAction(item.id)}
+            //             />
+            //           </span>
+            //         </div>
+
+            //         {openNotificationAction === item.id && (
+            //           <div className="absolute -top-4 -right-56 bg-white shadow-lg h-fit rounded-md w-fit z-auto">
+            //             <div className="grid gap-y-3 p-4">
+            //               {" "}
+            //               <button
+            //                 className="outline-none text-[#71717A] capitalize font-Graphik font-normal text-start"
+            //                 onClick={() => markAsRead(item.id)}
+            //               >
+            //                 Mark as read
+            //               </button>
+            //               <button className="outline-none text-[#71717A] capitalize font-Graphik font-normal text-start">
+            //                 Dismiss Notification
+            //               </button>
+            //             </div>
+            //           </div>
+            //         )}
+            //       </div>
+            //     </div>
+            //   </div>
+            // ))
           )}
         </div>
       )}

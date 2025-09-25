@@ -7,13 +7,17 @@ import LeavePieChart from "../../components/charts/LeavePieChart";
 import ProtectedRoute from "@/app/common/protectedRoute";
 import { getEmployeeYearlyPayroll } from "@/stores/employee-dashboard/analytics/yearlyPayroll";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GoArrowRight } from "react-icons/go";
 import { MdOutlinePayment } from "react-icons/md";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { getEmployeeLeaveList } from "@/stores/employee-dashboard/leave/getEmployeeLeaveRequest";
 import ErrorFetch from "@/app/common/errorFetch";
 import Spinner from "@/app/common/spinner";
+import { useLeaveStore } from "@/stores/employee-dashboard/analytics/LeaveCalendar";
+import { getLeaveDashboardData } from "@/stores/employee-dashboard/analytics/LeaveDashboard";
+import { getLeaveBalance } from "@/stores/employee-dashboard/analytics/LeaveBalance";
+import LeaveBalance from "@/app/components/leave-management/leaveBalance";
 
 const EmployeeAnalytics = () => {
   const [activeBtn, setActiveBtn] = useState<string>("My Earnings");
@@ -23,83 +27,47 @@ const EmployeeAnalytics = () => {
     loading,
     error,
   } = getEmployeeYearlyPayroll();
-
-  const { data: leaveData, fetchEmployeeLeaveList } = getEmployeeLeaveList();
-
-  useEffect(() => {
-    fetchEmployeeLeaveList();
-  }, [fetchEmployeeLeaveList]);
-
-  const cardData = [
-    {
-      label: "Approved",
-      value: leaveData?.summary?.approved,
-    },
-    {
-      label: "Awaiting Approval",
-      value: leaveData?.summary?.pending,
-    },
-    {
-      label: "Remaining",
-      value: leaveData?.summary?.rejected,
-    },
-    {
-      label: "National Holidays",
-      value: "12",
-    },
-  ];
-
   useEffect(() => {
     fetchEmployeeYearlyPayroll();
   }, [fetchEmployeeYearlyPayroll]);
+  //leave calendar store
+  const { errorValue, fetchLeaves } = useLeaveStore();
+  useEffect(() => {
+    fetchLeaves();
+  }, [fetchLeaves]);
+  //card Data store
+  const {
+    fetchLeaveList,
+    leaveData,
+    loadingLeaveDashbord,
+    LeaveDashboardError,
+  } = getLeaveDashboardData();
+  useEffect(() => {
+    fetchLeaveList();
+  }, [fetchLeaveList]);
+  const cardData = [
+    {
+      label: "Approved",
+      value: leaveData?.approved,
+    },
+    {
+      label: "Awaiting Approval",
+      value: leaveData?.awaiting_approval,
+    },
+    {
+      label: "Remaining",
+      value: leaveData?.remaining,
+    },
+    {
+      label: "National Holidays",
+      value: leaveData?.national_holidays,
+    },
+  ];
 
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "My Earnings" },
     { id: 2, name: "Timesheet" },
     { id: 3, name: "Leave Calendar" },
-  ];
-
-  // const chartData = [
-  //   { year: "2020", bonus: 12.5, baseSalary: 1, deduction: 5 },
-  //   {
-  //     year: "2021",
-  //     bonus: 22.5,
-  //     baseSalary: 1,
-  //     deduction: 5,
-  //   },
-  //   { year: "2022", bonus: 30, baseSalary: 1, deduction: 5 },
-  //   { year: "2023", bonus: 30, baseSalary: 1, deduction: 5 },
-  //   {
-  //     year: "2024",
-  //     bonus: 12.5,
-  //     baseSalary: 1,
-  //     deduction: 5,
-  //   },
-  //   {
-  //     year: "2025",
-  //     bonus: 30,
-  //     baseSalary: 1,
-  //     deduction: 5,
-  //   },
-  // ];
-  const totalLeaveDays = 360;
-  const actualLeaveChartData = [
-    {
-      leaveType: "remaining Leave:",
-      daysTaken: 87,
-      fill: "#F8F8F8",
-    },
-    { leaveType: "carry Over Leave", daysTaken: 173, fill: "#78D6E0" },
-    { leaveType: "days Taken", daysTaken: 100, fill: "#F8F8F8" },
-  ];
-  const sickLeaveChartData = [
-    {
-      leaveType: "remaining Leave",
-      daysTaken: 200,
-      fill: "#F8F8F8",
-    },
-    { leaveType: "carry Over Leave", daysTaken: 60, fill: "#78D6E0 " },
-    { leaveType: "days Taken", daysTaken: 100, fill: "#F8F8F8" },
   ];
 
   return (
@@ -285,12 +253,12 @@ const EmployeeAnalytics = () => {
               )}
               {activeBtn === "Leave Calendar" && (
                 <div>
-                  {loading ? (
+                  {loadingLeaveDashbord ? (
                     <Spinner spinnerSmall={true} />
                   ) : error ? (
                     <ErrorFetch
-                      onRefetch={fetchEmployeeLeaveList}
-                      message="Error Fetching leave overview"
+                      onRefetch={fetchLeaveList}
+                      message={LeaveDashboardError}
                     />
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 mb-8">
@@ -298,109 +266,24 @@ const EmployeeAnalytics = () => {
                         <OverviewCard
                           image="/assets/employee-dashboard/home/people.svg"
                           label={card?.label}
-                          value={card?.value || "0"}
+                          value={(card?.value as any) || 0}
                           key={index}
                         />
                       ))}
                     </div>
                   )}
-
-                  <LeavePieChart
-                    title="Annual leave"
-                    chartData={actualLeaveChartData}
-                  >
-                    <div className="border border-[#E3E3E5] rounded-[8px] ">
-                      <table className="h-[264px] w-[502px]  table-auto font-Graphik text-sm ">
-                        <thead className="bg-[#E3E3E5] h-[44px]">
-                          <tr className="">
-                            <th className="text-left text-[#71717A]  font-medium  px-6 capitalize ">
-                              annual leave
-                            </th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody className=" divide-y divide-[#EAECF0] capitalize">
-                          <tr>
-                            <td className="px-6 capitalize bg-[#F1F1F2] ">
-                              total Leave Days
-                            </td>
-                            <td className="px-6 capitalize bg-[#F1F1F2] ">
-                              {totalLeaveDays}
-                            </td>
-                          </tr>
-                          {actualLeaveChartData.map((leave, index) => (
-                            <tr
-                              key={index}
-                              className={
-                                index % 2 ? " bg-[#F1F1F2] " : "bg-[#F7F7F7]"
-                              }
-                            >
-                              <td className="px-6">{leave.leaveType}</td>
-                              <td className="px-6">{leave.daysTaken}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                        <tfoot className="h-[44px] bg-[#E3E3E5] text-[#2F2F33]">
-                          <tr className="">
-                            <td className="px-6  font-medium ">
-                              Leave Cycle Ends
-                            </td>
-                            <td className="px-6  font-medium ">Dec 31, 2025</td>
-                          </tr>
-                        </tfoot>
-                      </table>
-                    </div>{" "}
-                  </LeavePieChart>
-                  <LeavePieChart
-                    title="sick leave"
-                    chartData={sickLeaveChartData}
-                  >
-                    <div className="border border-[#E3E3E5] rounded-[8px] ">
-                      <table className="h-[264px] w-[502px]  table-auto font-Graphik text-sm ">
-                        <thead className="bg-[#E3E3E5] h-[44px]">
-                          <tr className="">
-                            <th className="text-left text-[#71717A]  font-medium  px-6 capitalize ">
-                              sick Leave
-                            </th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody className=" divide-y divide-[#EAECF0]">
-                          <tr>
-                            <td className="px-6 capitalize bg-[#F1F1F2] ">
-                              total Leave Days
-                            </td>
-                            <td className="px-6 capitalize bg-[#F1F1F2] ">
-                              {totalLeaveDays}
-                            </td>
-                          </tr>
-                          {sickLeaveChartData.map((leave, index) => (
-                            <tr
-                              key={index}
-                              className={
-                                index % 2 ? "bg-[#F7F7F7] " : "bg-[#F1F1F2]"
-                              }
-                            >
-                              <td className="px-6 capitalize">
-                                {leave.leaveType}
-                              </td>
-                              <td className="px-6 capitalize">
-                                {leave.daysTaken}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                        <tfoot className="h-[44px] bg-[#E3E3E5] text-[#2F2F33]">
-                          <tr className="">
-                            <td className="px-6  font-medium capitalize ">
-                              Leave Cycle Ends
-                            </td>
-                            <td className="px-6  font-medium ">Dec 31, 2025</td>
-                          </tr>
-                        </tfoot>
-                      </table>
-                    </div>{" "}
-                  </LeavePieChart>
+                  {/* {loadingBalance ? (
+                    <Spinner spinnerSmall={true} />
+                  ) : error ? (
+                    <ErrorFetch
+                      onRefetch={fetchLeaveBalance}
+                      message={balanceError}
+                    />
+                  ) : ( */}
+                  <>
+                    <LeavePieChart />
+                  </>
+                  {/* )} */}
                 </div>
               )}
             </>
