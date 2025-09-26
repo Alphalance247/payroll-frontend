@@ -430,33 +430,35 @@ export default function Home() {
                   />
                 ) : (
                   <div className="p-6 flex flex-col gap-y-3">
-                    {holidayData?.data?.results?.slice(0, 5).map((holiday) => (
-                      <div
-                        className="flex justify-between items-center bg-[#F7F7F7] py-3 px-4 border-[#E3E3E5] border rounded-[8px]"
-                        key={holiday?.id}
-                      >
-                        <div className="flex gap-x-4">
-                          <Image
-                            width={48}
-                            height={48}
-                            src="/assets/Home/world.jpg"
-                            alt="holiday in naija"
-                          />
-                          <div>
-                            <p className="font-Graphik font-medium text-base text-[#2F2F33] mb-1">
-                              {holiday?.name}
-                            </p>
-                            <p className="font-Graphik text-[15px] leading-[21px] text-[#71717A]">
-                              {holiday?.country}
-                            </p>
+                    {holidayData?.data?.holidays?.results
+                      ?.slice(0, 5)
+                      .map((holiday) => (
+                        <div
+                          className="flex justify-between items-center bg-[#F7F7F7] py-3 px-4 border-[#E3E3E5] border rounded-[8px]"
+                          key={holiday?.id}
+                        >
+                          <div className="flex gap-x-4">
+                            <Image
+                              width={48}
+                              height={48}
+                              src="/assets/Home/world.jpg"
+                              alt="holiday in naija"
+                            />
+                            <div>
+                              <p className="font-Graphik font-medium text-base text-[#2F2F33] mb-1">
+                                {holiday?.name}
+                              </p>
+                              <p className="font-Graphik text-[15px] leading-[21px] text-[#71717A]">
+                                {holiday?.country}
+                              </p>
+                            </div>
                           </div>
-                        </div>
 
-                        <p className="font-Graphik font-medium text-[15px] leading-[21px] text-[#2F2F33]">
-                          {holiday?.date}
-                        </p>
-                      </div>
-                    ))}
+                          <p className="font-Graphik font-medium text-[15px] leading-[21px] text-[#2F2F33]">
+                            {holiday?.date}
+                          </p>
+                        </div>
+                      ))}
                   </div>
                 )}
               </div>
