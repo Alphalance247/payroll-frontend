@@ -1,11 +1,11 @@
 "use client";
 import { Search } from "lucide-react";
-import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import PermissionOverlay from "./permissionOverlay";
 import { getAdminPermissionList } from "@/stores/settings/permissions/permissions";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
+import { useFilter } from "@/app/hooks/useFilter";
 
 const PermissionTable = ({
   showOverLay,
@@ -14,10 +14,14 @@ const PermissionTable = ({
   showOverLay: boolean;
   setShowOverlay: (showOverLay: boolean) => void;
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
 
   const { data, error, loading, fetchAdminPermission } =
     getAdminPermissionList();
+  const { filteredData, setSearchQuery, searchQuery } = useFilter(
+    data?.employees || [],
+    ["employee_name"]
+  );
 
   return (
     <section className="mt-6">
@@ -34,7 +38,7 @@ const PermissionTable = ({
             type="text"
             placeholder="Search"
             value={searchQuery}
-            onChange={() => {}}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-[10px] border border-[#E3E3E5] rounded-lg text-base focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
@@ -88,7 +92,7 @@ const PermissionTable = ({
                   ></th>
                 </tr>
               </thead>
-              {data?.employees?.length === 0 ? (
+              {filteredData?.length === 0 ? (
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center py-8">
@@ -98,7 +102,7 @@ const PermissionTable = ({
                 </tbody>
               ) : (
                 <tbody className="text-gray-600 dark:text-white text-[15px] leading-[1.5rem] divide-y divide-gray-200 dark:divide-[#424E59]">
-                  {data?.employees?.map((data, i) => (
+                  {filteredData?.map((data, i) => (
                     <tr
                       className="hover:bg-gray-50 dark:hover:bg-[#424E59] transition duration-200 ease-in-out"
                       key={i}

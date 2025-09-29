@@ -228,11 +228,11 @@ const Sidebar = () => {
           link: "/admin/settings/company-info",
           icons: <MdOutlineBusiness size={20} />,
         },
-        {
-          text: "Billing Info",
-          link: "/admin/settings/billing-info",
-          icons: <BsBarChartLine size={20} />,
-        },
+        // {
+        //   text: "Billing Info",
+        //   link: "/admin/settings/billing-info",
+        //   icons: <BsBarChartLine size={20} />,
+        // },
         {
           text: "Permissions",
           link: "/admin/settings/permissions",

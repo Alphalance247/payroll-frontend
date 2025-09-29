@@ -44,8 +44,6 @@ axiosInstance.interceptors.response.use(
       // Show a toast notification for permission denied
       if (typeof window !== "undefined") {
         // Import toast dynamically to avoid SSR issues
-        const { default: toast } = await import("react-hot-toast");
-        toast.error("You don't have permission to perform this action");
         return;
       }
       return Promise.reject(error);

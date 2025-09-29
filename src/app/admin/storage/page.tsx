@@ -6,7 +6,7 @@ import Heading from "../../common/heading";
 import ProtectedRoute from "../../common/protectedRoute";
 import { useEffect, useState } from "react";
 import { useFilter } from "../../hooks/useFilter";
-import DropDownBtn from "../../common/dropDownBtn";
+// import DropDownBtn from "../../common/dropDownBtn";
 import { FileText, Search } from "lucide-react";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { getEmployeeDocuments } from "@/stores/storage/getEmployeeDocuments";
@@ -15,22 +15,29 @@ import Spinner from "../../common/spinner";
 import ErrorFetch from "../../common/errorFetch";
 
 const Storage = () => {
-  const { filteredData, setSearchQuery, searchQuery, setFilter } = useFilter(
-    [],
-    ["created_by"]
-  );
-  console.log(filteredData);
-  const [selectedTeam, setSelectedTeam] = useState("");
-  const [requestType, setRequestType] = useState("");
-  const requestOption = ["All", "Salary", "Tax"];
+  // const [selectedTeam, setSelectedTeam] = useState("");
+  // const [requestType, setRequestType] = useState("");
+  // const requestOption = ["All", "Salary", "Tax"];
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
+  const { fetchEmployeeDocuments, data, loading, error } =
+    getEmployeeDocuments();
+
   useEffect(() => {
-    setFilter("team", selectedTeam);
-    setFilter("team", selectedTeam === "All" ? "" : selectedTeam);
-    setFilter("query_type", requestType);
-    setFilter("query_type", requestType === "All" ? "" : requestType);
-  }, [selectedTeam, requestType, setFilter]);
+    fetchEmployeeDocuments();
+  }, [fetchEmployeeDocuments]);
+
+  const { filteredData, setSearchQuery, searchQuery } = useFilter(
+    data?.data || [],
+    ["label"]
+  );
+
+  // useEffect(() => {
+  //   setFilter("team", selectedTeam);
+  //   setFilter("team", selectedTeam === "All" ? "" : selectedTeam);
+  //   setFilter("query_type", requestType);
+  //   setFilter("query_type", requestType === "All" ? "" : requestType);
+  // }, [selectedTeam, requestType, setFilter]);
 
   // Component to render different document types
   const DocumentRenderer = ({
@@ -99,13 +106,6 @@ const Storage = () => {
     );
   };
 
-  const { fetchEmployeeDocuments, data, loading, error } =
-    getEmployeeDocuments();
-
-  useEffect(() => {
-    fetchEmployeeDocuments();
-  }, [fetchEmployeeDocuments]);
-
   return (
     <ProtectedRoute>
       <DashboardLayout>
@@ -142,8 +142,10 @@ const Storage = () => {
                 />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
               </div>
+            </div>
+          </div>
 
-              <DropDownBtn
+          {/* <DropDownBtn
                 subText="Type"
                 btnHeight="h-auto"
                 width="w-auto"
@@ -164,7 +166,7 @@ const Storage = () => {
                 selectedValue={selectedTeam}
               />
             </div>
-          </div>
+          </div> */}
           {loading ? (
             <Spinner />
           ) : error ? (
@@ -174,13 +176,13 @@ const Storage = () => {
             />
           ) : (
             <>
-              {data?.data?.length === 0 ? (
+              {filteredData?.length === 0 ? (
                 <p className="text-sm text-gray-600 text-center px-2">
                   No Available documents yet
                 </p>
               ) : (
                 <div className="mt-10 border border-[#E3E3E5] rounded-md">
-                  {data?.data.map((item, i) => {
+                  {filteredData?.map((item, i) => {
                     return (
                       <div
                         key={i}

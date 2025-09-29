@@ -370,39 +370,7 @@ const Account = () => {
                 </p>
 
                 <div className="mt-8">
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div className="relative">
-                      <div>
-                        <Label
-                          //   htmlFor="first-name"
-                          id="current_password"
-                          className="block mb-1"
-                        >
-                          Current Password
-                        </Label>
-                        <Input
-                          type="password"
-                          id="old_password"
-                          readonly
-                          name="old_password"
-                          className=" cursor-not-allowed"
-                          value={form?.old_password || ""}
-                          onChange={
-                            // (e) =>
-                            handleChange
-                            // setForm({ ...form, old_password: e.target.value })
-                          }
-                        />
-                      </div>
-
-                      <PasswordEye
-                        onToggle={() =>
-                          togglePasswordVisibility("old_password")
-                        }
-                        showPasswordType={showPassword?.old_password}
-                      />
-                    </div>
-
+                  <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-4">
                     <div className="relative">
                       <div>
                         <Label id="password" className="block mb-1">

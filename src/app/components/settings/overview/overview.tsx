@@ -41,11 +41,11 @@ const Overview = () => {
       subhead: "you",
       btnLink: "/admin/settings/audit-logs",
     },
-    {
-      heading: "Billing Info",
-      subhead: "you",
-      btnLink: "/admin/settings/billing-info",
-    },
+    // {
+    //   heading: "Billing Info",
+    //   subhead: "you",
+    //   btnLink: "/admin/settings/billing-info",
+    // },
   ];
   return (
     <section>
