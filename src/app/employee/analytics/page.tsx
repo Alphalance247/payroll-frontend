@@ -21,7 +21,6 @@ const EmployeeAnalytics = () => {
   const {
     data: yearlyPayroll,
     fetchEmployeeYearlyPayroll,
-    loading,
     error,
   } = getEmployeeYearlyPayroll();
   const { fetchLeaves } = useLeaveStore();

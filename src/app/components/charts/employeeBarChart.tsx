@@ -1,5 +1,5 @@
 "use client";
-import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
@@ -18,8 +18,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function DashboardLayout() {
-  const { data, loading, error, fetchEmployeeYearlyPayroll } =
-    getEmployeeYearlyPayroll();
+  const { data, fetchEmployeeYearlyPayroll } = getEmployeeYearlyPayroll();
   useEffect(() => {
     fetchEmployeeYearlyPayroll();
   }, [fetchEmployeeYearlyPayroll]);
@@ -35,24 +34,7 @@ export default function DashboardLayout() {
     total_bonus: yearItem.totals.total_bonus,
     total_deductions: yearItem.totals.total_deductions,
   }));
-  const renderLegend = (props: any) => {
-    const { payload } = props;
-    return (
-      <ul className="flex gap-4 justify-start mb-6">
-        {payload.map((entry: any, index: number) => (
-          <li key={`item-${index}`} className="flex items-center  gap-2">
-            <span
-              className="w-4 h-4 rounded-sm"
-              style={{ backgroundColor: entry.color }}
-            />
-            <span className="text-sm font-medium font-Graphik capitalize">
-              {entry.value}
-            </span>
-          </li>
-        ))}
-      </ul>
-    );
-  };
+
   return (
     <div className="">
       <ChartContainer
@@ -69,7 +51,7 @@ export default function DashboardLayout() {
             // tickFormatter={(value) => value.slice(0, 4)}
           />
           <YAxis
-            domain={[100000, 1000000]}
+            domain={[100000, 2000000]}
             tickLine={false}
             tickMargin={10}
             axisLine={false}
