@@ -4,6 +4,7 @@ import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 
 interface employeeYearlyPayrollDataStore {
+
   data: {
     totals: {
       total_base_salary: number;
@@ -35,8 +36,30 @@ interface employeeYearlyPayrollDataStore {
   };
 }
 
+// interface MonthData {
+//   month: string;
+//   total_base_salary: number;
+//   total_bonus: number;
+//   total_deductions: number;
+// }
+
+// interface YearData {
+//   year: number;
+//   totals: {
+//     total_base_salary: number;
+//     total_bonus: number;
+//     total_deductions: number;
+//     last_payment: number | null;
+//   };
+//   months: MonthData[];
+// }
+
 interface employeeYearlyPayrollListStore {
   data: employeeYearlyPayrollDataStore | null;
+  // data: {
+  //   data: YearData[];
+  //   current_data: YearData | null;
+  // } | null;
   loading: boolean;
   error: string | null;
   fetchEmployeeYearlyPayroll: () => Promise<void>;
@@ -54,7 +77,22 @@ export const getEmployeeYearlyPayroll = create<employeeYearlyPayrollListStore>(
         const res = await axiosInstance.get(
           `/employees/my-yearly-employee-payroll`
         );
-        set({ data: res.data.current_data.totals, loading: false });
+        // const reshaped = res.data.map((item: any) => ({
+        //   year: item.year,
+        //   totals: {
+        //     total_base_salary: item.totals.total_base_salary,
+        //     total_bonus: item.totals.total_bonus,
+        //     total_deductions: item.totals.total_deductions,
+        //     last_payment: item.totals.last_payment,
+        //   },
+        //   months: item.months.map((m: any) => ({
+        //     month: m.month,
+        //     total_base_salary: m.total_base_salary,
+        //     total_bonus: m.total_bonus,
+        //     total_deductions: m.total_deductions,
+        //   })),
+        // }));
+        set({ data: res.data, loading: false });
       } catch (err) {
         if (err instanceof AxiosError) {
           set({ error: err.message, loading: false });
