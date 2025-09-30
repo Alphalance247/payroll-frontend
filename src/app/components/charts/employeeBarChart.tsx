@@ -12,59 +12,47 @@ import { getEmployeeYearlyPayroll } from "@/stores/employee-dashboard/analytics/
 import { useEffect } from "react";
 
 const chartConfig = {
-  baseSalary: {
-    label: "base salary",
-    color: "#009BC0",
-  },
-  bonus: {
-    label: "bonus",
-    color: "#E37915",
-  },
-  deduction: {
-    label: "deduction",
-    color: "#11202D",
-  },
+  total_base_salary: { label: "Base Salary", color: "#009BC0" },
+  total_bonus: { label: "Bonus", color: "#E37915" },
+  total_deductions: { label: "Deductions", color: "#11202D" },
 } satisfies ChartConfig;
 
-export default function DashboardLayout({
-  chartData,
-}: {
-  chartData: {
-    year: string;
-    months: {
-      total_base_salary: string;
-      total_bonus: string;
-      total_deductions: string;
-      month: string;
-    }[];
-    totals: {
-      total_base_salary: number;
-      total_bonus: number;
-      total_deductions: number;
-    };
-  }[];
-}) {
-  // const chartData = [{
-  // year:"2025", baseSalary:"10000",bonus:"3000", deductions:"5000"
-  // }]
-  // const chartData = [
-  //   {
-  //     year: 2025,
-  //     months: [
-  //       {
-  //         total_base_salary: "10000",
-  //         total_bonus: "2000",
-  //         total_deductions: "5000",
-  //         month: "january",
-  //       },
-  //     ],
-  //     totals: {
-  //       total_base_salary: "5000",
-  //       total_bonus: "3000",
-  //       total_deductions: "1500",
-  //     },
-  //   },
-  // ];
+export default function DashboardLayout() {
+  const { data, loading, error, fetchEmployeeYearlyPayroll } =
+    getEmployeeYearlyPayroll();
+  useEffect(() => {
+    fetchEmployeeYearlyPayroll();
+  }, [fetchEmployeeYearlyPayroll]);
+  // const chartData = data?.map((yearData) => ({
+  //   year: yearData.year,
+  //   total_base_salary: yearData.totals.total_base_salary,
+  //   total_bonus: yearData.totals.total_bonus,
+  //   total_deductions: yearData.totals.total_deductions,
+  // }));
+  const chartData = data?.data.map((yearItem) => ({
+    year: yearItem.year,
+    total_base_salary: yearItem.totals.total_base_salary,
+    total_bonus: yearItem.totals.total_bonus,
+    total_deductions: yearItem.totals.total_deductions,
+  }));
+  const renderLegend = (props: any) => {
+    const { payload } = props;
+    return (
+      <ul className="flex gap-4 justify-start mb-6">
+        {payload.map((entry: any, index: number) => (
+          <li key={`item-${index}`} className="flex items-center  gap-2">
+            <span
+              className="w-4 h-4 rounded-sm"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-sm font-medium font-Graphik capitalize">
+              {entry.value}
+            </span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
   return (
     <div className="">
       <ChartContainer
@@ -81,36 +69,37 @@ export default function DashboardLayout({
             // tickFormatter={(value) => value.slice(0, 4)}
           />
           <YAxis
-            // domain={[1000, 10000]}
+            domain={[100000, 1000000]}
             tickLine={false}
-            tickMargin={1}
+            tickMargin={10}
             axisLine={false}
-            width={40}
+            width={100}
+            tickSize={0}
             label={{
               value: "Total Amount (NGN)",
               angle: -90,
               position: "insideLeft",
               textAnchor: "middle",
+              offset: 5,
             }}
-            // tickFormatter={}
           />
-          {/* <Legend
+          <ChartLegend
             verticalAlign="top"
-            height={36}
             align="left"
-            iconSize={20}
-            textAnchor="uppercase"
-            className="rounded-md capitalize"
-          /> */}
+            content={
+              <ChartLegendContent className="text-sm font-medium font-Graphik flex justify-start text-[#2F2F33] " />
+            }
+            wrapperStyle={{ paddingBottom: "20px" }}
+          />
 
           <ChartTooltip
             content={
-              <ChartTooltipContent className="opacity-100 capitalize font-medium shadow-md" />
+              <ChartTooltipContent className="opacity-100 capitalize font-medium shadow-md w-fit h-fit" />
             }
           />
-          <Bar dataKey="baseSalary" fill="var(--color-baseSalary)" radius={4} />
-          <Bar dataKey="bonus" fill="var(--color-bonus" radius={4} />
-          <Bar dataKey="deduction" fill="var(--color-deduction" radius={4} />
+          <Bar dataKey="total_base_salary" fill="#009BC0" radius={4} />
+          <Bar dataKey="total_bonus" fill="#E37915" radius={4} />
+          <Bar dataKey="total_deductions" fill="#11202D" radius={4} />
         </BarChart>
       </ChartContainer>
     </div>

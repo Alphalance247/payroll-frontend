@@ -100,7 +100,10 @@ const LeavePieChart = () =>
                   },
                 ];
                 return (
-                  <div className="h-[396px] border border-[#E3E3E5] rounded-[8px] my-8">
+                  <div
+                    className="h-[396px] border border-[#E3E3E5] rounded-[8px] my-8"
+                    key={index}
+                  >
                     <div>
                       <div className="border-b border-[#E3E3E5] h-[52px]">
                         <div className=" py-4 pl-4 text-[#2F2F33] text-sm font-semibold font-Graphik capitalize">
