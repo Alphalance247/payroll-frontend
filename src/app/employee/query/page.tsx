@@ -395,6 +395,10 @@ const EmployeeRequest = () => {
                   </table>
                 </div>
               </div>
+              {/* <div className="flex space-x-20 ">
+                <DeleteEvent />
+                <CreateEvent />
+              </div> */}
             </>
           )}
         </section>
