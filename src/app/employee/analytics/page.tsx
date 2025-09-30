@@ -7,17 +7,14 @@ import LeavePieChart from "../../components/charts/LeavePieChart";
 import ProtectedRoute from "@/app/common/protectedRoute";
 import { getEmployeeYearlyPayroll } from "@/stores/employee-dashboard/analytics/yearlyPayroll";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { GoArrowRight } from "react-icons/go";
 import { MdOutlinePayment } from "react-icons/md";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { getEmployeeLeaveList } from "@/stores/employee-dashboard/leave/getEmployeeLeaveRequest";
 import ErrorFetch from "@/app/common/errorFetch";
 import Spinner from "@/app/common/spinner";
 import { useLeaveStore } from "@/stores/employee-dashboard/analytics/LeaveCalendar";
 import { getLeaveDashboardData } from "@/stores/employee-dashboard/analytics/LeaveDashboard";
-import { getLeaveBalance } from "@/stores/employee-dashboard/analytics/LeaveBalance";
-import LeaveBalance from "@/app/components/leave-management/leaveBalance";
 
 const EmployeeAnalytics = () => {
   const [activeBtn, setActiveBtn] = useState<string>("My Earnings");
@@ -27,14 +24,7 @@ const EmployeeAnalytics = () => {
     loading,
     error,
   } = getEmployeeYearlyPayroll();
-  useEffect(() => {
-    fetchEmployeeYearlyPayroll();
-  }, [fetchEmployeeYearlyPayroll]);
-  //leave calendar store
-  const { errorValue, fetchLeaves } = useLeaveStore();
-  useEffect(() => {
-    fetchLeaves();
-  }, [fetchLeaves]);
+  const { fetchLeaves } = useLeaveStore();
   //card Data store
   const {
     fetchLeaveList,
@@ -42,9 +32,15 @@ const EmployeeAnalytics = () => {
     loadingLeaveDashbord,
     LeaveDashboardError,
   } = getLeaveDashboardData();
+
   useEffect(() => {
+    fetchEmployeeYearlyPayroll();
+    fetchLeaves();
     fetchLeaveList();
-  }, [fetchLeaveList]);
+  }, [fetchEmployeeYearlyPayroll, fetchLeaves, fetchLeaveList]);
+
+  console.log(yearlyPayroll);
+
   const cardData = [
     {
       label: "Approved",
@@ -119,27 +115,7 @@ const EmployeeAnalytics = () => {
                         <IoMdArrowDropdown />
                       </button>
                     </div>
-                    {/* <div className="my-8 flex space-x-5 items-center px-20">
-                      <div className="flex space-x-2 items-center">
-                        <div className="h-4 w-4 rounded-sm bg-[#009BC0]"></div>
-                        <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
-                          Base salary
-                        </div>
-                      </div>
-                      <div className="flex space-x-2 items-center">
-                        <div className="h-4 w-4 rounded-sm bg-[#E37915]"></div>
-                        <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
-                          Bonus
-                        </div>
-                      </div>
-                      <div className="flex space-x-2 items-center">
-                        <div className="h-4 w-4 rounded-sm bg-[#11202D]"></div>
-                        <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
-                          Deduction
-                        </div>
-                      </div>
-                    </div> */}
-                    {/* <EmployeeBarChart /> */}
+
                     <EmployeeBarChart chartData={yearlyPayroll?.data || []} />
                   </div>
                   <div className="grid md:grid-cols-[2fr_1fr] gap-6">
@@ -220,7 +196,8 @@ const EmployeeAnalytics = () => {
                           <p className="text-[#71717A] ">Total Payroll</p>
                           <p className="text-[#2F2F33] font-medium">
                             N{" "}
-                            {yearlyPayroll?.current_data?.totals?.total_base_salary.toLocaleString()}
+                            {yearlyPayroll?.current_data?.totals
+                              ?.total_base_salary || 0}
                           </p>
                         </div>
 
@@ -266,7 +243,7 @@ const EmployeeAnalytics = () => {
                         <OverviewCard
                           image="/assets/employee-dashboard/home/people.svg"
                           label={card?.label}
-                          value={(card?.value as any) || 0}
+                          value={card?.value?.toString() || "0"}
                           key={index}
                         />
                       ))}
