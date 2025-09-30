@@ -22,12 +22,7 @@ export default function DashboardLayout() {
   useEffect(() => {
     fetchEmployeeYearlyPayroll();
   }, [fetchEmployeeYearlyPayroll]);
-  // const chartData = data?.map((yearData) => ({
-  //   year: yearData.year,
-  //   total_base_salary: yearData.totals.total_base_salary,
-  //   total_bonus: yearData.totals.total_bonus,
-  //   total_deductions: yearData.totals.total_deductions,
-  // }));
+
   const chartData = data?.data.map((yearItem) => ({
     year: yearItem.year,
     total_base_salary: yearItem.totals.total_base_salary,
@@ -79,9 +74,24 @@ export default function DashboardLayout() {
               <ChartTooltipContent className="opacity-100 capitalize font-medium shadow-md w-fit h-fit" />
             }
           />
-          <Bar dataKey="total_base_salary" fill="#009BC0" radius={4} />
-          <Bar dataKey="total_bonus" fill="#E37915" radius={4} />
-          <Bar dataKey="total_deductions" fill="#11202D" radius={4} />
+          <Bar
+            dataKey="total_base_salary"
+            fill="#009BC0"
+            stackId="a"
+            radius={[0, 0, 4, 4]}
+          />
+          <Bar
+            dataKey="total_bonus"
+            stackId="a"
+            fill="#E37915"
+            radius={[0, 0, 0, 0]}
+          />
+          <Bar
+            dataKey="total_deductions"
+            fill="#11202D"
+            stackId="a"
+            radius={[4, 4, 0, 0]}
+          />
         </BarChart>
       </ChartContainer>
     </div>

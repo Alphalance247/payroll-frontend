@@ -56,6 +56,7 @@ const MessageNotification = ({}: // isMobile = true,
       });
       if (res.status === 200 || 201) {
         console.log(read);
+        setOpenNoficationAction(null);
       }
       fetchNotifications();
     } catch (err) {

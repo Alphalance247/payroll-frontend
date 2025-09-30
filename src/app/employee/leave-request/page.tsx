@@ -7,6 +7,7 @@ import Heading from "@/app/common/heading";
 import ProtectedRoute from "@/app/common/protectedRoute";
 import Spinner from "@/app/common/spinner";
 import LeaveRequestModal from "@/app/components/Employee-Dashboard/leave-request/requestModal";
+import { useFilter } from "@/app/hooks/useFilter";
 import { getEmployeeLeaveList } from "@/stores/employee-dashboard/leave/getEmployeeLeaveRequest";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -43,9 +44,12 @@ const EmployeeLeaveRequest = () => {
       value: "12",
     },
   ];
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [requestModal, setRequestModal] = useState(false);
-
+  const { filteredData, setSearchQuery, searchQuery } = useFilter(
+    leaveData?.leaves || [],
+    ["leave_Type"]
+  );
   return (
     <ProtectedRoute>
       <EmployeeDashboardLayout>
@@ -145,7 +149,7 @@ const EmployeeLeaveRequest = () => {
                     </tr>
                   </thead>
 
-                  {leaveData?.leaves?.length === 0 ? (
+                  {filteredData.length === 0 ? (
                     <tbody>
                       <tr>
                         <td colSpan={6} className="text-center py-8">
@@ -155,7 +159,7 @@ const EmployeeLeaveRequest = () => {
                     </tbody>
                   ) : (
                     <tbody className="text-gray-600  dark:text-white text-[15px] leading-[1.5rem] divide-y divide-gray-200 dark:divide-[#424E59]">
-                      {leaveData?.leaves.map((data, i) => (
+                      {filteredData.map((data, i) => (
                         <tr
                           className="hover:bg-gray-50 even:bg-[#F7F7F7] dark:hover:bg-[#424E59] transition duration-200 ease-in-out"
                           key={i}

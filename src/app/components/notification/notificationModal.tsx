@@ -44,6 +44,7 @@ const NotificationModal = () => {
       });
       if (res.status === 200 || 201) {
         console.log(read);
+        setOpenNoficationAction(null);
       }
       fetchNotifications();
     } catch (err) {
@@ -92,7 +93,7 @@ const NotificationModal = () => {
             ))}
           </div>
         </div>
-        <div className="overflow-y-auto">
+        <div className=" h-[300px] overflow-y-auto">
           {filteredItems.map((item, index) => (
             <div className="px-6 pt-6  " key={index}>
               <div className=" border-b border-[#E3E3E5] pb-6 flex gap-x-5 items-center justify-between">

@@ -71,7 +71,7 @@ const Uploads = ({ children, onClick }: Uploads) => {
                                       <div>upload</div>
                                     </div>
                                   </button>
-                                  <button
+                                  {/* <button
                                     className="outline-none text-[#E37915] capitalize font-Graphik font-normal text-start"
                                     onClick={() => deleteDocument(document.id)}
                                   >
@@ -82,7 +82,7 @@ const Uploads = ({ children, onClick }: Uploads) => {
                                       </div>
                                       <div>Delete</div>
                                     </div>
-                                  </button>
+                                  </button> */}
                                 </div>
                               </div>
                             )}
