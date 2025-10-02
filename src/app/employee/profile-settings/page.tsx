@@ -99,18 +99,19 @@ const pages = () => {
             )} */}
           </div>
         );
-      case "uploads":
-        return (
-          <Uploads
-            onClick={() => {
-              setOpenUploadModal(true);
-            }}
-          >
-            {openUploadModal && (
-              <EditUploadedDoc onModalClose={() => setOpenUploadModal(false)} />
-            )}
-          </Uploads>
-        );
+      // case "uploads":
+      //   return (
+      //     <Uploads
+      //       onClick={() => {
+      //         setOpenUploadModal(true);
+      //       }}
+      //     >
+      //       {openUploadModal && (
+      //         <EditUploadedDoc onModalClose={() => setOpenUploadModal(false)} />
+      //       )}
+      //     </Uploads>
+      //   );
+
       default:
         return null;
     }
@@ -166,7 +167,7 @@ const pages = () => {
                         : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className} `
                     }
                   />
-                  <EmployeeSidebar
+                  {/* <EmployeeSidebar
                     onClick={() => setactiveTab("uploads")}
                     activeTab="uploads"
                     tabName="uploads"
@@ -175,7 +176,7 @@ const pages = () => {
                         ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-fit h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Graphik "
                         : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px] bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className} `
                     }
-                  />
+                  /> */}
                 </div>
               </div>
             </div>
