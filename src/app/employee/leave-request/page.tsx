@@ -48,7 +48,7 @@ const EmployeeLeaveRequest = () => {
   const [requestModal, setRequestModal] = useState(false);
   const { filteredData, setSearchQuery, searchQuery } = useFilter(
     leaveData?.leaves || [],
-    ["leave_Type"]
+    ["leave_type"]
   );
   return (
     <ProtectedRoute>

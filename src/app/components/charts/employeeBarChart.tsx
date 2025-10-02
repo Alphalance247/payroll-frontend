@@ -71,7 +71,7 @@ export default function DashboardLayout() {
 
           <ChartTooltip
             content={
-              <ChartTooltipContent className="opacity-100 capitalize font-medium shadow-md w-fit h-fit" />
+              <ChartTooltipContent className="opacity-100 capitalize font-medium shadow-md w-fit h-fit bg-white" />
             }
           />
           <Bar
@@ -84,7 +84,7 @@ export default function DashboardLayout() {
             dataKey="total_bonus"
             stackId="a"
             fill="#E37915"
-            radius={[0, 0, 0, 0]}
+            // radius={[0, 0, 0, 0]}
           />
           <Bar
             dataKey="total_deductions"

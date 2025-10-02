@@ -161,7 +161,7 @@ const EmployeePayroll = () => {
                         </th>
                       </tr>
                     </thead>
-                    {summaryData?.payslips.length === 0 ? (
+                    {filteredData?.length === 0 ? (
                       <tbody>
                         <tr>
                           <td colSpan={6} className="text-center py-8">
@@ -171,7 +171,7 @@ const EmployeePayroll = () => {
                       </tbody>
                     ) : (
                       <tbody className="text-gray-600  dark:text-white text-[15px] leading-[1.5rem] divide-y divide-gray-200 dark:divide-[#424E59]">
-                        {summaryData?.payslips.map((data, i) => (
+                        {filteredData?.map((data, i) => (
                           <tr
                             className="hover:bg-gray-50 even:bg-[#F7F7F7] dark:hover:bg-[#424E59] transition duration-200 ease-in-out"
                             key={i}
