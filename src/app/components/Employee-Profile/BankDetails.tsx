@@ -149,7 +149,8 @@ const BankDetails = ({ title }: BankDetailsProps) => {
               <div className="text-[#2F2F33] text-base font-medium font-Graphik"></div>
             </div>
           </div>
-          <div className="bg-[#D3D3D6] h-[68px] border-t border-[#D3D3D6]">
+          <div className="bg-[#D3D3D6] h-[68px] border-t border-[#D3D3D6] flex justify-end items-center">
+            <Button className=" w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm bg-white" />
             <Button
               className=" w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm"
               variant="secondary"

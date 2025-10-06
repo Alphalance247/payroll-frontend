@@ -24,9 +24,10 @@ const MessageNotification = () => {
     { id: 2, name: "read" },
     { id: 3, name: "unread" },
   ];
-  const [openNotificationAction, setOpenNoficationAction] = useState(null);
-
-  const toggleNotificationAction = (id: string | any) => {
+  const [openNotificationAction, setOpenNoficationAction] = useState<
+    string | null
+  >(null);
+  const toggleNotificationAction = (id: string | null) => {
     setOpenNoficationAction(openNotificationAction === id ? null : id);
   };
 
