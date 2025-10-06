@@ -23,7 +23,7 @@ const ComplianceDetails = ({
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
         <div className="flex justify-between items-center mb-12">
           <div className="text-base font-medium flex gap-x-2">
-            <Link href={"/compliance"}>
+            <Link href={"/admin/compliance"}>
               <li className="text-[#E37915] list-none">Compliance</li>
             </Link>{" "}
             <span className="text-[#A0A0A6]">

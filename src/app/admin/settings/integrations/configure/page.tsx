@@ -27,9 +27,7 @@ const Configure = () => {
         });
 
         if (res.status === 200 || res.status === 201) {
-          toast.success(
-            res?.data?.statusmessage || "Holiday deleted successfully"
-          );
+          toast.success(res?.data?.message || "App connected successfully");
           router.push("/admin/settings/integrations");
         }
 
@@ -54,7 +52,7 @@ const Configure = () => {
           <div className="relative w-[500px] mx-auto z-50 mt-8">
             <div className="px-4  py-5 grid gap-y-2">
               <div className="text-large text-[#2F2F33] font-semibold font-Graphik">
-                Flutterwave Token
+                Paystack Token
               </div>
               <p className="text-sm text-[#2F2F33] font-normal font-Graphik">
                 Lorem ipsum dolor sit amet consectetur. Vestibulum pellentesque
@@ -91,7 +89,7 @@ const Configure = () => {
                 className="w-[203px] text-[#F7F7F7] text-sm font-semibold font-Graphik"
                 onButtonClick={() => handleSubmit()}
               >
-                {loading ? "connecting...." : "Connect Flutterwave"}
+                {loading ? "connecting...." : "Connect Paystack"}
               </Button>
             </div>
           </div>

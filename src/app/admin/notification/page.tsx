@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
-import { BsBellFill, BsThreeDotsVertical } from "react-icons/bs";
 const Notification = ({ isMobile }: { isMobile: boolean }) => {
   const { all, fetchNotifications } = useNotificationStore();
 

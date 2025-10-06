@@ -7,6 +7,7 @@ import { useAuth } from "../context/authContext";
 import Image from "next/image";
 import axios, { AxiosError } from "axios";
 import { environment } from "../env/env.local";
+import Link from "next/link";
 
 interface LoginFormData {
   email: string;
@@ -160,14 +161,14 @@ const Login = () => {
               </div>
             </div>
           </div>
-          {/* <div className="ms-auto lg:w-[181px] my-5 justify-center items-center gap-1 inline-flex">
-          <Link
-            href="/forgot-password"
-            className="text-cyan-600 text-sm md:text-base font-bold hover:underline leading-tight pointer"
-          >
-            Forgot Your Password?
-          </Link>
-        </div> */}
+          <div className="ms-auto lg:w-[181px] my-5 justify-center items-center gap-1 inline-flex">
+            <Link
+              href="/forgot-password"
+              className="text-cyan-600 text-sm md:text-base font-bold hover:underline leading-tight pointer"
+            >
+              Forgot Your Password?
+            </Link>
+          </div>
           <div className="flex-col justify-start items-center gap-6 flex w-full mt-6">
             <div className="justify-start items-center gap-[26px] inline-flex w-full">
               <button
