@@ -11,8 +11,6 @@ import ErrorFetch from "@/app/common/errorFetch";
 import { useFilter } from "@/app/hooks/useFilter";
 
 const EmployeeCompliance = () => {
-  // const [searchQuery, setSearchQuery] = useState("");
-
   const { fetchComplianceCard, error, loading, data } =
     getComplianceCardStore();
 

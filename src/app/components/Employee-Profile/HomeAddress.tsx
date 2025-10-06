@@ -1,8 +1,6 @@
-import { title } from "process";
-import React, { useEffect } from "react";
+import React from "react";
 import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
-import { log } from "console";
 import ErrorFetch from "@/app/common/errorFetch";
 interface HomeAdressProps {
   children: any;

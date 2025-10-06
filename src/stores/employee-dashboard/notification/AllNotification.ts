@@ -1,17 +1,12 @@
 import { create } from "zustand";
 import axiosInstance from "@/app/utils/axios";
-import { all, AxiosError } from "axios";
-import { read } from "fs";
-import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+
 interface Item {
     id: string,
     message: string,
     created_at: string,
     is_read: boolean
-}
-interface NotificationUpdateData {
-    id: string;
-    is_read: boolean;
 }
 
 interface employeeNotifications {
