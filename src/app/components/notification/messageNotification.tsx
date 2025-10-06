@@ -18,14 +18,15 @@ const MessageNotification = () => {
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
-  const [activeBtn, setActiveBtn] = useState<string | any>("all");
+  const [activeBtn, setActiveBtn] = useState<string>("all");
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "all" },
     { id: 2, name: "read" },
     { id: 3, name: "unread" },
   ];
   const [openNotificationAction, setOpenNoficationAction] = useState(null);
-  const toggleNotificationAction = (id: any) => {
+
+  const toggleNotificationAction = (id: string | any) => {
     setOpenNoficationAction(openNotificationAction === id ? null : id);
   };
 

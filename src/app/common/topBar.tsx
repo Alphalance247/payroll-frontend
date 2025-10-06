@@ -65,7 +65,7 @@ const TopBar = () => {
               onClick={() => setOpenNofication(!openNotification)}
             >
               <p className="w-4 h-4 text-[10px] flex flex-col items-center justify-center rounded-full absolute bg-[#EA5455] text-white top-3 right-1">
-                {unread.length > 9 ? "9+" : unread.length}
+                {(unread.length as number) > 9 ? "9+" : unread.length}
               </p>
               <IoNotificationsOutline size={38} color="#4E4E4E" />
             </div>

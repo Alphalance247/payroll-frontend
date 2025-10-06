@@ -12,19 +12,19 @@ import NextOfKin from "@/app/components/Employee-Profile/NextOfKin";
 import { useEffect, useState } from "react";
 import EditPersonalDetails from "@/app/components/Employee-Profile/EditPersonalDetails";
 import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress";
-import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
-import { useDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
-const Pages = () => {
+import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
+import { UseDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
+const EmployeeSettings = () => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);
   const [openHousingModal, setOpenHousingModal] = useState(false);
   const RenderTabContent = () => {
-    const { fetchPersonalDetails } = useEmployeeStore();
+    const { fetchPersonalDetails } = UseEmployeeStore();
     useEffect(() => {
       fetchPersonalDetails();
     }, [fetchPersonalDetails]);
 
-    const { fetchDocument } = useDocumentsUploaded();
+    const { fetchDocument } = UseDocumentsUploaded();
     useEffect(() => {
       fetchDocument();
     }, [fetchDocument]);
@@ -164,4 +164,4 @@ const Pages = () => {
   );
 };
 
-export default Pages;
+export default EmployeeSettings;

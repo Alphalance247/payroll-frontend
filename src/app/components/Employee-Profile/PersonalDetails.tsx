@@ -1,14 +1,14 @@
-import React from "react";
-import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
+import React, { ReactNode } from "react";
+import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
 interface PersonalDetailsProp {
   title: string;
-  children: any;
+  children: ReactNode;
 }
 const PersonalDetails = ({ title, children }: PersonalDetailsProp) => {
   const { employeeData, loading, error, fetchPersonalDetails } =
-    useEmployeeStore();
+    UseEmployeeStore();
   return (
     <div className="grid gap-[10px] border-[1px] rounded-[10px] p-10 h-fit">
       <div className="flex justify-between items-center pb-6  ">

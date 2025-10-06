@@ -1,7 +1,7 @@
 import ModalOverlay from "@/app/common/modal/modal";
 import { useState } from "react";
 import useBoolean from "@/app/hooks/useBoolean";
-import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
+import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Label from "@/app/common/label";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
@@ -13,7 +13,7 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
   // const [preview, setPreview] = useState<string | null | undefined>(null);
   // const [file, setFile] = useState<File | null>(null);
   // const MAX_FILE_SIZE_BYTES = 1 * 1024 * 1024; // 1MB
-  const { employeeData, fetchPersonalDetails } = useEmployeeStore();
+  const { employeeData, fetchPersonalDetails } = UseEmployeeStore();
   const [form, setForm] = useState({
     country: employeeData?.data.country || "",
     state: employeeData?.data.state || "",
