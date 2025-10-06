@@ -17,6 +17,7 @@ import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress
 import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import { useDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
 import EditUploadedDoc from "@/app/components/Employee-Profile/EditUploadedDoc";
+
 const pages = () => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);

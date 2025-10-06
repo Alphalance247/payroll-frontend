@@ -3,10 +3,8 @@ import DropDownBtn from "@/app/common/dropDownBtn";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { TiArrowSortedDown } from "react-icons/ti";
 
 const LeaveBalance = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedTeam, setSelectedTeam] = useState("Quality  Assurance");
   const teamOptions = [
     "All",
@@ -62,7 +60,7 @@ const LeaveBalance = () => {
           <input
             type="text"
             placeholder="Search"
-            value={searchQuery}
+            value={""}
             onChange={() => {}}
             className="w-full pl-10 pr-4 py-[10px] border border-[#E3E3E5] rounded-lg text-base focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
           />

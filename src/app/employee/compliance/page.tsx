@@ -3,7 +3,7 @@ import ProtectedRoute from "@/app/common/protectedRoute";
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 import Heading from "@/app/common/heading";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getComplianceCardStore } from "@/stores/compliance/getComplianceCard";
 import { getComplianceDetails } from "@/stores/compliance/getComplianceDetails";
 import Spinner from "@/app/common/spinner";
