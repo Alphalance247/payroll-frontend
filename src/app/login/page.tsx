@@ -7,6 +7,7 @@ import { useAuth } from "../context/authContext";
 import Image from "next/image";
 import axios, { AxiosError } from "axios";
 import { environment } from "../env/env.local";
+import Link from "next/link";
 
 interface LoginFormData {
   email: string;
@@ -40,8 +41,6 @@ const Login = () => {
           userData
         );
 
-        console.log("Response from backend:", response);
-
         if (response.status >= 200 && response.status < 300) {
           const { refresh, access, email, fullname, is_payroll_staff, uid } =
             response.data;
@@ -57,7 +56,6 @@ const Login = () => {
             response?.data?.statusmessage || "Login successful Redirecting..."
           );
 
-          // Clear form
           setUserData({ email: "", password: "" });
 
           // After successful login
@@ -67,9 +65,26 @@ const Login = () => {
           setLoading(true);
 
           if (redirectPath) {
-            router.push(decodeURIComponent(redirectPath));
+            const decodedRedirectPath = decodeURIComponent(redirectPath);
+
+            if (is_payroll_staff) {
+              router.push(decodedRedirectPath);
+            } else {
+              if (decodedRedirectPath.startsWith("/admin")) {
+                toast.error(
+                  "Access denied. Redirecting to employee dashboard."
+                );
+                router.push("/employee");
+              } else {
+                router.push(decodedRedirectPath);
+              }
+            }
           } else {
-            router.push("/"); // Default to home if no redirect path is specified
+            if (is_payroll_staff) {
+              router.push("/admin");
+            } else {
+              router.push("/employee");
+            }
           }
         }
       } catch (err) {
@@ -146,14 +161,14 @@ const Login = () => {
               </div>
             </div>
           </div>
-          {/* <div className="ms-auto lg:w-[181px] my-5 justify-center items-center gap-1 inline-flex">
-          <Link
-            href="/forgot-password"
-            className="text-cyan-600 text-sm md:text-base font-bold hover:underline leading-tight pointer"
-          >
-            Forgot Your Password?
-          </Link>
-        </div> */}
+          <div className="ms-auto lg:w-[181px] my-5 justify-center items-center gap-1 inline-flex">
+            <Link
+              href="/forgot-password"
+              className="text-cyan-600 text-sm md:text-base font-bold hover:underline leading-tight pointer"
+            >
+              Forgot Your Password?
+            </Link>
+          </div>
           <div className="flex-col justify-start items-center gap-6 flex w-full mt-6">
             <div className="justify-start items-center gap-[26px] inline-flex w-full">
               <button

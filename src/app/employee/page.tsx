@@ -5,15 +5,17 @@ import QuickActions from "../components/Employee-Dashboard/Home/quickActions";
 import OverviewCard from "../common/employee-dashboard/common/overviewCard";
 import EmployeeDashboardLayout from "../common/employee-dashboard/common/employeeLayout";
 import { getEmployeePayrollSummary } from "@/stores/employee-dashboard/employee/payrollSummary";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ErrorFetch from "../common/errorFetch";
 import Spinner from "../common/spinner";
 import EmployeeBarChart from "../components/charts/employeeBarChart";
 import { IoMdArrowDropdown } from "react-icons/io";
+import { useAuth } from "../context/authContext";
 
-const Storage = () => {
+const Employee = () => {
   const { fetchEmployeePayrollSummary, error, loading, data } =
     getEmployeePayrollSummary();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchEmployeePayrollSummary();
@@ -33,34 +35,35 @@ const Storage = () => {
       value: data?.total_net_pay || "0",
     },
   ];
-  const chartData = [
-    { year: "2020", bonus: 12.5, baseSalary: 1, deduction: 5 },
-    {
-      year: "2021",
-      bonus: 22.5,
-      baseSalary: 1,
-      deduction: 5,
-    },
-    { year: "2022", bonus: 30, baseSalary: 1, deduction: 5 },
-    { year: "2023", bonus: 30, baseSalary: 1, deduction: 5 },
-    {
-      year: "2024",
-      bonus: 12.5,
-      baseSalary: 1,
-      deduction: 5,
-    },
-    {
-      year: "2025",
-      bonus: 30,
-      baseSalary: 1,
-      deduction: 5,
-    },
-  ];
+
+  const date = new Date();
+  date.getUTCDay();
+  const [dateTime, setDayTime] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+    const fullDate = today.toLocaleDateString("en-US", {
+      weekday: "long", // e.g., Monday
+      year: "numeric", // e.g., 2025
+      month: "long", // e.g., August
+      day: "numeric", // e.g., 5
+    });
+    setDayTime(fullDate);
+  }, []);
+
   return (
-    <ProtectedRoute>
+    <ProtectedRoute allowedUserTypes={["admin", "employee"]}>
       <EmployeeDashboardLayout>
         <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
-          <Heading flexDirection="" user={"Good afternoon, James"} />
+          <Heading
+            flexDirection=""
+            user={
+              user?.fullname
+                ? `Welcome, ${user.fullname}`
+                : "Good afternoon, James"
+            }
+            subHead={dateTime}
+          />
 
           {loading ? (
             <Spinner spinnerSmall={true} />
@@ -95,7 +98,7 @@ const Storage = () => {
                 <IoMdArrowDropdown />
               </button>
             </div>
-            <div className="my-8 flex space-x-5 items-center px-20">
+            {/* <div className="my-8 flex space-x-5 items-center px-20">
               <div className="flex space-x-2 items-center">
                 <div className="h-4 w-4 rounded-sm bg-[#009BC0]"></div>
                 <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
@@ -114,8 +117,8 @@ const Storage = () => {
                   Deduction
                 </div>
               </div>
-            </div>
-            <EmployeeBarChart chartData={chartData} />
+            </div> */}
+            <EmployeeBarChart />
           </div>
           {/* <EmployeeBarChart chartData={} /> */}
         </main>
@@ -124,4 +127,4 @@ const Storage = () => {
   );
 };
 
-export default Storage;
+export default Employee;

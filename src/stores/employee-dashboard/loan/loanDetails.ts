@@ -23,6 +23,7 @@ interface employeeLoansDetailsDataStore {
     next_repayment: string;
     total_duration: string;
     id: number;
+    repayment_progress: number;
     team: string;
   };
 }

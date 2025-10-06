@@ -1,14 +1,16 @@
 import { title } from "process";
 import React, { useEffect } from "react";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 import { log } from "console";
+import ErrorFetch from "@/app/common/errorFetch";
 interface HomeAdressProps {
   children: any;
   title: string;
 }
 const HomeAddress = ({ children, title }: HomeAdressProps) => {
-  const { employeeData, loading } = useEmployeeStore();
+  const { employeeData, loading, error, fetchPersonalDetails } =
+    useEmployeeStore();
   console.log(employeeData?.data);
   return (
     <div className="grid gap-[10px] border-[1px] rounded-[10px] p-10 mb-20 h-fit">
@@ -22,10 +24,15 @@ const HomeAddress = ({ children, title }: HomeAdressProps) => {
 
         {loading ? (
           <Spinner />
+        ) : error ? (
+          <ErrorFetch
+            message="Error Fetching leave request"
+            onRefetch={() => fetchPersonalDetails()}
+          />
         ) : (
           <>
             {!employeeData ? (
-              <div>address not available</div>
+              <div>Employee Address not available</div>
             ) : (
               <div className="grid gap-y-10">
                 <div className="flex ">

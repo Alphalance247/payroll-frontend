@@ -107,11 +107,11 @@ const EmployeeSideBar: React.FC<propData> = () => {
           icons: <TbSettings2 size={20} />,
           dropdownText: [
             {
-              link: "/employee/settings",
+              link: "/employee/profile-settings",
               text: "Profile Settings",
             },
             {
-              link: "/employee/settings/notifications",
+              link: "/employee/notifications",
               text: "Notification settings",
             },
           ],

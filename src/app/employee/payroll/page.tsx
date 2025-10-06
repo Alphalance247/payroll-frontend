@@ -41,10 +41,12 @@ const EmployeePayroll = () => {
       id: "Total Tax Paid",
       icon: "/assets/employee-dashboard/payroll/Icon.svg",
       label: "Total Tax Paid",
-      value: "N " + summaryData?.total_taxes.toLocaleString() || "0",
+      value: "N " + summaryData?.total_taxes || "0",
     },
   ];
-
+  // const filteredData = summaryData?.payslips.filter((item) =>
+  //   item?.pay_date.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
   return (
     <ProtectedRoute>
       <EmployeeDashboardLayout>
@@ -159,7 +161,7 @@ const EmployeePayroll = () => {
                         </th>
                       </tr>
                     </thead>
-                    {summaryData?.payslips.length === 0 ? (
+                    {summaryData?.payslips?.length === 0 ? (
                       <tbody>
                         <tr>
                           <td colSpan={6} className="text-center py-8">
@@ -175,25 +177,25 @@ const EmployeePayroll = () => {
                             key={i}
                           >
                             <td className="px-6 py-6 text-sm text-[#2F2F33]">
-                              {data?.pay_date || "Jan 25, 2025"}
+                              {data?.pay_date || "Not specified"}
                             </td>
                             <td
                               className="p-6 text-sm text-[#2F2F33]"
                               style={{ paddingLeft: "1.5rem" }}
                             >
-                              ₦ {data?.gross_pay.toLocaleString()}
+                              ₦ {data?.gross_pay.toLocaleString() || 0}
                             </td>
                             <td
                               className="p-6 text-sm text-[#2F2F33]"
                               style={{ paddingLeft: "1.5rem" }}
                             >
-                              ₦ {data?.debt.toLocaleString()}
+                              ₦ {data?.debt.toLocaleString() || 0}
                             </td>
                             <td
                               className="p-6 text-sm text-[#2F2F33]"
                               style={{ paddingLeft: "1.5rem" }}
                             >
-                              ₦ {data?.tax.toLocaleString()}
+                              ₦ {data?.tax || 0}
                             </td>
                             <td
                               className="p-6 text-sm text-[#2F2F33]"

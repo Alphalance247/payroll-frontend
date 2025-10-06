@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
+import ErrorFetch from "@/app/common/errorFetch";
 interface NOKProps {
   // children: any;
   title: string;
 }
 const NextOfKin = ({ title }: NOKProps) => {
-  const { employeeData, loading } = useEmployeeStore();
+  const { employeeData, loading, error, fetchPersonalDetails } =
+    useEmployeeStore();
 
   return (
     <div className="grid gap-[10px]  border-[1px] rounded-[10px] p-10 h-fit">
@@ -18,6 +20,11 @@ const NextOfKin = ({ title }: NOKProps) => {
       </div>
       {loading ? (
         <Spinner />
+      ) : error ? (
+        <ErrorFetch
+          message="Error Fetching leave request"
+          onRefetch={() => fetchPersonalDetails()}
+        />
       ) : (
         <>
           {employeeData ? (

@@ -7,7 +7,7 @@ interface employeeNoticationCategoriesDataStore {
     name: string;
     code: string;
     description: string;
-    notification_types: {
+    emp_notification_types: {
       name: string;
       description: string;
       code: string;

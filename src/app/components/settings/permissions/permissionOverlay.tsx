@@ -5,6 +5,10 @@ import { RxCross2 } from "react-icons/rx";
 import ModalOverlay from "@/app/common/modal/modal";
 import { useState } from "react";
 import Button from "@/app/common/Button";
+import axiosInstance from "@/app/utils/axios";
+import toast from "react-hot-toast";
+import { getAdminPermissionList } from "@/stores/settings/permissions/permissions";
+import { AxiosError } from "axios";
 
 const PermissionOverlay = ({
   onCloseOverlay,
@@ -15,24 +19,58 @@ const PermissionOverlay = ({
     {
       name: "Super Admin",
       description: "This administrator has access to all the payroll features",
+      value: "super_admin",
     },
     {
       name: "Admin",
       description:
         "This administrator does not have access approve payroll, connect integrations and manage admins",
+      value: "admin",
     },
     {
       name: "View-only Admin",
       description: "This administrator only has view access to all features",
+      value: "view_only_admin",
     },
   ];
 
-  const [emails, setEmails] = useState<string[]>([
-    "Olawaleadeoti@alluvium.net",
-  ]);
+  const [emails, setEmails] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState("Super Admin");
+  const [selectedValue, setSelectedValue] = useState("super_admin");
+  const [loading, setIsLoading] = useState(false);
+  const { fetchAdminPermission } = getAdminPermissionList();
+
+  const handleAdminUpdate = async () => {
+    try {
+      setIsLoading(true);
+
+      const res = await axiosInstance.post(
+        `/employees/payroll-staffs/bulk-add-staff`,
+        {
+          entries: emails.map((email) => ({ email, role: selectedValue })),
+        }
+      );
+
+      if (res.status === 200 || res.status === 201 || res?.status === 207) {
+        toast.success(res?.data?.message || "Admin Access Updated");
+        fetchAdminPermission();
+        onCloseOverlay();
+      }
+
+      setIsLoading(false);
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if ((e.key === " " || e.key === "," || e.key === "Enter") && inputValue) {
@@ -110,6 +148,7 @@ const PermissionOverlay = ({
                       key={role.name}
                       onClick={() => {
                         setSelectedRole(role.name);
+                        setSelectedValue(role.value);
                         setIsDropdownOpen(false);
                       }}
                       className="p-4 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer flex justify-between items-start"
@@ -142,7 +181,9 @@ const PermissionOverlay = ({
           >
             Cancel
           </Button>
-          <Button className="px-2">Add Admin</Button>
+          <Button className="px-2" onButtonClick={() => handleAdminUpdate()}>
+            {loading ? "Updating...." : " Add Admin"}
+          </Button>
         </div>
       </div>
     </ModalOverlay>

@@ -36,7 +36,7 @@ const Input: React.FC<InputProps> = ({
       required
       onChange={onChange}
       disabled={disabled}
-      className={` font-poppinsRegular ${
+      className={`${
         readonly
           ? "outline-none bg-gray-200 cursor-not-allowed"
           : "outline-[#51F4A6]"

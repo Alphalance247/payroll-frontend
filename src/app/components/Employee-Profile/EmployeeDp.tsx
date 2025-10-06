@@ -1,48 +1,101 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TiCamera } from "react-icons/ti";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 import Label from "@/app/common/label";
+import useBoolean from "@/app/hooks/useBoolean";
+import axiosInstance from "@/app/utils/axios";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+import { error } from "console";
+import ErrorFetch from "@/app/common/errorFetch";
 interface DpProps {
   dp: string;
 }
 const EmployeeDp = ({ dp }: DpProps) => {
+  const { employeeData, loading, fetchPersonalDetails, error } =
+    useEmployeeStore();
   const [preview, setPreview] = useState<string | null | undefined>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [form, setForm] = useState({});
-  const { employeeData, loading } = useEmployeeStore();
-
+  const [isUploading, setIsUploading] = useBoolean(false);
+  const [form, setForm] = useState({
+    prof_img: file || "",
+  });
   const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadFile = e.target.files?.[0];
-    if (uploadFile && uploadFile.size <= 5 * 1024 * 1024) {
-      setFile(uploadFile);
-      setPreview(URL.createObjectURL(uploadFile));
+    const file = e.target.files?.[0];
+    if (file && file.size <= 5 * 1024 * 1024) {
+      setFile(file);
+      setPreview(URL.createObjectURL(file));
     } else {
       alert("File must be less than 5MB");
+    }
+  };
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!file) return;
+    try {
+      setIsUploading();
+      const response = await axiosInstance.patch(
+        `/employees/employee/update-profile`,
+        { prof_img: file },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.status === 200 || 201) {
+        toast.success("Employee Details updated successfully!");
+        console.log(form.prof_img);
+      }
+      setForm({ prof_img: "" });
+      fetchPersonalDetails();
+      setIsUploading();
+    } catch (error) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (error instanceof AxiosError) {
+        errorMessage = error.response?.data?.message || errorMessage;
+      }
+      toast.error(errorMessage);
     }
   };
   return (
     <>
       {loading ? (
         <Spinner />
+      ) : error ? (
+        <ErrorFetch
+          message="Error Fetching leave request"
+          onRefetch={() => fetchPersonalDetails()}
+        />
       ) : (
         <>
-          {!employeeData ? (
-            <div className="px-72">Employee profile is not available</div>
-          ) : (
+          {employeeData && (
+            //   <div className="px-72 py-20">Employee profile is not available</div>
+            // ) : (
             <div className="flex justify-between items-center shrink-0  px-[72px] h-[180px] my-[40px]   ">
               <div className="flex space-x-10 items-center ">
                 <div className="relative">
-                  {preview ? (
+                  {preview && (
                     <img
                       src={preview}
                       alt="DP"
                       className="h-[180px] w-[180px] rounded-full object-cover"
                     />
-                  ) : (
-                    <img src={dp} alt="" />
                   )}
-                  <form action="">
+                  {!preview && employeeData.data.prof_img && (
+                    <img
+                      src={employeeData.data.prof_img}
+                      alt="DP"
+                      className="h-[180px] w-[180px] rounded-full object-cover"
+                    />
+                  )}
+
+                  <form
+                    action=""
+                    onSubmit={handleSubmit}
+                    encType="multipart/form-data"
+                  >
                     <Label
                       id="uploadDP"
                       className="absolute top-[140px] left-[127px] bg-[#E37915]  h-10 w-10 rounded-full cursor-pointer"
@@ -54,9 +107,12 @@ const EmployeeDp = ({ dp }: DpProps) => {
                         accept="image/*"
                         onChange={handlePictureUpload}
                         className=" hidden cursor-pointer "
-                      />
+                      />{" "}
                       <TiCamera className=" h-6 w-6 absolute text-white top-2 left-2" />
-                    </Label>
+                    </Label>{" "}
+                    <button className="bg-[#E37915] text-white w-28 h-8 rounded-sm font-Graphik font-medium mt-3 ml-10 capitalize">
+                      save image
+                    </button>
                   </form>
                 </div>
                 <div className="grid gap-2 ">

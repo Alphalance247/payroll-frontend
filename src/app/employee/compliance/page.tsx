@@ -8,9 +8,10 @@ import { getComplianceCardStore } from "@/stores/compliance/getComplianceCard";
 import { getComplianceDetails } from "@/stores/compliance/getComplianceDetails";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
+import { useFilter } from "@/app/hooks/useFilter";
 
 const EmployeeCompliance = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
 
   const { fetchComplianceCard, error, loading, data } =
     getComplianceCardStore();
@@ -18,7 +19,9 @@ const EmployeeCompliance = () => {
   useEffect(() => {
     fetchComplianceCard();
   }, [fetchComplianceCard]);
-
+  const { filteredData, setSearchQuery, searchQuery } = useFilter(data || [], [
+    "title",
+  ]);
   const {
     data: complianceDetails,
     error: errorDetails,
@@ -66,13 +69,13 @@ const EmployeeCompliance = () => {
                 />
               ) : (
                 <>
-                  {data?.length === 0 ? (
+                  {filteredData.length === 0 ? (
                     <p className="py-20 flex flex-col justify-center">
                       No compliance found
                     </p>
                   ) : (
                     <div className="flex flex-col gap-y-5">
-                      {data?.map((el, i) => (
+                      {filteredData?.map((el, i) => (
                         <div
                           className="py-5 px-4 grid grid-cols-2 cursor-pointer gap-x-4 items-center bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px]"
                           key={i}

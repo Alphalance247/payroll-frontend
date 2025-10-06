@@ -46,6 +46,7 @@ const LeaveRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
       if (res.status === 200 || res?.status === 201) {
         toast.success(res?.data?.message || "Leave request added successfully");
         onModalClose();
+        fetchEmployeeLeaveList();
       }
 
       setLoading(false);

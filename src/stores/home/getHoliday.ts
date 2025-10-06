@@ -4,13 +4,23 @@ import { AxiosError } from "axios";
 
 interface holidayDataStore {
   data: {
-    results: {
+    holidays: {
+      results: {
+        id: string;
+        country: string;
+        date: string;
+        name: string;
+        primary_type: string;
+        status: string;
+        type: string;
+      }[];
+    };
+    events: {
       id: string;
-      country: string;
-      date: string;
-      name: string;
-      primary_type: string;
-      status: string;
+      type: string;
+      start: string;
+      title: string;
+      location: string;
     }[];
   };
 }
@@ -33,7 +43,6 @@ export const getHolidayStore = create<holidayStore>((set) => ({
   fetchPayrollHoliday: async (start_date?: string, end_date?: string) => {
     set({ loading: true, error: null });
     try {
-      // ?from_date=2025-05-02&to_date=2025-05-31
       let url = "/leaves/holidays";
       if (start_date && end_date) {
         url += `?from_date=${start_date}&to_date=${end_date}`;

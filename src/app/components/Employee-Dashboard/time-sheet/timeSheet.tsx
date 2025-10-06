@@ -1,40 +1,10 @@
 "use client";
 import Button from "@/app/common/Button";
+import { getEmployeeTimesheet } from "@/stores/employee-dashboard/timesheet/time-sheet";
 import { TfiExport } from "react-icons/tfi";
 
 const TimeSheetTable = () => {
-  const filteredData = [
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-    {
-      id: 1,
-      fullname: "John Doe",
-      email: "",
-    },
-  ];
+  const { data } = getEmployeeTimesheet();
 
   return (
     <section className="mt-6">
@@ -61,7 +31,7 @@ const TimeSheetTable = () => {
             <table className="w-full min-w-[1000px] border-b border-[#E3E3E5]">
               <thead className="bg-[#F7F7F7]">
                 <tr>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                     Date
                   </th>
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
@@ -77,33 +47,50 @@ const TimeSheetTable = () => {
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                     Overtime Hours
                   </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px]">
                     Description
                   </th>
                 </tr>
               </thead>
-
-              <tbody>
-                {filteredData.map((emp, i) => (
-                  <tr
-                    key={i}
-                    className="border-b border-[#E3E3E5] last:border-b-0"
-                  >
-                    <td className="px-6 py-4">
-                      <span className="text-[#2F2F33] text-base">
-                        January 10
-                      </span>
+              {data?.timesheet?.length === 0 ? (
+                <tbody>
+                  <tr>
+                    <td colSpan={6} className="text-center py-8">
+                      No Time logged
                     </td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33] text-left cursor-pointer underline underline-offset-2">
-                      DVCT-715
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33]">10h</td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33]">3h</td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33]">4h</td>
-                    <td className="px-6 py-4 text-sm text-[#2F2F33]">3h</td>
                   </tr>
-                ))}
-              </tbody>
+                </tbody>
+              ) : (
+                <tbody>
+                  {data?.timesheet.map((emp, i) => (
+                    <tr
+                      key={i}
+                      className="border-b border-[#E3E3E5] last:border-b-0"
+                    >
+                      <td className="px-6 py-4">
+                        <span className="text-[#2F2F33] text-base">
+                          {emp?.date_logged}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33] text-left cursor-pointer underline underline-offset-2">
+                        DVCT-{emp?.id}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                        {emp?.hours}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                        {emp?.hours}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                        {emp?.overtime}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                        {emp?.description || "Not Specified"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
             </table>
           </div>
         </div>

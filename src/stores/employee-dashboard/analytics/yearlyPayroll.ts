@@ -35,8 +35,30 @@ interface employeeYearlyPayrollDataStore {
   };
 }
 
+// interface MonthData {
+//   month: string;
+//   total_base_salary: number;
+//   total_bonus: number;
+//   total_deductions: number;
+// }
+
+// interface YearData {
+//   year: number;
+//   totals: {
+//     total_base_salary: number;
+//     total_bonus: number;
+//     total_deductions: number;
+//     last_payment: number | null;
+//   };
+//   months: MonthData[];
+// }
+
 interface employeeYearlyPayrollListStore {
   data: employeeYearlyPayrollDataStore | null;
+  // data: {
+  //   data: YearData[];
+  //   current_data: YearData | null;
+  // } | null;
   loading: boolean;
   error: string | null;
   fetchEmployeeYearlyPayroll: () => Promise<void>;
