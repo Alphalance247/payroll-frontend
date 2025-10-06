@@ -1,7 +1,7 @@
 import Label from "@/app/common/label";
 import ModalOverlay from "@/app/common/modal/modal";
 import { useState } from "react";
-import { useEmployeeStore } from "@/stores/employeeDetails/PersonalDetail";
+import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import useBoolean from "@/app/hooks/useBoolean";
 import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
@@ -36,6 +36,9 @@ const EditNextOfKin = ({ onModalClose }: { onModalClose: () => void }) => {
           ...form,
         }
       );
+      if (response.status === 200 || 201) {
+        console.log(response.data);
+      }
       onModalClose();
       resetEditNok();
       fetchPersonalDetails();

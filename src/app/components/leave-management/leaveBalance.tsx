@@ -3,7 +3,6 @@ import DropDownBtn from "@/app/common/dropDownBtn";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { TiArrowSortedDown } from "react-icons/ti";
 
 const LeaveBalance = () => {
   const [searchQuery, setSearchQuery] = useState("");

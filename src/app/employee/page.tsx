@@ -33,30 +33,6 @@ const Storage = () => {
       value: data?.total_net_pay || "0",
     },
   ];
-  const chartData = [
-    { year: "2020", bonus: 12.5, baseSalary: 1, deduction: 5 },
-    {
-      year: "2021",
-      bonus: 22.5,
-      baseSalary: 1,
-      deduction: 5,
-    },
-    { year: "2022", bonus: 30, baseSalary: 1, deduction: 5 },
-    { year: "2023", bonus: 30, baseSalary: 1, deduction: 5 },
-    {
-      year: "2024",
-      bonus: 12.5,
-      baseSalary: 1,
-      deduction: 5,
-    },
-    {
-      year: "2025",
-      bonus: 30,
-      baseSalary: 1,
-      deduction: 5,
-    },
-  ];
-
   return (
     <ProtectedRoute allowedUserTypes={["admin", "employee"]}>
       <EmployeeDashboardLayout>

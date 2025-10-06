@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Trash2Icon, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, Upload } from "lucide-react";
 import { RiArrowDropDownFill } from "react-icons/ri";
 import { useDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
 import Spinner from "@/app/common/spinner";
@@ -15,10 +15,10 @@ const Uploads = ({ children, onClick }: Uploads) => {
   const toggleDropdown = (id: any) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
-  const deleteDocument = (id: any) => {
-    documents?.data.filter((item) => item.id !== id);
-    console.log("delete");
-  };
+  // const deleteDocument = (id: any) => {
+  //   documents?.data.filter((item) => item.id !== id);
+  //   console.log("delete");
+  // };
   return (
     <div className=" rounded-[10px]  border-[1px] table-auto overflow-auto h-fit">
       <table className="  w-full  font-Graphik">

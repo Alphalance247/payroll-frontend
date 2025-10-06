@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import ModalOverlay from "@/app/common/modal/modal";
 import Label from "@/app/common/label";
-import { TbFileUpload } from "react-icons/tb";
 
 const EditUploadedDoc = ({ onModalClose }: { onModalClose: () => void }) => {
   const [form, setForm] = useState({
@@ -12,7 +11,6 @@ const EditUploadedDoc = ({ onModalClose }: { onModalClose: () => void }) => {
     image: "",
   });
   const [preview, setPreview] = useState<string | null | undefined>(null);
-  const [file, setFile] = useState<File | null>(null);
   const handlePictureUpload = () => {};
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -21,7 +19,9 @@ const EditUploadedDoc = ({ onModalClose }: { onModalClose: () => void }) => {
       [name]: value,
     }));
   };
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    setPreview("");
+  };
   return (
     <ModalOverlay onClose={onModalClose} className="">
       <div className="w-[528px] h-[686px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative z-50  shadow-lg mt-20   ">

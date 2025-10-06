@@ -4,7 +4,7 @@ import HeadingSubHead from "../../common/headingSubHead";
 import Input from "../../common/input";
 import Label from "../../common/label";
 import PhoneInput from "react-phone-number-input";
-import styles from "../../styles/phone.module.scss";
+import styles from "../../../styles/phone.module.scss";
 import "react-phone-number-input/style.css";
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
