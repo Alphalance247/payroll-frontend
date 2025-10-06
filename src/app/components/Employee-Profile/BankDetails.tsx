@@ -1,5 +1,5 @@
 import React from "react";
-import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
+import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Button from "@/app/common/Button";
@@ -8,7 +8,7 @@ interface BankDetailsProps {
   // children: any;
 }
 const BankDetails = ({ title }: BankDetailsProps) => {
-  const { employeeData, loading } = useEmployeeStore();
+  const { employeeData, loading } = UseEmployeeStore();
   return (
     <>
       <div className="grid gap-[10px]  h-fit border-[1px] rounded-[10px] p-10">

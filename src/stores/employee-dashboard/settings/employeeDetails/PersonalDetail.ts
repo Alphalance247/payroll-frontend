@@ -45,7 +45,7 @@ interface EmployeePersonalDetails {
     fetchPersonalDetails: () => Promise<void>;
 }
 
-export const useEmployeeStore = create<EmployeePersonalDetails>((set) => ({
+export const UseEmployeeStore = create<EmployeePersonalDetails>((set) => ({
     employeeData: null,
     error: "",
     loading: false,

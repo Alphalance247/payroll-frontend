@@ -12,19 +12,19 @@ import NextOfKin from "@/app/components/Employee-Profile/NextOfKin";
 import { useEffect, useState } from "react";
 import EditPersonalDetails from "@/app/components/Employee-Profile/EditPersonalDetails";
 import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress";
-import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
-import { useDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
-const pages = () => {
+import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
+import { UseDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
+const EmployeeProfileSettings = () => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);
   const [openHousingModal, setOpenHousingModal] = useState(false);
-  const renderTabContent = () => {
-    const { fetchPersonalDetails } = useEmployeeStore();
+  const RenderTabContent = () => {
+    const { fetchPersonalDetails } = UseEmployeeStore();
     useEffect(() => {
       fetchPersonalDetails();
     }, [fetchPersonalDetails]);
 
-    const { fetchDocument } = useDocumentsUploaded();
+    const { fetchDocument } = UseDocumentsUploaded();
     useEffect(() => {
       fetchDocument();
     }, [fetchDocument]);
@@ -134,7 +134,7 @@ const pages = () => {
             </div>
             {/* personal details */}
             <div className="w-3/4  h-[700px] ">
-              <div className="grid gap-y-8">{renderTabContent()}</div>
+              <div className="grid gap-y-8">{RenderTabContent()}</div>
             </div>
           </div>
         </div>
@@ -143,4 +143,4 @@ const pages = () => {
   );
 };
 
-export default pages;
+export default EmployeeProfileSettings;

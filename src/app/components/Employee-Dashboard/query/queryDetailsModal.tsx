@@ -5,7 +5,7 @@ import { FaRegFilePdf } from "react-icons/fa";
 import SideDrawer from "@/app/common/sideDrawer/sideDrawer";
 import { useQueryStore } from "@/stores/employee-dashboard/settings/Query/QueryDetail";
 import Spinner from "@/app/common/spinner";
-const queryDetailsModal = ({
+const QueryDetailsModal = ({
   onDrawerClose,
 }: {
   onDrawerClose: () => void;
@@ -302,4 +302,4 @@ const queryDetailsModal = ({
   );
 };
 
-export default queryDetailsModal;
+export default QueryDetailsModal;

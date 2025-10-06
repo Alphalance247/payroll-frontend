@@ -1,19 +1,16 @@
 import React, { useState } from "react";
 import { TiCamera } from "react-icons/ti";
-import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
+import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 import Label from "@/app/common/label";
-import useBoolean from "@/app/hooks/useBoolean";
 import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import ErrorFetch from "@/app/common/errorFetch";
-// interface DpProps {
-//   dp: string;
-// }
+
 const EmployeeDp = () => {
   const { employeeData, loading, fetchPersonalDetails, error } =
-    useEmployeeStore();
+    UseEmployeeStore();
   const [preview, setPreview] = useState<string | null | undefined>(null);
   const [file, setFile] = useState<File | null>(null);
   const [form, setForm] = useState({
