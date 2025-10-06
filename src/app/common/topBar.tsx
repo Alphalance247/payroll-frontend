@@ -107,13 +107,40 @@ const TopBar = () => {
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
-                <button
-                  onClick={logout}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-                >
-                  Logout
-                </button>
+              <div className="absolute right-0  w-[425px] h-fit bg-white rounded-lg shadow-lg py-2 z-20">
+                <div className="p-6">
+                  <div className="flex space-x-3 items-center ">
+                    <div className="flex items-center gap-x-3">
+                      <div className=" bg-[#009BC0] flex items-center justify-center rounded-full h-16 w-16 text-white text-lg font-Graphik">
+                        {user?.fullname.split(" ").map((n) => n[0])}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[18px] text-[#2F2F33] font-semibold font-Graphik">
+                        {user?.fullname}
+                      </div>
+                      <div className="text-sm text-[#2F2F33] font-normal font-Graphik">
+                        {" "}
+                        {user?.email}
+                      </div>
+                      <div>
+                        <Link
+                          href={"/"}
+                          className="text-sm text-[#E37915] font-semibold font-Graphik"
+                        >
+                          Manage Account
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-b b-[#D3D3D6] pt-6"></div>
+                  <button
+                    onClick={logout}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             )}
           </div>
