@@ -37,18 +37,39 @@ const Account = () => {
       const emailPrefs: string[] = [];
       const slackPrefs: string[] = [];
 
-      preferenceData.data.map((pref: any) => {
-        const notificationTypeId = pref.notification_type.id.toString();
+      preferenceData.data.map(
+        (pref: {
+          notification_type: { id: number };
+          channels: {
+            channel: {
+              name: string;
+              description: string;
+              code: string;
+              id: number;
+            };
+          }[];
+        }) => {
+          const notificationTypeId = pref.notification_type.id.toString();
 
-        // Check which channels are enabled for this notification type
-        pref.channels.forEach((channel: any) => {
-          if (channel?.channel?.code === "email") {
-            emailPrefs.push(notificationTypeId);
-          } else if (channel?.channel?.code === "slack") {
-            slackPrefs.push(notificationTypeId);
-          }
-        });
-      });
+          // Check which channels are enabled for this notification type
+          pref.channels.forEach(
+            (channel: {
+              channel: {
+                name: string;
+                description: string;
+                code: string;
+                id: number;
+              };
+            }) => {
+              if (channel?.channel?.code === "email") {
+                emailPrefs.push(notificationTypeId);
+              } else if (channel?.channel?.code === "slack") {
+                slackPrefs.push(notificationTypeId);
+              }
+            }
+          );
+        }
+      );
       setSelectedNotificationTypes(emailPrefs);
       setSelectedSlackChannelNotificationTypes(slackPrefs);
     }
