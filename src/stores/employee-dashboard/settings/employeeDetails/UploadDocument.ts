@@ -17,7 +17,7 @@ interface DocumentInfo {
     loading: false,
     fetchDocument: () => Promise<void>,
 }
-export const useDocumentsUploaded = create<DocumentInfo>((set) => ({
+export const UseDocumentsUploaded = create<DocumentInfo>((set) => ({
     documents: null,
     error: "", loading: false,
     fetchDocument: async () => {

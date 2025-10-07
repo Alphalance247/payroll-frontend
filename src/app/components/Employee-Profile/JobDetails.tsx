@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
+import React from "react";
+import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
 interface JobDetailProps {
@@ -7,7 +7,7 @@ interface JobDetailProps {
 }
 const JobDetails = ({ title }: JobDetailProps) => {
   const { employeeData, loading, error, fetchPersonalDetails } =
-    useEmployeeStore();
+    UseEmployeeStore();
 
   return (
     <div className="grid gap-[10px] border-[1px] rounded-[10px] h-fit  p-10">

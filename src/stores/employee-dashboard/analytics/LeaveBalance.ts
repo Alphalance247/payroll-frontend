@@ -28,7 +28,7 @@ export const getLeaveBalance = create<LeaveBalance>((set) => ({
             const res = await axiosInstance.get(`/leaves/balance`)
             const response = res.data
 
-            const formatted = response.map((item: any) => ({
+            const formatted = response.map((item: BalanceData) => ({
                 leave_type: item.leave_type,
                 total_entitled: item.total_entitled,
                 days_taken: item.days_taken,

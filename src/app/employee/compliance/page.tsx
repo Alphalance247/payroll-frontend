@@ -3,7 +3,7 @@ import ProtectedRoute from "@/app/common/protectedRoute";
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 import Heading from "@/app/common/heading";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getComplianceCardStore } from "@/stores/compliance/getComplianceCard";
 import { getComplianceDetails } from "@/stores/compliance/getComplianceDetails";
 import Spinner from "@/app/common/spinner";
@@ -11,8 +11,6 @@ import ErrorFetch from "@/app/common/errorFetch";
 import { useFilter } from "@/app/hooks/useFilter";
 
 const EmployeeCompliance = () => {
-  // const [searchQuery, setSearchQuery] = useState("");
-
   const { fetchComplianceCard, error, loading, data } =
     getComplianceCardStore();
 

@@ -23,7 +23,6 @@ import { useQueryStore } from "@/stores/employee-dashboard/settings/Query/QueryD
 
 const EmployeeRequest = () => {
   const [activeBtn, setActiveBtn] = useState<string>("All");
-  const [isOpen, setIsOpen] = useState(false);
   const { data, fetchEmployeeQueryList, loading } = getEmployeeQueryList();
   const { fetchQuery, loading: query } = useQueryStore();
   console.log(query);
@@ -346,7 +345,6 @@ const EmployeeRequest = () => {
                               className="px-6 py-4 text-sm text-[#2F2F33] hover:underline hover:underline-offset-1 cursor-pointer"
                               onClick={() => {
                                 fetchQuery(emp?.id);
-                                setIsOpen(true);
                                 setQueryModal(true);
                               }}
                             >
@@ -395,10 +393,6 @@ const EmployeeRequest = () => {
                   </table>
                 </div>
               </div>
-              {/* <div className="flex space-x-20 ">
-                <DeleteEvent />
-                <CreateEvent />
-              </div> */}
             </>
           )}
         </section>

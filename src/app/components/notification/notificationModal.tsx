@@ -1,7 +1,6 @@
 "use client";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import Button from "@/app/common/Button";
-import MessageNotification from "./messageNotification";
 import Link from "next/link";
 import { useNotificationStore } from "@/stores/employee-dashboard/notification/AllNotification";
 import { useEffect, useState } from "react";
@@ -14,14 +13,16 @@ const NotificationModal = () => {
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
-  const [activeBtn, setActiveBtn] = useState<string | any>("all");
+  const [activeBtn, setActiveBtn] = useState<string>("all");
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "all" },
     { id: 2, name: "read" },
     { id: 3, name: "unread" },
   ];
-  const [openNotificationAction, setOpenNoficationAction] = useState(null);
-  const toggleNotificationAction = (id: any) => {
+  const [openNotificationAction, setOpenNoficationAction] = useState<
+    string | null
+  >(null);
+  const toggleNotificationAction = (id: string | null) => {
     setOpenNoficationAction(openNotificationAction === id ? null : id);
   };
 
@@ -58,6 +59,9 @@ const NotificationModal = () => {
       const res = await axiosInstance.post(`employees/notifications`, {
         mark_all_read: true,
       });
+      if (res.status === 200 || 201) {
+        console.log(res.data);
+      }
       all.map((item) => ({ ...item, is_read: true }));
       fetchNotifications();
     } catch (err) {

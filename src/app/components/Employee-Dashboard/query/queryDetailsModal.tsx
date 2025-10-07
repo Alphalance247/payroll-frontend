@@ -1,62 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { FaRegFilePdf } from "react-icons/fa";
 import SideDrawer from "@/app/common/sideDrawer/sideDrawer";
 import { useQueryStore } from "@/stores/employee-dashboard/settings/Query/QueryDetail";
 import Spinner from "@/app/common/spinner";
-// import axiosInstance from "@/app/utils/axios";
-const queryDetailsModal = ({
+const QueryDetailsModal = ({
   onDrawerClose,
 }: {
   onDrawerClose: () => void;
 }) => {
   const [openQueryOverview, setOpenQueryOverview] = useState(false);
   const [openQueryDetails, setOpenQueryDetails] = useState(false);
-  // const [openActionRes, setOpenActionRes] = useState(false);
   const { data, loading } = useQueryStore();
 
-  interface Activities {
-    name: string;
-    details: string;
-    datenTime: string;
-  }
-  const activities = [
-    {
-      name: "Query Received",
-      details:
-        "Samuel Jackson reported an unexpected deduction of ₦ 200,000 and missing bonus. (Auto-logged)",
-      datenTime: "2024-07-10 10:15 AM",
-    },
-    {
-      name: "HR Review",
-      details:
-        "Checked payroll records; deduction was for an unpaid leave adjustment. Bonus was processed separately.",
-      datenTime: "2024-07-10 10:15 AM",
-    },
-    {
-      name: "Finance Team Update",
-      details:
-        "Confirmed bonus payment scheduled for next payroll run (July 15, 2024).",
-      datenTime: "2024-07-10 10:15 AM",
-    },
-    {
-      name: "Query Received",
-      details:
-        "Samuel Jackson reported an unexpected deduction of ₦ 200,000 and missing bonus. (Auto-logged)",
-      datenTime: "2024-07-10 10:15 AM",
-    },
-    {
-      name: "Response Sent to Employee",
-      details: "Explained deduction reason and confirmed bonus payout date.",
-      datenTime: "2024-07-10 10:15 AM",
-    },
-    {
-      name: "Query Resolved",
-      details: "Employee acknowledged response, no further action needed.",
-      datenTime: "30 mins",
-    },
-  ];
   return (
     <SideDrawer onClose={onDrawerClose}>
       <div className="border border-[#E3E3E5]  h-[1024px] absolute right-0 top-0 z-50 w-[606px] bg-[#F7F7F7] shadow-lg overflow-auto">
@@ -175,13 +132,6 @@ const queryDetailsModal = ({
                         <p className="text-[#2F2F33] text-sm font-normal font-Graphik">
                           {" "}
                           {data.query.description}
-                          {/* I noticed that my salary for July 2024 is lower than
-                          expected. My payslip shows a deduction of ₦200,000,
-                          but I wasn’t informed about any deductions.
-                          Additionally, my usual bonus wasn’t included. Could
-                          you please clarify the reason for these deductions and
-                          whether my bonus will be paid separately? I've
-                          attached my payslip for reference." */}
                         </p>
                       </div>
                     </div>
@@ -352,4 +302,4 @@ const queryDetailsModal = ({
   );
 };
 
-export default queryDetailsModal;
+export default QueryDetailsModal;

@@ -39,10 +39,6 @@ const EmployeeLeaveRequest = () => {
       label: "Remaining",
       value: leaveData?.summary?.rejected,
     },
-    {
-      label: "National Holidays",
-      value: "12",
-    },
   ];
   // const [searchQuery, setSearchQuery] = useState("");
   const [requestModal, setRequestModal] = useState(false);
@@ -56,7 +52,7 @@ const EmployeeLeaveRequest = () => {
         <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
           <Heading flexDirection="" user={"My Leave Request"} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10 mb-8">
             {cardData.map((card, index) => (
               <OverviewCard
                 image="/assets/employee-dashboard/home/people.svg"

@@ -1,17 +1,12 @@
 "use client";
-import PersonalDetails from "./PersonalDetails";
+import { MouseEventHandler } from "react";
 interface TabProps {
   activeTab: string;
-  onClick: any;
+  onClick: MouseEventHandler;
   tabName: string;
-  className: any;
+  className: string;
 }
-const EmployeeSidebar = ({
-  activeTab,
-  onClick,
-  tabName,
-  className,
-}: TabProps) => {
+const EmployeeSidebar = ({ onClick, tabName, className }: TabProps) => {
   return (
     <button onClick={onClick} className={className}>
       {tabName}

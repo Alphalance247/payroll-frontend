@@ -3,60 +3,26 @@ import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import TopBar from "../../common/topBar";
 import MessageNotification from "../../components/notification/messageNotification";
 import { useNotificationStore } from "@/stores/employee-dashboard/notification/AllNotification";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
-const Notification = ({ isMobile }: { isMobile: boolean }) => {
+
+const Notification = () => {
   const { all, fetchNotifications } = useNotificationStore();
 
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
-  const [openNotificationAction, setOpenNoficationAction] = useState(null);
 
-  const toggleNotificationAction = (id: any) => {
-    setOpenNoficationAction(openNotificationAction === id ? null : id);
-  };
-  const tabs: { id: number; name: string }[] = [
-    { id: 1, name: "all" },
-    { id: 2, name: "read" },
-    { id: 3, name: "unread" },
-  ];
-  const [activeBtn, setActiveBtn] = useState<string | any>("all");
-
-  const filteredItems = all.filter((item) => {
-    if (activeBtn === "read") {
-      return item.is_read === true;
-    }
-    if (activeBtn === "unread") {
-      return item.is_read === false;
-    }
-    return true;
-  });
-  const markAsRead = async (id: string) => {
-    try {
-      const read = all.map((item) =>
-        item.id === id ? { ...item, is_read: !item.is_read } : item
-      );
-      const res = await axiosInstance.patch(`employees/notifications/${id}`, {
-        is_read: true,
-      });
-      if (res.status === 200 || 201) {
-        console.log(read);
-      }
-      fetchNotifications();
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        toast.error(err.message);
-      }
-    }
-  };
   const markAllRead = async () => {
     try {
       const res = await axiosInstance.post(`employees/notifications`, {
         mark_all_read: true,
       });
+      if (res.status === 200 || 201) {
+        console.log(res.data);
+      }
       all.map((item) => ({ ...item, is_read: true }));
     } catch (err) {
       if (err instanceof AxiosError) {
@@ -80,7 +46,7 @@ const Notification = ({ isMobile }: { isMobile: boolean }) => {
             read
           </p>
         </div>
-        <div className={isMobile ? "hidden" : "relative"}>
+        <div>
           <MessageNotification />
         </div>
       </div>

@@ -8,14 +8,13 @@ import { useAuth } from "../context/authContext";
 import Link from "next/link";
 import NotificationModal from "../components/notification/notificationModal";
 import { useNotificationStore } from "@/stores/employee-dashboard/notification/AllNotification";
-import { useMemo } from "react";
 
 const TopBar = () => {
   const { user, logout, isLoggingOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [openNotification, setOpenNofication] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { all, read, unread, fetchNotifications } = useNotificationStore();
+  const { unread, fetchNotifications } = useNotificationStore();
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
@@ -66,7 +65,7 @@ const TopBar = () => {
               onClick={() => setOpenNofication(!openNotification)}
             >
               <p className="w-4 h-4 text-[10px] flex flex-col items-center justify-center rounded-full absolute bg-[#EA5455] text-white top-3 right-1">
-                {(unread.length as any) > 9 ? "9+" : unread.length}
+                {(unread.length as number) > 9 ? "9+" : unread.length}
               </p>
               <IoNotificationsOutline size={38} color="#4E4E4E" />
             </div>
@@ -107,13 +106,40 @@ const TopBar = () => {
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
-                <button
-                  onClick={logout}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-                >
-                  Logout
-                </button>
+              <div className="absolute right-0  w-[425px] h-fit bg-white rounded-lg shadow-lg py-2 z-20">
+                <div className="p-6">
+                  <div className="flex space-x-3 items-center ">
+                    <div className="flex items-center gap-x-3">
+                      <div className=" bg-[#009BC0] flex items-center justify-center rounded-full h-16 w-16 text-white text-lg font-Graphik">
+                        {user?.fullname.split(" ").map((n) => n[0])}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[18px] text-[#2F2F33] font-semibold font-Graphik">
+                        {user?.fullname}
+                      </div>
+                      <div className="text-sm text-[#2F2F33] font-normal font-Graphik">
+                        {" "}
+                        {user?.email}
+                      </div>
+                      <div>
+                        <Link
+                          href={"/"}
+                          className="text-sm text-[#E37915] font-semibold font-Graphik"
+                        >
+                          Manage Account
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-b b-[#D3D3D6] pt-6"></div>
+                  <button
+                    onClick={logout}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             )}
           </div>

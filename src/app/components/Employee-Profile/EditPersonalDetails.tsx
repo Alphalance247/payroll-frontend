@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ModalOverlay from "@/app/common/modal/modal";
 import PhoneInput from "react-phone-number-input";
 import styles from "../../../styles/phone.module.scss";
@@ -8,14 +8,14 @@ import useBoolean from "@/app/hooks/useBoolean";
 import toast from "react-hot-toast";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
-import { useEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
+import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Button from "@/app/common/Button";
 const EditPersonalDetails = ({
   onModalClose,
 }: {
   onModalClose: () => void;
 }) => {
-  const { employeeData, fetchPersonalDetails } = useEmployeeStore();
+  const { employeeData, fetchPersonalDetails } = UseEmployeeStore();
   const [showPopup, setShowPopup] = useState(false);
   const [form, setForm] = useState({
     fullname: employeeData?.data.fullname || "",
@@ -68,7 +68,6 @@ const EditPersonalDetails = ({
         errorMessage = error.response?.data?.message || errorMessage;
       }
       toast.error(errorMessage);
-      onModalClose();
       resetEditEmployeeDetails();
     }
   };
@@ -201,7 +200,7 @@ const EditPersonalDetails = ({
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
-                Nationaliy
+                Nationality
               </Label>
               <br />
               <input
@@ -243,7 +242,7 @@ const EditPersonalDetails = ({
               variant="primary"
               className=" w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm"
             >
-              {editemployeeDetails ? "Updated" : "Submit Request"}
+              {editemployeeDetails ? "Updating.." : "Submit Request"}
             </Button>
           </div>
         </form>
