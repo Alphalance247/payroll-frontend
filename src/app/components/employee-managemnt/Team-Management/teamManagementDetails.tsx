@@ -58,8 +58,6 @@ const TeamManagementDetails = ({
     fetchEmployeeData();
   }, [teamManagementDetails]);
 
-  console.log(teamData);
-
   return (
     <DashboardLayout>
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">

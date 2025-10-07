@@ -345,7 +345,6 @@ const EmployeeRequest = () => {
                               className="px-6 py-4 text-sm text-[#2F2F33] hover:underline hover:underline-offset-1 cursor-pointer"
                               onClick={() => {
                                 fetchQuery(emp?.id);
-                                setIsOpen(!isOpen);
                                 setQueryModal(true);
                               }}
                             >

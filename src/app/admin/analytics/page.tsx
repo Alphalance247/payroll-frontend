@@ -83,7 +83,7 @@ const PayrollAnalytics = () => {
             <Heading
               flexDirection="column"
               subHead="Analyze payroll trends, team spending, and workforce metrics over time."
-              user={"Payroll Analysis"}
+              user={"Payroll Analytics"}
             />
 
             {isPayrollDataEmpty && !loading && (

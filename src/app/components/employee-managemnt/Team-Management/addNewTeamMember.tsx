@@ -130,7 +130,12 @@ const AddNewTeamMembers = ({
         </div>
 
         <div className="flex items-center gap-x-4">
-          <Button variant="secondary" className="w-fit" onClick={onModalClose}>
+          <Button
+            variant="secondary"
+            className="w-fit"
+            btnType="button"
+            onButtonClick={() => onModalClose()}
+          >
             Cancel
           </Button>
           <Button className="w-fit" onButtonClick={handleSave}>

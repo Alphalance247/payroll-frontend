@@ -16,9 +16,8 @@ const LeaveRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchEmployeeLeaveList();
     fetchLeaveType();
-  }, [fetchLeaveType, fetchEmployeeLeaveList]);
+  }, [fetchLeaveType]);
 
   const [form, setForm] = useState({
     leave_type: "",

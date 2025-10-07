@@ -7,7 +7,8 @@ import { useEffect } from "react";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
-const Notification = ({ isMobile }: { isMobile: boolean }) => {
+
+const Notification = () => {
   const { all, fetchNotifications } = useNotificationStore();
 
   useEffect(() => {
@@ -45,7 +46,7 @@ const Notification = ({ isMobile }: { isMobile: boolean }) => {
             read
           </p>
         </div>
-        <div className={isMobile ? "hidden" : "relative"}>
+        <div>
           <MessageNotification />
         </div>
       </div>

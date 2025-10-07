@@ -1,8 +1,6 @@
 import React from "react";
 import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import Button from "@/app/common/Button";
 interface BankDetailsProps {
   title: string;
   // children: any;
@@ -77,7 +75,7 @@ const BankDetails = ({ title }: BankDetailsProps) => {
           </>
         )}
       </div>
-      <div className="">
+      {/* <div className="">
         <h1 className="text-[#2F2F33] text-[32px] font-semibold font-Graphik p-10">
           Run Payroll
         </h1>
@@ -90,6 +88,7 @@ const BankDetails = ({ title }: BankDetailsProps) => {
               <BsThreeDotsVertical className="text-[#71717A]" />
             </div>
           </div>
+
           <div className="grid gap-y-2 items-center p-4">
             <div className="flex space-x-10 items-center">
               <div className="flex space-x-2 items-center">
@@ -157,7 +156,7 @@ const BankDetails = ({ title }: BankDetailsProps) => {
             />
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

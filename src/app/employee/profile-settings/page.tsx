@@ -14,6 +14,7 @@ import EditPersonalDetails from "@/app/components/Employee-Profile/EditPersonalD
 import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress";
 import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import { UseDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
+import ProtectedRoute from "@/app/common/protectedRoute";
 const EmployeeProfileSettings = () => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);
@@ -28,6 +29,7 @@ const EmployeeProfileSettings = () => {
     useEffect(() => {
       fetchDocument();
     }, [fetchDocument]);
+
     switch (activeTab) {
       case "personal details":
         return (
@@ -80,7 +82,7 @@ const EmployeeProfileSettings = () => {
     }
   };
   return (
-    <div>
+    <ProtectedRoute allowedUserTypes={["employee", "admin"]}>
       <EmployeeDashboardLayout>
         {/* the employee DP */}
         <div className="grid overflow-auto ">
@@ -139,7 +141,7 @@ const EmployeeProfileSettings = () => {
           </div>
         </div>
       </EmployeeDashboardLayout>
-    </div>
+    </ProtectedRoute>
   );
 };
 

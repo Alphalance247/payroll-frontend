@@ -68,7 +68,6 @@ const EditPersonalDetails = ({
         errorMessage = error.response?.data?.message || errorMessage;
       }
       toast.error(errorMessage);
-      onModalClose();
       resetEditEmployeeDetails();
     }
   };
@@ -201,7 +200,7 @@ const EditPersonalDetails = ({
                 className="text-[#2F2F33] text-sm font-medium font-Graphik "
               >
                 {" "}
-                Nationaliy
+                Nationality
               </Label>
               <br />
               <input
@@ -243,7 +242,7 @@ const EditPersonalDetails = ({
               variant="primary"
               className=" w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm"
             >
-              {editemployeeDetails ? "Updated" : "Submit Request"}
+              {editemployeeDetails ? "Updating.." : "Submit Request"}
             </Button>
           </div>
         </form>
