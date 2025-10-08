@@ -7,6 +7,7 @@ import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import ErrorFetch from "@/app/common/errorFetch";
+import { FaUser } from "react-icons/fa";
 
 const EmployeeDp = () => {
   const { employeeData, loading, fetchPersonalDetails, error } =
@@ -64,8 +65,6 @@ const EmployeeDp = () => {
       ) : (
         <>
           {employeeData && (
-            //   <div className="px-72 py-20">Employee profile is not available</div>
-            // ) : (
             <div className="flex justify-between items-center shrink-0  px-[72px] h-[180px] my-[40px]   ">
               <div className="flex space-x-10 items-center ">
                 <div className="relative">
@@ -77,11 +76,21 @@ const EmployeeDp = () => {
                     />
                   )}
                   {!preview && employeeData.data.prof_img && (
-                    <img
-                      src={employeeData.data.prof_img}
-                      alt="DP"
-                      className="h-[180px] w-[180px] rounded-full object-cover"
-                    />
+                    <>
+                      {employeeData.data.prof_img === "" ? (
+                        <div className="h-[180px] w-[180px] rounded-full object-cover bg-slate-500 flex items-center">
+                          <div>
+                            <FaUser className="h-[140px] w-[180px] flex justify-center items-center" />
+                          </div>
+                        </div>
+                      ) : (
+                        <img
+                          src={employeeData.data.prof_img}
+                          alt="DP"
+                          className="h-[180px] w-[180px] rounded-full object-cover"
+                        />
+                      )}
+                    </>
                   )}
 
                   <form
