@@ -8,10 +8,12 @@ import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import ErrorFetch from "@/app/common/errorFetch";
 import { FaUser } from "react-icons/fa";
+import Button from "@/app/common/Button";
 
 const EmployeeDp = () => {
   const { employeeData, loading, fetchPersonalDetails, error } =
     UseEmployeeStore();
+  const [savePicture, setSavePicture] = useState(false);
   const [preview, setPreview] = useState<string | null | undefined>(null);
   const [file, setFile] = useState<File | null>(null);
   const [form, setForm] = useState({
@@ -45,6 +47,7 @@ const EmployeeDp = () => {
       }
       setForm({ prof_img: "" });
       fetchPersonalDetails();
+      setSavePicture(true);
     } catch (error) {
       let errorMessage = "An error occurred please try again or contact Admin";
       if (error instanceof AxiosError) {
@@ -112,9 +115,16 @@ const EmployeeDp = () => {
                       />{" "}
                       <TiCamera className=" h-6 w-6 absolute text-white top-2 left-2" />
                     </Label>{" "}
-                    <button className="bg-[#E37915] text-white w-28 h-8 rounded-sm font-Graphik font-medium mt-3 ml-10 capitalize">
+                    <Button
+                      variant="primary"
+                      className={
+                        savePicture
+                          ? "hidden"
+                          : " text-white  rounded-sm font-Graphik font-medium mt-3 ml-10 capitalize"
+                      }
+                    >
                       save image
-                    </button>
+                    </Button>
                   </form>
                 </div>
                 <div className="grid gap-2 ">
