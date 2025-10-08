@@ -16,7 +16,6 @@ const EditPersonalDetails = ({
   onModalClose: () => void;
 }) => {
   const { employeeData, fetchPersonalDetails } = UseEmployeeStore();
-  const [showPopup, setShowPopup] = useState(false);
   const [form, setForm] = useState({
     fullname: employeeData?.data.fullname || "",
     email: employeeData?.data.email || "",
@@ -165,8 +164,6 @@ const EditPersonalDetails = ({
                   readOnly
                   value={form.dob}
                   onChange={handleChange}
-                  onMouseOver={() => setShowPopup(true)}
-                  onMouseLeave={() => setShowPopup(false)}
                   className="relative rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
                 />
               </div>

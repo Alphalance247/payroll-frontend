@@ -1,12 +1,7 @@
 "use client";
 import Link from "next/link";
 import { HiOutlineHome } from "react-icons/hi2";
-import {
-  MdOutlinePayment,
-  MdOutlineGavel,
-  MdOutlineLuggage,
-} from "react-icons/md";
-import { FaMoneyCheckAlt } from "react-icons/fa";
+import { MdOutlinePayment } from "react-icons/md";
 import { IoChevronBack } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
 import { BsBarChartLine } from "react-icons/bs";
