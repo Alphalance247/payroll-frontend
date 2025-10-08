@@ -7,12 +7,8 @@ import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import Button from "@/app/common/Button";
-// import { URL } from "url";
 
 const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
-  // const [preview, setPreview] = useState<string | null | undefined>(null);
-  // const [file, setFile] = useState<File | null>(null);
-  // const MAX_FILE_SIZE_BYTES = 1 * 1024 * 1024; // 1MB
   const { employeeData, fetchPersonalDetails } = UseEmployeeStore();
   const [form, setForm] = useState({
     country: employeeData?.data.country || "",
@@ -20,7 +16,6 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
     city: employeeData?.data.city || "",
     street_address: employeeData?.data.street_address || "",
     postal_code: employeeData?.data.postal_code || "",
-    // addressProof: "",
   });
   const [editHouseDetails, setEditHouseDetails, resetEditHouseDetails] =
     useBoolean(false);
@@ -69,38 +64,9 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
       resetEditHouseDetails();
     }
   };
-  // Process the file (e.g., upload)
-  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const fileList = event.target.files;
-  //   if (fileList && fileList.length > 0) {
-  //     setSelectedFile(fileList[0]);
-  //     console.log(fileList);
-  //     const obj = URL.createObjectURL(selectedFile as any);
-  //     console.log(obj);
-  //     // if (fileList instanceof Blob) {
-  //     //   const objectUrl = URL.createObjectURL(fileList);
-  //     //   console.log(objectUrl);
-  //     //   setPreviewImage(objectUrl);
-  //     // }
-  //     // setPreviewImage(objectUrl);
-  //   } else {
-  //     setSelectedFile(null);
-  //   }
-  //   return;
-  // };
-  // const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const uploadFile = e.target.files?.[0];
-  //   if (uploadFile && uploadFile.size <= 5 * 1024 * 1024) {
-  //     setFile(uploadFile);
-
-  //     setPreview(URL.createObjectURL(uploadFile));
-  //   } else {
-  //     alert("File must be less than 5MB");
-  //   }
-  // };
   return (
     <ModalOverlay onClose={onModalClose} className="">
-      <div className="w-[528px] h-[604px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative z-50  shadow-lg mt-20   ">
+      <div className="w-[528px] h-[540px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative z-50  shadow-lg mt-20   ">
         {" "}
         <form
           action="submit"
@@ -112,91 +78,93 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
               Edit Housing Address
             </h2>
           </div>
-          <div className="grid gap-y-4 p-6">
-            <div className="">
-              <Label
-                id="country"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                Country
-              </Label>
-              <br />
-              <input
-                type="text"
-                name="country"
-                value={form.country}
-                onChange={handleChange}
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              />
-            </div>
-            <div className="">
-              <Label
-                id="state"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                State
-              </Label>
-              <br />
-              <input
-                type="text"
-                name="state"
-                value={form.state}
-                onChange={handleChange}
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              />
-            </div>
-            <div className="">
-              <Label
-                id="city"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                City
-              </Label>
-              <br />
-              <input
-                type="text"
-                name="city"
-                value={form.city}
-                onChange={handleChange}
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              />
-            </div>
-            <div className="">
-              <label
-                htmlFor="street_address"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                Street Address
-              </label>
-              <br />
-              <input
-                type="text"
-                name="street_address"
-                value={form.street_address}
-                onChange={handleChange}
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              />
-            </div>
-            <div className="">
-              <label
-                htmlFor="postal_code"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                Postal Code
-              </label>
-              <br />
-              <input
-                type="text"
-                name="postal_code"
-                value={form.postal_code}
-                onChange={handleChange}
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              />
+          <div className="h-[400px] overflow-auto">
+            <div className="grid gap-y-4 p-6">
+              <div className="">
+                <Label
+                  id="country"
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                >
+                  {" "}
+                  Country
+                </Label>
+                <br />
+                <input
+                  type="text"
+                  name="country"
+                  value={form.country}
+                  onChange={handleChange}
+                  className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+                />
+              </div>
+              <div className="">
+                <Label
+                  id="state"
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                >
+                  {" "}
+                  State
+                </Label>
+                <br />
+                <input
+                  type="text"
+                  name="state"
+                  value={form.state}
+                  onChange={handleChange}
+                  className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+                />
+              </div>
+              <div className="">
+                <Label
+                  id="city"
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                >
+                  {" "}
+                  City
+                </Label>
+                <br />
+                <input
+                  type="text"
+                  name="city"
+                  value={form.city}
+                  onChange={handleChange}
+                  className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+                />
+              </div>
+              <div className="">
+                <Label
+                  id="street_address"
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                >
+                  {" "}
+                  Street Address
+                </Label>
+                <br />
+                <input
+                  type="text"
+                  name="street_address"
+                  value={form.street_address}
+                  onChange={handleChange}
+                  className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+                />
+              </div>
+              <div className="">
+                <Label
+                  id="postal_code"
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                >
+                  {" "}
+                  Postal Code
+                </Label>
+                <br />
+                <input
+                  type="text"
+                  name="postal_code"
+                  value={form.postal_code}
+                  onChange={handleChange}
+                  className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+                />
+              </div>
             </div>
           </div>
           <div className="flex items-center justify-end gap-x-4 px-6 border-t-[1px] h-[68px]  border-[#E3E3E5] bg-[#F7F7F7] rounded-b-[8px]">
@@ -209,9 +177,9 @@ const EditHouseAddress = ({ onModalClose }: { onModalClose: () => void }) => {
             </Button>
             <Button
               variant="primary"
-              className=" w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm"
+              className=" w-[96px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm"
             >
-              {editHouseDetails ? "Updating..." : "Submit Request"}
+              {editHouseDetails ? "Updating..." : "Save"}
             </Button>
           </div>
         </form>
