@@ -16,14 +16,12 @@ const EditPersonalDetails = ({
   onModalClose: () => void;
 }) => {
   const { employeeData, fetchPersonalDetails } = UseEmployeeStore();
-  const [showPopup, setShowPopup] = useState(false);
   const [form, setForm] = useState({
     fullname: employeeData?.data.fullname || "",
     email: employeeData?.data.email || "",
     phoneNumber: employeeData?.data.phone || "",
     nationality: employeeData?.data.country || "",
     dob: employeeData?.data.dob || "",
-    // reason: "Tell us why you are requesting this changes",
   });
   const [
     editemployeeDetails,
@@ -73,162 +71,117 @@ const EditPersonalDetails = ({
   };
   return (
     <ModalOverlay onClose={onModalClose} className=" ">
-      <div className="w-[528px] h-[610px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative  z-50   shadow-lg mt-20  ">
+      <div className="w-[528px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative  z-50 shadow-lg">
         {" "}
-        <form
-          action="submit"
-          onSubmit={handleSubmit}
-          className="absolute z-50 w-[528px]"
-        >
+        <form action="submit" onSubmit={handleSubmit}>
           <div className="pt-6  pl-6 border-b border-[#E3E3E5]  ">
             <h2 id="" className="text-lg font-semibold mb-2">
               Edit Personal Details
             </h2>
           </div>
-          <div className="grid gap-y-4 p-6">
-            <div className="">
-              <Label
-                id="fullname"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                Full name
-              </Label>
-              <br />
-              <input
-                type="text"
-                name="fullname"
-                value={form.fullname}
-                onChange={handleChange}
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              />
+          <div className="h-[350px] overflow-y-auto">
+            <div className="grid gap-y-4 p-6">
+              <div className="">
+                <Label
+                  id="fullname"
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                >
+                  {" "}
+                  Full name
+                </Label>
+                <br />
+                <input
+                  type="text"
+                  name="fullname"
+                  value={form.fullname}
+                  onChange={handleChange}
+                  className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+                />
+              </div>
+              <div className="">
+                <Label
+                  id="email"
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                >
+                  {" "}
+                  Email
+                </Label>
+                <br />
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  readOnly
+                  className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+                />
+              </div>
+              <div className="">
+                <Label
+                  id=""
+                  className=" text-[#2F2F33] text-sm font-medium font-Graphik "
+                >
+                  {" "}
+                  Phone Number
+                </Label>
+                <br />
+                <PhoneInput
+                  placeholder="(+234) 000-0000"
+                  international
+                  defaultCountry="NG"
+                  required
+                  readOnly
+                  value={form.phoneNumber || ""}
+                  onChange={(value) =>
+                    setForm({
+                      ...form,
+                      phoneNumber: value || "",
+                    })
+                  }
+                  className={`${styles.PhoneInput} outline-none rounded-md border-none mt-2 h-10`}
+                  numberInputProps={{
+                    className: `outline-none border-[#E0E0E0] border-[1px] text-[black] rounded-tr-md rounded-br-md rounded-tl-none rounded-bl-none text-sm w-[100%] px-3 py-[14px] h-10  font-normal font-Graphik`,
+                  }}
+                />
+              </div>
+              <div className="">
+                <Label
+                  id="dob"
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                >
+                  {" "}
+                  Date of Birth
+                </Label>
+                <br />
+                <input
+                  type="date"
+                  id="dob"
+                  name="dob"
+                  readOnly
+                  value={form.dob}
+                  onChange={handleChange}
+                  className="relative rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+                />
+              </div>
+              <div className="">
+                <Label
+                  id="nationality"
+                  className="text-[#2F2F33] text-sm font-medium font-Graphik "
+                >
+                  {" "}
+                  Nationality
+                </Label>
+                <br />
+                <input
+                  type="text"
+                  name="nationality"
+                  value={form.nationality}
+                  readOnly
+                  onChange={handleChange}
+                  className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
+                />
+              </div>
             </div>
-            <div className="">
-              <Label
-                id="email"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                Email
-              </Label>
-              <br />
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                readOnly
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              />
-            </div>
-            <div className="">
-              <Label
-                id=""
-                className=" text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                Phone Number
-              </Label>
-              <br />
-              <PhoneInput
-                placeholder="(+234) 000-0000"
-                international
-                defaultCountry="NG"
-                required
-                readOnly
-                value={form.phoneNumber || ""}
-                onChange={(value) =>
-                  setForm({
-                    ...form,
-                    phoneNumber: value || "",
-                  })
-                }
-                className={`${styles.PhoneInput} outline-none rounded-md border-none mt-2 h-10`}
-                numberInputProps={{
-                  className: `outline-none border-[#E0E0E0] border-[1px] text-[black] rounded-tr-md rounded-br-md rounded-tl-none rounded-bl-none text-sm w-[100%] px-3 py-[14px] h-10  font-normal font-Graphik`,
-                }}
-              />
-              {showPopup && (
-                <div className="absolute text-center right-24 left-24 z-20 w-[60%] transition bg-white shadow-md  h-[50px] rounded-md font-Graphik text-sm ]">
-                  <p className="flex justify-center items-center text-[#E37915] my-4">
-                    {" "}
-                    Phone number can not be edited
-                  </p>
-                </div>
-              )}
-
-              {/* <input
-                type="tel"
-                name="phoneNumber"
-                value={form.phoneNumber}
-                onChange={handleChange}
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#BEBEC2] text[16px] font-normal pl-4 font-Graphik"
-              /> */}
-            </div>
-            <div className="">
-              <Label
-                id="dob"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                Date of Birth
-              </Label>
-              <br />
-              <input
-                type="date"
-                id="dob"
-                name="dob"
-                readOnly
-                value={form.dob}
-                onChange={handleChange}
-                onMouseOver={() => setShowPopup(true)}
-                onMouseLeave={() => setShowPopup(false)}
-                className="relative rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              />
-              {/* {showPopup && (
-                <div className="absolute text-center right-24 left-24 z-20 w-[60%] transition bg-white shadow-md  h-[50px] rounded-md font-Graphik text-sm ]">
-                  <p className="flex justify-center items-center text-[#E37915] my-4">
-                    {" "}
-                    Date of birth can not be edited
-                  </p>
-                </div>
-              )} */}
-            </div>
-            <div className="">
-              <Label
-                id="nationality"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                Nationality
-              </Label>
-              <br />
-              <input
-                type="text"
-                name="nationality"
-                value={form.nationality}
-                readOnly
-                onChange={handleChange}
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-10 w-full mt-2 text-[#2F2F33] text[16px] font-normal pl-4 font-Graphik"
-              />
-            </div>
-            {/* <div className="">
-              <Label
-                id=" Reason For Update"
-                className="text-[#2F2F33] text-sm font-medium font-Graphik "
-              >
-                {" "}
-                Reason For Update
-              </Label>
-              <br />
-              <textarea
-                name="reason"
-                value={form.reason}
-                onChange={handleChange}
-                // placeholder="Tell us why you are requesting this changes"
-                className="rounded-[8px] border-[1px] border-[#E3E3E5] h-[132px] w-full mt-2  text[16px] font-medium pl-4 font-Graphik text-[#BEBEC2] pt-3 resize-none"
-              ></textarea>
-            </div> */}
           </div>
           <div className="flex items-center justify-end gap-x-4 mt-2 px-6 border-t-[1px] h-[68px] border-[#E3E3E5] bg-[#F7F7F7] rounded-b-[8px]">
             <Button
@@ -240,9 +193,9 @@ const EditPersonalDetails = ({
             </Button>
             <Button
               variant="primary"
-              className=" w-[156px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm"
+              className=" w-[96px] h-[36px] rounded-[6px] font-Graphik text-[#F7F7F7] font-semibold text-sm"
             >
-              {editemployeeDetails ? "Updating.." : "Submit Request"}
+              {editemployeeDetails ? "Updating.." : "Save"}
             </Button>
           </div>
         </form>

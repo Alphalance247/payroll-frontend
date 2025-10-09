@@ -11,9 +11,11 @@ import Spinner from "@/app/common/spinner";
 const EmployeeTimeTool = () => {
   const { fetchEmployeeTimesheet, data, loading, error } =
     getEmployeeTimesheet();
+
   useEffect(() => {
     fetchEmployeeTimesheet();
   }, [fetchEmployeeTimesheet]);
+
   const cardData = [
     {
       id: "1",
@@ -32,11 +34,11 @@ const EmployeeTimeTool = () => {
       heading: "Over Time Hours",
       subhead: data?.total_overtime,
     },
-    {
-      id: "4",
-      heading: "Days Fully Logged",
-      subhead: "3/5 days fully logged",
-    },
+    // {
+    //   id: "4",
+    //   heading: "Days Fully Logged",
+    //   subhead: "3/5 days fully logged",
+    // },
   ];
 
   return (
@@ -58,7 +60,7 @@ const EmployeeTimeTool = () => {
             />
           ) : (
             <>
-              <div className="mt-6 grid  md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="mt-6 grid  md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {cardData.map((card) => (
                   <div
                     className="py-6 px-4 border border-[#E3E3E5] rounded-md"

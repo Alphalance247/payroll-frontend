@@ -34,9 +34,9 @@ const TimeSheetTable = () => {
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                     Date
                   </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
+                  {/* <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                     Issue ID
-                  </th>
+                  </th> */}
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                     Hours Logged
                   </th>
@@ -72,9 +72,9 @@ const TimeSheetTable = () => {
                           {emp?.date_logged}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#2F2F33] text-left cursor-pointer underline underline-offset-2">
+                      {/* <td className="px-6 py-4 text-sm text-[#2F2F33] text-left cursor-pointer underline underline-offset-2">
                         DVCT-{emp?.id}
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4 text-sm text-[#2F2F33]">
                         {emp?.hours}
                       </td>

@@ -71,7 +71,7 @@ const LeaveRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
             </h2>
           </div>
 
-          <div className="p-4 flex flex-col gap-y-4">
+          <div className="p-4 flex flex-col overflow-y-auto h-[380px] gap-y-4">
             <div>
               <Label
                 //   htmlFor="first-name"

@@ -165,7 +165,7 @@ const EmployeePayroll = () => {
                       <tbody>
                         <tr>
                           <td colSpan={6} className="text-center py-8">
-                            No Loan payroll history found yet
+                            No payroll history found yet
                           </td>
                         </tr>
                       </tbody>

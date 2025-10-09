@@ -7,10 +7,13 @@ import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import ErrorFetch from "@/app/common/errorFetch";
+import { FaUser } from "react-icons/fa";
+import Button from "@/app/common/Button";
 
 const EmployeeDp = () => {
   const { employeeData, loading, fetchPersonalDetails, error } =
     UseEmployeeStore();
+  const [savePicture, setSavePicture] = useState(false);
   const [preview, setPreview] = useState<string | null | undefined>(null);
   const [file, setFile] = useState<File | null>(null);
   const [form, setForm] = useState({
@@ -44,6 +47,7 @@ const EmployeeDp = () => {
       }
       setForm({ prof_img: "" });
       fetchPersonalDetails();
+      setSavePicture(true);
     } catch (error) {
       let errorMessage = "An error occurred please try again or contact Admin";
       if (error instanceof AxiosError) {
@@ -64,8 +68,6 @@ const EmployeeDp = () => {
       ) : (
         <>
           {employeeData && (
-            //   <div className="px-72 py-20">Employee profile is not available</div>
-            // ) : (
             <div className="flex justify-between items-center shrink-0  px-[72px] h-[180px] my-[40px]   ">
               <div className="flex space-x-10 items-center ">
                 <div className="relative">
@@ -77,11 +79,21 @@ const EmployeeDp = () => {
                     />
                   )}
                   {!preview && employeeData.data.prof_img && (
-                    <img
-                      src={employeeData.data.prof_img}
-                      alt="DP"
-                      className="h-[180px] w-[180px] rounded-full object-cover"
-                    />
+                    <>
+                      {employeeData.data.prof_img === "" ? (
+                        <div className="h-[180px] w-[180px] rounded-full object-cover bg-slate-500 flex items-center">
+                          <div>
+                            <FaUser className="h-[140px] w-[180px] flex justify-center items-center" />
+                          </div>
+                        </div>
+                      ) : (
+                        <img
+                          src={employeeData.data.prof_img}
+                          alt="DP"
+                          className="h-[180px] w-[180px] rounded-full object-cover"
+                        />
+                      )}
+                    </>
                   )}
 
                   <form
@@ -103,9 +115,16 @@ const EmployeeDp = () => {
                       />{" "}
                       <TiCamera className=" h-6 w-6 absolute text-white top-2 left-2" />
                     </Label>{" "}
-                    <button className="bg-[#E37915] text-white w-28 h-8 rounded-sm font-Graphik font-medium mt-3 ml-10 capitalize">
+                    <Button
+                      variant="primary"
+                      className={
+                        savePicture
+                          ? "hidden"
+                          : " text-white  rounded-sm font-Graphik font-medium mt-3 ml-10 capitalize"
+                      }
+                    >
                       save image
-                    </button>
+                    </Button>
                   </form>
                 </div>
                 <div className="grid gap-2 ">

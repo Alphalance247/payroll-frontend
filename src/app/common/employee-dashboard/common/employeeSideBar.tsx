@@ -1,12 +1,7 @@
 "use client";
 import Link from "next/link";
 import { HiOutlineHome } from "react-icons/hi2";
-import {
-  MdOutlinePayment,
-  MdOutlineGavel,
-  MdOutlineLuggage,
-} from "react-icons/md";
-import { FaMoneyCheckAlt } from "react-icons/fa";
+import { MdOutlinePayment } from "react-icons/md";
 import { IoChevronBack } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
 import { BsBarChartLine } from "react-icons/bs";
@@ -69,7 +64,13 @@ const EmployeeSideBar: React.FC<propData> = () => {
         {
           text: "Compliance",
           link: "/employee/compliance",
-          icons: <MdOutlineGavel size={20} />,
+          icons: (
+            <img
+              src="/Compliance.svg"
+              alt="compliance icon"
+              className="w-5 h-5"
+            />
+          ),
         },
         {
           text: "Payroll",
@@ -78,7 +79,13 @@ const EmployeeSideBar: React.FC<propData> = () => {
         },
         {
           text: "Loan requests",
-          icons: <FaMoneyCheckAlt size={20} />,
+          icons: (
+            <img
+              src="/LoanRequest.svg"
+              alt="Loan Request Icon"
+              className="w-5 h-5"
+            />
+          ),
           link: "/employee/loan-request",
         },
         {
@@ -92,7 +99,7 @@ const EmployeeSideBar: React.FC<propData> = () => {
           text: "Timesheet",
         },
         {
-          icons: <MdOutlineLuggage size={20} />,
+          icons: <img src="/Leave.svg" alt="Leave icon" className="w-5 h-5" />,
           link: "/employee/leave-request",
           text: "Leave",
         },

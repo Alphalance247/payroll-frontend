@@ -47,12 +47,14 @@ const Login = () => {
   return (
     <section className={`bg-[#F7F7F7]`}>
       <div className="max-w-[1270px] mx-auto px-8 py-20 md:px-4 md:py-12">
-        <Image
-          src="/assets/login/logo.svg"
-          width={121}
-          height={25}
-          alt="logo"
-        />
+        <Link href={"/"}>
+          <Image
+            src="/assets/login/logo.svg"
+            width={121}
+            height={25}
+            alt="logo"
+          />
+        </Link>
 
         <div className="bg-[#F7F7F7] h-screen pt-32">
           <div className=" w-[500px] h-fit py-6 px-14 mx-auto bg-white rounded-lg border-[#D3D3D6] border">

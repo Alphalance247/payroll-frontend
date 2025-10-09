@@ -6,20 +6,20 @@ const LoanOverviewCard = () => {
   const cardData = [
     {
       label: "Loan Limit",
-      value: "N " + data?.loan_limit.toLocaleString(),
+      value: "N " + data?.loan_limit,
       details: "Eligible Amount:",
-      subdetails: "N " + data?.eligibility.toLocaleString(),
+      subdetails: "N " + data?.eligibility,
       detailsColor: "text-[#04CE00]",
     },
     {
       label: "Outstanding Balance",
-      value: "N " + data?.outstanding_balance.toLocaleString(),
+      value: "N " + data?.outstanding_balance,
       details: "Repayment in progrees -2 months remaining",
       detailsColor: "text-[#71717A]",
     },
     {
       label: "Next Repayment",
-      value: "N " + data?.proposed_next_repayment.toLocaleString(),
+      value: "N " + data?.proposed_next_repayment || "0",
       details: " Due date",
       subdetails: data?.next_repayment_date,
       detailsColor: "text-[#C00F0C]",
