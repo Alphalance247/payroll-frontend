@@ -16,6 +16,7 @@ const EmployeeDp = () => {
   const [savePicture, setSavePicture] = useState(false);
   const [preview, setPreview] = useState<string | null | undefined>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [isDone, setIsDone] = useState(false);
   const [form, setForm] = useState({
     prof_img: file || "",
   });
@@ -31,6 +32,7 @@ const EmployeeDp = () => {
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) return;
+    setSavePicture(true);
     try {
       const response = await axiosInstance.patch(
         `/employees/employee/update-profile`,
@@ -47,7 +49,8 @@ const EmployeeDp = () => {
       }
       setForm({ prof_img: "" });
       fetchPersonalDetails();
-      setSavePicture(true);
+      setSavePicture(false);
+      setIsDone(true);
     } catch (error) {
       let errorMessage = "An error occurred please try again or contact Admin";
       if (error instanceof AxiosError) {
@@ -71,31 +74,29 @@ const EmployeeDp = () => {
             <div className="flex justify-between items-center shrink-0  px-[72px] h-[180px] my-[40px]   ">
               <div className="flex space-x-10 items-center ">
                 <div className="relative">
-                  {preview && (
+                  {preview ? (
                     <img
                       src={preview}
                       alt="DP"
                       className="h-[180px] w-[180px] rounded-full object-cover"
                     />
-                  )}
-                  {!preview && employeeData.data.prof_img && (
+                  ) : (
                     <>
-                      {employeeData.data.prof_img === "" ? (
-                        <div className="h-[180px] w-[180px] rounded-full object-cover bg-slate-500 flex items-center">
-                          <div>
-                            <FaUser className="h-[140px] w-[180px] flex justify-center items-center" />
-                          </div>
-                        </div>
-                      ) : (
+                      {employeeData.data.prof_img ? (
                         <img
                           src={employeeData.data.prof_img}
                           alt="DP"
                           className="h-[180px] w-[180px] rounded-full object-cover"
                         />
+                      ) : (
+                        <div className="h-[180px] w-[180px] rounded-full object-cover bg-slate-500 flex items-center">
+                          <div>
+                            <FaUser className="h-[140px] w-[180px] flex justify-center items-center" />
+                          </div>
+                        </div>
                       )}
                     </>
                   )}
-
                   <form
                     action=""
                     onSubmit={handleSubmit}
@@ -115,16 +116,22 @@ const EmployeeDp = () => {
                       />{" "}
                       <TiCamera className=" h-6 w-6 absolute text-white top-2 left-2" />
                     </Label>{" "}
-                    <Button
-                      variant="primary"
-                      className={
+                    <>
+                      {!isDone && (
+                        <Button
+                          variant="primary"
+                          disabled={savePicture}
+                          className={`
+                      ${
                         savePicture
-                          ? "hidden"
-                          : " text-white  rounded-sm font-Graphik font-medium mt-3 ml-10 capitalize"
-                      }
-                    >
-                      save image
-                    </Button>
+                          ? "bg-[#E37915] opacity-60 text-white mt-3 ml-10 capitalize"
+                          : "text-white  rounded-sm font-Graphik font-medium mt-3 ml-10 capitalize"
+                      }`}
+                        >
+                          {savePicture ? "Saving..." : "Save Image"}
+                        </Button>
+                      )}
+                    </>
                   </form>
                 </div>
                 <div className="grid gap-2 ">
