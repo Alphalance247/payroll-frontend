@@ -14,7 +14,7 @@ const PayrollHistory = () => {
   const [activeTab, setActiveTab] = useState("Payroll Details");
   const [payrollHistory, setPayrollHistory] =
     useState<PayrollHistoryTranferData | null>(null);
-  const tabs = [{ name: "Payroll Details" }, { name: "Audit logs" }];
+  const tabs = [{ name: "Payroll Details" }];
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

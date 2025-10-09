@@ -74,7 +74,7 @@ const LoanRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
             </h2>
           </div>
 
-          <div className="overflow-y-auto h-[480px]">
+          <div className="overflow-y-auto h-[350px]">
             <div className="p-4 flex flex-col gap-y-4">
               <div>
                 <Label id="date-of-birth" className="block mb-1">

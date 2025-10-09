@@ -36,7 +36,7 @@ export const getEmployeeLeaveList = create<employeeLeaveListStore>((set) => ({
   fetchEmployeeLeaveList: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.get(`/leaves/leave-requests`);
+      const res = await axiosInstance.get(`/leaves/my-leave-requests`);
       set({ data: res.data, loading: false });
     } catch (err) {
       if (err instanceof AxiosError) {

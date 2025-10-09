@@ -13,7 +13,7 @@ const LeaveRequest = () => {
 
   const [selectedTeam, setSelectedTeam] = useState("");
   const { filteredData, setSearchQuery, searchQuery, setFilter } = useFilter(
-    data?.results || [],
+    data?.leaves || [],
     ["employee"]
   );
   useEffect(() => {

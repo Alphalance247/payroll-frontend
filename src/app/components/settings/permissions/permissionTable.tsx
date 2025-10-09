@@ -59,7 +59,7 @@ const PermissionTable = ({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full  overflow-hidden shadow-sm ">
-              <thead className="bg-[#F9FAFB]  border-[#E3E3E5] border-b-[1px]  text-[#667085] text-[15px] leading-[1.5rem] font-medium">
+              <thead className="bg-[#F9FAFB] border-[#E3E3E5] border-b-[1px]  text-[#667085] text-[15px] leading-[1.5rem] font-medium">
                 <tr>
                   <th
                     className="px-6 py-3 text-left"

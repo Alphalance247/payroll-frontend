@@ -13,6 +13,7 @@ interface activeLoanListDataStore {
     repayment_progress: string;
     total_duration_months: string;
   };
+  active: boolean;
 }
 
 interface activeLoanListStore {

@@ -71,19 +71,15 @@ const EditPersonalDetails = ({
   };
   return (
     <ModalOverlay onClose={onModalClose} className=" ">
-      <div className="w-[528px] h-[540px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative  z-50   shadow-lg mt-20  ">
+      <div className="w-[528px] border-[1px] border-[#E3E3E5] rounded-[8px] bg-white relative  z-50 shadow-lg">
         {" "}
-        <form
-          action="submit"
-          onSubmit={handleSubmit}
-          className="absolute z-50 w-[528px] "
-        >
+        <form action="submit" onSubmit={handleSubmit}>
           <div className="pt-6  pl-6 border-b border-[#E3E3E5]  ">
             <h2 id="" className="text-lg font-semibold mb-2">
               Edit Personal Details
             </h2>
           </div>
-          <div className="h-[400px] overflow-auto">
+          <div className="h-[350px] overflow-y-auto">
             <div className="grid gap-y-4 p-6">
               <div className="">
                 <Label

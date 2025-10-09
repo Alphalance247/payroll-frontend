@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import axios, { AxiosError } from "axios";
 import { environment } from "../env/env.local";
+import Link from "next/link";
 
 const SetPassword = () => {
   const SetPasswordDetails = () => {
@@ -46,31 +47,49 @@ const SetPassword = () => {
         setToken(UserToken);
       } else {
         toast.error("Invalid or missing Email / Token");
-        route.push("/forgot-password");
+        // route.push("/forgot-password");
       }
     }, [searchParams, route]);
 
     const handleChange = useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        if (name === "password" && !passwordRegex.test(value)) {
-          setError((prev) => ({
-            ...prev,
-            [name]:
-              "Password must contain at least 8 characters and must must be alphanumeric.",
-          }));
-        }
-        // Check password match for both fields
-        if (name === "confirm_password") {
-          if (value !== form.password) {
-            setError((prev) => ({
-              ...prev,
-              [name]: "Passwords don't match.",
-            }));
-          }
-        }
-
+        // Update form first so we can validate against the latest values
         setForm((prev) => ({ ...prev, [name]: value }));
+
+        // Validate and also CLEAR errors when conditions are met
+        setError((prev) => {
+          const next = { ...prev };
+
+          if (name === "password") {
+            // password strength
+            if (!passwordRegex.test(value)) {
+              next.password =
+                "Password must contain at least 8 characters and must must be alphanumeric.";
+            } else {
+              delete next.password;
+            }
+
+            // cross-validate with existing confirm_password
+            if (form.confirm_password) {
+              if (form.confirm_password !== value) {
+                next.confirm_password = "Passwords don't match.";
+              } else {
+                delete next.confirm_password;
+              }
+            }
+          }
+
+          if (name === "confirm_password") {
+            if (value !== form.password) {
+              next.confirm_password = "Passwords don't match.";
+            } else {
+              delete next.confirm_password;
+            }
+          }
+
+          return next;
+        });
       },
       [passwordRegex, form]
     );
@@ -141,12 +160,14 @@ const SetPassword = () => {
     return (
       <section className={`bg-[#F7F7F7]`}>
         <div className="max-w-[1270px] mx-auto px-8 py-20 md:px-4 md:py-12">
-          <Image
-            src="/assets/login/logo.svg"
-            width={121}
-            height={25}
-            alt="logo"
-          />
+          <Link href={"/"}>
+            <Image
+              src="/assets/login/logo.svg"
+              width={121}
+              height={25}
+              alt="logo"
+            />
+          </Link>
 
           <div className="bg-[#F7F7F7] h-screen pt-32">
             <div className=" w-[500px] h-fit py-6 px-14 mx-auto bg-white rounded-lg border-[#D3D3D6] border">

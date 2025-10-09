@@ -56,7 +56,7 @@ const TopBar = () => {
             <input
               type="text"
               className="py-[12px] pl-8 pr-3 w-[329px] h-[42px] border border-[#E5E7EB] text-sm font-medium shadow-sm rounded-lg"
-              placeholder="Search for people and payroll"
+              placeholder="Search"
             />
           </div>
           <div className="relative">
@@ -91,7 +91,7 @@ const TopBar = () => {
                     {user?.fullname || "Admin"}
                   </p>
                   <p className="text-[#71717A] text-[13px] leading-5 font-Graphik">
-                    {user?.is_payroll_staff ? "Admin" : "Staff"}
+                    {user?.is_payroll_staff ? "Admin" : "Employee"}
                   </p>
                 </div>
               </div>
