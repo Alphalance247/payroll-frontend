@@ -8,6 +8,7 @@ import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 
 import toast from "react-hot-toast";
+import Button from "@/app/common/Button";
 interface Items {
   id: string;
   message: string;
@@ -92,64 +93,67 @@ const MessageNotification = () => {
         />
       ) : (
         <div>
-          {!filteredItems ? (
-            <div className=" flex justify-center items-center my-96">
-              Notification is not found
+          {filteredItems.length === 0 ? (
+            <div className=" flex justify-center items-center h-96">
+              <p className="flex items-center">Notification is not found</p>
             </div>
           ) : (
-            filteredItems.map((item, index) => (
-              <div className="px-6 pt-6 " key={index}>
-                <div className="relative border-b border-[#E3E3E5] pb-6 flex gap-x-5 items-center justify-between">
-                  <div
-                    className="flex items-start gap-x-6 cursor-pointer"
-                    onClick={() => markAsRead(item.id)}
-                  >
-                    <BsBellFill
-                      className={
-                        item.is_read
-                          ? "text-[#71717A] w-6 h-6"
-                          : "text-[#E37915] w-6 h-6"
-                      }
-                    />
-                    <div>
-                      <p className="text-base font-semibold text-[#2F2F33] mb-2">
-                        {item.message}
-                      </p>
-                      <p className="text-sm text-[#71717A]">
-                        {item.created_at}
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <div>
-                      <span className="">
-                        <BsThreeDotsVertical
-                          className={
-                            !item.is_read
-                              ? "cursor-pointer text-[#71717A]"
-                              : "hidden"
-                          }
-                          onClick={() => toggleNotificationAction(item.id)}
-                        />
-                      </span>
-                    </div>
-                    {openNotificationAction === item.id && (
-                      <div className="absolute -top-4 -right-56 bg-white shadow-lg h-fit rounded-md w-fit z-auto">
-                        <div className="grid gap-y-3 p-4">
-                          {" "}
-                          <button
-                            className="outline-none text-[#71717A] capitalize font-Graphik font-normal text-start"
-                            onClick={() => markAsRead(item.id)}
-                          >
-                            Mark as read
-                          </button>
-                        </div>
+            <>
+              {filteredItems.map((item, index) => (
+                <div className="px-6 pt-6  " key={index}>
+                  <div className=" border-b border-[#E3E3E5] pb-6 flex gap-x-5 items-center justify-between">
+                    <div
+                      className="flex items-start gap-x-6 cursor-pointer"
+                      onClick={() => markAsRead(item.id)}
+                    >
+                      <BsBellFill
+                        className={
+                          item.is_read
+                            ? "text-[#71717A] w-6 h-6"
+                            : "text-[#E37915] w-6 h-6"
+                        }
+                      />
+                      <div>
+                        <p className="text-base font-semibold text-[#2F2F33] mb-2">
+                          {item.message}
+                        </p>
+                        <p className="text-sm text-[#71717A]">
+                          {item.created_at}
+                        </p>
                       </div>
-                    )}
+                    </div>
+                    <div>
+                      <div>
+                        <span className="relative">
+                          <BsThreeDotsVertical
+                            className={
+                              !item.is_read
+                                ? "cursor-pointer text-[#71717A]"
+                                : "hidden"
+                            }
+                            onClick={() => toggleNotificationAction(item.id)}
+                          />
+                        </span>
+                      </div>
+
+                      {openNotificationAction === item.id && (
+                        <div className="absolute top-44 -right-56 bg-white shadow-lg h-fit rounded-md w-fit z-30 ">
+                          <div className="grid gap-y-3 p-4">
+                            {" "}
+                            <Button
+                              className="outline-none text-[#71717A] capitalize font-Graphik font-normal text-start"
+                              onClick={() => markAsRead(item.id)}
+                            >
+                              Mark as read
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </>
           )}
         </div>
       )}
