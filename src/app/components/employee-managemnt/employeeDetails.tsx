@@ -33,9 +33,7 @@ export default function EmployeeDetailsClient({
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "Projects" },
     { id: 2, name: "Job" },
-    { id: 3, name: "Uploads" },
     { id: 4, name: "Timesheet" },
-    { id: 5, name: "Payslip" },
   ];
 
   const [employeeData, setEmployeeData] = useState<employeeDetailsData | null>(

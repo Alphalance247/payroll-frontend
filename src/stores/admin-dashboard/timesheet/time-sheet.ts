@@ -46,8 +46,10 @@ export const getAdminTimesheet = create<adminTimesheetListStore>((set) => ({
     set({ loading: true, error: null });
     try {
       let url = "/employees/timesheet?week=true";
+
       if (start && end) {
-        url += `&?start_date=${start}&end_date=${end}`;
+        url = "/employees/timesheet";
+        url += `?start_date=${start}&end_date=${end}`;
       }
       const res = await axiosInstance.get(url);
       set({ data: res.data, loading: false });
