@@ -89,7 +89,7 @@ const LoanTable = ({
                         setIsOpenSideBar(true);
                       }}
                     >
-                      LR-20240401-00{data?.id}
+                      {data?.id}
                     </td>
                     <td
                       className="p-6 text-sm text-[#2F2F33]"
