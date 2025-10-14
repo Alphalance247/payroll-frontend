@@ -7,10 +7,13 @@ import { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { useFilter } from "@/app/hooks/useFilter";
+import LeaveStatusUpdate from "./updateLeaveStatus";
 
 const LeaveRequest = () => {
   const { data, loading } = getLeaveRequestStore();
-
+  const [leaveId, setLeaveId] = useState("");
+  const [leaveStatusModal, setLeaveStatusModal] = useState(false);
+  const [leaveName, setLeaveName] = useState("");
   const [selectedTeam, setSelectedTeam] = useState("");
   const { filteredData, setSearchQuery, searchQuery, setFilter } = useFilter(
     data?.leaves || [],
@@ -51,6 +54,14 @@ const LeaveRequest = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
         </div>
 
+        {leaveStatusModal && (
+          <LeaveStatusUpdate
+            id={leaveId}
+            holidayName={leaveName}
+            onModalClose={() => setLeaveStatusModal(!leaveStatusModal)}
+          />
+        )}
+
         <DropDownBtn
           subText="Team"
           btnHeight="h-[350px]"
@@ -82,7 +93,7 @@ const LeaveRequest = () => {
           <Spinner />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1300px] border-b border-[#E3E3E5]">
+            <table className="w-full min-w-[1400px] border-b border-[#E3E3E5]">
               <thead className="bg-[#F7F7F7]">
                 <tr>
                   <th className="px-6 py-[14px] w-[40px]">
@@ -107,8 +118,13 @@ const LeaveRequest = () => {
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                     Duration
                   </th>
+
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                     Remaining
+                  </th>
+
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
+                    Reason
                   </th>
 
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
@@ -156,9 +172,7 @@ const LeaveRequest = () => {
                         {emp?.created_at}
                       </td>
                       <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        {emp?.employee === "Moshood Azeez Lawal"
-                          ? "Not stated yet"
-                          : emp?.leave_type}{" "}
+                        {emp?.leave_type}{" "}
                       </td>
                       <td className="px-6 py-4 text-sm text-[#2F2F33]">
                         {emp?.start_date} - {emp?.end_date}
@@ -166,19 +180,37 @@ const LeaveRequest = () => {
                       <td className="px-6 py-4 text-sm text-[#2F2F33]">
                         {emp?.remaining}
                       </td>
+
                       <td className="px-6 py-4 text-sm text-[#2F2F33]">
                         {emp?.remaining}
                       </td>
+
+                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                        {emp?.reason}
+                      </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs border border-[#188C43] bg-[#E9F9EF] text-[#188C43] font-medium`}
+                          className={`inline-block px-3 py-1 rounded-full text-xs border font-medium ${
+                            emp?.status === "pending"
+                              ? "border-yellow-400 bg-yellow-100 text-yellow-700"
+                              : emp?.status === "approved"
+                              ? "border-green-500 bg-green-100 text-green-600"
+                              : "border-red-500 bg-red-100 text-red-600"
+                          }`}
                         >
                           {emp?.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-[#2F2F33]">
                         {" "}
-                        <BsThreeDotsVertical />
+                        <BsThreeDotsVertical
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setLeaveStatusModal(true);
+                            setLeaveId(emp?.id);
+                            setLeaveName(emp?.employee);
+                          }}
+                        />
                       </td>
                     </tr>
                   ))}

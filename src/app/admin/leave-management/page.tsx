@@ -2,12 +2,8 @@
 import ProtectedRoute from "../../common/protectedRoute";
 import DashboardLayout from "../../common/DashBoardLayout";
 import Heading from "../../common/heading";
-import Button from "../../common/Button";
-import { BiPlus } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import LeaveRequest from "../../components/leave-management/leaveRequest";
-import LeaveBalance from "../../components/leave-management/leaveBalance";
-import { TfiExport } from "react-icons/tfi";
 import { getLeaveRequestStore } from "@/stores/leave-request/leaveRequestList";
 
 const LeaveManagement = () => {
@@ -16,9 +12,9 @@ const LeaveManagement = () => {
   useEffect(() => {
     fetchLeaveRequest();
   }, [fetchLeaveRequest]);
+
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "Leave Requests" },
-    { id: 2, name: "Leave Balance" },
   ];
   return (
     <ProtectedRoute>
@@ -33,7 +29,7 @@ const LeaveManagement = () => {
               />
             </div>
 
-            {activeBtn === "Leave Requests" ? (
+            {/* {activeBtn === "Leave Requests" ? (
               <Button variant="primary" className="flex items-center gap-x-2">
                 {" "}
                 <span className="text-white">
@@ -49,7 +45,7 @@ const LeaveManagement = () => {
                 </span>{" "}
                 Export CSV
               </Button>
-            )}
+            )} */}
           </div>
 
           {/* Requests Types Tab */}
@@ -72,7 +68,6 @@ const LeaveManagement = () => {
           </div>
 
           {activeBtn === "Leave Requests" && <LeaveRequest />}
-          {activeBtn === "Leave Balance" && <LeaveBalance />}
         </main>
       </DashboardLayout>
     </ProtectedRoute>
