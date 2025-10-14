@@ -8,7 +8,7 @@ const EmployeeDashboardLayout = ({ children }: { children: ReactNode }) => {
     <div className="max-w-[1800px] h-screen mx-auto flex flex-col">
       <TopBar />
 
-      <div className="grid grid-cols-[20%auto] overflow-hidden w-full">
+      <div className="grid grid-cols-[20%auto] overflow-hidden w-full h-full">
         <EmployeeSideBar />
         <>{children}</>
       </div>
