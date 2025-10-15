@@ -47,7 +47,7 @@ const EmployeeTimeTool = () => {
         <main className="p-4 md:p-6 lg:p-10 overflow-y-scroll">
           <Heading
             flexDirection="column"
-            subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+            subHead="Review your logged hours, regular time, and overtime."
             user={"Timesheet"}
           />
 

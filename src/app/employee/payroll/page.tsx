@@ -54,7 +54,7 @@ const EmployeePayroll = () => {
           <div className="flex justify-between items-center">
             <Heading
               user={"Payroll"}
-              subHead="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Consequuntur, "
+              subHead="View your pay history, net pay, and tax details."
               flexDirection="column"
             />
 
