@@ -32,7 +32,7 @@ const Employee = () => {
     },
     {
       label: "Total Time Booked",
-      value: data?.total_net_pay || "0",
+      value: data?.total_time_booked || "0",
     },
   ];
 

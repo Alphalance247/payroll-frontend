@@ -74,7 +74,7 @@ const EmployeeRequest = () => {
           <div>
             <Heading
               flexDirection="column"
-              subHead="Track and resolve queries by status, type, team, and date—search, filter and export."
+              subHead="Submit, track, and resolve your queries efficiently."
               user={"My Requests"}
             />
           </div>

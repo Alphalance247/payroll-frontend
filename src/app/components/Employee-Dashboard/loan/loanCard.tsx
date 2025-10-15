@@ -14,7 +14,7 @@ const LoanOverviewCard = () => {
     {
       label: "Outstanding Balance",
       value: "N " + data?.outstanding_balance,
-      details: "Repayment in progrees -2 months remaining",
+      details: "",
       detailsColor: "text-[#71717A]",
     },
     {

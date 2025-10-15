@@ -30,7 +30,7 @@ const EmployeeLoanRequest = () => {
           <div className="flex justify-between items-center">
             <Heading
               user={"My Loan Request"}
-              subHead="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Consequuntur, "
+              subHead="View active loans and submit new requests."
               flexDirection="column"
             />
 

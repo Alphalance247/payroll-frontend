@@ -39,7 +39,7 @@ const EmployeeCompliance = () => {
         <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
           <Heading
             flexDirection="column"
-            subHead="Lorem ipsum dolor sit amet consectetur. Vel ut eros leo enim ultrices"
+            subHead="Keep up with company policies, standards, and regulatory updates."
             user={"Compliance"}
           />
 
