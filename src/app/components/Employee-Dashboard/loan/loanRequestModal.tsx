@@ -9,7 +9,6 @@ import { AxiosError } from "axios";
 import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { getLoanCategory } from "@/stores/employee-dashboard/loan/loanCategories";
-import { getLoanRequestList } from "@/stores/loan/getLoanList";
 import { getEmployeeLoanList } from "@/stores/employee-dashboard/loan/loanList";
 
 const LoanRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
