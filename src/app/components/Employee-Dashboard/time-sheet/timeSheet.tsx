@@ -1,7 +1,6 @@
 "use client";
 import Button from "@/app/common/Button";
 import { getEmployeeTimesheet } from "@/stores/employee-dashboard/timesheet/time-sheet";
-import { TfiExport } from "react-icons/tfi";
 
 const TimeSheetTable = () => {
   const { data } = getEmployeeTimesheet();
@@ -12,13 +11,13 @@ const TimeSheetTable = () => {
         <div>
           <Button variant="secondary">This week</Button>
         </div>
-        <Button variant="secondary" className="flex items-center gap-x-2">
+        {/* <Button variant="secondary" className="flex items-center gap-x-2">
           {" "}
           <span className="text-[#2F2F33]">
             <TfiExport fill="#2F2F33" size={14} />
           </span>{" "}
           Export CSV File
-        </Button>
+        </Button> */}
       </div>
 
       <div>

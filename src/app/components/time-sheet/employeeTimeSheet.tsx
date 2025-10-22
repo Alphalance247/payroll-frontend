@@ -1,7 +1,5 @@
 "use client";
 import Button from "@/app/common/Button";
-import { BiPlus } from "react-icons/bi";
-import { TfiExport } from "react-icons/tfi";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Search } from "lucide-react";
@@ -48,7 +46,7 @@ const EmpoyeeTimeSheet = () => {
             </Button>
           </div>
         </div>
-        <div className="flex gap-x-2 items-center">
+        {/* <div className="flex gap-x-2 items-center">
           <Button variant="secondary" className="flex items-center gap-x-2">
             {" "}
             <span className="text-[#2F2F33]">
@@ -70,7 +68,7 @@ const EmpoyeeTimeSheet = () => {
             </span>{" "}
             Log Time
           </Button>
-        </div>
+        </div> */}
       </div>
       {loading ? (
         <Spinner spinnerSmall={true} />

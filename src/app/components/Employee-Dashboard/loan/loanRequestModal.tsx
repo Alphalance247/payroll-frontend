@@ -10,6 +10,7 @@ import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { getLoanCategory } from "@/stores/employee-dashboard/loan/loanCategories";
 import { getLoanRequestList } from "@/stores/loan/getLoanList";
+import { getEmployeeLoanList } from "@/stores/employee-dashboard/loan/loanList";
 
 const LoanRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
   const [loading, setIsLoading] = useState(false);
@@ -22,7 +23,7 @@ const LoanRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
   });
 
   const { fetchLoanCategory, data } = getLoanCategory();
-  const { fetchLoanRequestList } = getLoanRequestList();
+  const { fetchEmployeeLoanList } = getEmployeeLoanList();
 
   useEffect(() => {
     fetchLoanCategory();
@@ -47,7 +48,7 @@ const LoanRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
       if (res.status === 200 || res.status === 201) {
         toast.success(res?.data?.message || "Loan request added successfully");
         // Refresh loan details after loan request
-        fetchLoanRequestList();
+        fetchEmployeeLoanList();
         onModalClose();
       }
 

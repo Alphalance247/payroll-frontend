@@ -10,6 +10,7 @@ interface employeeLoanListDataStore {
     repayment_schedule: string;
     status: string;
     due_date: string;
+    created: string;
   }[];
   eligibility: number;
   loan_limit: number;

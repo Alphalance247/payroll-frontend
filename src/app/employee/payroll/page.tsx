@@ -2,7 +2,6 @@
 import EmployeeDashboardLayout from "@/app/common/employee-dashboard/common/employeeLayout";
 import Heading from "@/app/common/heading";
 import ProtectedRoute from "@/app/common/protectedRoute";
-import Button from "@/app/common/Button";
 import PayrollCardMain from "@/app/components/payroll/payrollCard";
 import { CgSoftwareDownload } from "react-icons/cg";
 import { Search } from "lucide-react";
@@ -58,7 +57,7 @@ const EmployeePayroll = () => {
               flexDirection="column"
             />
 
-            <Button variant="primary">Export CSV</Button>
+            {/* <Button variant="primary">Export CSV</Button> */}
           </div>
 
           {loading ? (
