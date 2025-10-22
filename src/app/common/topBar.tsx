@@ -18,6 +18,7 @@ const TopBar = () => {
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -31,6 +32,7 @@ const TopBar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
   return (
     <header className="sticky top-0 z-10 w-full bg-[#F7F7F7] border-b border-[#E3E3E5]">
       <div className="flex items-center justify-between px-6 py-5 max-w-[1440px] mx-auto">
@@ -124,7 +126,11 @@ const TopBar = () => {
                       </div>
                       <div>
                         <Link
-                          href={"/"}
+                          href={
+                            user?.is_payroll_staff
+                              ? "/employee/profile-settings"
+                              : "/employee/profile-settings"
+                          }
                           className="text-sm text-[#E37915] font-semibold font-Graphik"
                         >
                           Manage Account

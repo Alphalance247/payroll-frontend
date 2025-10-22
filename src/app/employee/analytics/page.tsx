@@ -61,7 +61,6 @@ const EmployeeAnalytics = () => {
 
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "My Earnings" },
-    { id: 2, name: "Timesheet" },
     { id: 3, name: "Leave Calendar" },
   ];
 
