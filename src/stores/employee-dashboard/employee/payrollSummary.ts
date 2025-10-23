@@ -18,6 +18,7 @@ interface payrollSummaryDataStore {
     debt: number;
     tax: number;
     net_pay: number;
+    related_file: string;
     paid: boolean;
   }[];
 }
