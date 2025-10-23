@@ -222,16 +222,22 @@ const EmployeePayroll = () => {
                               className="p-6 text-sm text-[#2F2F33]"
                               style={{ paddingLeft: "1.5rem" }}
                             >
-                              <div className="flex gap-x-2 items-center">
-                                <span>
-                                  <CgSoftwareDownload
-                                    size={20}
-                                    color="#000000"
-                                    fill="#000000"
-                                  />{" "}
-                                </span>
-                                Download
-                              </div>
+                              <a
+                                href={data?.related_file}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <div className="flex gap-x-2 items-center">
+                                  <span>
+                                    <CgSoftwareDownload
+                                      size={20}
+                                      color="#000000"
+                                      fill="#000000"
+                                    />{" "}
+                                  </span>
+                                  Download
+                                </div>
+                              </a>
                             </td>
                           </tr>
                         ))}
