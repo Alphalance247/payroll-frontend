@@ -119,7 +119,7 @@ const EmployeeAnalytics = () => {
                       <p className="text-base font-medium text-[#2F2F33]">
                         Transaction History
                       </p>
-                      <Link href={"/employee/analytics/transaction-history"}>
+                      <Link href={"/employee/payroll"}>
                         <p className="text-[#009BC0] text-[15px] font-medium tracking-[-0.3%] flex items-center gap-x-2">
                           See Full Transaction History{" "}
                           <span>
@@ -170,7 +170,7 @@ const EmployeeAnalytics = () => {
                                 <MdOutlinePayment size={20} fill="#009BC0" />
                               </span>
                             </div>
-                            <p className="text-[#71717A] ">Loan</p>
+                            <p className="text-[#71717A] ">Deductions</p>
                           </div>
                           <p className="text-[#2F2F33] font-medium">
                             N {el?.total_deductions}
