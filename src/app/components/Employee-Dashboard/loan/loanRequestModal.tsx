@@ -19,6 +19,7 @@ const LoanRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
     amount: "",
     due_date: "",
     category: "",
+    repay_per_month_percentage: "10",
   });
 
   const { fetchLoanCategory, data } = getLoanCategory();
@@ -122,6 +123,40 @@ const LoanRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
                       {el?.name}
                     </option>
                   ))}
+                </select>
+              </div>
+
+              <div>
+                <Label
+                  //   htmlFor="first-name"
+                  id="leave_type"
+                  className="block mb-1"
+                >
+                  Repayment Percentage
+                </Label>
+                <select
+                  id="repay_per_month_percentage"
+                  name="repay_per_month_percentage"
+                  value={form?.repay_per_month_percentage || ""}
+                  onChange={handleChange}
+                  className="w-full border border-[#E0E0E0] rounded-md text-sm px-3 py-[14px] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
+                >
+                  <option value="10">10%</option>
+                  <option value={"15"}>15%</option>
+                  <option value={"20"}>20%</option>
+                  <option value={"25"}>25%</option>
+                  <option value={"30"}>30%</option>
+                  <option value={"35"}>35%</option>
+                  <option value={"40"}>40%</option>
+                  <option value={"45"}>45%</option>
+                  <option value={"50"}>50%</option>
+                  <option value={"55"}>55%</option>
+                  <option value={"60"}>60%</option>
+                  <option value={"65"}>65%</option>
+                  <option value={"70"}>70%</option>
+                  <option value={"75"}>75%</option>
+                  <option value={"80"}>80%</option>
+                  <option value={"85"}>85%</option>
                 </select>
               </div>
 

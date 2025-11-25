@@ -9,6 +9,7 @@ interface employeeLoanListDataStore {
     amount: string;
     repayment_schedule: string;
     status: string;
+    repay_per_month_percentage: string;
     due_date: string;
     created: string;
   }[];

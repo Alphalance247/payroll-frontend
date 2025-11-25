@@ -64,6 +64,13 @@ const LoanTable = ({
                   className="px-6 py-3 text-left w-[200px]"
                   style={{ paddingLeft: "1.5rem" }}
                 >
+                  Repayment Percentage
+                </th>
+
+                <th
+                  className="px-6 py-3 text-left w-[200px]"
+                  style={{ paddingLeft: "1.5rem" }}
+                >
                   Due Date
                 </th>
 
@@ -127,6 +134,14 @@ const LoanTable = ({
                     >
                       {data?.created}
                     </td>
+
+                    <td
+                      className="p-6 text-sm text-[#2F2F33]"
+                      style={{ paddingLeft: "1.5rem" }}
+                    >
+                      {data?.created}
+                    </td>
+
                     <td
                       className="p-6 text-sm text-[#2F2F33]"
                       style={{ paddingLeft: "1.5rem" }}
