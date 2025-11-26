@@ -169,6 +169,7 @@ const LoanRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
                   className="w-full min-h-[132px] text-[#71717A] rounded-md border border-[#BEBEC2] p-3 text-sm resize-vertical outline-none focus:border-blue-400"
                   placeholder="Add context if needed..."
                   value={form?.purpose || ""}
+                  required
                   onChange={(e) =>
                     setForm({ ...form, purpose: e.target.value })
                   }
