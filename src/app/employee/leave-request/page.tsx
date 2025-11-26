@@ -104,7 +104,7 @@ const EmployeeLeaveRequest = () => {
               />
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[1000px] overflow-hidden shadow-sm ">
+                <table className="w-full min-w-[1100px] overflow-hidden shadow-sm ">
                   <thead className="bg-[#F7F7F7]  border-[#E3E3E5] border-b-[1px]  text-[#667085] text-[15px] leading-[1.5rem] font-medium">
                     <tr>
                       <th

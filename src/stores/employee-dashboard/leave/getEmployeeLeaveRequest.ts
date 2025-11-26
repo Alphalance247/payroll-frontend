@@ -8,6 +8,7 @@ interface employeeLeaveListDataStore {
     id: string;
     start_date: string;
     reason: string;
+    repay_per_month_percentage: string;
     end_date: string;
     status: string;
     duration: string;
