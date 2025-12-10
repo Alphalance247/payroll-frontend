@@ -9,8 +9,9 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import NonPayslipModal from "@/app/components/Admin/Bonus/NonPayslipModal";
 import PayslipModal from "@/app/components/Admin/Bonus/PayslipModal";
 import DisbursementModal from "@/app/components/Admin/Bonus/diburmentModal";
+import { useBonusList } from "@/app/hooks/useQueries/bonus/useBonusList";
 
-const Tax = () => {
+const Bonus = () => {
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [isBonusMenuOpen, setIsBonusMenuOpen] = useState(false);
@@ -20,6 +21,12 @@ const Tax = () => {
   const [actionMenuIndex, setActionMenuIndex] = useState<number | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
   const [diburseModal, setDisburseModal] = useState(false);
+  const { data } = useBonusList();
+  const [employeeDetails, setEmployeeDetails] = useState({
+    id: "",
+    name: "",
+    amount: "",
+  });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -42,24 +49,6 @@ const Tax = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const data = [
-    {
-      id: "",
-    },
-    {
-      id: "",
-    },
-    {
-      id: "",
-    },
-    {
-      id: "",
-    },
-    {
-      id: "",
-    },
-  ];
-
   return (
     <DashboardLayout>
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10 relative">
@@ -73,11 +62,17 @@ const Tax = () => {
           {showNonPaySlipModal && (
             <NonPayslipModal
               onModalClose={() => setShownonpayslipModal(false)}
+              id={employeeDetails?.id}
             />
           )}
 
           {diburseModal && (
-            <DisbursementModal onModalClose={() => setDisburseModal(false)} />
+            <DisbursementModal
+              employeeName={employeeDetails?.name}
+              amount={employeeDetails?.amount}
+              id={employeeDetails?.id}
+              onModalClose={() => setDisburseModal(false)}
+            />
           )}
 
           {showPaySlipModal && (
@@ -244,7 +239,7 @@ const Tax = () => {
                   </th>
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                     <p className="flex gap-x-1 cursor-pointer items-center">
-                      Bonus
+                      Bonus Amount
                       <span>
                         <IoMdInformationCircle fill="#71717A" size={16} />
                       </span>
@@ -283,7 +278,7 @@ const Tax = () => {
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]"></th>
                 </tr>
               </thead>
-              {data?.length === 0 ? (
+              {data?.data?.length === 0 ? (
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center py-8">
@@ -293,7 +288,7 @@ const Tax = () => {
                 </tbody>
               ) : (
                 <tbody>
-                  {data?.map((emp, i) => (
+                  {data?.data?.map((emp, i) => (
                     <tr
                       key={i}
                       className="border-b border-[#E3E3E5] last:border-b-0"
@@ -302,13 +297,13 @@ const Tax = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                            {"Moshood Azeez"
+                            {emp?.employee?.fullname
                               .split(" ")
                               .map((n) => n[0])
                               .join("")}
                           </div>
                           <span className="text-[#2F2F33] text-sm font-medium">
-                            Moshood Azeez
+                            {emp?.employee?.fullname}
                           </span>
                         </div>
                       </td>
@@ -316,21 +311,29 @@ const Tax = () => {
                         <span
                           className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
                         >
-                          ₦ 600,000
+                          N {emp?.amount}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        Testing for payments nothing
+                        {emp?.reason}
                       </td>
 
-                      <td className="px-6 py-4 text-sm text-[#2F2F33]">paid</td>
-                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        {" "}
-                        20-12-2025
+                      <td className="px-6 py-4 text-sm">
+                        {emp?.approved ? (
+                          <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
+                            Paid
+                          </span>
+                        ) : (
+                          <span className="text-xs bg-[#FFF5E5] border border-[#F6A723] text-[#B76A00] rounded-2xl capitalize w-fit px-2 py-1">
+                            Pending
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        {" "}
-                        20-65-2025
+                        {emp?.approved_by || "—"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                        {emp?.date_paid || "—"}
                       </td>
                       <td className="px-6 py-4 text-sm text-[#2F2F33]">
                         <div className="relative inline-block">
@@ -350,19 +353,30 @@ const Tax = () => {
                             <div className="absolute z-40 right-0 mt-2 w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden">
                               <button
                                 className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]"
-                                onClick={() => setDisburseModal(true)}
+                                onClick={() => {
+                                  setDisburseModal(true);
+                                  setEmployeeDetails((prev) => ({
+                                    ...prev,
+                                    id: emp?.id,
+                                    name: emp?.employee?.fullname,
+                                    amount: emp?.amount,
+                                  }));
+                                }}
                               >
                                 Disburse
                               </button>
 
                               <button
-                                className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]"
-                                onClick={() => setDisburseModal(true)}
+                                className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5]"
+                                onClick={() => {
+                                  setShownonpayslipModal(true);
+                                  setEmployeeDetails((prev) => ({
+                                    ...prev,
+                                    id: emp?.id,
+                                  }));
+                                }}
                               >
                                 Edit{" "}
-                              </button>
-                              <button className="w-full text-left px-4 py-3 text-sm hover:bg-[#FFF1F1] text-[#D14343] border-t border-[#E3E3E5]">
-                                Reject
                               </button>
                             </div>
                           )}
@@ -380,4 +394,4 @@ const Tax = () => {
   );
 };
 
-export default Tax;
+export default Bonus;

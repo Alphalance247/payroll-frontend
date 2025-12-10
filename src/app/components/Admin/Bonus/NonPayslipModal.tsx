@@ -35,6 +35,7 @@ const NonPayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
   const formatNaira = (value: string) => {
     if (!value) return "";
     const numeric = Number(value.replace(/[^0-9]/g, ""));
+
     if (Number.isNaN(numeric)) return "";
     return new Intl.NumberFormat("en-NG", {
       style: "currency",

@@ -1,22 +1,57 @@
 "use client";
 import ModalOverlay from "@/app/common/modal/modal";
 import Button from "@/app/common/Button";
+import { useState } from "react";
+import axiosInstance from "@/app/utils/axios";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
+import { useBonusList } from "@/app/hooks/useQueries/bonus/useBonusList";
 
 interface DisbursementModalProps {
   onModalClose: () => void;
   onConfirm?: () => void;
   employeeName?: string;
   amount?: string;
+  id: string;
 }
 
 const DisbursementModal = ({
   onModalClose,
-  onConfirm,
   employeeName,
   amount,
+  id,
 }: DisbursementModalProps) => {
-  const displayName = employeeName || "this employee";
-  const displayAmount = amount || "the specified bonus";
+  const [loading, setIsLoading] = useState(false);
+  const { refetch } = useBonusList();
+
+  const handleDisbursePayment = async () => {
+    try {
+      setIsLoading(true);
+
+      const res = await axiosInstance.post(
+        `employees/bonuses/bonus/${id}/disburse`
+      );
+
+      if (res.status === 200 || res.status === 201) {
+        toast.success(
+          res?.data?.message || "Bonus disbursed to employee successfully"
+        );
+
+        refetch();
+      }
+
+      setIsLoading(false);
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <ModalOverlay onClose={onModalClose}>
@@ -36,9 +71,8 @@ const DisbursementModal = ({
               Are you sure you want to proceed?
             </p>
             <p className="text-sm text-[#51525C] mt-1">
-              This will disburse{" "}
-              <span className="font-semibold">{displayAmount}</span> to{" "}
-              <span className="font-semibold">{displayName}</span>. Please
+              This will disburse <span className="font-semibold">{amount}</span>{" "}
+              to <span className="font-semibold">{employeeName}</span>. Please
               review before confirming.
             </p>
           </div>
@@ -54,14 +88,10 @@ const DisbursementModal = ({
           </Button>
           <Button
             className="w-fit"
-            onButtonClick={() => {
-              if (onConfirm) {
-                onConfirm();
-              }
-              onModalClose();
-            }}
+            btnType="submit"
+            onButtonClick={handleDisbursePayment}
           >
-            Yes, Disburse
+            {loading ? "Thinking...." : "Yes, Disburse"}
           </Button>
         </div>
       </div>
