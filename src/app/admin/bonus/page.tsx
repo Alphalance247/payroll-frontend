@@ -10,6 +10,8 @@ import NonPayslipModal from "@/app/components/Admin/Bonus/NonPayslipModal";
 import PayslipModal from "@/app/components/Admin/Bonus/PayslipModal";
 import DisbursementModal from "@/app/components/Admin/Bonus/diburmentModal";
 import { useBonusList } from "@/app/hooks/useQueries/bonus/useBonusList";
+import Spinner from "@/app/common/spinner";
+import ErrorFetch from "@/app/common/errorFetch";
 
 const Bonus = () => {
   const [selectedYear, setSelectedYear] = useState("");
@@ -21,7 +23,7 @@ const Bonus = () => {
   const [actionMenuIndex, setActionMenuIndex] = useState<number | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
   const [diburseModal, setDisburseModal] = useState(false);
-  const { data } = useBonusList();
+  const { data, error, isError, isLoading, refetch } = useBonusList();
   const [employeeDetails, setEmployeeDetails] = useState({
     id: "",
     name: "",
@@ -140,255 +142,261 @@ const Bonus = () => {
           </div>
         </div>
 
-        <div
-          className="bg-white rounded-lg border border-[#E3E3E5] mt-10 z-0 relative"
-          ref={actionMenuRef}
-        >
-          <div className="flex justify-between items-center py-5 px-6 z-0 relative">
-            <h2 className="text-base font-semibold  text-[#2F2F33]">Bonus</h2>
+        {isLoading ? (
+          <Spinner />
+        ) : isError ? (
+          <ErrorFetch onRefetch={refetch} message={error?.message || "Error"} />
+        ) : (
+          <div
+            className="bg-white rounded-lg border border-[#E3E3E5] mt-10 z-0 relative"
+            ref={actionMenuRef}
+          >
+            <div className="flex justify-between items-center py-5 px-6 z-0 relative">
+              <h2 className="text-base font-semibold  text-[#2F2F33]">Bonus</h2>
 
-            <div className="flex items-center gap-2">
-              <div>
-                <select
-                  name=""
-                  id=""
-                  className="border rounded-md px-4 py-[10px] focus:outline-none"
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
+              <div className="flex items-center gap-2">
+                <div>
+                  <select
+                    name=""
+                    id=""
+                    className="border rounded-md px-4 py-[10px] focus:outline-none"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                  >
+                    <option value="">Select year</option>
+                    <option value="2005">2005</option>
+                    <option value="2006">2006</option>
+                    <option value="2007">2007</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                    <option value="2031">2031</option>
+                  </select>
+                </div>
+
+                <div>
+                  <select
+                    name=""
+                    id=""
+                    className="border rounded-md px-4 py-[10px] focus:outline-none"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                  >
+                    <option value="">Select Month</option>
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                  </select>
+                </div>
+
+                <Button
+                  variant="primary"
+                  disabled={
+                    !selectedYear ||
+                    selectedYear === "" ||
+                    !selectedMonth ||
+                    selectedMonth === ""
+                  }
+                  className={`w-[100px] h-[40px] ${
+                    !selectedYear ||
+                    selectedYear === "" ||
+                    !selectedMonth ||
+                    selectedMonth === ""
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                  onButtonClick={() => {}}
                 >
-                  <option value="">Select year</option>
-                  <option value="2005">2005</option>
-                  <option value="2006">2006</option>
-                  <option value="2007">2007</option>
-                  <option value="2020">2020</option>
-                  <option value="2021">2021</option>
-                  <option value="2022">2022</option>
-                  <option value="2023">2023</option>
-                  <option value="2024">2024</option>
-                  <option value="2025">2025</option>
-                  <option value="2026">2026</option>
-                  <option value="2027">2027</option>
-                  <option value="2028">2028</option>
-                  <option value="2029">2029</option>
-                  <option value="2030">2030</option>
-                  <option value="2031">2031</option>
-                </select>
+                  Apply
+                </Button>
               </div>
-
-              <div>
-                <select
-                  name=""
-                  id=""
-                  className="border rounded-md px-4 py-[10px] focus:outline-none"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                >
-                  <option value="">Select Month</option>
-                  <option value="1">January</option>
-                  <option value="2">February</option>
-                  <option value="3">March</option>
-                  <option value="4">April</option>
-                  <option value="5">May</option>
-                  <option value="6">June</option>
-                  <option value="7">July</option>
-                  <option value="8">August</option>
-                  <option value="9">September</option>
-                  <option value="10">October</option>
-                  <option value="11">November</option>
-                  <option value="12">December</option>
-                </select>
-              </div>
-
-              <Button
-                variant="primary"
-                disabled={
-                  !selectedYear ||
-                  selectedYear === "" ||
-                  !selectedMonth ||
-                  selectedMonth === ""
-                }
-                className={`w-[100px] h-[40px] ${
-                  !selectedYear ||
-                  selectedYear === "" ||
-                  !selectedMonth ||
-                  selectedMonth === ""
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }`}
-                onButtonClick={() => {}}
-              >
-                Apply
-              </Button>
             </div>
-          </div>
 
-          <div className="overflow-x-auto relative z-0">
-            <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
-              <thead className="bg-[#F7F7F7]">
-                <tr>
-                  <th className="px-6 py-[14px] text-sm font-medium w-[40px] text-[#71717A]">
-                    S/N
-                  </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
-                    <p className="flex gap-x-1 cursor-pointer items-center">
-                      Name{" "}
-                      <span>
-                        <RiExpandUpDownFill fill="#2F2F33" size={12} />
-                      </span>
-                    </p>
-                  </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                    <p className="flex gap-x-1 cursor-pointer items-center">
-                      Bonus Amount
-                      <span>
-                        <IoMdInformationCircle fill="#71717A" size={16} />
-                      </span>
-                    </p>
-                  </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                    <p className="flex gap-x-1 cursor-pointer items-center">
-                      Reason
-                    </p>
-                  </th>
-
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                    <p className="flex gap-x-1 cursor-pointer items-center">
-                      Status
-                      <span>
-                        <IoMdInformationCircle fill="#71717A" size={16} />
-                      </span>
-                    </p>
-                  </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                    <p className="flex gap-x-1 cursor-pointer items-center">
-                      Date Added
-                      <span>
-                        <IoMdInformationCircle fill="#71717A" size={16} />
-                      </span>
-                    </p>
-                  </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                    <p className="flex gap-x-1 cursor-pointer items-center">
-                      Date Paid
-                      <span>
-                        <IoMdInformationCircle fill="#71717A" size={16} />
-                      </span>
-                    </p>
-                  </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]"></th>
-                </tr>
-              </thead>
-              {data?.data?.length === 0 ? (
-                <tbody>
+            <div className="overflow-x-auto relative z-0">
+              <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
+                <thead className="bg-[#F7F7F7]">
                   <tr>
-                    <td colSpan={6} className="text-center py-8">
-                      No Details found for the selected month
-                    </td>
-                  </tr>
-                </tbody>
-              ) : (
-                <tbody>
-                  {data?.data?.map((emp, i) => (
-                    <tr
-                      key={i}
-                      className="border-b border-[#E3E3E5] last:border-b-0"
-                    >
-                      <td className="px-6 py-4">{i + 1}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                            {emp?.employee?.fullname
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </div>
-                          <span className="text-[#2F2F33] text-sm font-medium">
-                            {emp?.employee?.fullname}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
-                        >
-                          N {emp?.amount}
+                    <th className="px-6 py-[14px] text-sm font-medium w-[40px] text-[#71717A]">
+                      S/N
+                    </th>
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
+                      <p className="flex gap-x-1 cursor-pointer items-center">
+                        Name{" "}
+                        <span>
+                          <RiExpandUpDownFill fill="#2F2F33" size={12} />
                         </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        {emp?.reason}
-                      </td>
+                      </p>
+                    </th>
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                      <p className="flex gap-x-1 cursor-pointer items-center">
+                        Bonus Amount
+                        <span>
+                          <IoMdInformationCircle fill="#71717A" size={16} />
+                        </span>
+                      </p>
+                    </th>
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                      <p className="flex gap-x-1 cursor-pointer items-center">
+                        Reason
+                      </p>
+                    </th>
 
-                      <td className="px-6 py-4 text-sm">
-                        {emp?.approved ? (
-                          <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
-                            Paid
-                          </span>
-                        ) : (
-                          <span className="text-xs bg-[#FFF5E5] border border-[#F6A723] text-[#B76A00] rounded-2xl capitalize w-fit px-2 py-1">
-                            Pending
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        {emp?.approved_by || "—"}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        {emp?.date_paid || "—"}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        <div className="relative inline-block">
-                          <button
-                            onClick={() =>
-                              setActionMenuIndex(
-                                actionMenuIndex === i ? null : i
-                              )
-                            }
-                            className="p-2 rounded-full hover:bg-[#F7F7F7] transition-colors"
-                            aria-label="Row actions"
-                          >
-                            <BsThreeDotsVertical />
-                          </button>
-
-                          {actionMenuIndex === i && (
-                            <div className="absolute z-40 right-0 mt-2 w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden">
-                              <button
-                                className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]"
-                                onClick={() => {
-                                  setDisburseModal(true);
-                                  setEmployeeDetails((prev) => ({
-                                    ...prev,
-                                    id: emp?.id,
-                                    name: emp?.employee?.fullname,
-                                    amount: emp?.amount,
-                                  }));
-                                }}
-                              >
-                                Disburse
-                              </button>
-
-                              <button
-                                className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5]"
-                                onClick={() => {
-                                  setShownonpayslipModal(true);
-                                  setEmployeeDetails((prev) => ({
-                                    ...prev,
-                                    id: emp?.id,
-                                  }));
-                                }}
-                              >
-                                Edit{" "}
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                      <p className="flex gap-x-1 cursor-pointer items-center">
+                        Status
+                        <span>
+                          <IoMdInformationCircle fill="#71717A" size={16} />
+                        </span>
+                      </p>
+                    </th>
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                      <p className="flex gap-x-1 cursor-pointer items-center">
+                        Date Added
+                        <span>
+                          <IoMdInformationCircle fill="#71717A" size={16} />
+                        </span>
+                      </p>
+                    </th>
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                      <p className="flex gap-x-1 cursor-pointer items-center">
+                        Date Paid
+                        <span>
+                          <IoMdInformationCircle fill="#71717A" size={16} />
+                        </span>
+                      </p>
+                    </th>
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]"></th>
+                  </tr>
+                </thead>
+                {data?.data?.length === 0 ? (
+                  <tbody>
+                    <tr>
+                      <td colSpan={6} className="text-center py-8">
+                        No Details found for the selected month
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              )}
-            </table>
+                  </tbody>
+                ) : (
+                  <tbody>
+                    {data?.data?.map((emp, i) => (
+                      <tr
+                        key={i}
+                        className="border-b border-[#E3E3E5] last:border-b-0"
+                      >
+                        <td className="px-6 py-4">{i + 1}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
+                              {emp?.employee?.fullname
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </div>
+                            <span className="text-[#2F2F33] text-sm font-medium">
+                              {emp?.employee?.fullname}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
+                          >
+                            N {emp?.amount}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                          {emp?.reason}
+                        </td>
+
+                        <td className="px-6 py-4 text-sm">
+                          {emp?.approved ? (
+                            <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
+                              Paid
+                            </span>
+                          ) : (
+                            <span className="text-xs bg-[#FFF5E5] border border-[#F6A723] text-[#B76A00] rounded-2xl capitalize w-fit px-2 py-1">
+                              Pending
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                          {emp?.approved_by || "—"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                          {emp?.date_paid || "—"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                          <div className="relative inline-block">
+                            <button
+                              onClick={() =>
+                                setActionMenuIndex(
+                                  actionMenuIndex === i ? null : i
+                                )
+                              }
+                              className="p-2 rounded-full hover:bg-[#F7F7F7] transition-colors"
+                              aria-label="Row actions"
+                            >
+                              <BsThreeDotsVertical />
+                            </button>
+
+                            {actionMenuIndex === i && (
+                              <div className="absolute z-40 right-0 mt-2 w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden">
+                                <button
+                                  className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]"
+                                  onClick={() => {
+                                    setDisburseModal(true);
+                                    setEmployeeDetails((prev) => ({
+                                      ...prev,
+                                      id: emp?.id,
+                                      name: emp?.employee?.fullname,
+                                      amount: emp?.amount,
+                                    }));
+                                  }}
+                                >
+                                  Disburse
+                                </button>
+
+                                <button
+                                  className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5]"
+                                  onClick={() => {
+                                    setShownonpayslipModal(true);
+                                    setEmployeeDetails((prev) => ({
+                                      ...prev,
+                                      id: emp?.id,
+                                    }));
+                                  }}
+                                >
+                                  Edit{" "}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                )}
+              </table>
+            </div>
           </div>
-        </div>
+        )}
       </main>
     </DashboardLayout>
   );
