@@ -8,10 +8,11 @@ interface data {
   approved: string;
   approved_by: string;
   date_paid: string;
+  created: string;
+  paid: boolean;
   employee: {
     fullname: string;
   };
-  paid: boolean;
   reason: string;
 }
 

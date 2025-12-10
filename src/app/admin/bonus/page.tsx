@@ -23,7 +23,7 @@ const Bonus = () => {
   const [actionMenuIndex, setActionMenuIndex] = useState<number | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
   const [diburseModal, setDisburseModal] = useState(false);
-  const { data, error, isError, isLoading, refetch } = useBonusList();
+  const { data, isError, error, isLoading, refetch } = useBonusList();
   const [employeeDetails, setEmployeeDetails] = useState({
     id: "",
     name: "",
@@ -141,11 +141,13 @@ const Bonus = () => {
             )}
           </div>
         </div>
-
         {isLoading ? (
-          <Spinner />
+          <Spinner spinnerSmall={true} />
         ) : isError ? (
-          <ErrorFetch onRefetch={refetch} message={error?.message || "Error"} />
+          <ErrorFetch
+            message={error?.message || "error fetching form please try again"}
+            onRefetch={() => refetch()}
+          />
         ) : (
           <div
             className="bg-white rounded-lg border border-[#E3E3E5] mt-10 z-0 relative"
@@ -233,9 +235,6 @@ const Bonus = () => {
               <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
                 <thead className="bg-[#F7F7F7]">
                   <tr>
-                    <th className="px-6 py-[14px] text-sm font-medium w-[40px] text-[#71717A]">
-                      S/N
-                    </th>
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Name{" "}
@@ -260,7 +259,16 @@ const Bonus = () => {
 
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                       <p className="flex gap-x-1 cursor-pointer items-center">
-                        Status
+                        Disburse Status
+                        <span>
+                          <IoMdInformationCircle fill="#71717A" size={16} />
+                        </span>
+                      </p>
+                    </th>
+
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                      <p className="flex gap-x-1 cursor-pointer items-center">
+                        Approval Status
                         <span>
                           <IoMdInformationCircle fill="#71717A" size={16} />
                         </span>
@@ -300,7 +308,6 @@ const Bonus = () => {
                         key={i}
                         className="border-b border-[#E3E3E5] last:border-b-0"
                       >
-                        <td className="px-6 py-4">{i + 1}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
                             <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
@@ -318,7 +325,7 @@ const Bonus = () => {
                           <span
                             className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
                           >
-                            N {emp?.amount}
+                            ₦ {emp?.amount}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-[#2F2F33]">
@@ -326,18 +333,30 @@ const Bonus = () => {
                         </td>
 
                         <td className="px-6 py-4 text-sm">
-                          {emp?.approved ? (
+                          {emp?.paid ? (
                             <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
-                              Paid
+                              disbursed
                             </span>
                           ) : (
                             <span className="text-xs bg-[#FFF5E5] border border-[#F6A723] text-[#B76A00] rounded-2xl capitalize w-fit px-2 py-1">
-                              Pending
+                              not disbursed
+                            </span>
+                          )}
+                        </td>
+
+                        <td className="px-6 py-4 text-sm">
+                          {emp?.approved ? (
+                            <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
+                              approved
+                            </span>
+                          ) : (
+                            <span className="text-xs bg-[#FFF5E5] border border-[#F6A723] text-[#B76A00] rounded-2xl capitalize w-fit px-2 py-1">
+                              pending
                             </span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {emp?.approved_by || "—"}
+                          {emp?.created || "—"}
                         </td>
                         <td className="px-6 py-4 text-sm text-[#2F2F33]">
                           {emp?.date_paid || "—"}

@@ -36,7 +36,7 @@ const DisbursementModal = ({
         toast.success(
           res?.data?.message || "Bonus disbursed to employee successfully"
         );
-
+        onModalClose();
         refetch();
       }
 
@@ -71,8 +71,9 @@ const DisbursementModal = ({
               Are you sure you want to proceed?
             </p>
             <p className="text-sm text-[#51525C] mt-1">
-              This will disburse <span className="font-semibold">{amount}</span>{" "}
-              to <span className="font-semibold">{employeeName}</span>. Please
+              This will disburse{" "}
+              <span className="font-semibold">₦{amount}</span> to{" "}
+              <span className="font-semibold">{employeeName}</span>. Please
               review before confirming.
             </p>
           </div>
