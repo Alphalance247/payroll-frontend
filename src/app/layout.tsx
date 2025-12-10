@@ -4,6 +4,7 @@ import Notification from "./common/notification";
 import { AuthProvider } from "./context/authContext";
 import SessionConflictMessage from "./common/sessionConflictMessage";
 import TokenExpiredMessage from "./components/TokenExpiredMessage";
+import QueryProviders from "./context/queryContext";
 
 export const metadata: Metadata = {
   title: "Payroll App",
@@ -22,7 +23,7 @@ export default function RootLayout({
           <Notification />
           <TokenExpiredMessage />
           <SessionConflictMessage />
-          {children}
+          <QueryProviders>{children}</QueryProviders>
         </AuthProvider>
       </body>
     </html>
