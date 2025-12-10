@@ -8,6 +8,7 @@ import { IoMdInformationCircle } from "react-icons/io";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import NonPayslipModal from "@/app/components/Admin/Bonus/NonPayslipModal";
 import PayslipModal from "@/app/components/Admin/Bonus/PayslipModal";
+import DisbursementModal from "@/app/components/Admin/Bonus/diburmentModal";
 
 const Tax = () => {
   const [selectedYear, setSelectedYear] = useState("");
@@ -18,6 +19,7 @@ const Tax = () => {
   const [showNonPaySlipModal, setShownonpayslipModal] = useState(false);
   const [actionMenuIndex, setActionMenuIndex] = useState<number | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
+  const [diburseModal, setDisburseModal] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -72,6 +74,10 @@ const Tax = () => {
             <NonPayslipModal
               onModalClose={() => setShownonpayslipModal(false)}
             />
+          )}
+
+          {diburseModal && (
+            <DisbursementModal onModalClose={() => setDisburseModal(false)} />
           )}
 
           {showPaySlipModal && (
@@ -144,9 +150,7 @@ const Tax = () => {
           ref={actionMenuRef}
         >
           <div className="flex justify-between items-center py-5 px-6 z-0 relative">
-            <h2 className="text-base font-semibold  text-[#2F2F33]">
-              Tax Breakdown
-            </h2>
+            <h2 className="text-base font-semibold  text-[#2F2F33]">Bonus</h2>
 
             <div className="flex items-center gap-2">
               <div>
@@ -344,8 +348,18 @@ const Tax = () => {
 
                           {actionMenuIndex === i && (
                             <div className="absolute z-40 right-0 mt-2 w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden">
-                              <button className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]">
+                              <button
+                                className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]"
+                                onClick={() => setDisburseModal(true)}
+                              >
                                 Disburse
+                              </button>
+
+                              <button
+                                className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]"
+                                onClick={() => setDisburseModal(true)}
+                              >
+                                Edit{" "}
                               </button>
                               <button className="w-full text-left px-4 py-3 text-sm hover:bg-[#FFF1F1] text-[#D14343] border-t border-[#E3E3E5]">
                                 Reject

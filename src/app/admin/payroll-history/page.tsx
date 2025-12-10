@@ -54,70 +54,78 @@ const PayrollHistory = () => {
       <DashboardLayout>
         <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
           <div className="flex flex-col">
-            <div className="flex items-center gap-x-2">
-              <p className="text-[#71717A] text-sm font-medium">
-                Payroll History
-              </p>
-              <span className="text-[#71717A] text-sm font-medium">
-                <GoChevronRight size={20} />
-              </span>
-              <p className="text-[#71717A] text-sm font-medium">
-                PR-2025-01-15
-              </p>
-            </div>
             <h2 className="text-[28px] text-[#2F2F33] font-semibold tracking-[-0.5px] mb-10 mt-4">
-              PR-2025-01-15
+              Payroll History
             </h2>
           </div>
-          <div className="flex gap-x-5 items-center border-b border-[#E4E7EC] mb-6">
-            {tabs.map((el, i) => (
-              <button
-                className={`${
-                  activeTab === el.name
-                    ? "text-[#E37915] border-b-[1.5px] border-[#E37915] bg-white text-sm"
-                    : "text-[#71717A] border-transparent"
-                }   font-semibold text-sm px-2 py-4`}
-                onClick={() => setActiveTab(el.name)}
-                key={i}
-              >
-                {el.name}
-              </button>
-            ))}
-          </div>
 
-          <div className="">
-            {activeTab === "Payroll Details" && (
-              <>
-                {isLoading ? (
-                  <div className="flex justify-center items-center h-screen">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-                  </div>
-                ) : payrollHistory ? (
-                  <>
-                    <HistoryOverview
-                      approvedBy={
-                        payrollHistory?.payroll?.approved_by?.fullname
-                      }
-                      approvalTimestamp={payrollHistory?.payroll?.payday}
-                      fundStatus={payrollHistory?.payroll?.total_payout}
-                      totalHours={payrollHistory?.payroll?.total_hours}
-                    />
-                    <PayrollHistoryTable
-                      teams={payrollHistory?.teams}
-                      transferData={payrollHistory?.transfer_data}
-                      payroll={payrollHistory}
-                    />
-                  </>
-                ) : (
-                  <div className="text-center py-10 text-[#71717A]">
-                    No payroll history data available
-                  </div>
-                )}
-              </>
-            )}
+          <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10 mt-32">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-x-2">
+                <p className="text-[#71717A] text-sm font-medium">
+                  Payroll History
+                </p>
+                <span className="text-[#71717A] text-sm font-medium">
+                  <GoChevronRight size={20} />
+                </span>
+                <p className="text-[#71717A] text-sm font-medium">
+                  PR-2025-01-15
+                </p>
+              </div>
+              <h2 className="text-[28px] text-[#2F2F33] font-semibold tracking-[-0.5px] mb-10 mt-4">
+                PR-2025-01-15
+              </h2>
+            </div>
+            <div className="flex gap-x-5 items-center border-b border-[#E4E7EC] mb-6">
+              {tabs.map((el, i) => (
+                <button
+                  className={`${
+                    activeTab === el.name
+                      ? "text-[#E37915] border-b-[1.5px] border-[#E37915] bg-white text-sm"
+                      : "text-[#71717A] border-transparent"
+                  }   font-semibold text-sm px-2 py-4`}
+                  onClick={() => setActiveTab(el.name)}
+                  key={i}
+                >
+                  {el.name}
+                </button>
+              ))}
+            </div>
 
-            {activeTab === "Audit logs" && <p>Audit logs</p>}
-          </div>
+            <div className="">
+              {activeTab === "Payroll Details" && (
+                <>
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-screen">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+                    </div>
+                  ) : payrollHistory ? (
+                    <>
+                      <HistoryOverview
+                        approvedBy={
+                          payrollHistory?.payroll?.approved_by?.fullname
+                        }
+                        approvalTimestamp={payrollHistory?.payroll?.payday}
+                        fundStatus={payrollHistory?.payroll?.total_payout}
+                        totalHours={payrollHistory?.payroll?.total_hours}
+                      />
+                      <PayrollHistoryTable
+                        teams={payrollHistory?.teams}
+                        transferData={payrollHistory?.transfer_data}
+                        payroll={payrollHistory}
+                      />
+                    </>
+                  ) : (
+                    <div className="text-center py-10 text-[#71717A]">
+                      No payroll history data available
+                    </div>
+                  )}
+                </>
+              )}
+
+              {activeTab === "Audit logs" && <p>Audit logs</p>}
+            </div>
+          </main>
         </main>
       </DashboardLayout>
     </ProtectedRoute>

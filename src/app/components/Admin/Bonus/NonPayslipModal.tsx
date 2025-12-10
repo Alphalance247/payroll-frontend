@@ -106,7 +106,7 @@ const NonPayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
 
               <div>
                 <Label id="due_date" className="block mb-1">
-                  Payslip
+                  Payslip (Optional)
                 </Label>
                 <Input
                   type="text"
@@ -151,10 +151,9 @@ const NonPayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
                   onChange={handleChange}
                   className="w-full border outline-none text-[#333333] border-[#E3E3E5] p-4 text-sm rounded-lg"
                 >
-                  <option value="">Status</option>
-                  <option value="in review">In review</option>
+                  <option value="reject">Status</option>
                   <option value="approved">Approved</option>
-                  <option value="rejected">Rejected</option>
+                  <option value="reject">Reject</option>
                 </select>
               </div>
 
