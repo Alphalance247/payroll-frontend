@@ -4,21 +4,22 @@ import Input from "@/app/common/input";
 import { useState } from "react";
 import ModalOverlay from "@/app/common/modal/modal";
 import Button from "@/app/common/Button";
-// import CollapseHeading from "@/app/common/colllapseHeading";
 import { AxiosError } from "axios";
 import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
+import { usePayslip } from "@/app/hooks/useQueries/bonus/usePayslip";
+import { useEmployeeListData } from "@/app/hooks/useQueries/useEmployeeData";
 
 const PayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
   const [loading, setIsLoading] = useState(false);
+  const [employeeId, setEmployeeId] = useState("");
   const [form, setForm] = useState({
-    employee_name: "",
-    purpose: "",
-    description: "",
-    status: "",
+    employee: "",
+    payslip: "",
     amount: "",
-    due_date: "",
   });
+  const { data: employeePayslip } = usePayslip({ id: employeeId });
+  const { data } = useEmployeeListData();
 
   const handleChange = (
     event:
@@ -28,6 +29,9 @@ const PayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
   ) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    if (name === "employee") {
+      setEmployeeId(value);
+    }
   };
 
   const formatNaira = (value: string) => {
@@ -48,20 +52,26 @@ const PayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
   };
 
   const handleLoanRequest = async (e: React.FormEvent<HTMLFormElement>) => {
+    const payslipId = form?.payslip;
     e.preventDefault();
     try {
       setIsLoading(true);
 
-      const payload = { ...form };
-      const res = await axiosInstance.post(`/employees/loan-request`, {
-        ...payload,
-      });
+      const res = await axiosInstance.patch(
+        `/employees/bonuses/add-bonus-to-payslip/${payslipId}`,
+        { amount: form?.amount }
+      );
 
       if (res.status === 200 || res.status === 201) {
-        toast.success(res?.data?.message || "Loan request added successfully");
-        // Refresh loan details after loan request
-        onModalClose();
+        toast.success(res?.data?.message || "Bonus  added successfully");
       }
+
+      setForm((prev) => ({
+        ...prev,
+        employee: "",
+        payslip: "",
+        amount: "",
+      }));
 
       setIsLoading(false);
     } catch (err) {
@@ -89,33 +99,48 @@ const PayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
           <div className="overflow-y-auto h-[300px]">
             <div className="p-4 flex flex-col gap-y-4">
               <div>
-                <Label id="date-of-birth" className="block mb-1">
+                <Label id="employee" className="block mb-1">
                   Employee Name
                 </Label>
-                <Input
-                  type="text"
-                  id="employee_name"
-                  placeholder="Enter employee name"
-                  name="employee_name"
-                  value={form?.employee_name || ""}
+                <select
+                  name="employee"
+                  required
+                  id="employee"
+                  value={form?.employee}
                   onChange={handleChange}
-                />
+                  className="w-full border outline-none text-[#333333] border-[#E3E3E5] p-4 text-sm rounded-lg"
+                >
+                  <option value="">Employees</option>
+                  {data?.employees?.map((el) => (
+                    <option value={el?.id} key={el?.id}>
+                      {el?.fullname}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
                 <Label id="due_date" className="block mb-1">
                   Payslip
                 </Label>
-                <Input
-                  type="text"
-                  id="due_date"
-                  placeholder="0.00"
-                  name="due_date"
-                  value={form?.due_date || ""}
-                  readonly
+                <select
+                  name="payslip"
+                  id="payslip"
+                  required
+                  value={form?.payslip}
                   onChange={handleChange}
-                  className=" cursor-not-allowed opacity-90"
-                />
+                  className={`w-full border outline-none text-[#333333] border-[#E3E3E5] p-4 text-sm rounded-lg ${
+                    employeeId ? "" : "cursor-not-allowed opacity-40"
+                  }`}
+                  disabled={!employeeId}
+                >
+                  <option value="">select payslip</option>
+                  {employeePayslip?.data?.map((el) => (
+                    <option value={el?.id} key={el?.id}>
+                      {el?.id}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>

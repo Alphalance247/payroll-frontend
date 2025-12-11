@@ -8,32 +8,32 @@ import { AxiosError } from "axios";
 import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { useEmployeeBonusDetail } from "@/app/hooks/useQueries/bonus/useEmployeeBonusDetail";
-import { getEmployeeListStore } from "@/stores/getEmployee";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
 import { useBonusList } from "@/app/hooks/useQueries/bonus/useBonusList";
+import { usePayslip } from "@/app/hooks/useQueries/bonus/usePayslip";
+import { useEmployeeListData } from "@/app/hooks/useQueries/useEmployeeData";
 
-interface data {
-  id: string;
-}
+const initialForm = {
+  employee: "",
+  reason: "",
+  payslip: "",
+  approved: "",
+  amount: "",
+};
 
 const NonPayslipModal = ({
   onModalClose,
   id,
+  btnType,
 }: {
   onModalClose: () => void;
   id: string;
+  btnType: "edit" | "add-new";
 }) => {
   const [loading, setIsLoading] = useState(false);
-  const [form, setForm] = useState({
-    employee: "",
-    reason: "",
-    payslip: "",
-    approved: "",
-    amount: "",
-  });
+  const [form, setForm] = useState(initialForm);
   const [employeeId, setEmployeeId] = useState("");
-  const [employeePayslip, setEmployeePayslip] = useState<data[]>([]);
   const { refetch } = useBonusList();
 
   const handleChange = (
@@ -50,53 +50,47 @@ const NonPayslipModal = ({
   };
 
   const { data: dataDetails } = useEmployeeBonusDetail({ id: id });
+  const { data: employeePayslip } = usePayslip({ id: employeeId });
 
   const {
-    fetchEmployeeList,
     data,
-    loading: loadingEmployeeList,
+    isError,
+    isLoading: loadingEmployeeList,
     error,
-  } = getEmployeeListStore();
+    refetch: refetchEmployee,
+  } = useEmployeeListData();
 
   useEffect(() => {
-    fetchEmployeeList();
-    if (id && dataDetails) {
-      setForm((prev) => ({
-        ...prev,
-        employee_name: dataDetails?.data.employee?.fullname,
+    if (id && dataDetails?.data && btnType === "edit") {
+      // prefer using the employee id as the select value (options use id)
+      const employeeIdFromDetails =
+        dataDetails?.data.employee?.id?.toString?.() ||
+        dataDetails?.data.employee?.id ||
+        "";
+
+      setForm(() => ({
+        employee: employeeIdFromDetails,
+        reason: dataDetails?.data.reason || "",
+        payslip: dataDetails?.data?.payslip || "",
+        approved: dataDetails?.data?.approved ? "approve" : "pending",
+        amount:
+          dataDetails?.data?.amount != null
+            ? String(dataDetails?.data?.amount).replace(/[^0-9]/g, "")
+            : "",
       }));
+      setEmployeeId(employeeIdFromDetails);
+    } else {
+      // clear form and employeeId to avoid stale/cached values replacing inputs later
+      setForm(initialForm);
+      setEmployeeId("");
     }
-  }, [id, dataDetails, fetchEmployeeList]);
 
-  useEffect(() => {
-    const fetchPayslip = async () => {
-      setIsLoading(true);
-      try {
-        const res = await axiosInstance.get(`/employees/payslip/${employeeId}`);
-        if (res.status === 200) {
-          setEmployeePayslip(res?.data?.data);
-        } else {
-          toast.error(
-            res?.data?.message ||
-              "Error fetching payroll history please refresh or contact Admin"
-          );
-        }
-      } catch (err) {
-        let errorMessage =
-          "An error occurred please try again or contact Admin";
-        if (err instanceof AxiosError) {
-          errorMessage = err.response?.data?.statusmessage || errorMessage;
-        }
-        toast.error(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
+    // cleanup on unmount
+    return () => {
+      setForm(initialForm);
+      setEmployeeId("");
     };
-
-    if (employeeId) {
-      fetchPayslip();
-    }
-  }, [employeeId]);
+  }, [id, dataDetails?.data, btnType]);
 
   const formatNaira = (value: string) => {
     if (!value) return "";
@@ -122,25 +116,39 @@ const NonPayslipModal = ({
     try {
       setIsLoading(true);
 
-      const res = await axiosInstance.post(`/employees/bonuses/add-bonus`, {
-        ...form,
-        approved: booleanValue,
-      });
+      let res;
+      //requirement: if btnType === "edit" use POST, otherwise use PATCH
+      if (btnType === "edit") {
+        res = await axiosInstance.patch(`/employees/bonuses/bonus/${id}`, {
+          ...form,
+          approved: booleanValue,
+        });
 
-      if (res.status === 200 || res.status === 201) {
-        toast.success(res?.data?.message || "Bonus added successfully");
-        // Refresh loan details after loan request
-        refetch();
+        if (res.status === 200 || res.status === 201) {
+          toast.success(res?.data?.message || "Bonus added successfully");
+          // Refresh loan details after loan request
+          refetch();
+          onModalClose();
+        }
+      } else {
+        res = await axiosInstance.post(`/employees/bonuses/add-bonus`, {
+          ...form,
+          approved: booleanValue,
+        });
+        if (res.status === 200 || res.status === 201) {
+          toast.success(res?.data?.message || "Bonus added successfully");
+          // Refresh loan details after loan request
+          refetch();
+        }
+        setForm((prev) => ({
+          ...prev,
+          approved: "",
+          employee: "",
+          reason: "",
+          payslip: "",
+          amount: "",
+        }));
       }
-
-      setForm((prev) => ({
-        ...prev,
-        approved: "",
-        employee: "",
-        reason: "",
-        payslip: "",
-        amount: "",
-      }));
 
       setIsLoading(false);
     } catch (err) {
@@ -167,10 +175,10 @@ const NonPayslipModal = ({
 
           {loadingEmployeeList ? (
             <Spinner spinnerSmall={true} />
-          ) : error ? (
+          ) : isError ? (
             <ErrorFetch
-              message="error fetching form please try again"
-              onRefetch={() => fetchEmployeeList()}
+              message={error?.message || "error fetching form please try again"}
+              onRefetch={() => refetchEmployee()}
             />
           ) : (
             <div className="overflow-y-auto h-[350px]">
@@ -202,7 +210,6 @@ const NonPayslipModal = ({
                   </Label>
                   <select
                     name="payslip"
-                    required
                     id="payslip"
                     value={form?.payslip}
                     onChange={handleChange}
@@ -212,7 +219,7 @@ const NonPayslipModal = ({
                     disabled={!employeeId}
                   >
                     <option value="">select payslip</option>
-                    {employeePayslip?.map((el) => (
+                    {employeePayslip?.data?.map((el) => (
                       <option value={el?.id} key={el?.id}>
                         {el?.id}
                       </option>
@@ -291,7 +298,9 @@ const NonPayslipModal = ({
               Cancel
             </Button>
             <Button className="w-fit" btnType="submit">
-              {loading ? "Thinking...." : "Add employee"}
+              {loading
+                ? "Thinking...."
+                : `${btnType === "edit" ? "Update Bonus" : "Add Bonus"} `}
             </Button>
           </div>
         </form>

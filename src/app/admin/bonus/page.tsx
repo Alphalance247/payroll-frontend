@@ -24,6 +24,7 @@ const Bonus = () => {
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
   const [diburseModal, setDisburseModal] = useState(false);
   const { data, isError, error, isLoading, refetch } = useBonusList();
+  const [btnType, setBtnType] = useState<"edit" | "add-new">("edit");
   const [employeeDetails, setEmployeeDetails] = useState({
     id: "",
     name: "",
@@ -65,6 +66,7 @@ const Bonus = () => {
             <NonPayslipModal
               onModalClose={() => setShownonpayslipModal(false)}
               id={employeeDetails?.id}
+              btnType={btnType}
             />
           )}
 
@@ -110,7 +112,10 @@ const Bonus = () => {
                 <div className="p-3 flex flex-col gap-2">
                   <button
                     className="flex items-center justify-between w-full px-3 py-3 rounded-lg border border-transparent hover:border-[#E37915] hover:bg-[#FCF2E8] transition-colors text-left"
-                    onClick={() => setShownonpayslipModal(true)}
+                    onClick={() => {
+                      setShownonpayslipModal(true);
+                      setBtnType("add-new");
+                    }}
                   >
                     <div>
                       <p className="text-sm font-semibold text-[#2F2F33]">
@@ -400,6 +405,7 @@ const Bonus = () => {
                                       ...prev,
                                       id: emp?.id,
                                     }));
+                                    setBtnType("edit");
                                   }}
                                 >
                                   Edit{" "}

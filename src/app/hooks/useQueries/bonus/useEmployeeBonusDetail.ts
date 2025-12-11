@@ -11,8 +11,10 @@ interface dataType {
     date_paid: string;
     employee: {
       fullname: string;
+      id: string;
     };
     paid: boolean;
+    payslip: string;
     reason: string;
   };
 }
