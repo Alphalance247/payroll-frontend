@@ -27,7 +27,7 @@ const MultipleDisburseModal = ({
       setIsLoading(true);
 
       const res = await axiosInstance.post(
-        `employees/bonuses/bonus/disburse-multiple-bonuses`,
+        `/employees/bonuses/disburse-multiple-bonuses/`,
         {
           bonus_ids: bonusIds,
         }
