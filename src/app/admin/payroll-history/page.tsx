@@ -1,46 +1,17 @@
 "use client";
 import ProtectedRoute from "../../common/protectedRoute";
 import DashboardLayout from "../../common/DashBoardLayout";
-import { useEffect, useRef, useState } from "react";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
-import { useBonusList } from "@/app/hooks/useQueries/bonus/useBonusList";
 import { RiExpandUpDownFill } from "react-icons/ri";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { Search } from "lucide-react";
+import { usePayrollHistoryList } from "@/app/hooks/useQueries/payroll-history/usePayrollHistoryList";
+import { useState } from "react";
+import Link from "next/link";
 
 const PayrollHistory = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [actionMenuIndex, setActionMenuIndex] = useState<number | null>(null);
-  const actionMenuRef = useRef<HTMLDivElement | null>(null);
-  const data = [
-    {
-      id: "",
-    },
-  ];
-  const { isError, error, refetch } = useBonusList();
+  const { isError, error, refetch, isLoading, data } = usePayrollHistoryList();
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      // if (
-      //   bonusMenuRef.current &&
-      //   !bonusMenuRef.current.contains(event.target as Node)
-      // ) {
-      //   setIsBonusMenuOpen(false);
-      // }
-
-      if (
-        actionMenuRef.current &&
-        !actionMenuRef.current.contains(event.target as Node)
-      ) {
-        setActionMenuIndex(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
     <ProtectedRoute>
@@ -106,11 +77,9 @@ const PayrollHistory = () => {
                       <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                         Status
                       </th>
-
-                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]"></th>
                     </tr>
                   </thead>
-                  {data?.length === 0 ? (
+                  {data?.data?.length === 0 ? (
                     <tbody>
                       <tr>
                         <td colSpan={6} className="text-center py-8">
@@ -120,57 +89,32 @@ const PayrollHistory = () => {
                     </tbody>
                   ) : (
                     <tbody>
-                      {data?.map((emp, i) => (
+                      {data?.data?.map((emp, i) => (
                         <tr
                           key={i}
                           className="border-b border-[#E3E3E5] last:border-b-0"
                         >
-                          <td className="px-6 py-4 text-[#E37915] underline-offset-2 underline font-medium">
-                            PR-2025-01-15
+                          <Link href={`/admin/payroll-history/${emp?.id}`}>
+                            <td className="px-6 py-4 text-[#E37915] underline-offset-2 underline font-medium cursor-pointer">
+                              PR-2025-01-{emp?.id}
+                            </td>
+                          </Link>
+                          <td className="px-6 py-4 text-base text-[#2F2F33]">
+                            {emp?.created}
+                            {/* Jan 1–Jan 31, 2025 */}
                           </td>
                           <td className="px-6 py-4 text-base text-[#2F2F33]">
-                            Jan 1–Jan 31, 2025
-                          </td>
-                          <td className="px-6 py-4 text-base text-[#2F2F33]">
-                            NGN 10,000,000
+                            NGN {Number(emp?.total_salary).toLocaleString()}
                           </td>
 
                           <td className="px-6 py-4 text-base text-[#2F2F33]">
-                            Olayiwola Adeyemi
+                            {emp?.approved_by?.fullname}
                           </td>
 
                           <td className="px-6 py-4 text-base text-[#2F2F33]">
                             <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
-                              approved
+                              {emp?.approved_state}
                             </span>
-                          </td>
-
-                          <td className="px-6 py-4 text-base text-[#2F2F33]">
-                            <div className="relative inline-block">
-                              <button
-                                onClick={() =>
-                                  setActionMenuIndex(
-                                    actionMenuIndex === i ? null : i
-                                  )
-                                }
-                                className="p-2 rounded-full hover:bg-[#F7F7F7] transition-colors"
-                                aria-label="Row actions"
-                              >
-                                <BsThreeDotsVertical />
-                              </button>
-
-                              {actionMenuIndex === i && (
-                                <div className="absolute z-40 right-0 mt-2 w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden">
-                                  <button className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]">
-                                    Disburse
-                                  </button>
-
-                                  <button className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5]">
-                                    Edit{" "}
-                                  </button>
-                                </div>
-                              )}
-                            </div>
                           </td>
                         </tr>
                       ))}

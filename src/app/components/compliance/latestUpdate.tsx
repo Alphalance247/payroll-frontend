@@ -13,13 +13,13 @@ const LatestUpdate = () => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {data.map((item) => (
           <Link href={`/admin/compliance/${item?.id}`} key={item?.id}>
-            <div className="p-4 flex flex-col gap-x-4 bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px]">
+            <div className="p-4 flex flex-col gap-x-4 bg-[#F7F7F7] border border-[#E3E3E5] rounded-[8px] h-full max-h-[321px]">
               <img
                 src={item?.list_image}
                 width={226}
                 height={162}
                 alt="uphold"
-                className="w-full"
+                className="w-full h-[182px] rounded-md"
               />
 
               <div className="mt-4">

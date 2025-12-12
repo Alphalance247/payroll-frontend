@@ -10,6 +10,7 @@ import PayrollHistoryTable from "./payrollHistoryTable";
 import DashboardLayout from "@/app/common/DashBoardLayout";
 import axiosInstance from "@/app/utils/axios";
 import Link from "next/link";
+import { usePayrollHistoryDetails } from "@/app/hooks/useQueries/payroll-history/usePayrollHistoryDetails";
 
 const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
   const [activeTab, setActiveTab] = useState("Payroll Details");
@@ -17,6 +18,7 @@ const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
     useState<PayrollHistoryTranferData | null>(null);
   const tabs = [{ name: "Payroll Details" }];
   const [isLoading, setIsLoading] = useState(false);
+  const { data } = usePayrollHistoryDetails({ id: historyID });
 
   useEffect(() => {
     const fetchPayrollAdmin = async () => {
@@ -40,8 +42,7 @@ const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
           // Check if err is an instance of AxiosError
           errorMessage = err.response?.data?.statusmessage || errorMessage;
         }
-        console.log(errorMessage);
-        // toast.error(errorMessage);
+        toast.error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -102,17 +103,18 @@ const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
                 ) : payrollHistory ? (
                   <>
                     <HistoryOverview
-                      approvedBy={
-                        payrollHistory?.payroll?.approved_by?.fullname
+                      approvedBy={data?.data?.approved_by?.fullname || "N/A"}
+                      approvalTimestamp={data?.data?.payday || "N/A"}
+                      fundStatus={
+                        Number(data?.data?.total_payout)?.toLocaleString() ||
+                        "N/A"
                       }
-                      approvalTimestamp={payrollHistory?.payroll?.payday}
-                      fundStatus={payrollHistory?.payroll?.total_payout}
-                      totalHours={payrollHistory?.payroll?.total_hours}
+                      totalHours={data?.data?.total_hours || "N/A"}
                     />
                     <PayrollHistoryTable
                       teams={payrollHistory?.teams}
-                      transferData={payrollHistory?.transfer_data}
                       payroll={payrollHistory}
+                      id={historyID as string}
                     />
                   </>
                 ) : (

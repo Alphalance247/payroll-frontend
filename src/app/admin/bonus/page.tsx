@@ -12,6 +12,7 @@ import DisbursementModal from "@/app/components/Admin/Bonus/diburmentModal";
 import { useBonusList } from "@/app/hooks/useQueries/bonus/useBonusList";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
+import { IoCheckmarkOutline } from "react-icons/io5";
 
 const Bonus = () => {
   const [selectedYear, setSelectedYear] = useState("");
@@ -25,11 +26,16 @@ const Bonus = () => {
   const [diburseModal, setDisburseModal] = useState(false);
   const { data, isError, error, isLoading, refetch } = useBonusList();
   const [btnType, setBtnType] = useState<"edit" | "add-new">("edit");
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
+  const selectAllCheckboxRef = useRef<HTMLInputElement | null>(null);
+  const selectAllToolbarCheckboxRef = useRef<HTMLInputElement | null>(null);
+  const employees = data?.data || [];
   const [employeeDetails, setEmployeeDetails] = useState({
     id: "",
     name: "",
     amount: "",
   });
+  console.log(selectedEmployeeIds);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,6 +57,38 @@ const Bonus = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const isAllSelected =
+    employees.length > 0 && selectedEmployeeIds.length === employees.length;
+  const isSomeSelected =
+    selectedEmployeeIds.length > 0 &&
+    selectedEmployeeIds.length < employees.length;
+
+  useEffect(() => {
+    [selectAllCheckboxRef.current, selectAllToolbarCheckboxRef.current].forEach(
+      (checkbox) => {
+        if (checkbox) {
+          checkbox.indeterminate = isSomeSelected;
+        }
+      }
+    );
+  }, [isSomeSelected]);
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedEmployeeIds([]);
+      return;
+    }
+    const allIds = employees.map((emp) => emp.id).filter(Boolean);
+    setSelectedEmployeeIds(allIds);
+  };
+
+  const toggleSelectEmployee = (id?: string) => {
+    if (!id) return;
+    setSelectedEmployeeIds((prev) =>
+      prev.includes(id) ? prev.filter((empId) => empId !== id) : [...prev, id]
+    );
+  };
 
   return (
     <DashboardLayout>
@@ -158,81 +196,129 @@ const Bonus = () => {
             className="bg-white rounded-lg border border-[#E3E3E5] mt-10 z-0 relative"
             ref={actionMenuRef}
           >
-            <div className="flex justify-between items-center py-5 px-6 z-0 relative">
-              <h2 className="text-base font-semibold  text-[#2F2F33]">Bonus</h2>
+            <div>
+              <div className="flex justify-between items-center py-5 px-6 z-0 relative">
+                <h2 className="text-base font-semibold  text-[#2F2F33]">
+                  Bonus
+                </h2>
 
-              <div className="flex items-center gap-2">
-                <div>
-                  <select
-                    name=""
-                    id=""
-                    className="border rounded-md px-4 py-[10px] focus:outline-none"
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
+                <div className="flex items-center gap-2">
+                  <div>
+                    <select
+                      name=""
+                      id=""
+                      className="border rounded-md px-4 py-[10px] focus:outline-none"
+                      value={selectedYear}
+                      onChange={(e) => setSelectedYear(e.target.value)}
+                    >
+                      <option value="">Select year</option>
+                      <option value="2005">2005</option>
+                      <option value="2006">2006</option>
+                      <option value="2007">2007</option>
+                      <option value="2020">2020</option>
+                      <option value="2021">2021</option>
+                      <option value="2022">2022</option>
+                      <option value="2023">2023</option>
+                      <option value="2024">2024</option>
+                      <option value="2025">2025</option>
+                      <option value="2026">2026</option>
+                      <option value="2027">2027</option>
+                      <option value="2028">2028</option>
+                      <option value="2029">2029</option>
+                      <option value="2030">2030</option>
+                      <option value="2031">2031</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <select
+                      name=""
+                      id=""
+                      className="border rounded-md px-4 py-[10px] focus:outline-none"
+                      value={selectedMonth}
+                      onChange={(e) => setSelectedMonth(e.target.value)}
+                    >
+                      <option value="">Select Month</option>
+                      <option value="1">January</option>
+                      <option value="2">February</option>
+                      <option value="3">March</option>
+                      <option value="4">April</option>
+                      <option value="5">May</option>
+                      <option value="6">June</option>
+                      <option value="7">July</option>
+                      <option value="8">August</option>
+                      <option value="9">September</option>
+                      <option value="10">October</option>
+                      <option value="11">November</option>
+                      <option value="12">December</option>
+                    </select>
+                  </div>
+
+                  <Button
+                    variant="primary"
+                    disabled={
+                      !selectedYear ||
+                      selectedYear === "" ||
+                      !selectedMonth ||
+                      selectedMonth === ""
+                    }
+                    className={`w-[100px] h-[40px] ${
+                      !selectedYear ||
+                      selectedYear === "" ||
+                      !selectedMonth ||
+                      selectedMonth === ""
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
+                    onButtonClick={() => {}}
                   >
-                    <option value="">Select year</option>
-                    <option value="2005">2005</option>
-                    <option value="2006">2006</option>
-                    <option value="2007">2007</option>
-                    <option value="2020">2020</option>
-                    <option value="2021">2021</option>
-                    <option value="2022">2022</option>
-                    <option value="2023">2023</option>
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                    <option value="2027">2027</option>
-                    <option value="2028">2028</option>
-                    <option value="2029">2029</option>
-                    <option value="2030">2030</option>
-                    <option value="2031">2031</option>
-                  </select>
+                    Apply
+                  </Button>
+                </div>
+              </div>
+
+              <div className="py-4 pl-4 flex items-center gap-x-8 border-t border-[#E3E3E5]">
+                <div className="flex items-center bg-[#F7F7F7] w-fit gap-x-2 rounded-sm px-2 py-1">
+                  <input
+                    type="checkbox"
+                    ref={selectAllToolbarCheckboxRef}
+                    className="rounded w-[14px] h-[14px] border-gray-300 cursor-pointer"
+                    checked={isAllSelected}
+                    onChange={toggleSelectAll}
+                    disabled={employees.length === 0}
+                    aria-label="Select all employees"
+                  />
+                  <p className="text-[#2F2F33] text-sm font-medium">
+                    {selectedEmployeeIds.length > 0
+                      ? `${selectedEmployeeIds.length} selected`
+                      : "Select employees"}
+                  </p>
                 </div>
 
-                <div>
-                  <select
-                    name=""
-                    id=""
-                    className="border rounded-md px-4 py-[10px] focus:outline-none"
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                  >
-                    <option value="">Select Month</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                  </select>
-                </div>
+                {selectedEmployeeIds.length > 0 && (
+                  <div className="flex items-center gap-x-2">
+                    <Button
+                      variant="primary"
+                      className="flex items-center gap-x-2"
+                      onButtonClick={() => {}}
+                    >
+                      <IoCheckmarkOutline
+                        size={18}
+                        color="#ffffff"
+                        fill="#ffffff"
+                      />
+                      Disburse selected ({selectedEmployeeIds.length})
+                    </Button>
 
-                <Button
-                  variant="primary"
-                  disabled={
-                    !selectedYear ||
-                    selectedYear === "" ||
-                    !selectedMonth ||
-                    selectedMonth === ""
-                  }
-                  className={`w-[100px] h-[40px] ${
-                    !selectedYear ||
-                    selectedYear === "" ||
-                    !selectedMonth ||
-                    selectedMonth === ""
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                  onButtonClick={() => {}}
-                >
-                  Apply
-                </Button>
+                    <Button
+                      variant="primaryWhite"
+                      className="flex items-center gap-x-2"
+                      onButtonClick={() => setSelectedEmployeeIds([])}
+                    >
+                      Clear selection
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -240,6 +326,17 @@ const Bonus = () => {
               <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
                 <thead className="bg-[#F7F7F7]">
                   <tr>
+                    <th className="px-6 py-[14px] w-[40px]">
+                      <input
+                        type="checkbox"
+                        ref={selectAllCheckboxRef}
+                        className="rounded border-gray-300 cursor-pointer"
+                        checked={isAllSelected}
+                        onChange={toggleSelectAll}
+                        disabled={employees.length === 0}
+                        aria-label="Select all employees"
+                      />
+                    </th>
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Name{" "}
@@ -308,114 +405,140 @@ const Bonus = () => {
                   </tbody>
                 ) : (
                   <tbody>
-                    {data?.data?.map((emp, i) => (
-                      <tr
-                        key={i}
-                        className="border-b border-[#E3E3E5] last:border-b-0"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                              {emp?.employee?.fullname
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </div>
-                            <span className="text-[#2F2F33] text-sm font-medium">
-                              {emp?.employee?.fullname}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
-                          >
-                            ₦ {emp?.amount}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {emp?.reason}
-                        </td>
-
-                        <td className="px-6 py-4 text-sm">
-                          {emp?.paid ? (
-                            <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
-                              disbursed
-                            </span>
-                          ) : (
-                            <span className="text-xs bg-[#FFF5E5] border border-[#F6A723] text-[#B76A00] rounded-2xl capitalize w-fit px-2 py-1">
-                              not disbursed
-                            </span>
-                          )}
-                        </td>
-
-                        <td className="px-6 py-4 text-sm">
-                          {emp?.approved ? (
-                            <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
-                              approved
-                            </span>
-                          ) : (
-                            <span className="text-xs bg-[#FFF5E5] border border-[#F6A723] text-[#B76A00] rounded-2xl capitalize w-fit px-2 py-1">
-                              pending
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {emp?.created || "—"}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {emp?.date_paid || "—"}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          <div className="relative inline-block">
-                            <button
-                              onClick={() =>
-                                setActionMenuIndex(
-                                  actionMenuIndex === i ? null : i
-                                )
-                              }
-                              className="p-2 rounded-full hover:bg-[#F7F7F7] transition-colors"
-                              aria-label="Row actions"
-                            >
-                              <BsThreeDotsVertical />
-                            </button>
-
-                            {actionMenuIndex === i && (
-                              <div className="absolute z-40 right-0 mt-2 w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden">
-                                <button
-                                  className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]"
-                                  onClick={() => {
-                                    setDisburseModal(true);
-                                    setEmployeeDetails((prev) => ({
-                                      ...prev,
-                                      id: emp?.id,
-                                      name: emp?.employee?.fullname,
-                                      amount: emp?.amount,
-                                    }));
-                                  }}
-                                >
-                                  Disburse
-                                </button>
-
-                                <button
-                                  className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5]"
-                                  onClick={() => {
-                                    setShownonpayslipModal(true);
-                                    setEmployeeDetails((prev) => ({
-                                      ...prev,
-                                      id: emp?.id,
-                                    }));
-                                    setBtnType("edit");
-                                  }}
-                                >
-                                  Edit{" "}
-                                </button>
+                    {employees?.map((emp, i) => {
+                      const isSelected = selectedEmployeeIds.includes(emp?.id);
+                      return (
+                        <tr
+                          key={i}
+                          className={`border-b border-[#E3E3E5] last:border-b-0 ${
+                            isSelected ? "bg-[#FFF9F2]" : ""
+                          }`}
+                        >
+                          <td className="px-6 py-[14px] w-[40px]">
+                            <input
+                              type="checkbox"
+                              className="rounded border-gray-300 cursor-pointer"
+                              checked={isSelected}
+                              onChange={() => toggleSelectEmployee(emp?.id)}
+                              aria-label={`Select ${
+                                emp?.employee?.fullname || "employee"
+                              }`}
+                              disabled={emp?.paid}
+                            />
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <div className="h-8 w-8 rounded-full uppercase bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
+                                {emp?.employee?.fullname
+                                  .split(" ")
+                                  .slice(0, 2)
+                                  .map((n) => n[0])
+                                  .join("")}
                               </div>
+                              <span className="text-[#2F2F33] capitalize text-sm font-medium">
+                                {emp?.employee?.fullname
+                                  ?.split(" ")
+                                  .slice(0, 2)
+                                  .join(" ")}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
+                            >
+                              ₦ {emp?.amount}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            {emp?.reason}
+                          </td>
+
+                          <td className="px-6 py-4 text-sm">
+                            {emp?.paid ? (
+                              <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
+                                disbursed
+                              </span>
+                            ) : (
+                              <span className="text-xs bg-[#FFF5E5] border border-[#F6A723] text-[#B76A00] rounded-2xl capitalize w-fit px-2 py-1">
+                                not disbursed
+                              </span>
                             )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+
+                          <td className="px-6 py-4 text-sm">
+                            {emp?.approved ? (
+                              <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
+                                approved
+                              </span>
+                            ) : (
+                              <span className="text-xs bg-[#FFF5E5] border border-[#F6A723] text-[#B76A00] rounded-2xl capitalize w-fit px-2 py-1">
+                                pending
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            {emp?.created || "—"}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            {emp?.date_paid || "—"}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            <div className="relative inline-block">
+                              <button
+                                onClick={() =>
+                                  setActionMenuIndex(
+                                    actionMenuIndex === i ? null : i
+                                  )
+                                }
+                                className="p-2 rounded-full hover:bg-[#F7F7F7] transition-colors"
+                                aria-label="Row actions"
+                              >
+                                <BsThreeDotsVertical />
+                              </button>
+
+                              {actionMenuIndex === i && (
+                                <div className="absolute z-40 right-0 mt-2 w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden">
+                                  <button
+                                    className={`w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]  ${
+                                      emp?.paid
+                                        ? " cursor-not-allowed opacity-25"
+                                        : ""
+                                    } `}
+                                    onClick={() => {
+                                      setDisburseModal(true);
+                                      setEmployeeDetails((prev) => ({
+                                        ...prev,
+                                        id: emp?.id,
+                                        name: emp?.employee?.fullname,
+                                        amount: emp?.amount,
+                                      }));
+                                    }}
+                                    disabled={emp?.paid}
+                                  >
+                                    {emp?.paid ? " ✅ dibursed" : "Disburse"}
+                                  </button>
+
+                                  <button
+                                    className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5]"
+                                    onClick={() => {
+                                      setShownonpayslipModal(true);
+                                      setEmployeeDetails((prev) => ({
+                                        ...prev,
+                                        id: emp?.id,
+                                      }));
+                                      setBtnType("edit");
+                                    }}
+                                  >
+                                    Edit{" "}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 )}
               </table>
