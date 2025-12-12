@@ -94,11 +94,11 @@ const PayrollHistory = () => {
                           key={i}
                           className="border-b border-[#E3E3E5] last:border-b-0"
                         >
-                          <Link href={`/admin/payroll-history/${emp?.id}`}>
-                            <td className="px-6 py-4 text-[#E37915] underline-offset-2 underline font-medium cursor-pointer">
+                          <td className="px-6 py-4 text-[#E37915] underline-offset-2 underline font-medium cursor-pointer">
+                            <Link href={`/admin/payroll-history/${emp?.id}`}>
                               PR-2025-01-{emp?.id}
-                            </td>
-                          </Link>
+                            </Link>
+                          </td>
                           <td className="px-6 py-4 text-base text-[#2F2F33]">
                             {emp?.created}
                             {/* Jan 1–Jan 31, 2025 */}

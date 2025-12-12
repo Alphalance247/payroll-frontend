@@ -7,35 +7,40 @@ import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useBonusList } from "@/app/hooks/useQueries/bonus/useBonusList";
 
-interface DisbursementModalProps {
+interface MultipleDisburseModalProps {
   onModalClose: () => void;
-  onConfirm?: () => void;
-  employeeName?: string;
-  amount?: string;
-  id: string;
+  onSuccess?: () => void;
+  bonusIds: string[];
 }
 
 const MultipleDisburseModal = ({
   onModalClose,
-  id,
-}: DisbursementModalProps) => {
+  onSuccess,
+  bonusIds,
+}: MultipleDisburseModalProps) => {
   const [loading, setIsLoading] = useState(false);
   const { refetch } = useBonusList();
 
   const handleDisbursePayment = async () => {
+    if (!bonusIds.length) return;
     try {
       setIsLoading(true);
 
       const res = await axiosInstance.post(
-        `employees/bonuses/bonus/${id}/disburse`
+        `employees/bonuses/bonus/disburse-multiple-bonuses`,
+        {
+          bonus_ids: bonusIds,
+        }
       );
 
       if (res.status === 200 || res.status === 201) {
         toast.success(
-          res?.data?.message || "Bonus disbursed to employee successfully"
+          res?.data?.message ||
+            "Bonus disbursed successfully to selected employees"
         );
-        onModalClose();
         refetch();
+        onSuccess?.();
+        onModalClose();
       }
 
       setIsLoading(false);
@@ -59,7 +64,12 @@ const MultipleDisburseModal = ({
             Confirm Disbursement
           </h2>
           <p className="text-sm text-[#71717A] mt-1">
-            Please confirm you want to disburse this bonus.
+            You are about to disburse bonuses for{" "}
+            <span className="font-semibold text-[#2F2F33]">
+              {bonusIds.length}
+            </span>{" "}
+            {bonusIds.length === 1 ? "employee" : "employees"}. This action
+            cannot be undone.
           </p>
         </div>
 
@@ -75,8 +85,9 @@ const MultipleDisburseModal = ({
             className="w-fit"
             btnType="submit"
             onButtonClick={handleDisbursePayment}
+            disabled={!bonusIds.length || loading}
           >
-            {loading ? "Thinking...." : "Yes, Disburse"}
+            {loading ? "Disbursing..." : "Yes, Disburse"}
           </Button>
         </div>
       </div>

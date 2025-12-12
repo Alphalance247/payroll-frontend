@@ -13,6 +13,7 @@ import { useBonusList } from "@/app/hooks/useQueries/bonus/useBonusList";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
 import { IoCheckmarkOutline } from "react-icons/io5";
+import MultipleDisburseModal from "@/app/components/Admin/Bonus/multipleDisburseModal";
 
 const Bonus = () => {
   const [selectedYear, setSelectedYear] = useState("");
@@ -30,6 +31,8 @@ const Bonus = () => {
   const selectAllCheckboxRef = useRef<HTMLInputElement | null>(null);
   const selectAllToolbarCheckboxRef = useRef<HTMLInputElement | null>(null);
   const employees = data?.data || [];
+  const [showMultipleDisburseModal, setShowMultipleDisburseModal] =
+    useState(false);
   const [employeeDetails, setEmployeeDetails] = useState({
     id: "",
     name: "",
@@ -73,6 +76,12 @@ const Bonus = () => {
       }
     );
   }, [isSomeSelected]);
+
+  const handleMultipleDisburseSuccess = () => {
+    setSelectedEmployeeIds([]);
+    setShowMultipleDisburseModal(false);
+    refetch();
+  };
 
   const toggleSelectAll = () => {
     if (isAllSelected) {
@@ -119,6 +128,14 @@ const Bonus = () => {
 
           {showPaySlipModal && (
             <PayslipModal onModalClose={() => setShowPayslipModal(false)} />
+          )}
+
+          {showMultipleDisburseModal && (
+            <MultipleDisburseModal
+              onModalClose={() => setShowMultipleDisburseModal(false)}
+              onSuccess={handleMultipleDisburseSuccess}
+              bonusIds={selectedEmployeeIds}
+            />
           )}
 
           <div className="relative flex gap-x-2 z-30" ref={bonusMenuRef}>
@@ -300,7 +317,7 @@ const Bonus = () => {
                     <Button
                       variant="primary"
                       className="flex items-center gap-x-2"
-                      onButtonClick={() => {}}
+                      onButtonClick={() => setShowMultipleDisburseModal(true)}
                     >
                       <IoCheckmarkOutline
                         size={18}
