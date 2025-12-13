@@ -35,7 +35,7 @@ const PayrollHistoryTable = ({
 
   // Filtered and sorted employees
   const filteredEmployees = useMemo(() => {
-    return data?.data?.payslips
+    return data?.data?.data?.payslips
       .filter((emp) => {
         const searchLower = searchQuery.toLowerCase();
         const matchesSearch =

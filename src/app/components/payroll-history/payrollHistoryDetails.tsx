@@ -1,55 +1,48 @@
 "use client";
 import ProtectedRoute from "@/app/common/protectedRoute";
-import { PayrollHistoryTranferData } from "@/app/utils/payrollHistoryType";
-import { AxiosError } from "axios";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useState } from "react";
 import { GoChevronRight } from "react-icons/go";
 import HistoryOverview from "./historyOverview";
 import PayrollHistoryTable from "./payrollHistoryTable";
 import DashboardLayout from "@/app/common/DashBoardLayout";
-import axiosInstance from "@/app/utils/axios";
 import Link from "next/link";
 import { usePayrollHistoryDetails } from "@/app/hooks/useQueries/payroll-history/usePayrollHistoryDetails";
 
 const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
   const [activeTab, setActiveTab] = useState("Payroll Details");
-  const [payrollHistory, setPayrollHistory] =
-    useState<PayrollHistoryTranferData | null>(null);
   const tabs = [{ name: "Payroll Details" }];
-  const [isLoading, setIsLoading] = useState(false);
   const { data } = usePayrollHistoryDetails({ id: historyID });
 
-  useEffect(() => {
-    const fetchPayrollAdmin = async () => {
-      setIsLoading(true);
-      try {
-        const res = await axiosInstance.get(`/employees/transfers`);
-        if (res.status === 200) {
-          setPayrollHistory(res?.data?.data);
-        } else {
-          toast.error(
-            res?.data?.message ||
-              "Error fetching payroll history please refresh or contact Admin"
-          );
-        }
-        setIsLoading(false);
-      } catch (err) {
-        // Extract the error message from the response
-        let errorMessage =
-          "An error occurred please try again or contact Admin";
-        if (err instanceof AxiosError) {
-          // Check if err is an instance of AxiosError
-          errorMessage = err.response?.data?.statusmessage || errorMessage;
-        }
-        toast.error(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchPayrollAdmin = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const res = await axiosInstance.get(`/employees/transfers`);
+  //       if (res.status === 200) {
+  //         setPayrollHistory(res?.data?.data);
+  //       } else {
+  //         toast.error(
+  //           res?.data?.message ||
+  //             "Error fetching payroll history please refresh or contact Admin"
+  //         );
+  //       }
+  //       setIsLoading(false);
+  //     } catch (err) {
+  //       // Extract the error message from the response
+  //       let errorMessage =
+  //         "An error occurred please try again or contact Admin";
+  //       if (err instanceof AxiosError) {
+  //         // Check if err is an instance of AxiosError
+  //         errorMessage = err.response?.data?.statusmessage || errorMessage;
+  //       }
+  //       toast.error(errorMessage);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-    fetchPayrollAdmin();
-  }, []);
+  //   fetchPayrollAdmin();
+  // }, []);
 
   return (
     <ProtectedRoute>
@@ -70,11 +63,11 @@ const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
               </Link>
 
               <p className="text-[#71717A] text-sm font-medium">
-                PR-2025-01-15
+                PR-{historyID}
               </p>
             </div>
             <h2 className="text-[28px] text-[#2F2F33] font-semibold tracking-[-0.5px] mb-10 mt-4">
-              PR-2025-01-15
+              PR-{historyID}
             </h2>
           </div>
           <div className="flex gap-x-5 items-center border-b border-[#E4E7EC] mb-6">
@@ -103,16 +96,20 @@ const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
                 ) : payrollHistory ? (
                   <>
                     <HistoryOverview
-                      approvedBy={data?.data?.approved_by?.fullname || "N/A"}
-                      approvalTimestamp={data?.data?.payday || "N/A"}
-                      fundStatus={
-                        Number(data?.data?.total_payout)?.toLocaleString() ||
-                        "N/A"
+                      historyID={historyID}
+                      approvedBy={
+                        data?.data?.data?.approved_by?.fullname || "N/A"
                       }
-                      totalHours={data?.data?.total_hours || "N/A"}
+                      approvalTimestamp={data?.data?.data?.payday || "N/A"}
+                      fundStatus={
+                        Number(
+                          data?.data?.data?.total_payout
+                        )?.toLocaleString() || "N/A"
+                      }
+                      totalHours={data?.data?.data?.total_hours || "N/A"}
                     />
                     <PayrollHistoryTable
-                      teams={payrollHistory?.teams}
+                      teams={data?.data?.data?.teams || []}
                       payroll={payrollHistory}
                       id={historyID as string}
                     />

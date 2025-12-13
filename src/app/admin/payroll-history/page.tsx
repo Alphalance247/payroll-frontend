@@ -71,7 +71,7 @@ const PayrollHistory = () => {
                       </th>
 
                       <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                        Processed By
+                        Approved By
                       </th>
 
                       <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
@@ -96,7 +96,7 @@ const PayrollHistory = () => {
                         >
                           <td className="px-6 py-4 text-[#E37915] underline-offset-2 underline font-medium cursor-pointer">
                             <Link href={`/admin/payroll-history/${emp?.id}`}>
-                              PR-2025-01-{emp?.id}
+                              PR-{emp?.id}
                             </Link>
                           </td>
                           <td className="px-6 py-4 text-base text-[#2F2F33]">

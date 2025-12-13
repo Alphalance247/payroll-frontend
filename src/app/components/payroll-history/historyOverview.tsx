@@ -3,7 +3,9 @@ const HistoryOverview = ({
   approvalTimestamp,
   fundStatus,
   totalHours,
+  historyID,
 }: {
+  historyID: string;
   approvedBy: string;
   approvalTimestamp: string;
   fundStatus: string;
@@ -11,7 +13,7 @@ const HistoryOverview = ({
 }) => {
   const payrollHistoryData = [
     {
-      payrollId: "PR-2025-01-15",
+      payrollId: `PR-${historyID}`,
       totalPayroll: `₦ ${fundStatus}`,
       payhead: "Payroll ID",
       subhead: "Total Amount paid out",
