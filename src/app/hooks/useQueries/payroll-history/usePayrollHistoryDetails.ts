@@ -19,7 +19,7 @@ export interface data {
     data: {
       id: string;
       teams: string[];
-
+      approved_on: string;
       approved_by: {
         fullname: string;
       };
@@ -46,6 +46,7 @@ export interface data {
         };
       }[];
     };
+    teams: string[];
   };
 }
 

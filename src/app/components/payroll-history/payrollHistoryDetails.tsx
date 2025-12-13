@@ -11,38 +11,7 @@ import { usePayrollHistoryDetails } from "@/app/hooks/useQueries/payroll-history
 const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
   const [activeTab, setActiveTab] = useState("Payroll Details");
   const tabs = [{ name: "Payroll Details" }];
-  const { data } = usePayrollHistoryDetails({ id: historyID });
-
-  // useEffect(() => {
-  //   const fetchPayrollAdmin = async () => {
-  //     setIsLoading(true);
-  //     try {
-  //       const res = await axiosInstance.get(`/employees/transfers`);
-  //       if (res.status === 200) {
-  //         setPayrollHistory(res?.data?.data);
-  //       } else {
-  //         toast.error(
-  //           res?.data?.message ||
-  //             "Error fetching payroll history please refresh or contact Admin"
-  //         );
-  //       }
-  //       setIsLoading(false);
-  //     } catch (err) {
-  //       // Extract the error message from the response
-  //       let errorMessage =
-  //         "An error occurred please try again or contact Admin";
-  //       if (err instanceof AxiosError) {
-  //         // Check if err is an instance of AxiosError
-  //         errorMessage = err.response?.data?.statusmessage || errorMessage;
-  //       }
-  //       toast.error(errorMessage);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchPayrollAdmin();
-  // }, []);
+  const { data, isLoading } = usePayrollHistoryDetails({ id: historyID });
 
   return (
     <ProtectedRoute>
@@ -93,10 +62,11 @@ const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
                   <div className="flex justify-center items-center h-screen">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
                   </div>
-                ) : payrollHistory ? (
+                ) : (
                   <>
                     <HistoryOverview
                       historyID={historyID}
+                      approvedOn={data?.data?.data?.approved_on || "N/A"}
                       approvedBy={
                         data?.data?.data?.approved_by?.fullname || "N/A"
                       }
@@ -108,16 +78,8 @@ const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
                       }
                       totalHours={data?.data?.data?.total_hours || "N/A"}
                     />
-                    <PayrollHistoryTable
-                      teams={data?.data?.data?.teams || []}
-                      payroll={payrollHistory}
-                      id={historyID as string}
-                    />
+                    <PayrollHistoryTable id={historyID as string} />
                   </>
-                ) : (
-                  <div className="text-center py-10 text-[#71717A]">
-                    No payroll history data available
-                  </div>
                 )}
               </>
             )}
