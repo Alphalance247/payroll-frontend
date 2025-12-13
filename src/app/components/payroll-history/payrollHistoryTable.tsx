@@ -6,48 +6,32 @@ import EmployeeSearch, {
   type SortByTeam,
 } from "../../components/payroll/employeeSearch";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import {
-  PayrollHistoryTranferData,
-  PayrollTransferData,
-} from "../../utils/payrollHistoryType";
+import { usePayrollHistoryDetails } from "@/app/hooks/useQueries/payroll-history/usePayrollHistoryDetails";
 
-const PayrollHistoryTable = ({
-  teams,
-  transferData,
-  payroll,
-}: {
-  teams: string[];
-  transferData: PayrollTransferData[];
-  payroll: PayrollHistoryTranferData;
-}) => {
+const PayrollHistoryTable = ({ id }: { id: string }) => {
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
+  const { data } = usePayrollHistoryDetails({ id: id });
 
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("firstName");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
   const [sortByTeam, setSortByTeam] = useState<SortByTeam>("All Teams");
-  const currencySymbol = payroll?.payroll?.rates?.find(
+  const currencySymbol = data?.data?.data?.rates?.find(
     (rate) => rate.code === "NGN"
   )
     ? "₦"
     : "K";
 
-  console.log(payroll);
-
   // Filtered and sorted employees
   const filteredEmployees = useMemo(() => {
-    return transferData
+    return data?.data?.data?.payslips
       .filter((emp) => {
         const searchLower = searchQuery.toLowerCase();
         const matchesSearch =
-          emp?.payslip?.employee?.fullname
-            .toLowerCase()
-            .includes(searchLower) ||
-          emp?.payslip?.employee?.team?.name
-            .toLowerCase()
-            .includes(searchLower);
+          emp?.employee?.fullname.toLowerCase().includes(searchLower) ||
+          emp?.employee?.team?.name.toLowerCase().includes(searchLower);
 
         // Always apply search filter
         if (!matchesSearch) return false;
@@ -56,33 +40,31 @@ const PayrollHistoryTable = ({
         if (sortByTeam === "All Teams") return true;
 
         // Otherwise, filter by the selected team
-        return emp.payslip?.employee?.team?.name === sortByTeam;
+        return emp?.employee?.team?.name === sortByTeam;
       })
       .sort((a, b) => {
         switch (sortBy) {
           case "firstName":
-            return a.payslip?.employee?.fullname
+            return a?.employee?.fullname
               ?.split(" ")[0]
-              .localeCompare(b.payslip?.employee?.fullname?.split(" ")[0]);
+              .localeCompare(b?.employee?.fullname?.split(" ")[0]);
           case "lastName":
-            return a.payslip?.employee?.fullname
+            return a?.employee?.fullname
               ?.split(" ")
               .slice(-1)[0]
-              .localeCompare(
-                b.payslip?.employee?.fullname?.split(" ").slice(-1)[0]
-              );
+              .localeCompare(b?.employee?.fullname?.split(" ").slice(-1)[0]);
           case "team":
-            return a.payslip?.employee?.team?.name.localeCompare(
-              b.payslip?.employee?.team?.name
+            return a?.employee?.team?.name.localeCompare(
+              b?.employee?.team?.name
             );
           default:
             return 0;
         }
       });
-  }, [transferData, searchQuery, sortBy, filterBy, sortByTeam]);
+  }, [searchQuery, sortBy, filterBy, sortByTeam]);
   return (
     <section className="mt-20">
-      {teams && (
+      {data?.data?.teams && (
         <EmployeeSearch
           searchQuery={searchQuery}
           sortBy={sortBy}
@@ -94,7 +76,7 @@ const PayrollHistoryTable = ({
           onSortChangeTeam={setSortByTeam}
           showSortByTeam={true}
           showsortFilter={false}
-          teams={teams}
+          teams={data?.data?.teams}
         />
       )}
 
@@ -143,13 +125,13 @@ const PayrollHistoryTable = ({
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                        {emp?.payslip?.employee?.fullname
+                        {emp?.employee?.fullname
                           ?.split(" ")
                           .map((n) => n[0])
                           .join("")}
                       </div>
                       <span className="text-[#2F2F33] text-sm font-medium">
-                        {emp?.payslip?.employee?.fullname}
+                        {emp?.employee?.fullname}
                       </span>
                     </div>
                   </td>
@@ -160,24 +142,23 @@ const PayrollHistoryTable = ({
                     {/* {emp.overtimeHours.toFixed(2)} */} 500
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol}{" "}
-                    {emp?.payslip?.official_base_pay?.toLocaleString()}
+                    {currencySymbol} {emp?.official_base_pay?.toLocaleString()}
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.payslip?.tax?.toLocaleString()}
+                    {currencySymbol} {emp?.tax?.toLocaleString()}
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.payslip?.debt?.toLocaleString()}
+                    {currencySymbol} {emp?.debt?.toLocaleString()}
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.payslip?.net_pay?.toLocaleString()}
+                    {currencySymbol} {emp?.net_pay?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#188C43] ">
                     <span className="text-xs bg-[#E9F9EF] border border-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
-                      {emp?.status}
+                      {emp?.paid ? "paid" : "pending"}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-[#188C43] ">
@@ -198,19 +179,19 @@ const PayrollHistoryTable = ({
                   {}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  {payroll?.payroll?.total_hours}
+                  {data?.data?.data?.total_hours}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{payroll?.payroll?.total_payout}
+                  ₦{Number(data?.data?.data?.total_payout)?.toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{payroll?.payroll?.total_tax?.toLocaleString()}
+                  ₦{Number(data?.data?.data?.total_tax)?.toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{payroll?.payroll?.total_tax?.toLocaleString()}
+                  ₦{Number(data?.data?.data?.total_tax)?.toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{payroll?.payroll?.total_payout?.toLocaleString()}
+                  ₦{Number(data?.data?.data?.total_payout)?.toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]"></td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]"></td>
