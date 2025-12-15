@@ -14,6 +14,9 @@ import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import MultipleDisburseModal from "@/app/components/Admin/Bonus/multipleDisburseModal";
+import axiosInstance from "@/app/utils/axios";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
 
 const Bonus = () => {
   const [selectedYear, setSelectedYear] = useState("");
@@ -24,6 +27,7 @@ const Bonus = () => {
   const [showNonPaySlipModal, setShownonpayslipModal] = useState(false);
   const [actionMenuIndex, setActionMenuIndex] = useState<number | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
+  const actionMenuFloatingRef = useRef<HTMLDivElement | null>(null);
   const [diburseModal, setDisburseModal] = useState(false);
   const { data, isError, error, isLoading, refetch } = useBonusList();
   const [btnType, setBtnType] = useState<"edit" | "add-new">("edit");
@@ -38,7 +42,11 @@ const Bonus = () => {
     name: "",
     amount: "",
   });
-  console.log(selectedEmployeeIds);
+  const [actionMenuPosition, setActionMenuPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const [loading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -49,11 +57,16 @@ const Bonus = () => {
         setIsBonusMenuOpen(false);
       }
 
-      if (
+      const targetNode = event.target as Node;
+      const clickedOutsideActionMenu =
         actionMenuRef.current &&
-        !actionMenuRef.current.contains(event.target as Node)
-      ) {
+        !actionMenuRef.current.contains(targetNode) &&
+        (!actionMenuFloatingRef.current ||
+          !actionMenuFloatingRef.current.contains(targetNode));
+
+      if (clickedOutsideActionMenu) {
         setActionMenuIndex(null);
+        setActionMenuPosition(null);
       }
     };
 
@@ -99,13 +112,35 @@ const Bonus = () => {
     );
   };
 
+  const handleSendPayslip = async (id: string) => {
+    try {
+      setIsLoading(true);
+      const res = await axiosInstance.post(
+        `/employees/bonuses/send-bonus-payslip/${id}`
+      );
+      if (res.status === 200 || res.status === 201) {
+        toast.success(res?.data?.message || "Payslip sent successfully");
+      }
+      setIsLoading(false);
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10 relative">
         <div className="flex items-center justify-between z-0">
           <Heading
             user="Bonus"
-            subHead="Review and export monthly payroll taxes by employee; filter by year and month."
+            subHead="Review and manage employee bonuses; filter by year and month."
             flexDirection="column"
           />
 
@@ -339,7 +374,10 @@ const Bonus = () => {
               </div>
             </div>
 
-            <div className="overflow-x-auto relative z-0">
+            <div
+              className="overflow-x-auto relative z-0"
+              style={{ overflowY: "visible" }}
+            >
               <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
                 <thead className="bg-[#F7F7F7]">
                   <tr>
@@ -503,54 +541,30 @@ const Bonus = () => {
                           <td className="px-6 py-4 text-sm text-[#2F2F33]">
                             <div className="relative inline-block">
                               <button
-                                onClick={() =>
-                                  setActionMenuIndex(
-                                    actionMenuIndex === i ? null : i
-                                  )
-                                }
+                                onClick={(e) => {
+                                  const isOpen = actionMenuIndex === i;
+                                  setActionMenuIndex(isOpen ? null : i);
+
+                                  if (isOpen) {
+                                    setActionMenuPosition(null);
+                                    return;
+                                  }
+
+                                  const rect = (
+                                    e.currentTarget as HTMLElement
+                                  ).getBoundingClientRect();
+                                  const menuWidth = 160; // matches w-40
+                                  setActionMenuPosition({
+                                    top: rect.bottom + window.scrollY + 8,
+                                    left:
+                                      rect.right + window.scrollX - menuWidth,
+                                  });
+                                }}
                                 className="p-2 rounded-full hover:bg-[#F7F7F7] transition-colors"
                                 aria-label="Row actions"
                               >
                                 <BsThreeDotsVertical />
                               </button>
-
-                              {actionMenuIndex === i && (
-                                <div className="absolute z-40 right-0 mt-2 w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden">
-                                  <button
-                                    className={`w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]  ${
-                                      emp?.paid
-                                        ? " cursor-not-allowed opacity-25"
-                                        : ""
-                                    } `}
-                                    onClick={() => {
-                                      setDisburseModal(true);
-                                      setEmployeeDetails((prev) => ({
-                                        ...prev,
-                                        id: emp?.id,
-                                        name: emp?.employee?.fullname,
-                                        amount: emp?.amount,
-                                      }));
-                                    }}
-                                    disabled={emp?.paid}
-                                  >
-                                    {emp?.paid ? " ✅ dibursed" : "Disburse"}
-                                  </button>
-
-                                  <button
-                                    className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5]"
-                                    onClick={() => {
-                                      setShownonpayslipModal(true);
-                                      setEmployeeDetails((prev) => ({
-                                        ...prev,
-                                        id: emp?.id,
-                                      }));
-                                      setBtnType("edit");
-                                    }}
-                                  >
-                                    Edit{" "}
-                                  </button>
-                                </div>
-                              )}
                             </div>
                           </td>
                         </tr>
@@ -560,6 +574,68 @@ const Bonus = () => {
                 )}
               </table>
             </div>
+
+            {actionMenuIndex !== null && actionMenuPosition && (
+              <div
+                ref={actionMenuFloatingRef}
+                className="fixed z-[1200] w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden"
+                style={{
+                  top: actionMenuPosition.top,
+                  left: actionMenuPosition.left,
+                }}
+              >
+                <button
+                  className={`w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33]  ${
+                    employees[actionMenuIndex]?.paid
+                      ? " cursor-not-allowed opacity-25"
+                      : ""
+                  } `}
+                  onClick={() => {
+                    const emp = employees[actionMenuIndex];
+                    if (!emp) return;
+                    setDisburseModal(true);
+                    setEmployeeDetails((prev) => ({
+                      ...prev,
+                      id: emp?.id,
+                      name: emp?.employee?.fullname,
+                      amount: emp?.amount,
+                    }));
+                  }}
+                  disabled={employees[actionMenuIndex]?.paid}
+                >
+                  {employees[actionMenuIndex]?.paid
+                    ? " ✅ dibursed"
+                    : "Disburse"}
+                </button>
+
+                <button
+                  className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5]"
+                  onClick={() => {
+                    const emp = employees[actionMenuIndex];
+                    if (!emp) return;
+                    setShownonpayslipModal(true);
+                    setEmployeeDetails((prev) => ({
+                      ...prev,
+                      id: emp?.id,
+                    }));
+                    setBtnType("edit");
+                  }}
+                >
+                  Edit{" "}
+                </button>
+
+                <button
+                  className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5]"
+                  onClick={() => {
+                    const emp = employees[actionMenuIndex];
+                    if (!emp?.id) return;
+                    handleSendPayslip(emp.id);
+                  }}
+                >
+                  {loading ? "Sending..." : "Send payslip"}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </main>

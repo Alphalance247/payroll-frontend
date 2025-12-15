@@ -4,6 +4,7 @@ import { AxiosError } from "axios";
 
 interface data {
   id: string;
+  payslip_str: string;
 }
 
 interface dataType {
