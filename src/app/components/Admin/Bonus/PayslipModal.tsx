@@ -137,7 +137,7 @@ const PayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
                   <option value="">select payslip</option>
                   {employeePayslip?.data?.map((el) => (
                     <option value={el?.id} key={el?.id}>
-                      {el?.id}
+                      {el?.payslip_str}
                     </option>
                   ))}
                 </select>
