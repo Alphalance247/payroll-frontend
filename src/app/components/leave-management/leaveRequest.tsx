@@ -8,6 +8,8 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { useFilter } from "@/app/hooks/useFilter";
 import LeaveStatusUpdate from "./updateLeaveStatus";
+import { useRef } from "react";
+import ShowCommentSideBar from "../Employee-Dashboard/leave-request/showCommentSideBar";
 
 const LeaveRequest = () => {
   const { data, loading } = getLeaveRequestStore();
@@ -15,6 +17,10 @@ const LeaveRequest = () => {
   const [leaveStatusModal, setLeaveStatusModal] = useState(false);
   const [leaveName, setLeaveName] = useState("");
   const [selectedTeam, setSelectedTeam] = useState("");
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [showCommentDrawer, setShowCommentDrawer] = useState(false);
+  const [requestStatus, setRequestStatus] = useState<string>("");
+  const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { filteredData, setSearchQuery, searchQuery, setFilter } = useFilter(
     data?.leaves || [],
     ["employee"]
@@ -23,6 +29,21 @@ const LeaveRequest = () => {
     setFilter("country", selectedTeam);
     setFilter("country", selectedTeam === "All" ? "" : selectedTeam);
   }, [selectedTeam, setFilter]);
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRefs.current.every(
+          (ref) => ref && !ref.contains(event.target as Node)
+        )
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const teamOptions = [
     "All",
@@ -202,15 +223,46 @@ const LeaveRequest = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        {" "}
-                        <BsThreeDotsVertical
-                          className="cursor-pointer"
-                          onClick={() => {
-                            setLeaveStatusModal(true);
-                            setLeaveId(emp?.id);
-                            setLeaveName(emp?.employee);
-                          }}
-                        />
+                        <div className="relative">
+                          <button
+                            onClick={() => {
+                              setOpenDropdown(openDropdown === i ? null : i);
+                              setRequestStatus(emp?.status);
+                            }}
+                            className="p-2 hover:bg-[#F0F0F3] rounded-lg transition-colors"
+                          >
+                            <BsThreeDotsVertical />
+                          </button>
+                          {/* Dropdown Menu */}
+                          {openDropdown === i && (
+                            <div
+                              ref={(el) => {
+                                dropdownRefs.current[i] = el;
+                              }}
+                              className="absolute right-0 top-0 z-50 bg-white border border-[#E3E3E5] rounded-lg shadow-md w-[180px]"
+                            >
+                              <button
+                                onClick={() => {
+                                  setLeaveStatusModal(true);
+                                  setLeaveId(emp?.id);
+                                  setLeaveName(emp?.employee);
+                                }}
+                                className="w-full text-left px-4 py-3 text-sm text-[#2F2F33] hover:bg-[#F0F0F3] transition-colors border-b border-[#E3E3E5] last:border-b-0"
+                              >
+                                View Status
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setShowCommentDrawer(true);
+                                  setOpenDropdown(null);
+                                }}
+                                className="w-full text-left px-4 py-3 text-sm text-[#2F2F33] hover:bg-[#F0F0F3] transition-colors border-b border-[#E3E3E5] last:border-b-0"
+                              >
+                                View Comments
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -220,6 +272,13 @@ const LeaveRequest = () => {
           </div>
         )}
       </div>
+
+      {showCommentDrawer && (
+        <ShowCommentSideBar
+          status={requestStatus}
+          onCloseSideDrawer={() => setShowCommentDrawer(false)}
+        />
+      )}
     </section>
   );
 };

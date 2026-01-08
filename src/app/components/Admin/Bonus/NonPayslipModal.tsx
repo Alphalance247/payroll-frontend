@@ -220,7 +220,11 @@ const NonPayslipModal = ({
                   >
                     <option value="">select payslip</option>
                     {employeePayslip?.data?.map((el) => (
-                      <option value={el?.id} key={el?.id}>
+                      <option
+                        value={el?.id}
+                        key={el?.id}
+                        className=" capitalize"
+                      >
                         {el?.payslip_str}
                       </option>
                     ))}

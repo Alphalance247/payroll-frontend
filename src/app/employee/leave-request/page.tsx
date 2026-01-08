@@ -7,10 +7,11 @@ import Heading from "@/app/common/heading";
 import ProtectedRoute from "@/app/common/protectedRoute";
 import Spinner from "@/app/common/spinner";
 import LeaveRequestModal from "@/app/components/Employee-Dashboard/leave-request/requestModal";
+import ShowCommentSideBar from "@/app/components/Employee-Dashboard/leave-request/showCommentSideBar";
 import { useFilter } from "@/app/hooks/useFilter";
 import { getEmployeeLeaveList } from "@/stores/employee-dashboard/leave/getEmployeeLeaveRequest";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { BiPlus } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
@@ -40,12 +41,31 @@ const EmployeeLeaveRequest = () => {
       value: leaveData?.summary?.rejected,
     },
   ];
-  // const [searchQuery, setSearchQuery] = useState("");
   const [requestModal, setRequestModal] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [showCommentDrawer, setShowCommentDrawer] = useState(false);
+  const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { filteredData, setSearchQuery, searchQuery } = useFilter(
     leaveData?.leaves || [],
     ["leave_type"]
   );
+  const [requestStatus, setRequestStatus] = useState<string>("");
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRefs.current.every(
+          (ref) => ref && !ref.contains(event.target as Node)
+        )
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   return (
     <ProtectedRoute>
       <EmployeeDashboardLayout>
@@ -215,8 +235,39 @@ const EmployeeLeaveRequest = () => {
                           </td>
 
                           <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                            {" "}
-                            <BsThreeDotsVertical />
+                            <div className="relative">
+                              <button
+                                onClick={() => {
+                                  setOpenDropdown(
+                                    openDropdown === i ? null : i
+                                  );
+                                  setRequestStatus(data?.status);
+                                }}
+                                className="p-2 hover:bg-[#F0F0F3] rounded-lg transition-colors"
+                              >
+                                <BsThreeDotsVertical />
+                              </button>
+
+                              {/* Dropdown Menu */}
+                              {openDropdown === i && (
+                                <div
+                                  ref={(el) => {
+                                    dropdownRefs.current[i] = el;
+                                  }}
+                                  className="absolute right-0 top-0 z-50 bg-white border border-[#E3E3E5] rounded-lg shadow-md w-[180px]"
+                                >
+                                  <button
+                                    onClick={() => {
+                                      setShowCommentDrawer(true);
+                                      setOpenDropdown(null);
+                                    }}
+                                    className="w-full text-left px-4 py-3 text-sm text-[#2F2F33] hover:bg-[#F0F0F3] transition-colors border-b border-[#E3E3E5] last:border-b-0"
+                                  >
+                                    View Comments
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -232,6 +283,13 @@ const EmployeeLeaveRequest = () => {
               onModalClose={() => {
                 setRequestModal(!requestModal);
               }}
+            />
+          )}
+
+          {showCommentDrawer && (
+            <ShowCommentSideBar
+              status={requestStatus}
+              onCloseSideDrawer={() => setShowCommentDrawer(false)}
             />
           )}
         </main>
