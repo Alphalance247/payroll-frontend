@@ -45,6 +45,7 @@ const EmployeeLeaveRequest = () => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [showCommentDrawer, setShowCommentDrawer] = useState(false);
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [leaveId, setLeaveId] = useState<string>("");
   const { filteredData, setSearchQuery, searchQuery } = useFilter(
     leaveData?.leaves || [],
     ["leave_type"]
@@ -242,6 +243,7 @@ const EmployeeLeaveRequest = () => {
                                     openDropdown === i ? null : i
                                   );
                                   setRequestStatus(data?.status);
+                                  setLeaveId(data?.id);
                                 }}
                                 className="p-2 hover:bg-[#F0F0F3] rounded-lg transition-colors"
                               >
@@ -288,6 +290,7 @@ const EmployeeLeaveRequest = () => {
 
           {showCommentDrawer && (
             <ShowCommentSideBar
+              id={leaveId}
               status={requestStatus}
               onCloseSideDrawer={() => setShowCommentDrawer(false)}
             />

@@ -1,5 +1,5 @@
 import SideDrawer from "@/app/common/sideDrawer/sideDrawer";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { LiaTimesSolid } from "react-icons/lia";
 import RequestDetails from "./requestDetails";
@@ -7,6 +7,7 @@ import LoanHistory from "./loanHistory";
 import CurrentLoanActivity from "./currentLoanActivity";
 import { getLoanDetails } from "@/stores/loan/getLoanDetails";
 import Spinner from "@/app/common/spinner";
+import ShowCommentSideBar from "../Employee-Dashboard/loan/showCommentSideBar";
 
 interface loadData {
   data: {
@@ -26,6 +27,27 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const { fetchLoanDetails, loading } = getLoanDetails();
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [showCommentDrawer, setShowCommentDrawer] = useState(false);
+  const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [selectedId, setSelectedId] = useState<string>("");
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRefs.current.every(
+          (ref) => ref && !ref.contains(event.target as Node)
+        )
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="bg-white rounded-lg border border-[#E3E3E5] mt-10">
@@ -118,8 +140,39 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
                     {" "}
                     {emp?.date_disburse || "N/A"}
                   </td>
-                  <td className="px-6 py-4 text-sm text-[#2F2F33] text-center">
-                    <BsThreeDotsVertical />
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    <div className="relative">
+                      <button
+                        onClick={() =>
+                          setOpenDropdown(openDropdown === i ? null : i)
+                        }
+                        className="p-2 hover:bg-[#F0F0F3] rounded-lg transition-colors"
+                      >
+                        <BsThreeDotsVertical />
+                      </button>
+
+                      {/* Dropdown Menu */}
+                      {openDropdown === i && (
+                        <div
+                          ref={(el) => {
+                            dropdownRefs.current[i] = el;
+                          }}
+                          className="absolute right-0 top-0 z-50 bg-white border border-[#E3E3E5] rounded-lg shadow-md w-[180px]"
+                        >
+                          <button
+                            onClick={() => {
+                              setShowCommentDrawer(true);
+                              setOpenDropdown(null);
+                              setSelectedStatus(emp?.status);
+                              setSelectedId(emp?.id);
+                            }}
+                            className="w-full text-left px-4 py-3 text-sm text-[#2F2F33] hover:bg-[#F0F0F3] transition-colors border-b border-[#E3E3E5] last:border-b-0"
+                          >
+                            View Comments
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -157,6 +210,14 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
             )}
           </div>
         </SideDrawer>
+      )}
+
+      {showCommentDrawer && (
+        <ShowCommentSideBar
+          status={selectedStatus}
+          id={selectedId}
+          onCloseSideDrawer={() => setShowCommentDrawer(false)}
+        />
       )}
     </div>
   );

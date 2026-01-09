@@ -16,6 +16,8 @@ const LoanTable = ({
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [showCommentDrawer, setShowCommentDrawer] = useState(false);
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [selectedId, setSelectedId] = useState<string>("");
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -187,12 +189,14 @@ const LoanTable = ({
                             ref={(el) => {
                               dropdownRefs.current[i] = el;
                             }}
-                            className="absolute right-0 top-10 z-50 bg-white border border-[#E3E3E5] rounded-lg shadow-md w-[180px]"
+                            className="absolute right-0 top-0 z-50 bg-white border border-[#E3E3E5] rounded-lg shadow-md w-[180px]"
                           >
                             <button
                               onClick={() => {
                                 setShowCommentDrawer(true);
                                 setOpenDropdown(null);
+                                setSelectedStatus(data?.status);
+                                setSelectedId(data?.id);
                               }}
                               className="w-full text-left px-4 py-3 text-sm text-[#2F2F33] hover:bg-[#F0F0F3] transition-colors border-b border-[#E3E3E5] last:border-b-0"
                             >
@@ -211,6 +215,8 @@ const LoanTable = ({
       </div>
       {showCommentDrawer && (
         <ShowCommentSideBar
+          status={selectedStatus}
+          id={selectedId}
           onCloseSideDrawer={() => setShowCommentDrawer(false)}
         />
       )}

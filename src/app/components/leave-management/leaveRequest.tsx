@@ -228,6 +228,7 @@ const LeaveRequest = () => {
                             onClick={() => {
                               setOpenDropdown(openDropdown === i ? null : i);
                               setRequestStatus(emp?.status);
+                              setLeaveId(emp?.id);
                             }}
                             className="p-2 hover:bg-[#F0F0F3] rounded-lg transition-colors"
                           >
@@ -276,6 +277,7 @@ const LeaveRequest = () => {
       {showCommentDrawer && (
         <ShowCommentSideBar
           status={requestStatus}
+          id={leaveId}
           onCloseSideDrawer={() => setShowCommentDrawer(false)}
         />
       )}

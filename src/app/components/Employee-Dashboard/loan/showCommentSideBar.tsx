@@ -3,51 +3,26 @@ import SideDrawer from "@/app/common/sideDrawer/sideDrawer";
 import { useState } from "react";
 import { LiaTimesSolid } from "react-icons/lia";
 import { IoSend } from "react-icons/io5";
-
-interface Comment {
-  id: string;
-  author: "admin" | "employee";
-  message: string;
-  timestamp: string;
-  authorName?: string;
-}
-
-type StatusType = "pending" | "approved" | "rejected";
+import CommentLoadingState from "@/app/common/loadingState/commentLoading";
+import ErrorFetch from "@/app/common/errorFetch";
+import axiosInstance from "@/app/utils/axios";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
+import { useLoanComments } from "@/app/hooks/useQueries/loan-request/useLoanComment";
 
 const ShowCommentSideBar = ({
   onCloseSideDrawer,
-  status = "approved",
+  status,
   rejectionReason,
+  id,
 }: {
   onCloseSideDrawer: () => void;
-  status?: StatusType;
+  status?: string;
   rejectionReason?: string;
+  id: string;
 }) => {
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: "1",
-      author: "admin",
-      message:
-        "Thank you for submitting your loan request. We have received it and will review it shortly.",
-      timestamp: "2025-01-05 10:30 AM",
-      authorName: "Admin - Payroll Team",
-    },
-    {
-      id: "2",
-      author: "employee",
-      message: "Thank you! When can I expect a response?",
-      timestamp: "2025-01-05 2:15 PM",
-      authorName: "You",
-    },
-    {
-      id: "3",
-      author: "admin",
-      message:
-        "Your loan request has been approved! You will receive the disbursement within 2-3 business days.",
-      timestamp: "2025-01-07 9:45 AM",
-      authorName: "Admin - Payroll Team",
-    },
-  ]);
+  const { data, isError, isLoading, refetch } = useLoanComments({ id });
+  const [loadingState, setLoadingState] = useState(false);
 
   const [newMessage, setNewMessage] = useState("");
 
@@ -90,17 +65,34 @@ const ShowCommentSideBar = ({
 
   const statusStyles = getStatusStyles();
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      const newComment: Comment = {
-        id: String(comments.length + 1),
-        author: "employee",
-        message: newMessage,
-        timestamp: new Date().toLocaleString(),
-        authorName: "You",
-      };
-      setComments([...comments, newComment]);
-      setNewMessage("");
+      setLoadingState(true);
+      try {
+        const res = await axiosInstance.post(
+          `employees/loan-request/${id}/comments`,
+          {
+            comment: newMessage,
+          }
+        );
+
+        if (res.status === 200 || res.status === 201) {
+          setNewMessage("");
+          refetch();
+        }
+
+        setLoadingState(false);
+      } catch (err) {
+        let errorMessage =
+          "An error occurred please try again or contact Admin";
+        if (err instanceof AxiosError) {
+          errorMessage = err.response?.data?.message || errorMessage;
+        }
+
+        toast.error(errorMessage);
+      } finally {
+        setLoadingState(false);
+      }
     }
   };
 
@@ -148,51 +140,62 @@ const ShowCommentSideBar = ({
 
         {/* Messages Container */}
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
-          {comments.length === 0 ? (
+          {isLoading ? (
+            <CommentLoadingState />
+          ) : isError ? (
+            <ErrorFetch
+              message={"Error fetching comments"}
+              onRefetch={refetch}
+              smallWindow
+            />
+          ) : data?.data?.length === 0 ? (
             <div className="flex items-center justify-center h-full text-center">
               <p className="text-[#71717A] text-sm">
                 No comments yet. Start a conversation!
               </p>
             </div>
           ) : (
-            comments.map((comment) => (
+            data?.data?.map((comment) => (
               <div
                 key={comment.id}
                 className={`flex ${
-                  comment.author === "employee"
-                    ? "justify-end"
-                    : "justify-start"
+                  comment.is_admin ? "justify-start" : " justify-end"
                 }`}
               >
                 <div
                   className={`max-w-[70%] ${
-                    comment.author === "employee"
-                      ? "bg-[#E37915]"
-                      : "bg-[#F0F0F3]"
+                    comment.is_admin ? "bg-[#F0F0F3]" : "bg-[#E37915]"
                   } rounded-lg px-4 py-3`}
                 >
-                  {comment.author === "admin" && (
+                  {/* {comment.author === "admin" && (
                     <p className="text-xs font-semibold text-[#71717A] mb-1">
                       {comment.authorName}
                     </p>
-                  )}
+                  )} */}
+
+                  <p
+                    className={`text-xs font-semibold  mb-1 ${
+                      comment.is_admin ? "text-[#71717A]" : "text-white"
+                    }`}
+                  >
+                    {comment?.is_admin ? "Admin - Payroll Team" : "You"}
+                  </p>
+
                   <p
                     className={`text-sm ${
-                      comment.author === "employee"
-                        ? "text-white"
-                        : "text-[#2F2F33]"
+                      comment.is_admin ? " text-[#2F2F33]" : "text-white"
                     } break-words`}
                   >
-                    {comment.message}
+                    {comment.comment}
                   </p>
                   <p
                     className={`text-xs mt-2 ${
-                      comment.author === "employee"
-                        ? "text-[rgba(255,255,255,0.7)]"
-                        : "text-[#999]"
+                      comment.is_admin
+                        ? "text-[#999]"
+                        : "text-[rgba(255,255,255,0.7)]"
                     }`}
                   >
-                    {comment.timestamp}
+                    {comment.created_at}
                   </p>
                 </div>
               </div>
@@ -215,7 +218,33 @@ const ShowCommentSideBar = ({
               disabled={!newMessage.trim()}
               className="px-4 py-2 bg-[#E37915] text-white rounded-lg hover:bg-[#d46f0f] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center"
             >
-              <IoSend size={18} />
+              {loadingState ? (
+                <span className="flex items-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.046 1.137 5.824 3 7.938l3-3.647z"
+                    ></path>
+                  </svg>
+                  Sending...
+                </span>
+              ) : (
+                <IoSend size={18} />
+              )}
             </button>
           </div>
           <p className="text-xs text-[#999] mt-2">
