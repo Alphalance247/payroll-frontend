@@ -8,15 +8,65 @@ import { Search } from "lucide-react";
 import { usePayrollHistoryList } from "@/app/hooks/useQueries/payroll-history/usePayrollHistoryList";
 import { useState } from "react";
 import Link from "next/link";
+import axiosInstance from "@/app/utils/axios";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 const PayrollHistory = () => {
   const { isError, error, refetch, isLoading, data } = usePayrollHistoryList();
   const [search, setSearch] = useState("");
   const [selectedYear, setSelectedYear] = useState<string>("");
+  const [loadingState, setLoadingState] = useState(false);
 
   // Generate list of years (current year and previous 5 years)
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 6 }, (_, i) => currentYear - i);
+
+  const handleDownloadReport = async (selectedYear: string) => {
+    setLoadingState(true);
+    try {
+      const res = await axiosInstance.get(
+        `employees/reports/payment-disbursement?year=${selectedYear}`,
+        {
+          responseType: "blob", // Important: Tell axios to handle response as blob
+        }
+      );
+
+      if (res.status === 200 || res.status === 201) {
+        // Create a blob from the response
+        const blob = new Blob([res.data], {
+          type: res.headers["content-type"] || "application/octet-stream",
+        });
+
+        // Create a temporary URL for the blob
+        const url = URL.createObjectURL(blob);
+
+        // Create a temporary anchor element and trigger download
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `Payroll-Disbursement-Report-${selectedYear}.pdf`; // Set filename
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up: remove the temporary link and revoke the URL
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        toast.success("Report downloaded successfully!");
+      }
+
+      setLoadingState(false);
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setLoadingState(false);
+    }
+  };
 
   return (
     <ProtectedRoute>
@@ -61,13 +111,13 @@ const PayrollHistory = () => {
 
               <button
                 disabled={!selectedYear}
-                onClick={() => {
+                onClick={
                   // TODO: API call to download yearly disbursement report
-                  console.log(`Downloading report for year: ${selectedYear}`);
-                }}
+                  () => handleDownloadReport(selectedYear)
+                }
                 className="px-6 py-2 bg-[#E37915] text-white rounded-lg text-sm font-medium hover:bg-[#d46f0f] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed transition-colors duration-200 sm:mt-6"
               >
-                Download Report
+                {loadingState ? "downloading..." : " Download Report"}
               </button>
             </div>
           </div>
