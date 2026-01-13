@@ -38,7 +38,7 @@ const EmployeeLeaveRequest = () => {
     },
     {
       label: "Remaining",
-      value: leaveData?.summary?.rejected,
+      value: leaveData?.remaining,
     },
   ];
   const [requestModal, setRequestModal] = useState(false);

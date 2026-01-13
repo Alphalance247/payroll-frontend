@@ -145,7 +145,13 @@ const LoanTable = ({
                       style={{ paddingLeft: "1.5rem" }}
                     >
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-xs border border-[#188C43] bg-[#E9F9EF] text-[#188C43] font-medium`}
+                        className={`inline-block px-3 py-1 rounded-full text-xs border border-[#188C43] bg-[#E9F9EF] text-[#188C43] font-medium ${
+                          data?.status === "pending"
+                            ? "border-yellow-400 bg-yellow-100 text-yellow-700"
+                            : data?.status === "approved"
+                            ? "border-green-500 bg-green-100 text-green-600"
+                            : "border-red-500 bg-red-100 text-red-600"
+                        }`}
                       >
                         {data?.status}
                       </span>

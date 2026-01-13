@@ -81,9 +81,17 @@ const CurrentLoanActivity = ({
           ₦{data?.data?.amount}
         </p>
         <div className="w-full">
-          <p className="text-sm font-normal text-[#262626] mb-1">70% Paid</p>
+          <p className="text-sm font-normal text-[#262626] mb-1">
+            {data?.data?.repayment_progress}%
+          </p>
           <div className="bg-[#E0E0E0] h-[5px] w-full">
-            <div className="bg-[#198038] w-[70%] h-[5px] rounded-sm"></div>
+            <div
+              className={` ${
+                Number(data?.data?.repayment_progress) >= 0
+                  ? "bg-slate-400"
+                  : "bg-[#198038]"
+              } w-[${data?.data?.repayment_progress}%] h-[5px] rounded-sm`}
+            ></div>
           </div>
         </div>
       </div>
