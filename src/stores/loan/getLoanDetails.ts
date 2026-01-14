@@ -17,6 +17,7 @@ interface loanListDataStore {
     team: string;
     status: string;
     disburse: boolean;
+    repayment_progress: string;
   };
 
   loan_history: {
