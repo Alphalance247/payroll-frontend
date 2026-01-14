@@ -59,7 +59,18 @@ const PayrollHistory = () => {
     } catch (err) {
       let errorMessage = "An error occurred please try again or contact Admin";
       if (err instanceof AxiosError) {
-        errorMessage = err.response?.data?.message || errorMessage;
+        // Handle blob response - convert it back to text
+        if (err.response?.data instanceof Blob) {
+          try {
+            const text = await err.response.data.text();
+            const errorData = JSON.parse(text);
+            errorMessage = errorData?.message || errorMessage;
+          } catch {
+            errorMessage = "Failed to download report";
+          }
+        } else {
+          errorMessage = err.response?.data?.message || errorMessage;
+        }
       }
 
       toast.error(errorMessage);
