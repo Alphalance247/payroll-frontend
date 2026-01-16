@@ -1,0 +1,75 @@
+image: node:18
+
+options:
+  docker: true
+
+branches:
+  develop:
+    - deployment: staging
+  main:
+    - deployment: production
+
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Install & Test (Next.js)
+          caches:
+            - node
+          script:
+            - cd payroll/frontend
+            - npm ci
+            - npm run lint
+            - npm run test --if-present
+            - npm run build
+
+      - step:
+          name: Security Scan (Dependencies)
+          script:
+            - cd payroll/frontend
+            - npm ci
+            - npx audit-ci --moderate
+
+      - step:
+          name: Deploy Frontend to Production
+          deployment: production
+          image: atlassian/default-image:3
+          script:
+            # ---- SSH SETUP ----
+            - mkdir -p ~/.ssh
+            - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+            - chmod 600 ~/.ssh/id_rsa
+            - ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+
+            # ---- REMOTE DEPLOYMENT ----
+            - |
+              ssh $SSH_USER@$SERVER_IP << 'EOF'
+                set -e
+
+                cd $DEPLOY_PATH
+
+                echo "Stopping existing container (if any)..."
+                docker stop frontend || true
+                docker rm frontend || true
+
+                echo "Removing old image (if any)..."
+                docker rmi frontend || true
+
+                echo "Building new frontend image..."
+                docker build -t frontend .
+
+                echo "Running new frontend container..."
+                docker run -d \
+                  --name frontend \
+                  -p 3000:3000 \
+                  --restart unless-stopped \
+                  frontend
+
+                echo "Copying Next.js static files..."
+                docker exec frontend \
+                  tar -C /app/.next -cf - static | tar -C $STATIC_PATH -xf -
+
+                echo "Cleaning unused Docker resources..."
+                docker image prune -f
+              EOF
