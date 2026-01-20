@@ -16,10 +16,8 @@ definitions:
     - step: &lint_dockerfile
         name: Lint Dockerfile (Hadolint)
         image: hadolint/hadolint:latest-debian
-        clone: true
         script:
-          - ls -la
-          - hadolint ./Dockerfile
+          - hadolint Dockerfile
 
     - step: &test_and_coverage
         name: Run Tests and Generate Coverage
