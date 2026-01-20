@@ -17,7 +17,9 @@ definitions:
         name: Lint Dockerfile (Hadolint)
         image: hadolint/hadolint:latest-debian
         script:
-          - hadolint Dockerfile
+          # Ensure the Dockerfile exists in the current directory
+          - ls -la
+          - hadolint Dockerfile || exit 1
 
     - step: &test_and_coverage
         name: Run Tests and Generate Coverage
