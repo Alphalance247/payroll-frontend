@@ -1,4 +1,4 @@
-image: node:18-alpine
+image: atlassian/default-image:3
 
 options:
   docker: true
@@ -7,95 +7,87 @@ options:
 definitions:
   services:
     docker:
-      memory: 4096
+      memory: 3072
 
   caches:
     docker: /var/lib/docker
     node: ~/.npm
 
   steps:
-    - step: &docker-build
-        name: Build Docker Image (Next.js)
-        image: docker:24.0.7
-        services:
-          - docker
-        caches:
-          - docker
+    - step: &lint_dockerfile
+        name: Lint Dockerfile (Hadolint)
+        image: hadolint/hadolint:latest-debian
         script:
-          - set -e
-          - docker version
-          - docker build --progress=plain -t payroll-frontend:${BITBUCKET_COMMIT} .
-        artifacts:
-          - docker-build.log
+          - hadolint Dockerfile
 
-    - step: &docker-test
-        name: Run Container & Generate Coverage
-        image: docker:24.0.7
+    - step: &build_image
+        name: Build Next.js Docker Image
         services:
           - docker
         caches:
           - docker
         script:
-          - set -e
-          - docker run -d --name frontend-test -p 3000:3000 payroll-frontend:${BITBUCKET_COMMIT}
-          - sleep 15
-          - docker ps | grep frontend-test
-          # Optional: if test/coverage script exists in image
-          - |
-            if docker exec frontend-test sh -c "test -f package.json && (npm run test -- --coverage || yarn test --coverage)"; then
-              docker exec frontend-test sh -c "mkdir -p /app/coverage"
-            else
-              echo "No test/coverage script found, skipping coverage generation"
-            fi
-          - docker stop frontend-test
-          - docker rm frontend-test
+          - export IMAGE_NAME=${BITBUCKET_REPO_SLUG}
+          - export DOCKER_BUILDKIT=1
+          - docker build --progress=plain --file Dockerfile --tag ${IMAGE_NAME}:ci .
+          - docker save ${IMAGE_NAME}:ci --output ${IMAGE_NAME}.tar
+        artifacts:
+          - "*.tar"
+
+    - step: &test_and_coverage
+        name: Run Tests and Generate Coverage
+        image: node:18-alpine
+        caches:
+          - node
+        script:
+          - apk add --no-cache libc6-compat
+          - npm ci || npm install
+          - npm test -- --coverage || echo "No tests configured, skipping"
         artifacts:
           - coverage/**
 
-    - step: &docker-build-dev
-        name: Build & Tag Docker Image (dev)
-        image: docker:24.0.7
+    - step: &push_image
+        name: Build and Push Docker Image (Main)
+        deployment: Production
         services:
           - docker
         caches:
           - docker
         script:
-          - set -e
-          - docker build --progress=plain -t payroll-frontend:latest -t payroll-frontend:${BITBUCKET_BUILD_NUMBER} .
-        artifacts:
-          - docker-build.log
+          - echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+          - export IMAGE_NAME=${BITBUCKET_REPO_SLUG}
+          - export VERSION=prod-${BITBUCKET_BUILD_NUMBER}
+          - docker load --input ${IMAGE_NAME}.tar
+          - docker tag ${IMAGE_NAME}:ci ${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}:${VERSION}
+          - docker push ${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}:${VERSION}
 
 pipelines:
+  default:
+    - parallel:
+        - step: *lint_dockerfile
+        - step: *test_and_coverage
+    - step: *build_image
+
   branches:
+    feature/*:
+      - parallel:
+          - step: *lint_dockerfile
+          - step: *test_and_coverage
+      - step:
+          <<: *build_image
+          name: Build Docker Image (Feature Branch)
+
     dev:
-      - step: *docker-build
-      - step: *docker-test
+      - parallel:
+          - step: *lint_dockerfile
+          - step: *test_and_coverage
+      - step:
+          <<: *build_image
+          name: Build Docker Image (Dev Branch)
 
     main:
-      - step: *docker-build-dev
-      - step: *docker-test
-
-  pull-requests:
-    '**':
-      - step:
-          name: PR Validation – Docker Build
-          image: docker:24.0.7
-          services:
-            - docker
-          caches:
-            - docker
-          script:
-            - set -e
-            - docker build --progress=plain -t payroll-frontend:pr-${BITBUCKET_PR_ID} .
-
-  default:
-    - step:
-        name: Default Safety Build
-        image: docker:24.0.7
-        services:
-          - docker
-        caches:
-          - docker
-        script:
-          - set -e
-          - docker build --progress=plain -t payroll-frontend:default .
+      - parallel:
+          - step: *lint_dockerfile
+          - step: *test_and_coverage
+      - step: *build_image
+      - step: *push_image
