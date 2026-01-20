@@ -10,7 +10,6 @@ definitions:
       memory: 3072
 
   caches:
-    docker: /var/lib/docker
     node: ~/.npm
 
   steps:
@@ -20,20 +19,6 @@ definitions:
         script:
           - hadolint Dockerfile
 
-    - step: &build_image
-        name: Build Next.js Docker Image
-        services:
-          - docker
-        caches:
-          - docker
-        script:
-          - export IMAGE_NAME=${BITBUCKET_REPO_SLUG}
-          - export DOCKER_BUILDKIT=1
-          - docker build --progress=plain --file Dockerfile --tag ${IMAGE_NAME}:ci .
-          - docker save ${IMAGE_NAME}:ci --output ${IMAGE_NAME}.tar
-        artifacts:
-          - "*.tar"
-
     - step: &test_and_coverage
         name: Run Tests and Generate Coverage
         image: node:18-alpine
@@ -41,17 +26,32 @@ definitions:
           - node
         script:
           - apk add --no-cache libc6-compat
-          - npm ci || npm install
+          - |
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
           - npm test -- --coverage || echo "No tests configured, skipping"
         artifacts:
           - coverage/**
 
-    - step: &push_image
-        name: Build and Push Docker Image (Main)
-        deployment: Production
+    - step: &build_image
+        name: Build Next.js Docker Image
         services:
           - docker
-        caches:
+        script:
+          - export IMAGE_NAME=${BITBUCKET_REPO_SLUG}
+          - export DOCKER_BUILDKIT=1
+          - docker build --file Dockerfile --tag ${IMAGE_NAME}:ci .
+          - docker save ${IMAGE_NAME}:ci --output ${IMAGE_NAME}.tar
+        artifacts:
+          - "*.tar"
+
+    - step: &push_image
+        name: Push Docker Image (Main)
+        deployment: Production
+        services:
           - docker
         script:
           - echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
