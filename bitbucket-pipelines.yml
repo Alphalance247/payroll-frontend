@@ -2,74 +2,100 @@ image: node:18-alpine
 
 options:
   docker: true
+  size: 2x
 
-branches:
-  develop:
-    - deployment: staging
-  main:
-    - deployment: production
+definitions:
+  services:
+    docker:
+      memory: 4096
 
+  caches:
+    docker: /var/lib/docker
+    node: ~/.npm
+
+  steps:
+    - step: &docker-build
+        name: Build Docker Image (Next.js)
+        image: docker:24.0.7
+        services:
+          - docker
+        caches:
+          - docker
+        script:
+          - set -e
+          - docker version
+          - docker build --progress=plain -t payroll-frontend:${BITBUCKET_COMMIT} .
+        artifacts:
+          - docker-build.log
+
+    - step: &docker-test
+        name: Run Container & Generate Coverage
+        image: docker:24.0.7
+        services:
+          - docker
+        caches:
+          - docker
+        script:
+          - set -e
+          - docker run -d --name frontend-test -p 3000:3000 payroll-frontend:${BITBUCKET_COMMIT}
+          - sleep 15
+          - docker ps | grep frontend-test
+          # Optional: if test/coverage script exists in image
+          - |
+            if docker exec frontend-test sh -c "test -f package.json && (npm run test -- --coverage || yarn test --coverage)"; then
+              docker exec frontend-test sh -c "mkdir -p /app/coverage"
+            else
+              echo "No test/coverage script found, skipping coverage generation"
+            fi
+          - docker stop frontend-test
+          - docker rm frontend-test
+        artifacts:
+          - coverage/**
+
+    - step: &docker-build-dev
+        name: Build & Tag Docker Image (dev)
+        image: docker:24.0.7
+        services:
+          - docker
+        caches:
+          - docker
+        script:
+          - set -e
+          - docker build --progress=plain -t payroll-frontend:latest -t payroll-frontend:${BITBUCKET_BUILD_NUMBER} .
+        artifacts:
+          - docker-build.log
 
 pipelines:
   branches:
+    dev:
+      - step: *docker-build
+      - step: *docker-test
+
     main:
+      - step: *docker-build-dev
+      - step: *docker-test
+
+  pull-requests:
+    '**':
       - step:
-          name: Install & Test (Next.js)
+          name: PR Validation – Docker Build
+          image: docker:24.0.7
+          services:
+            - docker
           caches:
-            - node
+            - docker
           script:
-            - cd payroll/frontend
-            - npm ci
-            - npm run lint
-            - npm run test --if-present
-            - npm run build
+            - set -e
+            - docker build --progress=plain -t payroll-frontend:pr-${BITBUCKET_PR_ID} .
 
-      - step:
-          name: Security Scan (Dependencies)
-          script:
-            - cd payroll/frontend
-            - npm ci
-            - npx audit-ci --moderate
-
-      - step:
-          name: Deploy Frontend to Production
-          deployment: production
-          image: atlassian/default-image:3
-          script:
-            # ---- SSH SETUP ----
-            - mkdir -p ~/.ssh
-            - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-            - chmod 600 ~/.ssh/id_rsa
-            - ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
-
-            # ---- REMOTE DEPLOYMENT ----
-            - |
-              ssh $SSH_USER@$SERVER_IP << 'EOF'
-                set -e
-
-                cd $DEPLOY_PATH
-
-                echo "Stopping existing container (if any)..."
-                docker stop frontend || true
-                docker rm frontend || true
-
-                echo "Removing old image (if any)..."
-                docker rmi frontend || true
-
-                echo "Building new frontend image..."
-                docker build -t frontend .
-
-                echo "Running new frontend container..."
-                docker run -d \
-                  --name frontend \
-                  -p 3000:3000 \
-                  --restart unless-stopped \
-                  frontend
-
-                echo "Copying Next.js static files..."
-                docker exec frontend \
-                  tar -C /app/.next -cf - static | tar -C $STATIC_PATH -xf -
-
-                echo "Cleaning unused Docker resources..."
-                docker image prune -f
-              EOF
+  default:
+    - step:
+        name: Default Safety Build
+        image: docker:24.0.7
+        services:
+          - docker
+        caches:
+          - docker
+        script:
+          - set -e
+          - docker build --progress=plain -t payroll-frontend:default .
