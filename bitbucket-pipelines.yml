@@ -76,7 +76,7 @@ pipelines:
         deployment: development
         script:
           - export DEPLOY_ENV=development
-          - pipe: atlassian/compass-deployment:1.x.x
+          - pipe: atlassian/compass-deployment:1.4.0
             variables:
               ATLASSIAN_USER_EMAIL: $ATLASSIAN_USER_EMAIL
               ATLASSIAN_API_TOKEN: $ATLASSIAN_API_TOKEN
@@ -100,7 +100,7 @@ pipelines:
           deployment: production
           script:
             - export DEPLOY_ENV=production
-            - pipe: atlassian/compass-deployment:1.x.x
+            - pipe: atlassian/compass-deployment:1.4.0
               variables:
                 ATLASSIAN_USER_EMAIL: $ATLASSIAN_USER_EMAIL
                 ATLASSIAN_API_TOKEN: $ATLASSIAN_API_TOKEN
