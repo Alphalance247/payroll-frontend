@@ -1,95 +1,76 @@
-image: atlassian/default-image:3
+image: node:18-alpine
 
 options:
-  docker: true
   size: 2x
 
 definitions:
-  services:
-    docker:
-      memory: 3072
-
   caches:
     node: ~/.npm
 
   steps:
-    - step: &lint_dockerfile
-        name: Lint Dockerfile (Hadolint)
-        image: hadolint/hadolint:latest-debian
-        script:
-          # Ensure the Dockerfile exists in the current directory
-          - ls -la
-          - hadolint Dockerfile || exit 1
-
-    - step: &test_and_coverage
-        name: Run Tests and Generate Coverage
-        image: node:18-alpine
+    - step: &build_test
+        name: Build, Test & Collect Metrics
         caches:
           - node
         script:
-          - apk add --no-cache libc6-compat
+          - apk add --no-cache libc6-compat jq
+          - npm ci
+          - npm test -- --coverage || echo "No tests configured"
+          - npm run build
+
+          # Extract coverage percentage if present
           - |
-            if [ -f package-lock.json ]; then
-              npm ci
+            if [ -f coverage/coverage-summary.json ]; then
+              export UNIT_TEST_COVERAGE=$(jq '.total.lines.pct' coverage/coverage-summary.json)
             else
-              npm install
+              export UNIT_TEST_COVERAGE=0
             fi
-          - npm test -- --coverage || echo "No tests configured, skipping"
+
         artifacts:
           - coverage/**
+          - .next/**
 
-    - step: &build_image
-        name: Build Next.js Docker Image
-        services:
-          - docker
+    - step: &report_to_compass
+        name: Report Metrics to Compass
         script:
-          - export IMAGE_NAME=${BITBUCKET_REPO_SLUG}
-          - export DOCKER_BUILDKIT=1
-          - docker build --file Dockerfile --tag ${IMAGE_NAME}:ci .
-          - docker save ${IMAGE_NAME}:ci --output ${IMAGE_NAME}.tar
-        artifacts:
-          - "*.tar"
-
-    - step: &push_image
-        name: Push Docker Image (Main)
-        deployment: Production
-        services:
-          - docker
-        script:
-          - echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
-          - export IMAGE_NAME=${BITBUCKET_REPO_SLUG}
-          - export VERSION=prod-${BITBUCKET_BUILD_NUMBER}
-          - docker load --input ${IMAGE_NAME}.tar
-          - docker tag ${IMAGE_NAME}:ci ${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}:${VERSION}
-          - docker push ${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}:${VERSION}
+          - pipe: atlassian/compass-report:1.5.0
+            variables:
+              COMPASS_API_TOKEN: $COMPASS_API_TOKEN
+              COMPONENT_ID: $COMPASS_COMPONENT_ID
+              EVENT_TYPE: build
+              DESCRIPTION: "Frontend CI metrics from Bitbucket Pipelines"
+              METRICS: >
+                {
+                  "unit_test_coverage": {
+                    "value": ${UNIT_TEST_COVERAGE},
+                    "unit": "percentage"
+                  },
+                  "open_pull_requests": {
+                    "value": ${BITBUCKET_PR_ID:-0}
+                  },
+                  "mean_time_to_resolve": {
+                    "value": 0,
+                    "unit": "hours"
+                  },
+                  "recent_incidents": {
+                    "value": 0
+                  }
+                }
 
 pipelines:
   default:
-    - parallel:
-        - step: *lint_dockerfile
-        - step: *test_and_coverage
-    - step: *build_image
+    - step: *build_test
+    - step: *report_to_compass
 
   branches:
     feature/*:
-      - parallel:
-          - step: *lint_dockerfile
-          - step: *test_and_coverage
-      - step:
-          <<: *build_image
-          name: Build Docker Image (Feature Branch)
+      - step: *build_test
+      - step: *report_to_compass
 
     dev:
-      - parallel:
-          - step: *lint_dockerfile
-          - step: *test_and_coverage
-      - step:
-          <<: *build_image
-          name: Build Docker Image (Dev Branch)
+      - step: *build_test
+      - step: *report_to_compass
 
     main:
-      - parallel:
-          - step: *lint_dockerfile
-          - step: *test_and_coverage
-      - step: *build_image
-      - step: *push_image
+      - step: *build_test
+      - step: *report_to_compass
