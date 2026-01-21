@@ -69,7 +69,7 @@ definitions:
               COMPONENT_ID: "ari:cloud:compass:f8428991-f914-4927-92be-879835a51fd9:component/0e7bd41b-c4ff-471d-9cb8-21fc832290dd/9b1ca5ce-2bb4-4bb0-a2bc-bfcb2e8848a2"
               ENVIRONMENT: $DEPLOY_ENV
               STATE: "SUCCESS"
-              PIPELINE_URL: "https://bitbucket.org/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pipelines/results/${BITBUCKET_BUILD_NUMBER}"
+              PIPELINE_URL: "https://bitbucket.org/goalluvium/payroll-frontend/src/dev/bitbucket-pipelines.yml"
               COMMIT_SHA: $BITBUCKET_COMMIT
               BRANCH: $BITBUCKET_BRANCH
 
@@ -93,7 +93,7 @@ pipelines:
               COMPONENT_ID: "ari:cloud:compass:f8428991-f914-4927-92be-879835a51fd9:component/0e7bd41b-c4ff-471d-9cb8-21fc832290dd/9b1ca5ce-2bb4-4bb0-a2bc-bfcb2e8848a2"
               ENVIRONMENT: development
               STATE: "SUCCESS"
-              PIPELINE_URL: "https://bitbucket.org/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pipelines/results/${BITBUCKET_BUILD_NUMBER}"
+              PIPELINE_URL: "https://bitbucket.org/goalluvium/payroll-frontend/src/dev/bitbucket-pipelines.yml"
               COMMIT_SHA: $BITBUCKET_COMMIT
               BRANCH: $BITBUCKET_BRANCH
 
@@ -117,7 +117,7 @@ pipelines:
                 COMPONENT_ID: "ari:cloud:compass:f8428991-f914-4927-92be-879835a51fd9:component/0e7bd41b-c4ff-471d-9cb8-21fc832290dd/9b1ca5ce-2bb4-4bb0-a2bc-bfcb2e8848a2"
                 ENVIRONMENT: production
                 STATE: "SUCCESS"
-                PIPELINE_URL: "https://bitbucket.org/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pipelines/results/${BITBUCKET_BUILD_NUMBER}"
+                PIPELINE_URL: "https://bitbucket.org/goalluvium/payroll-frontend/src/dev/bitbucket-pipelines.yml"
                 COMMIT_SHA: $BITBUCKET_COMMIT
                 BRANCH: $BITBUCKET_BRANCH
 
