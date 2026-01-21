@@ -52,7 +52,7 @@ definitions:
     - step: &compass_deploy
         name: Publish deployment to Compass
         script:
-          - pipe: atlassian/compass-deployment:1.x.x
+          - pipe: atlassian/compass-deployment:1.4.0
             variables:
               ATLASSIAN_USER_EMAIL: $ATLASSIAN_USER_EMAIL
               ATLASSIAN_API_TOKEN: $ATLASSIAN_API_TOKEN
