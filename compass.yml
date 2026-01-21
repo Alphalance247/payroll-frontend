@@ -1,0 +1,20 @@
+name: Payroll-frontend-pipeline
+id: 'ari:cloud:compass:f8428991-f914-4927-92be-879835a51fd9:component/0e7bd41b-c4ff-471d-9cb8-21fc832290dd/9b1ca5ce-2bb4-4bb0-a2bc-bfcb2e8848a2'
+description: null
+configVersion: 1
+typeId: APPLICATION
+ownerId: 'ari:cloud:identity::team/892cadee-b9d3-4b0d-aec4-245732d164a1'
+fields:
+  tier: 4
+  isMonorepoProject: false
+links:
+  - name: null
+    type: REPOSITORY
+    url: 'https://bitbucket.org/goalluvium/payroll-frontend'
+relationships: {}
+labels:
+  - synced-with-jsm
+customFields: null
+
+# Learn more about formatting compass.yml:
+# https://go.atlassian.com/compass-yml-format
