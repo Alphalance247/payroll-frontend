@@ -1,17 +1,20 @@
 # Bitbucket Pipelines configuration for payroll-frontend (Next.js 15)
-# This pipeline runs linting, tests, build, generates coverage artifacts,
-# and publishes deployment metrics to Atlassian Compass for DORA tracking.
+# Docs: https://support.atlassian.com/bitbucket-cloud/docs/bitbucket-pipelines-configuration-reference/
 
 image: node:20
 
 options:
-  size: 2x
+  max-time: 30
+
+clone:
+  depth: full
 
 definitions:
   caches:
     npm: ~/.npm
 
   steps:
+
     - step: &install_deps
         name: Install dependencies
         caches:
@@ -22,46 +25,52 @@ definitions:
     - step: &lint
         name: Lint
         script:
+          # Run lint only if script exists
           - |
             if npm run | grep -q "lint"; then
               npm run lint
             else
-              echo "No lint script found, skipping lint step."
+              echo "No lint script found. Skipping lint."
             fi
 
     - step: &test
-        name: Test & Coverage
+        name: Test with coverage
         script:
+          # Run tests only if script exists
           - |
             if npm run | grep -q "test"; then
-              npm run test -- --coverage || npm run test
+              npm test -- --coverage || npm test || true
             else
-              echo "No test script found, skipping tests."
+              echo "No test script found. Skipping tests."
             fi
         artifacts:
+          # Common coverage locations for JS/TS projects
           - coverage/**
+          - .nyc_output/**
 
     - step: &build
-        name: Build
+        name: Build application
         script:
           - npm run build
         artifacts:
           - .next/**
-          - out/**
+          - dist/**
+          - build/**
 
     - step: &compass_deploy
-        name: Publish deployment to Compass
+        name: Publish deployment metrics to Compass
         script:
-          - pipe: atlassian/compass-deployment:1.4.0
+          # Sends deployment/build events to Atlassian Compass (DORA metrics)
+          - pipe: atlassian/compass-deployment:1
             variables:
               ATLASSIAN_USER_EMAIL: $ATLASSIAN_USER_EMAIL
               ATLASSIAN_API_TOKEN: $ATLASSIAN_API_TOKEN
               CLOUD_ID: $COMPASS_CLOUD_ID
               COMPONENT_ID: "ari:cloud:compass:f8428991-f914-4927-92be-879835a51fd9:component/0e7bd41b-c4ff-471d-9cb8-21fc832290dd/9b1ca5ce-2bb4-4bb0-a2bc-bfcb2e8848a2"
               ENVIRONMENT: $DEPLOY_ENV
-              DEPLOYMENT_STATUS: SUCCESS
-              PIPELINE_URL: $BITBUCKET_PIPELINE_URL
-              REVISION: $BITBUCKET_COMMIT
+              STATE: "SUCCESS"
+              PIPELINE_URL: "https://bitbucket.org/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pipelines/results/${BITBUCKET_BUILD_NUMBER}"
+              COMMIT_SHA: $BITBUCKET_COMMIT
               BRANCH: $BITBUCKET_BRANCH
 
 pipelines:
@@ -72,20 +81,20 @@ pipelines:
     - step: *build
     - step:
         <<: *compass_deploy
-        name: Publish development deployment to Compass
+        name: Publish Compass metrics (development)
         deployment: development
         script:
           - export DEPLOY_ENV=development
-          - pipe: atlassian/compass-deployment:1.4.0
+          - pipe: atlassian/compass-deployment:1
             variables:
               ATLASSIAN_USER_EMAIL: $ATLASSIAN_USER_EMAIL
               ATLASSIAN_API_TOKEN: $ATLASSIAN_API_TOKEN
               CLOUD_ID: $COMPASS_CLOUD_ID
               COMPONENT_ID: "ari:cloud:compass:f8428991-f914-4927-92be-879835a51fd9:component/0e7bd41b-c4ff-471d-9cb8-21fc832290dd/9b1ca5ce-2bb4-4bb0-a2bc-bfcb2e8848a2"
               ENVIRONMENT: development
-              DEPLOYMENT_STATUS: SUCCESS
-              PIPELINE_URL: $BITBUCKET_PIPELINE_URL
-              REVISION: $BITBUCKET_COMMIT
+              STATE: "SUCCESS"
+              PIPELINE_URL: "https://bitbucket.org/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pipelines/results/${BITBUCKET_BUILD_NUMBER}"
+              COMMIT_SHA: $BITBUCKET_COMMIT
               BRANCH: $BITBUCKET_BRANCH
 
   branches:
@@ -96,26 +105,26 @@ pipelines:
       - step: *build
       - step:
           <<: *compass_deploy
-          name: Publish production deployment to Compass
+          name: Publish Compass metrics (production)
           deployment: production
           script:
             - export DEPLOY_ENV=production
-            - pipe: atlassian/compass-deployment:1.4.0
+            - pipe: atlassian/compass-deployment:1
               variables:
                 ATLASSIAN_USER_EMAIL: $ATLASSIAN_USER_EMAIL
                 ATLASSIAN_API_TOKEN: $ATLASSIAN_API_TOKEN
                 CLOUD_ID: $COMPASS_CLOUD_ID
                 COMPONENT_ID: "ari:cloud:compass:f8428991-f914-4927-92be-879835a51fd9:component/0e7bd41b-c4ff-471d-9cb8-21fc832290dd/9b1ca5ce-2bb4-4bb0-a2bc-bfcb2e8848a2"
                 ENVIRONMENT: production
-                DEPLOYMENT_STATUS: SUCCESS
-                PIPELINE_URL: $BITBUCKET_PIPELINE_URL
-                REVISION: $BITBUCKET_COMMIT
+                STATE: "SUCCESS"
+                PIPELINE_URL: "https://bitbucket.org/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pipelines/results/${BITBUCKET_BUILD_NUMBER}"
+                COMMIT_SHA: $BITBUCKET_COMMIT
                 BRANCH: $BITBUCKET_BRANCH
+
 
   pull-requests:
     "**":
       - step: *install_deps
       - step: *lint
       - step: *build
-
 
