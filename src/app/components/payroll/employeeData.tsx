@@ -137,7 +137,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
           </h2>
 
           <Button className="w-[200px]" onButtonClick={handleExport}>
-            {loadingState ? "Downloading..." : "Export Report"}
+            {loadingState ? "Downloading..." : "Export CSV"}
           </Button>
         </div>
 
