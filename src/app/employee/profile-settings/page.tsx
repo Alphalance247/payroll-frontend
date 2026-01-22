@@ -15,10 +15,15 @@ import EditHouseAddress from "@/app/components/Employee-Profile/EditHouseAddress
 import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import { UseDocumentsUploaded } from "@/stores/employee-dashboard/settings/employeeDetails/UploadDocument";
 import ProtectedRoute from "@/app/common/protectedRoute";
+import TaxInformation from "@/app/components/Employee-Profile/taxInformation";
+import TaxModal from "@/app/components/Employee-Profile/taxModal";
+
 const EmployeeProfileSettings = () => {
   const [activeTab, setactiveTab] = useState("personal details");
   const [openPDModal, setOpenPDModal] = useState(false);
   const [openHousingModal, setOpenHousingModal] = useState(false);
+  const [taxInfoModal, setTaxInfoModal] = useState(false);
+
   const RenderTabContent = () => {
     const { fetchPersonalDetails } = UseEmployeeStore();
     useEffect(() => {
@@ -76,6 +81,23 @@ const EmployeeProfileSettings = () => {
             <NextOfKin title="next of kin" />{" "}
           </div>
         );
+      case "tax-information":
+        return (
+          <div>
+            <TaxInformation title="tax information">
+              <button
+                className="capitalize text-[#E37915] underline outline-none flex items-center space-x-1 "
+                onClick={() => setTaxInfoModal(true)}
+              >
+                <div> edit</div>
+                <Pencil className="text-[#E37915] w-[13.5px] h-[13.5px]" />
+              </button>
+            </TaxInformation>
+            {taxInfoModal && (
+              <TaxModal onModalClose={() => setTaxInfoModal(false)} />
+            )}
+          </div>
+        );
 
       default:
         return null;
@@ -127,6 +149,16 @@ const EmployeeProfileSettings = () => {
                     tabName="next of kin details"
                     className={
                       activeTab === "next of kin"
+                        ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-fit h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Graphik "
+                        : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className} `
+                    }
+                  />
+                  <EmployeeSidebar
+                    onClick={() => setactiveTab("tax-information")}
+                    activeTab="tax-information"
+                    tabName="tax information"
+                    className={
+                      activeTab === "tax-information"
                         ? "grid gap-2.5 py-[8px] px-3 text-start  bg-[#E379153B] w-fit h-10 font-medium  text-[#2F2F33] text-base rounded-[8px] capitalize font-Graphik "
                         : `grid gap-2.5 py-[8px] px-3 text-start  w-fit h-[44px]   bg-none text-[#71717A] font-bold text-base rounded-[8px] capitalize ${nunito.className} `
                     }

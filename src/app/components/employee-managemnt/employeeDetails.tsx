@@ -12,6 +12,7 @@ import axiosInstance from "@/app/utils/axios";
 import { employeeDetailsData } from "@/app/utils/type";
 import Spinner from "@/app/common/spinner";
 import { getTimeSheetWithId } from "@/stores/time-sheet-id/getTimeSheetWithId";
+import TaxInfo from "./TaxInfo";
 
 interface EmployeeDetailsClientProps {
   employeeId: string;
@@ -34,10 +35,11 @@ export default function EmployeeDetailsClient({
     { id: 1, name: "Projects" },
     { id: 2, name: "Job" },
     { id: 4, name: "Timesheet" },
+    { id: 5, name: "TaxInfo" },
   ];
 
   const [employeeData, setEmployeeData] = useState<employeeDetailsData | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +48,7 @@ export default function EmployeeDetailsClient({
     const fetchEmployeeData = async () => {
       try {
         const res = await axiosInstance.get(
-          `/employees/employee/${employeeId}`
+          `/employees/employee/${employeeId}`,
         );
         setEmployeeData(res.data);
       } catch (err) {
@@ -134,6 +136,9 @@ export default function EmployeeDetailsClient({
           {activeBtn === "Uploads" && <Uploads />}
           {activeBtn === "Timesheet" &&
             (timeSheetLoading ? <Spinner /> : <TimeSheet />)}
+          {activeBtn === "TaxInfo" && employeeInfo && (
+            <TaxInfo employeeInfo={employeeInfo} />
+          )}
         </div>
         {isEmployeeDeactivivated && (
           <>
