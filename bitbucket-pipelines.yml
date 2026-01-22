@@ -97,3 +97,29 @@ pipelines:
       - step: *lint
       - step: *build
 
+
+  custom:
+    manual-deploy-development:
+      - step: *install_deps
+      - step: *lint
+      - step: *test
+      - step: *build
+      - step:
+          <<: *compass_deploy
+          name: Publish Compass metrics (manual development)
+          deployment: development
+          script:
+            - echo "Manually publishing deployment metrics for development environment..."
+
+    manual-deploy-production:
+      - step: *install_deps
+      - step: *lint
+      - step: *test
+      - step: *build
+      - step:
+          <<: *compass_deploy
+          name: Publish Compass metrics (manual production)
+          deployment: production
+          script:
+            - echo "Manually publishing deployment metrics for production environment..."
+
