@@ -28,6 +28,7 @@ interface EmployeeDetailsState {
     };
     rent_doc: string;
     status: string;
+    tax_status: string;
     start_date: string;
     bank_name: string;
     bank_code: string;
