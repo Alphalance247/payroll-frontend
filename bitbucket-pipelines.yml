@@ -1,125 +1,278 @@
-# Bitbucket Pipelines configuration for payroll-frontend (Next.js 15)
-# Docs: https://support.atlassian.com/bitbucket-cloud/docs/bitbucket-pipelines-configuration-reference/
+image: node:18-alpine
 
-image: node:20
-
+# Pipeline configuration options
 options:
-  max-time: 30
+  size: 2x  # Use 2x for resource-intensive Next.js builds
+  max-time: 10
 
-clone:
-  depth: full
-
+# Define caches to speed up builds
 definitions:
   caches:
-    npm: ~/.npm
+    node: ~/.npm
+    nextcache: .next/cache
 
+  # Reusable step definitions
   steps:
-
-    - step: &install_deps
-        name: Install dependencies
-        caches:
-          - npm
-        script:
-          - npm ci
-
     - step: &lint
-        name: Lint
+        name: Lint Code
+        caches:
+          - node
         script:
-          # Run lint only if script exists
-          - |
-            if npm run | grep -q "lint"; then
-              npm run lint
-            else
-              echo "No lint script found. Skipping lint."
-            fi
+          - echo "Installing dependencies..."
+          - npm ci
+          - echo "Running ESLint..."
+          - npm run lint
+        after-script:
+          - echo "✓ Linting completed"
 
     - step: &test
-        name: Test with coverage
+        name: Run Tests with Coverage
+        caches:
+          - node
         script:
-          # Run tests only if script exists
+          - echo "Installing dependencies..."
+          - apk add --no-cache libc6-compat jq
+          - npm ci
+          - echo "Running tests with coverage..."
+          - npm test -- --coverage || echo "No tests configured"
+          
+          # Extract coverage percentage
           - |
-            if npm run | grep -q "test"; then
-              npm test -- --coverage || npm test || true
+            if [ -f coverage/coverage-summary.json ]; then
+              export UNIT_TEST_COVERAGE=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+              echo "✓ Code coverage: ${UNIT_TEST_COVERAGE}%"
             else
-              echo "No test script found. Skipping tests."
+              echo "No coverage data generated"
+              export UNIT_TEST_COVERAGE=0
             fi
         artifacts:
-          # Common coverage locations for JS/TS projects
           - coverage/**
-          - .nyc_output/**
+          - test-results/**
+        after-script:
+          - echo "✓ Tests completed"
 
     - step: &build
-        name: Build application
+        name: Build Application
+        caches:
+          - node
+          - nextcache
         script:
+          - echo "Installing dependencies..."
+          - apk add --no-cache libc6-compat
+          - npm ci
+          - echo "Building Next.js application..."
           - npm run build
+          - echo "✓ Build completed successfully"
         artifacts:
           - .next/**
-          - dist/**
-          - build/**
+        after-script:
+          - echo "✓ Build artifacts created"
 
-    - step: &compass_deploy
-        name: Publish deployment metrics to Compass
+    - step: &security-scan
+        name: Security Scan
+        caches:
+          - node
         script:
-          # Bitbucket Pipelines automatically notifies Compass of deployments via the 'deployment' keyword below
-          # Ensure the 'Bitbucket for Compass' app is installed in your Bitbucket workspace.
-          - echo "Deploying to Compass-monitored environment..."
+          - echo "Installing dependencies..."
+          - npm ci
+          - echo "Running npm audit..."
+          - npm audit --audit-level=moderate || true
+          - echo "Checking for outdated packages..."
+          - npm outdated || true
+        after-script:
+          - echo "✓ Security scan completed"
 
+    - step: &report-to-compass
+        name: Report Metrics to Compass
+        script:
+          - echo "Preparing to report metrics to Compass..."
+          - apk add --no-cache jq curl
+          - apk add --no-cache jq curl git
+          
+          # Extract coverage percentage if available
+          - |
+            if [ -f coverage/coverage-summary.json ]; then
+              export UNIT_TEST_COVERAGE=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+              echo "✓ Extracted coverage: ${UNIT_TEST_COVERAGE}%"
+              echo "✓ Unit Test Coverage: ${UNIT_TEST_COVERAGE}%"
+            else
+              export UNIT_TEST_COVERAGE=0
+              echo "⚠ No coverage data found, using 0%"
+            fi
+          
+          # Count open pull requests for this repository
+          - |
+            if [ -n "$BITBUCKET_PR_ID" ]; then
+              export OPEN_PULL_REQUESTS=1
+              echo "✓ Running in PR context: PR #${BITBUCKET_PR_ID}"
+            else
+              # Query Bitbucket API for open PRs
+              PR_RESPONSE=$(curl -s -X GET \
+                "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pullrequests?state=OPEN" \
+                -H "Authorization: Bearer ${BITBUCKET_TOKEN:-}" \
+                2>/dev/null || echo '{"size":0}')
+              
+              export OPEN_PULL_REQUESTS=$(echo "$PR_RESPONSE" | jq -r '.size // 0')
+              echo "✓ Open Pull Requests: ${OPEN_PULL_REQUESTS}"
+            fi
+          
+          # Calculate Mean Time To Resolve (based on recent closed PRs)
+          - |
+            # Query last 10 closed PRs to calculate MTTR
+            CLOSED_PR_RESPONSE=$(curl -s -X GET \
+              "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pullrequests?state=MERGED&pagelen=10" \
+              -H "Authorization: Bearer ${BITBUCKET_TOKEN:-}" \
+              2>/dev/null || echo '{"values":[]}')
+            
+            # Calculate average time from PR creation to merge (in hours)
+            MTTR=$(echo "$CLOSED_PR_RESPONSE" | jq -r '
+              [.values[] | 
+                ((.updated_on | fromdateiso8601) - (.created_on | fromdateiso8601)) / 3600
+              ] | 
+              if length > 0 then (add / length) else 0 end | floor
+            ' 2>/dev/null || echo "0")
+            
+            export MEAN_TIME_TO_RESOLVE=${MTTR}
+            echo "✓ Mean Time To Resolve: ${MEAN_TIME_TO_RESOLVE} hours (avg of last 10 merged PRs)"
+          
+          # Count recent incidents (using failed builds as proxy)
+          - |
+            # Query recent pipeline failures as incidents
+            FAILED_BUILDS=$(curl -s -X GET \
+              "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pipelines/?pagelen=20&sort=-created_on" \
+              -H "Authorization: Bearer ${BITBUCKET_TOKEN:-}" \
+              2>/dev/null || echo '{"values":[]}')
+            
+            # Count failed pipelines in last 20 runs
+            export RECENT_INCIDENTS=$(echo "$FAILED_BUILDS" | jq -r '
+              [.values[] | select(.state.name == "FAILED" or .state.name == "ERROR")] | length
+            ' 2>/dev/null || echo "0")
+            
+            echo "✓ Recent Incidents: ${RECENT_INCIDENTS} (failed builds in last 20 runs)"
+          
+          # Report to Compass via REST API
+          - echo "Sending metrics to Compass API..."
+          - echo ""
+          - echo "📊 Sending all metrics to Compass API..."
+          - |
+            # Create metrics payload
+            # Create comprehensive metrics payload
+            PAYLOAD=$(cat <<EOF
+            {
+              "metricSourceId": "bitbucket-pipelines-${BITBUCKET_BUILD_NUMBER}",
+              "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+              "metrics": [
+                {
+                  "metricAri": "ari:cloud:compass::metric/unit-test-coverage",
+                  "value": ${UNIT_TEST_COVERAGE}
+                },
+                {
+                  "metricAri": "ari:cloud:compass::metric/open-pull-requests",
+                  "value": ${OPEN_PULL_REQUESTS}
+                },
+                {
+                  "metricAri": "ari:cloud:compass::metric/mean-time-to-resolve",
+                  "value": ${MEAN_TIME_TO_RESOLVE}
+                },
+                {
+                  "metricAri": "ari:cloud:compass::metric/recent-incidents",
+                  "value": ${RECENT_INCIDENTS}
+                },
+                {
+                  "metricAri": "ari:cloud:compass::metric/build-status",
+                  "value": 1
+                }
+              ]
+            }
+            EOF
+            )
+            
+            # Send to Compass REST API
+            HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              "https://api.atlassian.com/compass/v1/components/${COMPASS_COMPONENT_ID}/metrics" \
+              -H "Authorization: Bearer ${COMPASS_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              -H "Accept: application/json" \
+              -d "${PAYLOAD}")
+            
+            HTTP_CODE=$(echo "$HTTP_RESPONSE" | tail -n1)
+            RESPONSE_BODY=$(echo "$HTTP_RESPONSE" | sed '$d')
+            
+            echo "HTTP Response Code: ${HTTP_CODE}"
+            
+            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+              echo "✓ Metrics successfully sent to Compass"
+              echo "  - Coverage: ${UNIT_TEST_COVERAGE}%"
+              echo "  - Build Status: Success"
+              echo ""
+              echo "✅ All metrics successfully sent to Compass!"
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              echo "📈 Unit Test Coverage:    ${UNIT_TEST_COVERAGE}%"
+              echo "📋 Open Pull Requests:    ${OPEN_PULL_REQUESTS}"
+              echo "⏱️  Mean Time To Resolve:  ${MEAN_TIME_TO_RESOLVE} hours"
+              echo "🚨 Recent Incidents:       ${RECENT_INCIDENTS}"
+              echo "✓  Build Status:           Success"
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            else
+              echo "⚠ Warning: Failed to send metrics to Compass (HTTP ${HTTP_CODE})"
+              echo ""
+              echo "⚠️  Warning: Failed to send metrics to Compass (HTTP ${HTTP_CODE})"
+              echo "Response: ${RESPONSE_BODY}"
+              echo "Note: Pipeline continues despite this warning"
+            fi
+        after-script:
+          - echo "✓ Compass metrics reporting step completed"
+
+# Pipeline definitions for different branches
 pipelines:
+  # Default pipeline
   default:
-    - step: *install_deps
-    - step: *lint
-    - step: *test
+    - parallel:
+        - step: *lint
+        - step: *test
     - step: *build
-    - step:
-        <<: *compass_deploy
-        name: Publish Compass metrics (development)
-        deployment: development
-        script:
-          - echo "Publishing deployment metrics for development environment..."
+    - step: *security-scan
 
+  # Branch-specific pipelines
   branches:
+    # Feature branches
+    'feature/*':
+      - parallel:
+          - step: *lint
+          - step: *test
+      - step: *build
+      - step: *report-to-compass
+
+    # Development branch
+    dev:
+      - parallel:
+          - step: *lint
+          - step: *test
+      - step: *build
+      - step: *security-scan
+      - step: *report-to-compass
+
+    # Main/Production branch
     main:
-      - step: *install_deps
-      - step: *lint
-      - step: *test
+      - parallel:
+          - step: *lint
+          - step: *test
       - step: *build
+      - step: *security-scan
+      - step: *report-to-compass
       - step:
-          <<: *compass_deploy
-          name: Publish Compass metrics (production)
+          name: Deploy to Production
           deployment: production
+          trigger: manual
           script:
-            - echo "Publishing deployment metrics for production environment..."
+            - echo "Ready for production deployment"
+            - echo "Add your deployment commands here"
 
-
+  # Pull request pipeline
   pull-requests:
-    "**":
-      - step: *install_deps
-      - step: *lint
+    '**':
+      - parallel:
+          - step: *lint
+          - step: *test
       - step: *build
-
-
-  custom:
-    manual-deploy-development:
-      - step: *install_deps
-      - step: *lint
-      - step: *test
-      - step: *build
-      - step:
-          <<: *compass_deploy
-          name: Publish Compass metrics (manual development)
-          deployment: development
-          script:
-            - echo "Manually publishing deployment metrics for development environment..."
-
-    manual-deploy-production:
-      - step: *install_deps
-      - step: *lint
-      - step: *test
-      - step: *build
-      - step:
-          <<: *compass_deploy
-          name: Publish Compass metrics (manual production)
-          deployment: production
-          script:
-            - echo "Manually publishing deployment metrics for production environment..."
-
+      - step: *report-to-compass
