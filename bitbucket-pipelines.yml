@@ -251,6 +251,13 @@ pipelines:
       - step: *build
       - step: *security-scan
       - step: *report-to-compass
+      - step: 
+          name: Deploy to Production
+          deployment: deployment
+          script:
+            - echo "Ready for production deployment"
+            - echo "Add your deployment commands here"
+
 
     # Main/Production branch
     main:
