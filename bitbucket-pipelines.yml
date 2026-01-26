@@ -253,7 +253,7 @@ pipelines:
       - step: *report-to-compass
       - step: 
           name: Deploy to Production
-          deployment: deployment
+          deployment: development
           script:
             - echo "Ready for production deployment"
             - echo "Add your deployment commands here"
