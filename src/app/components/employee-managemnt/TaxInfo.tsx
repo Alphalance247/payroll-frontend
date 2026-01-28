@@ -3,12 +3,20 @@ import { useState } from "react";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
+import useStatusApproval from "@/stores/employee-dashboard/settings/employeeDetails/useStatusApproval";
 
-const TaxInfo = ({ employeeInfo }: { employeeInfo: dataDetails }) => {
+const TaxInfo = ({
+  employeeInfo,
+  refetch,
+}: {
+  employeeInfo: dataDetails;
+  refetch: () => void;
+}) => {
   const [taxStatus, setTaxStatus] = useState(
-    employeeInfo?.tax_status || "in review",
+    employeeInfo?.rent_approve_status || "in review",
   );
   const [isUpdating, setIsUpdating] = useState(false);
+  const { getStatusBadge } = useStatusApproval();
 
   const getFileTypeLabel = (fileName: string): string => {
     if (!fileName) return "";
@@ -36,20 +44,21 @@ const TaxInfo = ({ employeeInfo }: { employeeInfo: dataDetails }) => {
 
     try {
       setIsUpdating(true);
-      const response = await axiosInstance.patch(
-        `/employees/${employeeInfo?.id}/approve-tax`,
-        { tax_status: newStatus },
+      const response = await axiosInstance.post(
+        `/employees/approve-decline-rent/${employeeInfo?.id}`,
+        { status: newStatus },
       );
       if (response.status === 200 || response.status === 201) {
         toast.success("Tax information status updated successfully!");
       }
+      refetch();
     } catch (error) {
       let errorMessage = "An error occurred please try again or contact Admin";
       if (error instanceof AxiosError) {
         errorMessage = error.response?.data?.message || errorMessage;
       }
       toast.error(errorMessage);
-      setTaxStatus(employeeInfo?.tax_status || "in review");
+      setTaxStatus(employeeInfo?.rent_approve_status || "in review");
     } finally {
       setIsUpdating(false);
     }
@@ -62,6 +71,20 @@ const TaxInfo = ({ employeeInfo }: { employeeInfo: dataDetails }) => {
           <h4 className="text-xl text-[#4D4D4D] font-semibold">
             Tax Information
           </h4>
+
+          {(() => {
+            const statusInfo = getStatusBadge(
+              employeeInfo?.rent_approve_status,
+              !!employeeInfo?.rent_doc,
+            );
+            return (
+              <div
+                className={`${statusInfo.bgColor} ${statusInfo.textColor} px-4 py-2 rounded-full inline-flex items-center justify-center font-semibold text-sm w-fit`}
+              >
+                {statusInfo.label}
+              </div>
+            );
+          })()}
         </div>
 
         <div className="grid grid-cols-3 gap-10">
@@ -78,7 +101,7 @@ const TaxInfo = ({ employeeInfo }: { employeeInfo: dataDetails }) => {
             <p className="text-[#4D4D4D] text-sm mb-4">Rent Amount</p>
             <p className="text-[#4D4D4D] text-base font-medium">
               {employeeInfo?.rent_amount
-                ? `${employeeInfo?.pay_deno === "Dollars" ? "$ " : "₦ "}${employeeInfo.rent_amount}`
+                ? `${employeeInfo?.pay_deno === "Dollars" ? "₦ " : "₦ "}${employeeInfo.rent_amount}`
                 : "N/A"}
             </p>
           </div>
@@ -110,16 +133,29 @@ const TaxInfo = ({ employeeInfo }: { employeeInfo: dataDetails }) => {
         <div className="mt-10 pt-10 border-t border-[#A8A2A233]">
           <div className="flex items-center gap-4">
             <div className="flex-1">
-              <p className="text-[#4D4D4D] text-sm mb-4">Tax Status</p>
-              <select
-                value={taxStatus}
-                onChange={handleStatusChange}
-                disabled={isUpdating}
-                className="px-4 py-2 border border-[#E3E3E5] rounded-[8px] text-[#2F2F33] font-medium bg-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                <option value="in review">In Review</option>
-                <option value="approve">Approve</option>
-              </select>
+              <p className="text-[#4D4D4D] text-sm mb-4">
+                Update tax document status
+              </p>
+
+              {
+                /* Dropdown to change tax status */
+                !employeeInfo?.rent_doc ? (
+                  <p>No document uploaded</p>
+                ) : (
+                  <select
+                    value={taxStatus}
+                    onChange={handleStatusChange}
+                    disabled={isUpdating}
+                    className="px-4 py-2 border border-[#E3E3E5] rounded-[8px] text-[#2F2F33] font-medium bg-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    <option value="" disabled>
+                      Update status
+                    </option>
+                    <option value="declined">Reject</option>
+                    <option value="approved">Approve</option>
+                  </select>
+                )
+              }
             </div>
           </div>
         </div>

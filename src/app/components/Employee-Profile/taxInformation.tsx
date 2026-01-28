@@ -2,6 +2,7 @@ import React from "react";
 import { UseEmployeeStore } from "@/stores/employee-dashboard/settings/employeeDetails/PersonalDetail";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
+import useStatusApproval from "@/stores/employee-dashboard/settings/employeeDetails/useStatusApproval";
 
 interface NOKProps {
   // children: any;
@@ -27,48 +28,11 @@ const getFileTypeLabel = (fileName: string): string => {
   return typeMap[ext || ""] || "FILE";
 };
 
-const getStatusBadge = (
-  status: string | undefined,
-  hasDocument: boolean,
-): { label: string; bgColor: string; textColor: string } => {
-  // If no document uploaded yet
-  if (!hasDocument) {
-    return {
-      label: "Pending",
-      bgColor: "bg-yellow-100",
-      textColor: "text-yellow-700",
-    };
-  }
-
-  // If document uploaded but not approved
-  if (status === "in review") {
-    return {
-      label: "In Review",
-      bgColor: "bg-blue-100",
-      textColor: "text-blue-700",
-    };
-  }
-
-  // If approved
-  if (status === "approve" || status === "approved") {
-    return {
-      label: "Approved",
-      bgColor: "bg-green-100",
-      textColor: "text-green-700",
-    };
-  }
-
-  // Default fallback
-  return {
-    label: status || "N/A",
-    bgColor: "bg-gray-100",
-    textColor: "text-gray-700",
-  };
-};
-
 const TaxInformation = ({ title, children }: NOKProps) => {
   const { employeeData, loading, error, fetchPersonalDetails } =
     UseEmployeeStore();
+
+  const { getStatusBadge } = useStatusApproval();
 
   return (
     <div className="grid gap-[10px]  border-[1px] rounded-[10px] p-10 h-fit">
@@ -143,7 +107,7 @@ const TaxInformation = ({ title, children }: NOKProps) => {
 
               {(() => {
                 const statusInfo = getStatusBadge(
-                  employeeData?.data.tax_status,
+                  employeeData?.data.rent_approve_status,
                   !!employeeData?.data.rent_doc,
                 );
                 return (

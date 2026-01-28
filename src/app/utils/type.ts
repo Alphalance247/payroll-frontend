@@ -94,6 +94,8 @@ export interface dataDetails {
   base_pay: string;
   city: string;
   tax_id: string;
+  rent_approve_status: string;
+  rent_approved: boolean;
   rent_amount: string;
   rent_doc: string;
   pay_deno: string;

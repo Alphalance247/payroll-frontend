@@ -28,7 +28,6 @@ interface EmployeeDetailsState {
     };
     rent_doc: string;
     status: string;
-    tax_status: string;
     start_date: string;
     bank_name: string;
     bank_code: string;
@@ -36,6 +35,7 @@ interface EmployeeDetailsState {
     tax_id: string;
     rent_amount: string;
     rent_document: string;
+    rent_approve_status: string;
     acct_num: string;
     nok_name: string;
     nok_address: string;
