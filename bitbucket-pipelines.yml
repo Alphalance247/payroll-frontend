@@ -205,7 +205,7 @@ definitions:
               echo "  - Coverage: ${UNIT_TEST_COVERAGE}%"
               echo "  - Build Status: Success"
               echo ""
-              echo "✅ All metrics successfully sent to Compass!"
+              echo "✅All metrics successfully sent to Compass!"
               echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
               echo "📈 Unit Test Coverage:    ${UNIT_TEST_COVERAGE}%"
               echo "📋 Open Pull Requests:    ${OPEN_PULL_REQUESTS}"
