@@ -166,12 +166,16 @@ const TaxModal = ({ onModalClose }: { onModalClose: () => void }) => {
                         {getFileTypeLabel(documentPreview.type)}
                       </div>
                       <a
-                        href={employeeData?.data.rent_doc}
+                        href={
+                          form.rent_document
+                            ? URL.createObjectURL(form.rent_document)
+                            : employeeData?.data.rent_doc
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 underline text-sm truncate font-medium"
+                        className="text-blue-600 cursor-pointer hover:text-blue-800 underline text-sm truncate font-medium"
                       >
-                        {employeeData?.data.rent_doc.split("/").pop() ||
+                        {employeeData?.data.rent_doc?.split("/").pop() ||
                           "View Document"}
                       </a>
                       <button

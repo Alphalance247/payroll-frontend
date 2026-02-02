@@ -151,6 +151,7 @@ const TaxInfo = ({
                     <option value="" disabled>
                       Update status
                     </option>
+                    <option value="in review">In Review</option>
                     <option value="declined">Reject</option>
                     <option value="approved">Approve</option>
                   </select>
