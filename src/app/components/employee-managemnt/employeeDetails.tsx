@@ -2,16 +2,18 @@
 import Profile from "@/app/components/employee-managemnt/profile";
 import DashboardLayout from "../../common/DashBoardLayout";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Job from "@/app/components/employee-managemnt/job";
 import Uploads from "@/app/components/employee-managemnt/Uploads";
 import TimeSheet from "@/app/components/employee-managemnt/timeSheet";
 import DeactivateEmployee from "@/app/components/employee-managemnt/Team-Management/deactivateEmployee";
 import useBoolean from "@/app/hooks/useBoolean";
-import axiosInstance from "@/app/utils/axios";
-import { employeeDetailsData } from "@/app/utils/type";
+// import axiosInstance from "@/app/utils/axios";
+// import { employeeDetailsData } from "@/app/utils/type";
 import Spinner from "@/app/common/spinner";
 import { getTimeSheetWithId } from "@/stores/time-sheet-id/getTimeSheetWithId";
+import TaxInfo from "./TaxInfo";
+import { useEmployeeDataDetails } from "@/app/hooks/useQueries/employee-management/useEmployeeDetails";
 
 interface EmployeeDetailsClientProps {
   employeeId: string;
@@ -29,36 +31,43 @@ export default function EmployeeDetailsClient({
 
   const { fetchTimeSheetWithId, loading: timeSheetLoading } =
     getTimeSheetWithId();
+  const {
+    data: employeeData,
+    error,
+    isLoading,
+    refetch,
+  } = useEmployeeDataDetails({ id: employeeId });
+  console.log("employeeData", employeeData?.data);
 
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "Projects" },
     { id: 2, name: "Job" },
     { id: 4, name: "Timesheet" },
+    { id: 5, name: "TaxInfo" },
   ];
 
-  const [employeeData, setEmployeeData] = useState<employeeDetailsData | null>(
-    null
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [employeeData, setEmployeeData] = useState<employeeDetailsData | null>(
+  //   null,
+  // );
+  // const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchEmployeeData = async () => {
-      try {
-        const res = await axiosInstance.get(
-          `/employees/employee/${employeeId}`
-        );
-        setEmployeeData(res.data);
-      } catch (err) {
-        console.error("Failed to fetch employee:", err);
-        setError("Failed to load employee data");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchEmployeeData = async () => {
+  //     try {
+  //       const res = await axiosInstance.get(
+  //         `/employees/employee/${employeeId}`,
+  //       );
+  //       setEmployeeData(res.data);
+  //     } catch (err) {
+  //       console.error("Failed to fetch employee:", err);
+  //       setError("Failed to load employee data");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchEmployeeData();
-  }, [employeeId]);
+  //   fetchEmployeeData();
+  // }, [employeeId]);
 
   const employeeInfo = employeeData?.data;
 
@@ -107,10 +116,10 @@ export default function EmployeeDetailsClient({
 
           {activeBtn === "Projects" && (
             <>
-              {loading ? (
+              {isLoading ? (
                 <Spinner />
               ) : error ? (
-                <div>Error: {error}</div>
+                <div>Error: {error?.message}</div>
               ) : employeeInfo ? (
                 <Profile
                   onDeactivatingEmployee={() => setIsEmployeeDeactivated()}
@@ -134,6 +143,9 @@ export default function EmployeeDetailsClient({
           {activeBtn === "Uploads" && <Uploads />}
           {activeBtn === "Timesheet" &&
             (timeSheetLoading ? <Spinner /> : <TimeSheet />)}
+          {activeBtn === "TaxInfo" && employeeInfo && (
+            <TaxInfo employeeInfo={employeeInfo} refetch={refetch} />
+          )}
         </div>
         {isEmployeeDeactivivated && (
           <>

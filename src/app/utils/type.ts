@@ -93,6 +93,11 @@ export interface dataDetails {
   street_address: string;
   base_pay: string;
   city: string;
+  tax_id: string;
+  rent_approve_status: string;
+  rent_approved: boolean;
+  rent_amount: string;
+  rent_doc: string;
   pay_deno: string;
   state: string;
   nok_name: string;
@@ -118,7 +123,7 @@ export interface dataDetails {
       status: string;
       role: string;
       id: string;
-    }
+    },
   ];
 }
 

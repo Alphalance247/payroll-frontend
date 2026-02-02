@@ -5,6 +5,10 @@ import EmployeeSearch, {
   type FilterOption,
 } from "../../components/payroll/employeeSearch";
 import { PayrollData } from "../../utils/type";
+import Button from "@/app/common/Button";
+import axiosInstance from "@/app/utils/axios";
+import { toast } from "react-hot-toast";
+import { AxiosError } from "axios";
 
 interface PayrollSummaryProps {
   payroll: PayrollData;
@@ -21,6 +25,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
   const currencySymbol = payroll?.rates?.find((rate) => rate.code === "NGN")
     ? "₦"
     : "K";
+  const [loadingState, setLoadingState] = useState(false);
 
   // Filtered and sorted employees
   const filteredEmployees = useMemo(() => {
@@ -55,6 +60,63 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
       });
   }, [payroll?.payslips, searchQuery, sortBy, filterBy]);
 
+  const handleExport = async () => {
+    setLoadingState(true);
+    try {
+      const res = await axiosInstance.get(
+        `employees/payroll/export-current-month`,
+        {
+          responseType: "blob", // Important: Tell axios to handle response as blob
+        },
+      );
+
+      if (res.status === 200 || res.status === 201) {
+        // Create a blob from the response
+        const blob = new Blob([res.data], {
+          type: res.headers["content-type"] || "application/octet-stream",
+        });
+
+        // Create a temporary URL for the blob
+        const url = URL.createObjectURL(blob);
+
+        // Create a temporary anchor element and trigger download
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `Payroll-Disbursement-Report-${new Date().toISOString().split("T")[0]}`; // Set filename
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up: remove the temporary link and revoke the URL
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        toast.success("Report downloaded successfully!");
+      }
+
+      setLoadingState(false);
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        // Handle blob response - convert it back to text
+        if (err.response?.data instanceof Blob) {
+          try {
+            const text = await err.response.data.text();
+            const errorData = JSON.parse(text);
+            errorMessage = errorData?.message || errorMessage;
+          } catch {
+            errorMessage = "Failed to download report";
+          }
+        } else {
+          errorMessage = err.response?.data?.message || errorMessage;
+        }
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setLoadingState(false);
+    }
+  };
+
   return (
     <section className="px-12">
       <EmployeeSearch
@@ -69,9 +131,15 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
       />
 
       <div className="bg-white rounded-lg border border-[#E3E3E5]">
-        <h2 className="text-base font-semibold py-5 pl-6 text-[#2F2F33]">
-          Employees Details
-        </h2>
+        <div className="flex items-center justify-between py-5 px-6 border-b border-[#E3E3E5]">
+          <h2 className="text-base font-semibold  text-[#2F2F33]">
+            Employees Details
+          </h2>
+
+          <Button className="w-[200px]" onButtonClick={handleExport}>
+            {loadingState ? "Downloading..." : "Export CSV"}
+          </Button>
+        </div>
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1750px] border-b border-[#E3E3E5]">
