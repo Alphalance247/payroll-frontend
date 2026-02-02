@@ -148,9 +148,7 @@ const TaxInfo = ({
                     disabled={isUpdating}
                     className="px-4 py-2 border border-[#E3E3E5] rounded-[8px] text-[#2F2F33] font-medium bg-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    <option value="" disabled>
-                      Update status
-                    </option>
+                    <option value="">Update status</option>
                     <option value="in review">In Review</option>
                     <option value="declined">Reject</option>
                     <option value="approved">Approve</option>
