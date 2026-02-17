@@ -17,6 +17,7 @@ import MultipleDisburseModal from "@/app/components/Admin/Bonus/multipleDisburse
 import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import Link from "next/link";
 
 const Bonus = () => {
   const [selectedYear, setSelectedYear] = useState("");
@@ -86,7 +87,7 @@ const Bonus = () => {
         if (checkbox) {
           checkbox.indeterminate = isSomeSelected;
         }
-      }
+      },
     );
   }, [isSomeSelected]);
 
@@ -108,7 +109,7 @@ const Bonus = () => {
   const toggleSelectEmployee = (id?: string) => {
     if (!id) return;
     setSelectedEmployeeIds((prev) =>
-      prev.includes(id) ? prev.filter((empId) => empId !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((empId) => empId !== id) : [...prev, id],
     );
   };
 
@@ -116,7 +117,7 @@ const Bonus = () => {
     try {
       setIsLoading(true);
       const res = await axiosInstance.post(
-        `/employees/bonuses/send-bonus-payslip/${id}`
+        `/employees/bonuses/send-bonus-payslip/${id}`,
       );
       if (res.status === 200 || res.status === 201) {
         toast.success(res?.data?.message || "Payslip sent successfully");
@@ -173,67 +174,73 @@ const Bonus = () => {
             />
           )}
 
-          <div className="relative flex gap-x-2 z-30" ref={bonusMenuRef}>
-            <Button
-              className="flex items-center gap-x-2 shadow-sm hover:shadow-md transition-shadow"
-              variant="primary"
-              onButtonClick={() => setIsBonusMenuOpen((prev) => !prev)}
-            >
-              Add Bonus
-              <span
-                className={`transition-transform text-xs ${
-                  isBonusMenuOpen ? "rotate-180" : ""
-                }`}
-              >
-                ▼
-              </span>
-            </Button>
+          <div className="flex items-center gap-x-4">
+            <Link href="/admin/bonus-breakdown">
+              <Button>Bonus Breakdown</Button>
+            </Link>
 
-            {isBonusMenuOpen && (
-              <div className="absolute right-0 top-12 w-72 bg-white border border-[#E3E3E5]  shadow-2xl rounded-xl overflow-hidden animate-fadeIn">
-                <div className="bg-gradient-to-r from-[#FCF2E8] via-white to-white px-4 py-3 border-b border-[#F1F1F2]">
-                  <p className="text-xs uppercase tracking-wide text-[#A1A1A6] font-semibold">
-                    Bonus Type
-                  </p>
-                  <p className="text-sm text-[#2F2F33] font-semibold">
-                    Choose how to add a bonus
-                  </p>
+            <div className="relative flex gap-x-2 z-30" ref={bonusMenuRef}>
+              <Button
+                className="flex items-center gap-x-2 shadow-sm hover:shadow-md transition-shadow"
+                variant="primary"
+                onButtonClick={() => setIsBonusMenuOpen((prev) => !prev)}
+              >
+                Add Bonus
+                <span
+                  className={`transition-transform text-xs ${
+                    isBonusMenuOpen ? "rotate-180" : ""
+                  }`}
+                >
+                  ▼
+                </span>
+              </Button>
+
+              {isBonusMenuOpen && (
+                <div className="absolute right-0 top-12 w-72 bg-white border border-[#E3E3E5]  shadow-2xl rounded-xl overflow-hidden animate-fadeIn">
+                  <div className="bg-gradient-to-r from-[#FCF2E8] via-white to-white px-4 py-3 border-b border-[#F1F1F2]">
+                    <p className="text-xs uppercase tracking-wide text-[#A1A1A6] font-semibold">
+                      Bonus Type
+                    </p>
+                    <p className="text-sm text-[#2F2F33] font-semibold">
+                      Choose how to add a bonus
+                    </p>
+                  </div>
+                  <div className="p-3 flex flex-col gap-2">
+                    <button
+                      className="flex items-center justify-between w-full px-3 py-3 rounded-lg border border-transparent hover:border-[#E37915] hover:bg-[#FCF2E8] transition-colors text-left"
+                      onClick={() => {
+                        setShownonpayslipModal(true);
+                        setBtnType("add-new");
+                      }}
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-[#2F2F33]">
+                          Non payslip bonus
+                        </p>
+                        <p className="text-xs text-[#71717A]">
+                          For discretionary bonuses outside payroll
+                        </p>
+                      </div>
+                      <span className="text-[#E37915] font-semibold">→</span>
+                    </button>
+                    <button
+                      className="flex items-center justify-between w-full px-3 py-3 rounded-lg border border-transparent hover:border-[#E37915] hover:bg-[#FCF2E8] transition-colors text-left"
+                      onClick={() => setShowPayslipModal(true)}
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-[#2F2F33]">
+                          Payslip bonus
+                        </p>
+                        <p className="text-xs text-[#71717A]">
+                          Create a one-off bonus without payslip impact
+                        </p>
+                      </div>
+                      <span className="text-[#E37915] font-semibold">→</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="p-3 flex flex-col gap-2">
-                  <button
-                    className="flex items-center justify-between w-full px-3 py-3 rounded-lg border border-transparent hover:border-[#E37915] hover:bg-[#FCF2E8] transition-colors text-left"
-                    onClick={() => {
-                      setShownonpayslipModal(true);
-                      setBtnType("add-new");
-                    }}
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-[#2F2F33]">
-                        Non payslip bonus
-                      </p>
-                      <p className="text-xs text-[#71717A]">
-                        For discretionary bonuses outside payroll
-                      </p>
-                    </div>
-                    <span className="text-[#E37915] font-semibold">→</span>
-                  </button>
-                  <button
-                    className="flex items-center justify-between w-full px-3 py-3 rounded-lg border border-transparent hover:border-[#E37915] hover:bg-[#FCF2E8] transition-colors text-left"
-                    onClick={() => setShowPayslipModal(true)}
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-[#2F2F33]">
-                        Payslip bonus
-                      </p>
-                      <p className="text-xs text-[#71717A]">
-                        Create a one-off bonus without payslip impact
-                      </p>
-                    </div>
-                    <span className="text-[#E37915] font-semibold">→</span>
-                  </button>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
         {isLoading ? (
