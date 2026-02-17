@@ -171,10 +171,10 @@ const MonthlyBonus = () => {
     setFilters({ ...filters, month: e.target.value });
   };
 
-  const getMonthLabel = (monthValue: string) => {
-    const month = monthOptions.find((m) => m.value === monthValue);
-    return month?.label || "";
-  };
+  // const getMonthLabel = (monthValue: string) => {
+  //   const month = monthOptions.find((m) => m.value === monthValue);
+  //   return month?.label || "";
+  // };
 
   return (
     <ProtectedRoute>
