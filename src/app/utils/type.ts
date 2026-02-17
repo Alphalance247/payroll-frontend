@@ -28,7 +28,7 @@ export interface Payslip {
   pension: string;
   nhf: string;
   nhis: string;
-  total_hours: string;
+  total_hours: number;
   main_hours: string;
 }
 
