@@ -24,6 +24,12 @@ export interface Payslip {
   net_pay: string;
   official_base_pay: number;
   bonus: number;
+  rent: string;
+  pension: string;
+  nhf: string;
+  nhis: string;
+  total_hours: string;
+  main_hours: string;
 }
 
 export interface payrollRate {

@@ -142,7 +142,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1750px] border-b border-[#E3E3E5]">
+          <table className="w-full min-w-[2300px] border-b border-[#E3E3E5]">
             <thead className="bg-[#F7F7F7]">
               <tr>
                 <th className="px-6 py-[14px] w-[40px]">
@@ -170,11 +170,21 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Employee ID
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
-                  Bonus
-                </th>
+
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                   Tax
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
+                  Rent Amount
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
+                  NHF
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
+                  NHIS
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
+                  Pension
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
                   Deductions
@@ -213,7 +223,9 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                       {emp.employee.team?.name}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">150</td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {emp?.main_hours}
+                  </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {currencySymbol} {emp?.net_pay?.toLocaleString()}
@@ -229,10 +241,19 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     {emp?.employee?.employee_id}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {emp?.bonus?.toLocaleString()}
+                    {currencySymbol} {emp?.tax?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.tax?.toLocaleString()}
+                    {emp?.rent}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {emp?.nhf}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {emp?.nhis}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {currencySymbol} {emp?.pension?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {currencySymbol} {emp?.debt?.toLocaleString()}
@@ -249,7 +270,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                   Total
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  6000 hrs
+                  {payroll?.total_hours}
                 </td>
 
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
@@ -264,12 +285,26 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ----
                 </td>
-                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  {payroll?.total_bonus}
-                </td>
+
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ₦{payroll?.total_tax?.toLocaleString()}
                 </td>
+
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ----
+                </td>
+
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ----
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ----
+                </td>
+
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ----
+                </td>
+
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ₦ {payroll?.total_debt?.toLocaleString()}
                 </td>
