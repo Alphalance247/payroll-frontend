@@ -5,6 +5,8 @@ import { useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import PayrollCard from "../../common/payrollCard";
 import Button from "@/app/common/Button";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import toast from "react-hot-toast";
 
 interface MetricsData {
   totalHoursLogged: string;
@@ -21,65 +23,71 @@ interface Filters {
   month: string;
 }
 
-interface BonusEmployee {
-  id: number;
-  sn: number;
-  name: string;
-  clientHours: string;
-  nonClientHours: string;
-  clientBonus: string;
-  nonClientBonus: string;
-  status: "Disbursed" | "Pending" | "Processing";
-  lastDisbursed: string;
-}
+// interface BonusEmployee {
+//   id: number;
+//   sn: number;
+//   name: string;
+//   clientHours: string;
+//   nonClientHours: string;
+//   clientBonus: string;
+//   nonClientBonus: string;
+//   status:
+//     | "In Review"
+//     | "Reject"
+//     | "Approved"
+//     | "Disbursed"
+//     | "Pending"
+//     | "Processing";
+//   lastDisbursed: string;
+// }
 
 // Mock employee data - will be replaced with API integration
-const employeeData: BonusEmployee[] = [
-  {
-    id: 1,
-    sn: 1,
-    name: "John Doe",
-    clientHours: "40",
-    nonClientHours: "5",
-    clientBonus: "$160",
-    nonClientBonus: "$5",
-    status: "Disbursed",
-    lastDisbursed: "2024-02-01",
-  },
-  {
-    id: 2,
-    sn: 2,
-    name: "Jane Smith",
-    clientHours: "38",
-    nonClientHours: "8",
-    clientBonus: "$152",
-    nonClientBonus: "$8",
-    status: "Pending",
-    lastDisbursed: "2024-01-01",
-  },
-  {
-    id: 3,
-    sn: 3,
-    name: "Mike Johnson",
-    clientHours: "42",
-    nonClientHours: "2",
-    clientBonus: "$168",
-    nonClientBonus: "$2",
-    status: "Processing",
-    lastDisbursed: "2024-02-01",
-  },
-  {
-    id: 4,
-    sn: 4,
-    name: "Sarah Williams",
-    clientHours: "35",
-    nonClientHours: "10",
-    clientBonus: "$140",
-    nonClientBonus: "$10",
-    status: "Disbursed",
-    lastDisbursed: "2024-01-15",
-  },
-];
+// const employeeData: BonusEmployee[] = [
+//   {
+//     id: 1,
+//     sn: 1,
+//     name: "John Doe",
+//     clientHours: "40",
+//     nonClientHours: "5",
+//     clientBonus: "$160",
+//     nonClientBonus: "$5",
+//     status: "Disbursed",
+//     lastDisbursed: "2024-02-01",
+//   },
+//   {
+//     id: 2,
+//     sn: 2,
+//     name: "Jane Smith",
+//     clientHours: "38",
+//     nonClientHours: "8",
+//     clientBonus: "$152",
+//     nonClientBonus: "$8",
+//     status: "Pending",
+//     lastDisbursed: "2024-01-01",
+//   },
+//   {
+//     id: 3,
+//     sn: 3,
+//     name: "Mike Johnson",
+//     clientHours: "42",
+//     nonClientHours: "2",
+//     clientBonus: "$168",
+//     nonClientBonus: "$2",
+//     status: "Processing",
+//     lastDisbursed: "2024-02-01",
+//   },
+//   {
+//     id: 4,
+//     sn: 4,
+//     name: "Sarah Williams",
+//     clientHours: "35",
+//     nonClientHours: "10",
+//     clientBonus: "$140",
+//     nonClientBonus: "$10",
+//     status: "Disbursed",
+//     lastDisbursed: "2024-01-15",
+//   },
+// ];
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -89,6 +97,12 @@ const getStatusColor = (status: string) => {
       return "bg-yellow-100 text-yellow-800";
     case "Processing":
       return "bg-blue-100 text-blue-800";
+    case "In Review":
+      return "bg-blue-50 border border-blue-200 text-blue-700";
+    case "Approved":
+      return "bg-green-50 border border-green-200 text-green-700";
+    case "Reject":
+      return "bg-red-50 border border-red-200 text-red-700";
     default:
       return "bg-gray-100 text-gray-800";
   }
@@ -119,6 +133,71 @@ const MonthlyBonus = () => {
     bonusType: "",
     team: "",
   });
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<number[]>([]);
+  const [actionMenuIndex, setActionMenuIndex] = useState<number | null>(null);
+  const [actionMenuPosition, setActionMenuPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  console.log(actionMenuPosition);
+  const [statusUpdateIndex, setStatusUpdateIndex] = useState<number | null>(
+    null,
+  );
+  const [statusDropdownPosition, setStatusDropdownPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const [bulkStatusDropdown, setBulkStatusDropdown] = useState(false);
+  const [loading, setLoading] = useState(false);
+  // const actionMenuRef = useRef<HTMLDivElement | null>(null);
+  // const statusDropdownRef = useRef<HTMLDivElement | null>(null);
+  const employeeData = [
+    {
+      id: 1,
+      sn: 1,
+      name: "John Doe",
+      clientHours: "40",
+      nonClientHours: "5",
+      clientBonus: "$160",
+      nonClientBonus: "$5",
+      status: "In Review" as const,
+      lastDisbursed: "2024-02-01",
+    },
+    {
+      id: 2,
+      sn: 2,
+      name: "Jane Smith",
+      clientHours: "38",
+      nonClientHours: "8",
+      clientBonus: "$152",
+      nonClientBonus: "$8",
+      status: "Pending" as const,
+      lastDisbursed: "2024-01-01",
+    },
+    {
+      id: 3,
+      sn: 3,
+      name: "Mike Johnson",
+      clientHours: "42",
+      nonClientHours: "2",
+      clientBonus: "$168",
+      nonClientBonus: "$2",
+      status: "In Review" as const,
+      lastDisbursed: "2024-02-01",
+    },
+    {
+      id: 4,
+      sn: 4,
+      name: "Sarah Williams",
+      clientHours: "35",
+      nonClientHours: "10",
+      clientBonus: "$140",
+      nonClientBonus: "$10",
+      status: "Disbursed" as const,
+      lastDisbursed: "2024-01-15",
+    },
+  ];
+
   // Generate year options (current year and previous 5 years)
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - i);
@@ -135,6 +214,52 @@ const MonthlyBonus = () => {
 
     return matchesSearch && matchesBonusType && matchesTeam;
   });
+
+  const isAllSelected =
+    filteredEmployees.length > 0 &&
+    selectedEmployeeIds.length === filteredEmployees.length;
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedEmployeeIds([]);
+      return;
+    }
+    const allIds = filteredEmployees.map((emp) => emp.id);
+    setSelectedEmployeeIds(allIds);
+  };
+
+  const toggleSelectEmployee = (id: number) => {
+    setSelectedEmployeeIds((prev) =>
+      prev.includes(id) ? prev.filter((empId) => empId !== id) : [...prev, id],
+    );
+  };
+
+  const handleStatusUpdate = async (
+    newStatus: "In Review" | "Reject" | "Approved",
+    employeeIds?: number[],
+  ) => {
+    try {
+      setLoading(true);
+      const ids = employeeIds || [employeeData[actionMenuIndex!]?.id];
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      toast.success(
+        `Status updated to "${newStatus}" for ${ids.length} employee(s)`,
+      );
+      setActionMenuIndex(null);
+      setActionMenuPosition(null);
+      setStatusUpdateIndex(null);
+      setStatusDropdownPosition(null);
+      setBulkStatusDropdown(false);
+      setLoading(false);
+    } catch (err) {
+      toast.error("Failed to update status");
+      setLoading(false);
+      console.log(err);
+    }
+  };
 
   // Month options
   const monthOptions = [
@@ -302,146 +427,304 @@ const MonthlyBonus = () => {
             </h3>
 
             {/* Table Filters */}
-            <div className="mb-6 flex flex-col md:flex-row gap-4">
+            <div className="">
               {/* Search Input */}
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  placeholder="Search by employee name..."
-                  value={tableFilters.search}
-                  onChange={(e) =>
-                    setTableFilters({ ...tableFilters, search: e.target.value })
-                  }
-                  className="w-full pl-10 pr-4 py-2 border border-[#E3E3E5] rounded-lg text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
-                />
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
-              </div>
 
-              {/* Bonus Type Filter */}
-              <div className="relative w-full md:w-[200px]">
-                <select
-                  value={tableFilters.bonusType}
-                  onChange={(e) =>
-                    setTableFilters({
-                      ...tableFilters,
-                      bonusType: e.target.value,
-                    })
-                  }
-                  className="appearance-none w-full px-4 py-2 border border-[#E3E3E5] rounded-lg bg-white text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] cursor-pointer"
-                >
-                  {bonusTypeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#71717A] pointer-events-none" />
-              </div>
+              <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    placeholder="Search by employee name..."
+                    value={tableFilters.search}
+                    onChange={(e) =>
+                      setTableFilters({
+                        ...tableFilters,
+                        search: e.target.value,
+                      })
+                    }
+                    className="w-full pl-10 pr-4 py-2 border border-[#E3E3E5] rounded-lg text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
+                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
+                </div>
 
-              {/* Team Filter */}
-              <div className="relative w-full md:w-[200px]">
-                <select
-                  value={tableFilters.team}
-                  onChange={(e) =>
-                    setTableFilters({ ...tableFilters, team: e.target.value })
-                  }
-                  className="appearance-none w-full px-4 py-2 border border-[#E3E3E5] rounded-lg bg-white text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] cursor-pointer"
-                >
-                  {teamOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#71717A] pointer-events-none" />
-              </div>
-            </div>
+                {/* Bonus Type Filter */}
+                <div className="relative w-full md:w-[200px]">
+                  <select
+                    value={tableFilters.bonusType}
+                    onChange={(e) =>
+                      setTableFilters({
+                        ...tableFilters,
+                        bonusType: e.target.value,
+                      })
+                    }
+                    className="appearance-none w-full px-4 py-2 border border-[#E3E3E5] rounded-lg bg-white text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] cursor-pointer"
+                  >
+                    {bonusTypeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#71717A] pointer-events-none" />
+                </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto border border-[#E3E3E5] rounded-lg">
-              <table className="w-full bg-white">
-                <thead>
-                  <tr className="bg-[#F7F7F7] border-b border-[#E3E3E5]">
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                      S/N
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                      Employees
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                      Client Hours
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                      Non-Client Hours
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                      Client Bonus
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                      Non-Client Bonus
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                      Last Disbursed
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredEmployees.length > 0 ? (
-                    filteredEmployees.map((employee) => (
-                      <tr
-                        key={employee.id}
-                        className="border-b border-[#E3E3E5] hover:bg-[#F7F7F7] transition-colors"
+                {/* Team Filter */}
+                <div className="relative w-full md:w-[200px]">
+                  <select
+                    value={tableFilters.team}
+                    onChange={(e) =>
+                      setTableFilters({ ...tableFilters, team: e.target.value })
+                    }
+                    className="appearance-none w-full px-4 py-2 border border-[#E3E3E5] rounded-lg bg-white text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] cursor-pointer"
+                  >
+                    {teamOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#71717A] pointer-events-none" />
+                </div>
+
+                {/* Bulk Action Toolbar */}
+                {selectedEmployeeIds.length > 0 && (
+                  <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                    <span className="text-xs font-medium text-blue-700">
+                      {selectedEmployeeIds.length} selected
+                    </span>
+                    <div className="relative">
+                      <Button
+                        variant="primaryWhite"
+                        className="text-xs py-1 px-2"
+                        onButtonClick={() =>
+                          setBulkStatusDropdown(!bulkStatusDropdown)
+                        }
                       >
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {employee.sn}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33] font-medium">
-                          {employee.name}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {employee.clientHours}h
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {employee.nonClientHours}h
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {employee.clientBonus}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {employee.nonClientBonus}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                              employee.status,
-                            )}`}
+                        Update Status
+                      </Button>
+                      {bulkStatusDropdown && (
+                        <div className="absolute top-full right-0 mt-2 w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden z-50">
+                          <button
+                            onClick={() =>
+                              handleStatusUpdate(
+                                "In Review",
+                                selectedEmployeeIds,
+                              )
+                            }
+                            disabled={loading}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-[#F7F7F7] text-[#2F2F33] disabled:opacity-50"
                           >
-                            {employee.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                          {employee.lastDisbursed}
+                            In Review
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleStatusUpdate(
+                                "Approved",
+                                selectedEmployeeIds,
+                              )
+                            }
+                            disabled={loading}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-[#F7F7F7] text-[#2F2F33] border-t border-[#E3E3E5] disabled:opacity-50"
+                          >
+                            Approved
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleStatusUpdate("Reject", selectedEmployeeIds)
+                            }
+                            disabled={loading}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-[#F7F7F7] text-red-600 border-t border-[#E3E3E5] disabled:opacity-50"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <Button
+                      variant="primaryWhite"
+                      className="text-xs py-1 px-2"
+                      onButtonClick={() => setSelectedEmployeeIds([])}
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Table */}
+              <div className="overflow-x-auto border border-[#E3E3E5] rounded-lg">
+                <table className="w-full bg-white">
+                  <thead>
+                    <tr className="bg-[#F7F7F7] border-b border-[#E3E3E5]">
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33] w-[40px]">
+                        <input
+                          type="checkbox"
+                          className="rounded border-gray-300 cursor-pointer"
+                          checked={isAllSelected}
+                          onChange={toggleSelectAll}
+                          aria-label="Select all employees"
+                        />
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
+                        S/N
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
+                        Employees
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
+                        Client Hours
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
+                        Non-Client Hours
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
+                        Client Bonus
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
+                        Non-Client Bonus
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
+                        Last Disbursed
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredEmployees.length > 0 ? (
+                      filteredEmployees.map((employee, index) => {
+                        const isSelected = selectedEmployeeIds.includes(
+                          employee.id,
+                        );
+                        return (
+                          <tr
+                            key={employee.id}
+                            className={`border-b border-[#E3E3E5] hover:bg-[#F7F7F7] transition-colors ${
+                              isSelected ? "bg-[#FFF9F2]" : ""
+                            }`}
+                          >
+                            <td className="px-6 py-4 text-sm w-[40px]">
+                              <input
+                                type="checkbox"
+                                className="rounded border-gray-300 cursor-pointer"
+                                checked={isSelected}
+                                onChange={() =>
+                                  toggleSelectEmployee(employee.id)
+                                }
+                                aria-label={`Select ${employee.name}`}
+                              />
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                              {employee.sn}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#2F2F33] font-medium">
+                              {employee.name}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                              {employee.clientHours}h
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                              {employee.nonClientHours}h
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                              {employee.clientBonus}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                              {employee.nonClientBonus}
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <span
+                                className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                                  employee.status,
+                                )}`}
+                              >
+                                {employee.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                              {employee.lastDisbursed}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#2F2F33] relative">
+                              <button
+                                onClick={(e) => {
+                                  const isOpen = statusUpdateIndex === index;
+                                  setStatusUpdateIndex(isOpen ? null : index);
+                                  if (isOpen) {
+                                    setStatusDropdownPosition(null);
+                                    return;
+                                  }
+                                  const rect = (
+                                    e.currentTarget as HTMLElement
+                                  ).getBoundingClientRect();
+                                  setStatusDropdownPosition({
+                                    top: rect.bottom + window.scrollY + 8,
+                                    left: rect.right + window.scrollX - 160,
+                                  });
+                                }}
+                                className="p-2 rounded-full hover:bg-[#E3E3E5] transition-colors"
+                                aria-label="Row actions"
+                              >
+                                <BsThreeDotsVertical />
+                              </button>
+
+                              {statusUpdateIndex === index &&
+                                statusDropdownPosition && (
+                                  <div
+                                    className="fixed z-[1200] w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden"
+                                    style={{
+                                      top: statusDropdownPosition.top,
+                                      left: statusDropdownPosition.left,
+                                    }}
+                                  >
+                                    <button
+                                      onClick={() =>
+                                        handleStatusUpdate("In Review")
+                                      }
+                                      disabled={loading}
+                                      className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] disabled:opacity-50"
+                                    >
+                                      In Review
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleStatusUpdate("Approved")
+                                      }
+                                      disabled={loading}
+                                      className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5] disabled:opacity-50"
+                                    >
+                                      Approved
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleStatusUpdate("Reject")
+                                      }
+                                      disabled={loading}
+                                      className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-red-600 border-t border-[#E3E3E5] disabled:opacity-50"
+                                    >
+                                      Reject
+                                    </button>
+                                  </div>
+                                )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={10} className="px-6 py-8 text-center">
+                          <p className="text-[#71717A]">
+                            No employees found matching your filters.
+                          </p>
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={8} className="px-6 py-8 text-center">
-                        <p className="text-[#71717A]">
-                          No employees found matching your filters.
-                        </p>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-
-          {/* Additional content sections will be added here */}
         </main>
       </DashboardLayout>
     </ProtectedRoute>

@@ -18,10 +18,13 @@ import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import Link from "next/link";
+import { downloadFile, generateFileName } from "@/app/utils/exportFile";
 
 const Bonus = () => {
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
+  const [filterYear, setFilterYear] = useState("");
+  const [filterMonth, setFilterMonth] = useState("");
   const [isBonusMenuOpen, setIsBonusMenuOpen] = useState(false);
   const bonusMenuRef = useRef<HTMLDivElement | null>(null);
   const [showPaySlipModal, setShowPayslipModal] = useState(false);
@@ -30,12 +33,35 @@ const Bonus = () => {
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
   const actionMenuFloatingRef = useRef<HTMLDivElement | null>(null);
   const [diburseModal, setDisburseModal] = useState(false);
-  const { data, isError, error, isLoading, refetch } = useBonusList();
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [includeDateRange, setIncludeDateRange] = useState(false);
+  const [exportMonth, setExportMonth] = useState("");
+  const [exportYear, setExportYear] = useState("");
+  const { data, isError, error, isLoading, refetch } = useBonusList(
+    filterMonth,
+    filterYear,
+  );
   const [btnType, setBtnType] = useState<"edit" | "add-new">("edit");
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectAllCheckboxRef = useRef<HTMLInputElement | null>(null);
   const selectAllToolbarCheckboxRef = useRef<HTMLInputElement | null>(null);
+  // const additionalDta = [
+  //   {
+  //     id: "90",
+  //     employee: {
+  //       fullname: "John Doe",
+  //     },
+  //     amount: "5000",
+  //     reason: "Excellent performance in Q1",
+  //     paid: false,
+  //     approved: true,
+  //     created: "2024-08-01",
+  //     date_paid: null,
+  //   },
+  // ];
+  // [...additionalDta, ...(data?.data || [])]
   const employees = data?.data || [];
+  console.log("employees", employees);
   const [showMultipleDisburseModal, setShowMultipleDisburseModal] =
     useState(false);
   const [employeeDetails, setEmployeeDetails] = useState({
@@ -135,6 +161,59 @@ const Bonus = () => {
     }
   };
 
+  const getMonthName = (monthNumber: string): string => {
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const index = parseInt(monthNumber) - 1;
+    return monthNames[index] || "";
+  };
+
+  const handleExportBonuses = async () => {
+    try {
+      setIsLoading(true);
+      // const idsParam = selectedEmployeeIds.join(",");
+      let url = `/employees/bonuses/export-bonuses`;
+
+      // Add export date range if selected
+      if (exportMonth && exportYear) {
+        url += `?month=${exportMonth}&year=${exportYear}`;
+      }
+
+      const res = await axiosInstance.get(url, {
+        responseType: "blob",
+      });
+      if (res.status === 200 || res.status === 201) {
+        const fileName = generateFileName("bonuses-export");
+        downloadFile(res.data as Blob, fileName);
+        toast.success("Bonuses exported successfully");
+        setShowExportModal(false);
+        setIncludeDateRange(false);
+        setExportMonth("");
+        setExportYear("");
+      }
+      setIsLoading(false);
+    } catch (err) {
+      let errorMessage = "An error occurred please try again or contact Admin";
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
+      toast.error(errorMessage);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10 relative">
@@ -172,6 +251,119 @@ const Bonus = () => {
               onSuccess={handleMultipleDisburseSuccess}
               bonusIds={selectedEmployeeIds}
             />
+          )}
+
+          {showExportModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1300]">
+              <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
+                <h2 className="text-lg font-semibold text-[#2F2F33] mb-2">
+                  Export Bonus Data
+                </h2>
+
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-[#2F2F33] mb-2">
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 cursor-pointer mr-2"
+                        checked={includeDateRange}
+                        onChange={(e) => {
+                          setIncludeDateRange(e.target.checked);
+                          if (!e.target.checked) {
+                            setExportMonth("");
+                            setExportYear("");
+                          }
+                        }}
+                      />
+                      Include date range (optional)
+                    </label>
+                  </div>
+
+                  {includeDateRange && (
+                    <div className="bg-[#F7F7F7] p-4 rounded-lg space-y-3">
+                      <div>
+                        <label className="block text-xs font-medium text-[#71717A] mb-1">
+                          Month
+                        </label>
+                        <select
+                          value={exportMonth}
+                          onChange={(e) => setExportMonth(e.target.value)}
+                          className="w-full border border-[#E3E3E5] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E37915]"
+                        >
+                          <option value="">All months</option>
+                          <option value="1">January</option>
+                          <option value="2">February</option>
+                          <option value="3">March</option>
+                          <option value="4">April</option>
+                          <option value="5">May</option>
+                          <option value="6">June</option>
+                          <option value="7">July</option>
+                          <option value="8">August</option>
+                          <option value="9">September</option>
+                          <option value="10">October</option>
+                          <option value="11">November</option>
+                          <option value="12">December</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-[#71717A] mb-1">
+                          Year
+                        </label>
+                        <select
+                          value={exportYear}
+                          onChange={(e) => setExportYear(e.target.value)}
+                          className="w-full border border-[#E3E3E5] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E37915]"
+                        >
+                          <option value="">All years</option>
+                          <option value="2020">2020</option>
+                          <option value="2021">2021</option>
+                          <option value="2022">2022</option>
+                          <option value="2023">2023</option>
+                          <option value="2024">2024</option>
+                          <option value="2025">2025</option>
+                          <option value="2026">2026</option>
+                          <option value="2027">2027</option>
+                          <option value="2028">2028</option>
+                          <option value="2029">2029</option>
+                          <option value="2030">2030</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
+                  <p className="text-xs text-blue-700 font-medium">
+                    📋 Preview: record will be exported
+                    {exportMonth && exportYear
+                      ? ` for ${getMonthName(exportMonth)} ${exportYear}`
+                      : ""}
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowExportModal(false);
+                      setIncludeDateRange(false);
+                      setExportMonth("");
+                      setExportYear("");
+                    }}
+                    className="flex-1 px-4 py-2 border border-[#E3E3E5] rounded-lg text-[#2F2F33] font-medium hover:bg-[#F7F7F7] transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleExportBonuses}
+                    disabled={loading}
+                    className="flex-1 px-4 py-2 bg-[#E37915] text-white rounded-lg font-medium hover:bg-[#D16B0D] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {loading ? "Exporting..." : "Export"}
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
 
           <div className="flex items-center gap-x-4">
@@ -329,55 +521,81 @@ const Bonus = () => {
                         ? "opacity-50 cursor-not-allowed"
                         : ""
                     }`}
-                    onButtonClick={() => {}}
+                    onButtonClick={() => {
+                      setFilterMonth(selectedMonth);
+                      setFilterYear(selectedYear);
+                      setSelectedEmployeeIds([]);
+                    }}
                   >
                     Apply
                   </Button>
                 </div>
               </div>
 
-              <div className="py-4 pl-4 flex items-center gap-x-8 border-t border-[#E3E3E5]">
-                <div className="flex items-center bg-[#F7F7F7] w-fit gap-x-2 rounded-sm px-2 py-1">
-                  <input
-                    type="checkbox"
-                    ref={selectAllToolbarCheckboxRef}
-                    className="rounded w-[14px] h-[14px] border-gray-300 cursor-pointer"
-                    checked={isAllSelected}
-                    onChange={toggleSelectAll}
-                    disabled={employees.length === 0}
-                    aria-label="Select all employees"
-                  />
-                  <p className="text-[#2F2F33] text-sm font-medium">
-                    {selectedEmployeeIds.length > 0
-                      ? `${selectedEmployeeIds.length} selected`
-                      : "Select employees"}
-                  </p>
+              <div className="py-4 px-4 flex justify-between items-center gap-x-8 border-t border-[#E3E3E5]">
+                <div className="flex items-center gap-x-4">
+                  <div className="flex items-center bg-[#F7F7F7] w-fit gap-x-2 rounded-sm px-2 py-1">
+                    <input
+                      type="checkbox"
+                      ref={selectAllToolbarCheckboxRef}
+                      className="rounded w-[14px] h-[14px] border-gray-300 cursor-pointer"
+                      checked={isAllSelected}
+                      onChange={toggleSelectAll}
+                      disabled={employees.length === 0}
+                      aria-label="Select all employees"
+                    />
+                    <p className="text-[#2F2F33] text-sm font-medium">
+                      {selectedEmployeeIds.length > 0
+                        ? `${selectedEmployeeIds.length} selected`
+                        : "Select employees"}
+                    </p>
+                  </div>
+
+                  {selectedEmployeeIds.length > 0 && (
+                    <div className="flex items-center gap-x-2">
+                      <Button
+                        variant="primary"
+                        className="flex items-center gap-x-2"
+                        onButtonClick={() => setShowMultipleDisburseModal(true)}
+                      >
+                        <IoCheckmarkOutline
+                          size={18}
+                          color="#ffffff"
+                          fill="#ffffff"
+                        />
+                        Disburse selected ({selectedEmployeeIds.length})
+                      </Button>
+
+                      <Button
+                        variant="primaryWhite"
+                        className="flex items-center gap-x-2"
+                        onButtonClick={() => setSelectedEmployeeIds([])}
+                      >
+                        Clear selection
+                      </Button>
+                    </div>
+                  )}
+
+                  {employees.length > 0 && (
+                    <div className="flex items-center bg-blue-50 border border-blue-200 rounded-md px-3 py-2 gap-x-2">
+                      <span className="text-xs font-medium text-[#2F2F33]">
+                        Total Bonus:
+                      </span>
+                      <span className="text-sm font-semibold text-[#26547C]">
+                        {data?.total_amount || "0.00"}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
-                {selectedEmployeeIds.length > 0 && (
-                  <div className="flex items-center gap-x-2">
-                    <Button
-                      variant="primary"
-                      className="flex items-center gap-x-2"
-                      onButtonClick={() => setShowMultipleDisburseModal(true)}
-                    >
-                      <IoCheckmarkOutline
-                        size={18}
-                        color="#ffffff"
-                        fill="#ffffff"
-                      />
-                      Disburse selected ({selectedEmployeeIds.length})
-                    </Button>
-
-                    <Button
-                      variant="primaryWhite"
-                      className="flex items-center gap-x-2"
-                      onButtonClick={() => setSelectedEmployeeIds([])}
-                    >
-                      Clear selection
-                    </Button>
-                  </div>
-                )}
+                <Button
+                  variant="primaryWhite"
+                  className={`flex items-center gap-x-2 ${employees.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                  onButtonClick={() => setShowExportModal(true)}
+                  disabled={employees.length === 0}
+                >
+                  Export bonus
+                </Button>
               </div>
             </div>
 
@@ -457,7 +675,7 @@ const Bonus = () => {
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]"></th>
                   </tr>
                 </thead>
-                {data?.data?.length === 0 ? (
+                {employees?.length === 0 ? (
                   <tbody>
                     <tr>
                       <td colSpan={6} className="text-center py-8">

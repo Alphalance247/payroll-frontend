@@ -18,18 +18,33 @@ interface data {
 
 interface dataType {
   data: data[];
+  total_amount: string;
 }
 
-const fetchBonusList = async () => {
-  const res = await axiosInstance.get<dataType | null>("/employees/bonuses");
+const fetchBonusList = async (month?: string, year?: string) => {
+  let url = "/employees/bonuses";
+  const params = new URLSearchParams();
+
+  if (month && month !== "") {
+    params.append("month", month);
+  }
+  if (year && year !== "") {
+    params.append("year", year);
+  }
+
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
+
+  const res = await axiosInstance.get<dataType | null>(url);
 
   return res.data;
 };
 
-export const useBonusList = () => {
+export const useBonusList = (month?: string, year?: string) => {
   return useQuery<dataType | null, AxiosError>({
-    queryKey: ["bonus-list"],
-    queryFn: fetchBonusList,
+    queryKey: ["bonus-list", month, year],
+    queryFn: () => fetchBonusList(month, year),
     staleTime: 1000 * 60 * 5, // data fresh for 5 minutes
     retry: 1,
   });
