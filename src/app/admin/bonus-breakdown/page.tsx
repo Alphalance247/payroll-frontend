@@ -104,13 +104,13 @@ const getStatusColor = (status: string) => {
   }
 };
 
-// const teamOptions = [
-//   { value: "", label: "All Teams" },
-//   { value: "engineering", label: "Engineering" },
-//   { value: "design", label: "Design" },
-//   { value: "marketing", label: "Marketing" },
-//   { value: "sales", label: "Sales" },
-// ];
+const teamOptions = [
+  { value: "", label: "All Teams" },
+  { value: "engineering", label: "Engineering" },
+  { value: "design", label: "Design" },
+  { value: "marketing", label: "Marketing" },
+  { value: "sales", label: "Sales" },
+];
 
 // Bonus type options
 const bonusTypeOptions = [
@@ -314,9 +314,7 @@ const MonthlyBonus = () => {
 
     const metrics = bonusData.metrics;
     return {
-      totalHoursLogged: `${(
-        parseFloat(metrics.client_hours) + parseFloat(metrics.non_client_hours)
-      ).toFixed(2)}h`,
+      totalHoursLogged: `${(metrics?.total_hours_logged).toFixed(2)}h`,
       clientHours: `${metrics.client_hours}h`,
       nonClientHours: `${metrics.non_client_hours}h`,
       totalClientBonus: `# ${metrics.total_client_bonus}`,
@@ -527,7 +525,7 @@ const MonthlyBonus = () => {
                     </div>
 
                     {/* Team Filter */}
-                    {/* <div className="relative w-full md:w-[200px]">
+                    <div className="relative w-full md:w-[200px]">
                       <select
                         value={tableFilters.team}
                         onChange={(e) =>
@@ -545,7 +543,7 @@ const MonthlyBonus = () => {
                         ))}
                       </select>
                       <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#71717A] pointer-events-none" />
-                    </div> */}
+                    </div>
 
                     {/* Bulk Action Toolbar */}
                     {selectedEmployeeIds.length > 0 && (
