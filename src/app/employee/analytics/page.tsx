@@ -15,6 +15,7 @@ import ErrorFetch from "@/app/common/errorFetch";
 import Spinner from "@/app/common/spinner";
 import { useLeaveStore } from "@/stores/employee-dashboard/analytics/LeaveCalendar";
 import { getLeaveDashboardData } from "@/stores/employee-dashboard/analytics/LeaveDashboard";
+import ApprovedHolidaysTab from "./holiday";
 
 const EmployeeAnalytics = () => {
   const [activeBtn, setActiveBtn] = useState<string>("My Earnings");
@@ -62,6 +63,7 @@ const EmployeeAnalytics = () => {
   const tabs: { id: number; name: string }[] = [
     { id: 1, name: "My Earnings" },
     { id: 3, name: "Leave Calendar" },
+    { id: 4, name: "Holidays" },
   ];
 
   return (
@@ -258,8 +260,9 @@ const EmployeeAnalytics = () => {
                 {/* )} */}
               </div>
             )}
+
+            {activeBtn === "Holidays" && <ApprovedHolidaysTab />}
           </>
-          {/* )} */}
         </main>
       </EmployeeDashboardLayout>
     </ProtectedRoute>

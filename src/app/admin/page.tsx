@@ -62,7 +62,7 @@ export default function Home() {
   const [dismissed, setDismissed] = useState<number[]>([]);
   const filteredTasks =
     pendingTaskData?.Tasks?.filter(
-      (task, index) => !dismissed.includes(index)
+      (task, index) => !dismissed.includes(index),
     ) || [];
 
   const date = new Date();
@@ -207,7 +207,7 @@ export default function Home() {
                       </p>
                     ) : (
                       pendingTaskData?.Tasks?.filter(
-                        (task, index) => !dismissed.includes(index)
+                        (task, index) => !dismissed.includes(index),
                       ).map((task, index) => (
                         <div
                           key={index}
@@ -339,7 +339,7 @@ export default function Home() {
                               Pay period
                             </p>
                             <p className="font-medium font-Graphik text-[#2F2F33] text-base">
-                              June 1 - June 30, 2025
+                              {upcomingPayrollData?.pay_period}
                             </p>
                           </div>
                         </div>
