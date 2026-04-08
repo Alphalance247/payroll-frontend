@@ -45,8 +45,10 @@ export default function HolidayCalendar() {
   } = getHolidayStore();
   const { setFilter, filteredData } = useFilter(
     holidayData?.data?.holidays?.results || [],
-    ["country"]
+    ["country"],
   );
+
+  console.log("holidayData", holidayData, "filtered", filteredData);
 
   useEffect(() => {
     fetchPayrollHoliday();
@@ -153,7 +155,7 @@ export default function HolidayCalendar() {
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]"></th>
                   </tr>
                 </thead>
-                {filteredData?.length === 0 ||
+                {filteredData?.length === 0 &&
                 holidayData?.data?.events?.length === 0 ? (
                   <tbody>
                     <tr>
@@ -223,8 +225,8 @@ export default function HolidayCalendar() {
                               emp?.status === "in review"
                                 ? "border-yellow-400 bg-yellow-100 text-yellow-700"
                                 : emp?.status === "approved"
-                                ? "border-green-500 bg-green-100 text-green-600"
-                                : "border-red-500 bg-red-100 text-red-600"
+                                  ? "border-green-500 bg-green-100 text-green-600"
+                                  : "border-red-500 bg-red-100 text-red-600"
                             }`}
                           >
                             {emp?.status}

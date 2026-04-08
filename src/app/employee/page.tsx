@@ -98,26 +98,7 @@ const Employee = () => {
                 <IoMdArrowDropdown />
               </button>
             </div>
-            {/* <div className="my-8 flex space-x-5 items-center px-20">
-              <div className="flex space-x-2 items-center">
-                <div className="h-4 w-4 rounded-sm bg-[#009BC0]"></div>
-                <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
-                  Base salary
-                </div>
-              </div>
-              <div className="flex space-x-2 items-center">
-                <div className="h-4 w-4 rounded-sm bg-[#E37915]"></div>
-                <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
-                  Bonus
-                </div>
-              </div>
-              <div className="flex space-x-2 items-center">
-                <div className="h-4 w-4 rounded-sm bg-[#11202D]"></div>
-                <div className="text-sm text-[#2F2F33] font-Graphik font-medium">
-                  Deduction
-                </div>
-              </div>
-            </div> */}
+
             <EmployeeBarChart />
           </div>
           {/* <EmployeeBarChart chartData={} /> */}
