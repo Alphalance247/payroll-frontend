@@ -12,12 +12,13 @@ import LoanSideBar from "@/app/components/Employee-Dashboard/loan/loanSideBar";
 import { getEmployeeLoanList } from "@/stores/employee-dashboard/loan/loanList";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
+import toast from "react-hot-toast";
 
 const EmployeeLoanRequest = () => {
   const [loanModal, setLoanModal] = useState(false);
   const [isOpenSideBar, setIsOpenSideBar] = useState(false);
 
-  const { fetchEmployeeLoanList, error, loading } = getEmployeeLoanList();
+  const { fetchEmployeeLoanList, error, loading, data } = getEmployeeLoanList();
 
   useEffect(() => {
     fetchEmployeeLoanList();
@@ -34,7 +35,18 @@ const EmployeeLoanRequest = () => {
               flexDirection="column"
             />
 
-            <Button variant="primary" onButtonClick={() => setLoanModal(true)}>
+            <Button
+              variant="primary"
+              onButtonClick={() => {
+                if (data?.active_loan_exist) {
+                  toast.error(
+                    "You have an active loan. You cannot request a new loan until the current one is fully repaid.",
+                  );
+                } else {
+                  setLoanModal(true);
+                }
+              }}
+            >
               New Loan Request
             </Button>
           </div>

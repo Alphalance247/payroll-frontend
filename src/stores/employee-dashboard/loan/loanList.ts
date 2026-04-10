@@ -18,6 +18,7 @@ interface employeeLoanListDataStore {
   next_repayment_date: string;
   outstanding_balance: number;
   proposed_next_repayment: number;
+  active_loan_exist: boolean;
 }
 
 interface employeeLoanListStore {
