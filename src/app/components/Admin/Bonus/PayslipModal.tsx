@@ -9,6 +9,7 @@ import axiosInstance from "@/app/utils/axios";
 import toast from "react-hot-toast";
 import { usePayslip } from "@/app/hooks/useQueries/bonus/usePayslip";
 import { useEmployeeListData } from "@/app/hooks/useQueries/useEmployeeData";
+import { useBonusList } from "@/app/hooks/useQueries/bonus/useBonusList";
 
 const PayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
   const [loading, setIsLoading] = useState(false);
@@ -18,6 +19,7 @@ const PayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
     payslip: "",
     amount: "",
   });
+  const { refetch } = useBonusList();
   const { data: employeePayslip } = usePayslip({ id: employeeId });
   const { data } = useEmployeeListData();
 
@@ -64,6 +66,8 @@ const PayslipModal = ({ onModalClose }: { onModalClose: () => void }) => {
 
       if (res.status === 200 || res.status === 201) {
         toast.success(res?.data?.message || "Bonus  added successfully");
+        await refetch();
+        onModalClose();
       }
 
       setForm((prev) => ({

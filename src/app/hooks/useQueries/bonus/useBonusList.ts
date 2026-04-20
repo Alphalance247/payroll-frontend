@@ -10,6 +10,9 @@ interface data {
   date_paid: string;
   created: string;
   paid: boolean;
+  bonus_type: string;
+  pay_deno: string;
+  naira_amount: string;
   employee: {
     fullname: string;
   };
@@ -21,7 +24,11 @@ interface dataType {
   total_amount: string;
 }
 
-const fetchBonusList = async (month?: string, year?: string) => {
+const fetchBonusList = async (
+  month?: string,
+  year?: string,
+  bonus_type?: string,
+) => {
   let url = "/employees/bonuses";
   const params = new URLSearchParams();
 
@@ -30,6 +37,10 @@ const fetchBonusList = async (month?: string, year?: string) => {
   }
   if (year && year !== "") {
     params.append("year", year);
+  }
+
+  if (bonus_type && bonus_type !== "") {
+    params.append("bonus_type", bonus_type);
   }
 
   if (params.toString()) {
@@ -41,10 +52,14 @@ const fetchBonusList = async (month?: string, year?: string) => {
   return res.data;
 };
 
-export const useBonusList = (month?: string, year?: string) => {
+export const useBonusList = (
+  month?: string,
+  year?: string,
+  bonus_type?: string,
+) => {
   return useQuery<dataType | null, AxiosError>({
-    queryKey: ["bonus-list", month, year],
-    queryFn: () => fetchBonusList(month, year),
+    queryKey: ["bonus-list", month, year, bonus_type],
+    queryFn: () => fetchBonusList(month, year, bonus_type),
     staleTime: 1000 * 60 * 5, // data fresh for 5 minutes
     retry: 1,
   });

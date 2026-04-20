@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import Link from "next/link";
 import { downloadFile, generateFileName } from "@/app/utils/exportFile";
+import FixedBonusModal from "@/app/components/Admin/Bonus/fixedBonusModal";
 
 const Bonus = () => {
   const [selectedYear, setSelectedYear] = useState("");
@@ -29,6 +30,7 @@ const Bonus = () => {
   const bonusMenuRef = useRef<HTMLDivElement | null>(null);
   const [showPaySlipModal, setShowPayslipModal] = useState(false);
   const [showNonPaySlipModal, setShownonpayslipModal] = useState(false);
+  const [showFixedBonusModal, setShowFixedBonusModal] = useState(false);
   const [actionMenuIndex, setActionMenuIndex] = useState<number | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
   const actionMenuFloatingRef = useRef<HTMLDivElement | null>(null);
@@ -37,31 +39,26 @@ const Bonus = () => {
   const [includeDateRange, setIncludeDateRange] = useState(false);
   const [exportMonth, setExportMonth] = useState("");
   const [exportYear, setExportYear] = useState("");
+  const [bonusType, setBonusType] = useState("");
+  const [bonusTypeFilter, setBonusTypeFilter] = useState("");
   const { data, isError, error, isLoading, refetch } = useBonusList(
     filterMonth,
     filterYear,
+    bonusTypeFilter,
   );
   const [btnType, setBtnType] = useState<"edit" | "add-new">("edit");
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectAllCheckboxRef = useRef<HTMLInputElement | null>(null);
   const selectAllToolbarCheckboxRef = useRef<HTMLInputElement | null>(null);
-  // const additionalDta = [
-  //   {
-  //     id: "90",
-  //     employee: {
-  //       fullname: "John Doe",
-  //     },
-  //     amount: "5000",
-  //     reason: "Excellent performance in Q1",
-  //     paid: false,
-  //     approved: true,
-  //     created: "2024-08-01",
-  //     date_paid: null,
-  //   },
-  // ];
-  // [...additionalDta, ...(data?.data || [])]
-  const employees = data?.data || [];
-  console.log("employees", employees);
+  const rawEmployees = data?.data || [];
+
+  // Client-side filtering by bonus type
+  const employees = bonusTypeFilter
+    ? rawEmployees.filter(
+        (emp) =>
+          emp?.bonus_type?.toLowerCase() === bonusTypeFilter.toLowerCase(),
+      )
+    : rawEmployees;
   const [showMultipleDisburseModal, setShowMultipleDisburseModal] =
     useState(false);
   const [employeeDetails, setEmployeeDetails] = useState({
@@ -227,6 +224,15 @@ const Bonus = () => {
           {showNonPaySlipModal && (
             <NonPayslipModal
               onModalClose={() => setShownonpayslipModal(false)}
+              id={employeeDetails?.id}
+              btnType={btnType}
+            />
+          )}
+
+          {showFixedBonusModal && (
+            <FixedBonusModal
+              refetch={refetch}
+              onModalClose={() => setShowFixedBonusModal(false)}
               id={employeeDetails?.id}
               btnType={btnType}
             />
@@ -429,6 +435,24 @@ const Bonus = () => {
                       </div>
                       <span className="text-[#E37915] font-semibold">→</span>
                     </button>
+
+                    <button
+                      className="flex items-center justify-between w-full px-3 py-3 rounded-lg border border-transparent hover:border-[#E37915] hover:bg-[#FCF2E8] transition-colors text-left"
+                      onClick={() => {
+                        setBtnType("add-new");
+                        setShowFixedBonusModal(true);
+                      }}
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-[#2F2F33]">
+                          Fixed bonus
+                        </p>
+                        <p className="text-xs text-[#71717A]">
+                          For recurring bonuses that should reflect on payslip
+                        </p>
+                      </div>
+                      <span className="text-[#E37915] font-semibold">→</span>
+                    </button>
                   </div>
                 </div>
               )}
@@ -453,82 +477,76 @@ const Bonus = () => {
                   Bonus
                 </h2>
 
-                <div className="flex items-center gap-2">
-                  <div>
-                    <select
-                      name=""
-                      id=""
-                      className="border rounded-md px-4 py-[10px] focus:outline-none"
-                      value={selectedYear}
-                      onChange={(e) => setSelectedYear(e.target.value)}
-                    >
-                      <option value="">Select year</option>
-                      <option value="2005">2005</option>
-                      <option value="2006">2006</option>
-                      <option value="2007">2007</option>
-                      <option value="2020">2020</option>
-                      <option value="2021">2021</option>
-                      <option value="2022">2022</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
-                      <option value="2028">2028</option>
-                      <option value="2029">2029</option>
-                      <option value="2030">2030</option>
-                      <option value="2031">2031</option>
-                    </select>
-                  </div>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-2">
+                    <div>
+                      <select
+                        name=""
+                        id=""
+                        className="border rounded-md px-4 py-[10px] focus:outline-none"
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(e.target.value)}
+                      >
+                        <option value="">Select year</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>
+                      </select>
+                    </div>
 
-                  <div>
-                    <select
-                      name=""
-                      id=""
-                      className="border rounded-md px-4 py-[10px] focus:outline-none"
-                      value={selectedMonth}
-                      onChange={(e) => setSelectedMonth(e.target.value)}
-                    >
-                      <option value="">Select Month</option>
-                      <option value="1">January</option>
-                      <option value="2">February</option>
-                      <option value="3">March</option>
-                      <option value="4">April</option>
-                      <option value="5">May</option>
-                      <option value="6">June</option>
-                      <option value="7">July</option>
-                      <option value="8">August</option>
-                      <option value="9">September</option>
-                      <option value="10">October</option>
-                      <option value="11">November</option>
-                      <option value="12">December</option>
-                    </select>
-                  </div>
+                    <div>
+                      <select
+                        name=""
+                        id=""
+                        className="border rounded-md px-4 py-[10px] focus:outline-none"
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(e.target.value)}
+                      >
+                        <option value="">Select Month</option>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                      </select>
+                    </div>
 
-                  <Button
-                    variant="primary"
-                    disabled={
-                      !selectedYear ||
-                      selectedYear === "" ||
-                      !selectedMonth ||
-                      selectedMonth === ""
-                    }
-                    className={`w-[100px] h-[40px] ${
-                      !selectedYear ||
-                      selectedYear === "" ||
-                      !selectedMonth ||
-                      selectedMonth === ""
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                    onButtonClick={() => {
-                      setFilterMonth(selectedMonth);
-                      setFilterYear(selectedYear);
-                      setSelectedEmployeeIds([]);
-                    }}
-                  >
-                    Apply
-                  </Button>
+                    <Button
+                      variant="primary"
+                      disabled={
+                        !selectedYear ||
+                        selectedYear === "" ||
+                        !selectedMonth ||
+                        selectedMonth === ""
+                      }
+                      className={`w-[100px] h-[40px] ${
+                        !selectedYear ||
+                        selectedYear === "" ||
+                        !selectedMonth ||
+                        selectedMonth === ""
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
+                      onButtonClick={() => {
+                        setFilterMonth(selectedMonth);
+                        setFilterYear(selectedYear);
+                        setSelectedEmployeeIds([]);
+                      }}
+                    >
+                      Apply
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -588,14 +606,45 @@ const Bonus = () => {
                   )}
                 </div>
 
-                <Button
-                  variant="primaryWhite"
-                  className={`flex items-center gap-x-2 ${employees.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
-                  onButtonClick={() => setShowExportModal(true)}
-                  disabled={employees.length === 0}
-                >
-                  Export bonus
-                </Button>
+                <div className="flex items-center gap-x-5">
+                  <div className="flex items-center gap-2">
+                    <div>
+                      <select
+                        className="border rounded-md px-4 py-[10px] focus:outline-none"
+                        value={bonusTypeFilter}
+                        onChange={(e) => {
+                          setBonusTypeFilter(e.target.value);
+                          setSelectedEmployeeIds([]);
+                        }}
+                      >
+                        <option value="">All Bonus Types</option>
+                        <option value="fixed">Fixed Bonus</option>
+                        <option value="client">Non Payslip Bonus</option>
+                        <option value="payslip">Payslip Bonus</option>
+                      </select>
+                    </div>
+                    {bonusTypeFilter && (
+                      <button
+                        onClick={() => {
+                          setBonusTypeFilter("");
+                          setSelectedEmployeeIds([]);
+                        }}
+                        className="text-sm text-[#E37915] hover:underline font-medium"
+                      >
+                        Clear filter
+                      </button>
+                    )}
+                  </div>
+
+                  <Button
+                    variant="primaryWhite"
+                    className={`flex items-center gap-x-2 ${employees.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                    onButtonClick={() => setShowExportModal(true)}
+                    disabled={employees.length === 0}
+                  >
+                    Export bonus
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -603,7 +652,7 @@ const Bonus = () => {
               className="overflow-x-auto relative z-0"
               style={{ overflowY: "visible" }}
             >
-              <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
+              <table className="w-full min-w-[1600px] border-b border-[#E3E3E5]">
                 <thead className="bg-[#F7F7F7]">
                   <tr>
                     <th className="px-6 py-[14px] w-[40px]">
@@ -633,9 +682,13 @@ const Bonus = () => {
                         </span>
                       </p>
                     </th>
+
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                       <p className="flex gap-x-1 cursor-pointer items-center">
-                        Reason
+                        Bonus (Naira)
+                        <span>
+                          <IoMdInformationCircle fill="#71717A" size={16} />
+                        </span>
                       </p>
                     </th>
 
@@ -645,6 +698,12 @@ const Bonus = () => {
                         <span>
                           <IoMdInformationCircle fill="#71717A" size={16} />
                         </span>
+                      </p>
+                    </th>
+
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                      <p className="flex gap-x-1 cursor-pointer items-center">
+                        Bonus Type
                       </p>
                     </th>
 
@@ -662,6 +721,11 @@ const Bonus = () => {
                         <span>
                           <IoMdInformationCircle fill="#71717A" size={16} />
                         </span>
+                      </p>
+                    </th>
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                      <p className="flex gap-x-1 cursor-pointer items-center">
+                        Reason
                       </p>
                     </th>
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
@@ -727,11 +791,17 @@ const Bonus = () => {
                             <span
                               className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
                             >
-                              ₦ {emp?.amount}
+                              {emp?.pay_deno === "Dollars"
+                                ? `$ ${emp?.amount}`
+                                : `₦ ${emp?.amount}`}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                            {emp?.reason}
+                          <td className="px-6 py-4">
+                            <span
+                              className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
+                            >
+                              ₦ {emp?.naira_amount}
+                            </span>
                           </td>
 
                           <td className="px-6 py-4 text-sm">
@@ -746,6 +816,10 @@ const Bonus = () => {
                             )}
                           </td>
 
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            {emp?.bonus_type || "—"}
+                          </td>
+
                           <td className="px-6 py-4 text-sm">
                             {emp?.approved ? (
                               <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
@@ -757,18 +831,24 @@ const Bonus = () => {
                               </span>
                             )}
                           </td>
+
                           <td className="px-6 py-4 text-sm text-[#2F2F33]">
                             {emp?.created || "—"}
                           </td>
                           <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                            {emp?.reason}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
                             {emp?.date_paid || "—"}
                           </td>
+
                           <td className="px-6 py-4 text-sm text-[#2F2F33]">
                             <div className="relative inline-block">
                               <button
                                 onClick={(e) => {
                                   const isOpen = actionMenuIndex === i;
                                   setActionMenuIndex(isOpen ? null : i);
+                                  setBonusType(emp?.bonus_type);
 
                                   if (isOpen) {
                                     setActionMenuPosition(null);
@@ -838,7 +918,15 @@ const Bonus = () => {
                   onClick={() => {
                     const emp = employees[actionMenuIndex];
                     if (!emp) return;
-                    setShownonpayslipModal(true);
+
+                    if (bonusType === "fixed") {
+                      setShowFixedBonusModal(true);
+                    } else if (bonusType === "client") {
+                      setShownonpayslipModal(true);
+                    } else {
+                      setShowPayslipModal(true);
+                    }
+
                     setEmployeeDetails((prev) => ({
                       ...prev,
                       id: emp?.id,

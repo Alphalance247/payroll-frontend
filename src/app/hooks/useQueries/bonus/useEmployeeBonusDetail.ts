@@ -9,6 +9,7 @@ interface dataType {
     approved: string;
     approved_by: string;
     date_paid: string;
+    pay_deno: string;
     employee: {
       fullname: string;
       id: string;
@@ -21,7 +22,7 @@ interface dataType {
 
 const fetchEmployeeBonusDetail = async (id: string | number) => {
   const res = await axiosInstance.get<dataType | null>(
-    `/employees/bonuses/bonus/${id}`
+    `/employees/bonuses/bonus/${id}`,
   );
 
   return res.data;
