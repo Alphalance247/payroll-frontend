@@ -30,15 +30,15 @@ const MultipleDisburseModal = ({
         `/employees/bonuses/disburse-multiple-bonuses/`,
         {
           bonus_ids: bonusIds,
-        }
+        },
       );
 
       if (res.status === 200 || res.status === 201) {
         toast.success(
           res?.data?.message ||
-            "Bonus disbursed successfully to selected employees"
+            "Bonus disbursed successfully to selected employees",
         );
-        refetch();
+        await refetch();
         onSuccess?.();
         onModalClose();
       }

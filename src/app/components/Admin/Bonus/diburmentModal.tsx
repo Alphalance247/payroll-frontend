@@ -29,15 +29,15 @@ const DisbursementModal = ({
       setIsLoading(true);
 
       const res = await axiosInstance.post(
-        `employees/bonuses/bonus/${id}/disburse`
+        `employees/bonuses/bonus/${id}/disburse`,
       );
 
       if (res.status === 200 || res.status === 201) {
         toast.success(
-          res?.data?.message || "Bonus disbursed to employee successfully"
+          res?.data?.message || "Bonus disbursed to employee successfully",
         );
+        await refetch();
         onModalClose();
-        refetch();
       }
 
       setIsLoading(false);

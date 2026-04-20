@@ -40,7 +40,7 @@ const NonPayslipModal = ({
     event:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLSelectElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -75,7 +75,7 @@ const NonPayslipModal = ({
         approved: dataDetails?.data?.approved ? "approve" : "pending",
         amount:
           dataDetails?.data?.amount != null
-            ? String(dataDetails?.data?.amount).replace(/[^0-9]/g, "")
+            ? String(dataDetails?.data?.amount)
             : "",
       }));
       setEmployeeId(employeeIdFromDetails);
@@ -138,7 +138,8 @@ const NonPayslipModal = ({
         if (res.status === 200 || res.status === 201) {
           toast.success(res?.data?.message || "Bonus added successfully");
           // Refresh loan details after loan request
-          refetch();
+          await refetch();
+          onModalClose();
         }
         setForm((prev) => ({
           ...prev,
@@ -241,7 +242,11 @@ const NonPayslipModal = ({
                       id="amount"
                       placeholder="₦0"
                       name="amount"
-                      value={formatNaira(form?.amount || "")}
+                      value={
+                        btnType === "edit"
+                          ? form?.amount
+                          : formatNaira(form?.amount || "")
+                      }
                       onChange={handleAmountChange}
                       className="pl-2"
                     />
