@@ -22,7 +22,9 @@ const TimeTracking = ({
   onFetch,
 }: TimeTrackingProps) => {
   const { data: teamHoursLoggedData } = getTeamHoursLogged();
-  const [selectedTeam, setSelectedTeam] = useState("Development");
+  const [selectedTeam, setSelectedTeam] = useState(
+    teamHoursLoggedData?.employee_data?.[0]?.team_name || "",
+  );
 
   const data = [
     {
@@ -91,7 +93,7 @@ const TimeTracking = ({
             selectedValue={selectedTeam}
             options={
               teamHoursLoggedData?.employee_data?.map(
-                (team) => team?.team_name
+                (team) => team?.team_name,
               ) || []
             }
             isSubTextAvailable={false}

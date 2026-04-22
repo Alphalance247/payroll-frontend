@@ -6,8 +6,9 @@ import { ChevronDown, Search } from "lucide-react";
 import Button from "@/app/common/Button";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import toast from "react-hot-toast";
-import { useBonusBreakdown } from "../../../hooks/useQueries/bonus/useBonusBreakdown";
 import axiosInstance from "@/app/utils/axios";
+import OverviewCard from "@/app/common/employee-dashboard/common/overviewCard";
+import { useQuarterlyBonus } from "@/app/hooks/useQueries/bonus/useQuarterlyBonus";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -30,13 +31,6 @@ const teamOptions = [
   { value: "sales", label: "Sales" },
 ];
 
-// Bonus type options
-const bonusTypeOptions = [
-  { value: "", label: "All Types" },
-  { value: "client", label: "Client" },
-  { value: "non-client", label: "Non-Client" },
-];
-
 const MonthlyBonus = () => {
   const [tableFilters, setTableFilters] = useState({
     search: "",
@@ -44,14 +38,12 @@ const MonthlyBonus = () => {
     team: "",
   });
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<number[]>([]);
-  const [statusUpdateIndex, setStatusUpdateIndex] = useState<number | null>(
-    null,
-  );
-  const [statusDropdownPosition, setStatusDropdownPosition] = useState<{
+  const [actionIndex, setActionIndex] = useState<number | null>(null);
+  const [actionDropdownPosition, setActionDropdownPosition] = useState<{
     top: number;
     left: number;
   } | null>(null);
-  const [bulkStatusDropdown, setBulkStatusDropdown] = useState(false);
+  const [bulkActionDropdown, setBulkActionDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -65,21 +57,20 @@ const MonthlyBonus = () => {
           ?.closest("button")
           ?.classList.contains("action-button")
       ) {
-        setStatusUpdateIndex(null);
-        setStatusDropdownPosition(null);
+        setActionIndex(null);
+        setActionDropdownPosition(null);
       }
     };
 
-    if (statusUpdateIndex !== null) {
+    if (actionIndex !== null) {
       document.addEventListener("mousedown", handleClickOutside);
       return () => {
         document.removeEventListener("mousedown", handleClickOutside);
       };
     }
-  }, [statusUpdateIndex]);
+  }, [actionIndex]);
 
-  // Fetch bonus breakdown data
-  const { data: bonusData, isLoading, error, refetch } = useBonusBreakdown();
+  const { data: bonusData, isLoading, error, refetch } = useQuarterlyBonus();
 
   // Transform API data to employee table format
   const employeeData = useMemo(() => {
@@ -89,10 +80,6 @@ const MonthlyBonus = () => {
       id: bonus.id,
       sn: index + 1,
       name: bonus.employee.fullname || "Unknown Employee",
-      clientHours: bonus.client_hours.toString(),
-      nonClientHours: bonus.non_client_hours.toString(),
-      clientBonus: bonus.client_bonus_str,
-      nonClientBonus: bonus.non_client_bonus_str,
       // Use approved_state for status (pending, approved, rejected)
       status: (bonus.approved_state.charAt(0).toUpperCase() +
         bonus.approved_state.slice(1)) as "Pending" | "Approved" | "Rejected",
@@ -105,14 +92,8 @@ const MonthlyBonus = () => {
     const matchesSearch = employee.name
       .toLowerCase()
       .includes(tableFilters.search.toLowerCase());
-    const matchesBonusType =
-      tableFilters.bonusType === "" ||
-      (tableFilters.bonusType === "client" && employee.clientHours !== "0") ||
-      (tableFilters.bonusType === "non-client" &&
-        employee.nonClientHours !== "0");
-    const matchesTeam = tableFilters.team === "";
 
-    return matchesSearch && matchesBonusType && matchesTeam;
+    return matchesSearch;
   });
 
   const isAllSelected =
@@ -142,8 +123,8 @@ const MonthlyBonus = () => {
       setLoading(true);
       const ids =
         employeeIds ||
-        (statusUpdateIndex !== null && employeeData[statusUpdateIndex]
-          ? [employeeData[statusUpdateIndex].id]
+        (actionIndex !== null && employeeData[actionIndex]
+          ? [employeeData[actionIndex].id]
           : []);
 
       if (ids.length === 0) {
@@ -177,9 +158,9 @@ const MonthlyBonus = () => {
       // Refetch the data to get updated statuses
       await refetch();
 
-      setStatusUpdateIndex(null);
-      setStatusDropdownPosition(null);
-      setBulkStatusDropdown(false);
+      setActionIndex(null);
+      setActionDropdownPosition(null);
+      setBulkActionDropdown(false);
       setSelectedEmployeeIds([]);
       setLoading(false);
     } catch (err) {
@@ -188,6 +169,86 @@ const MonthlyBonus = () => {
       console.log(err);
     }
   };
+
+  const handleDisbursement = async (employeeIds?: number[]) => {
+    try {
+      setLoading(true);
+      const ids =
+        employeeIds ||
+        (actionIndex !== null && employeeData[actionIndex]
+          ? [employeeData[actionIndex].id]
+          : []);
+
+      if (ids.length === 0) {
+        toast.error("No employee selected");
+        setLoading(false);
+        return;
+      }
+
+      // Validate all selected bonuses are approved
+      const selectedBonuses = employeeData.filter((emp) =>
+        ids.includes(emp.id),
+      );
+
+      const allApproved = selectedBonuses.every(
+        (bonus) => bonus.status === "Approved",
+      );
+
+      if (!allApproved) {
+        toast.error("Only approved bonuses can be disbursed");
+        setLoading(false);
+        return;
+      }
+
+      // Make PATCH requests for each bonus to mark as paid
+      const disbursePromises = ids.map((bonusId) =>
+        axiosInstance.patch(`/employees/bonuses/bonus/${bonusId}`, {
+          paid: true,
+        }),
+      );
+
+      await Promise.all(disbursePromises);
+
+      toast.success(`Disbursement processed for ${ids.length} bonus(es)`);
+
+      // Refetch the data to get updated disbursement status
+      await refetch();
+
+      setActionIndex(null);
+      setActionDropdownPosition(null);
+      setBulkActionDropdown(false);
+      setSelectedEmployeeIds([]);
+      setLoading(false);
+    } catch (err) {
+      toast.error("Failed to process disbursement");
+      setLoading(false);
+      console.log(err);
+    }
+  };
+
+  // Check if any selected employees are approved
+  const anyApprovedSelected = selectedEmployeeIds.some((id) => {
+    const employee = employeeData.find((emp) => emp.id === id);
+    return employee?.status === "Approved";
+  });
+
+  const cardData = [
+    {
+      label: "Total Amount",
+      value: bonusData?.total_amount.toLocaleString() || "0",
+      icon: "/assets/payroll/1.svg",
+    },
+    {
+      label: "Total Employees",
+      value: bonusData?.data.length.toString() || "0",
+      icon: "/assets/payroll/2.svg",
+    },
+    {
+      label: "Quarter",
+      value: "0",
+      icon: "/assets/payroll/3.svg",
+    },
+  ];
 
   return (
     <ProtectedRoute>
@@ -216,7 +277,7 @@ const MonthlyBonus = () => {
           {!isLoading && !error && (
             <>
               <div className=" flex justify-between items-center ">
-                <div className="mb-8">
+                <div className="mb-0">
                   <h2 className="text-[28px] text-[#2F2F33] font-semibold tracking-[-0.5px] mb-2">
                     Quarterly Bonus
                   </h2>
@@ -226,6 +287,16 @@ const MonthlyBonus = () => {
                     eligibility.
                   </p>
                 </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 mb-8">
+                {cardData.map((card, index) => (
+                  <OverviewCard
+                    key={index}
+                    image={card?.icon}
+                    label={card?.label}
+                    value={card?.value}
+                  />
+                ))}
               </div>
 
               {/* Employee Bonus Details Table Section */}
@@ -255,28 +326,6 @@ const MonthlyBonus = () => {
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
                     </div>
 
-                    {/* Bonus Type Filter */}
-                    <div className="relative w-full md:w-[200px]">
-                      <select
-                        value={tableFilters.bonusType}
-                        onChange={(e) =>
-                          setTableFilters({
-                            ...tableFilters,
-                            bonusType: e.target.value,
-                          })
-                        }
-                        className="appearance-none w-full px-4 py-2 border border-[#E3E3E5] rounded-lg bg-white text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] cursor-pointer"
-                      >
-                        {bonusTypeOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#71717A] pointer-events-none" />
-                    </div>
-
-                    {/* Team Filter */}
                     <div className="relative w-full md:w-[200px]">
                       <select
                         value={tableFilters.team}
@@ -299,7 +348,7 @@ const MonthlyBonus = () => {
 
                     {/* Bulk Action Toolbar */}
                     {selectedEmployeeIds.length > 0 && (
-                      <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                      <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 flex-wrap">
                         <span className="text-xs font-medium text-blue-700">
                           {selectedEmployeeIds.length} selected
                         </span>
@@ -308,12 +357,12 @@ const MonthlyBonus = () => {
                             variant="primaryWhite"
                             className="text-xs py-1 px-2"
                             onButtonClick={() =>
-                              setBulkStatusDropdown(!bulkStatusDropdown)
+                              setBulkActionDropdown(!bulkActionDropdown)
                             }
                           >
                             Update Status
                           </Button>
-                          {bulkStatusDropdown && (
+                          {bulkActionDropdown && (
                             <div className="absolute top-full right-0 mt-2 w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden z-50">
                               <button
                                 onClick={() =>
@@ -357,6 +406,21 @@ const MonthlyBonus = () => {
                         <Button
                           variant="primaryWhite"
                           className="text-xs py-1 px-2"
+                          onButtonClick={() =>
+                            handleDisbursement(selectedEmployeeIds)
+                          }
+                          disabled={loading || !anyApprovedSelected}
+                          // title={
+                          //   anyApprovedSelected
+                          //     ? "Disburse approved bonuses"
+                          //     : "Select approved bonuses to disburse"
+                          // }
+                        >
+                          Disburse
+                        </Button>
+                        <Button
+                          variant="primaryWhite"
+                          className="text-xs py-1 px-2"
                           onButtonClick={() => setSelectedEmployeeIds([])}
                         >
                           Clear
@@ -394,9 +458,7 @@ const MonthlyBonus = () => {
                           <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
                             Quarter
                           </th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                            Non-Client Bonus
-                          </th>
+
                           <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
                             Status
                           </th>
@@ -436,18 +498,7 @@ const MonthlyBonus = () => {
                                 <td className="px-6 py-4 text-sm text-[#2F2F33] font-medium">
                                   {employee.name}
                                 </td>
-                                <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                                  {employee.clientHours}h
-                                </td>
-                                <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                                  {employee.nonClientHours}h
-                                </td>
-                                <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                                  {employee.clientBonus}
-                                </td>
-                                <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                                  {employee.nonClientBonus}
-                                </td>
+
                                 <td className="px-6 py-4 text-sm">
                                   <span
                                     className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
@@ -463,13 +514,10 @@ const MonthlyBonus = () => {
                                 <td className="px-6 py-4 text-sm text-[#2F2F33] relative">
                                   <button
                                     onClick={(e) => {
-                                      const isOpen =
-                                        statusUpdateIndex === index;
-                                      setStatusUpdateIndex(
-                                        isOpen ? null : index,
-                                      );
+                                      const isOpen = actionIndex === index;
+                                      setActionIndex(isOpen ? null : index);
                                       if (isOpen) {
-                                        setStatusDropdownPosition(null);
+                                        setActionDropdownPosition(null);
                                         return;
                                       }
                                       const rect = (
@@ -478,7 +526,7 @@ const MonthlyBonus = () => {
 
                                       // Calculate dropdown position with viewport awareness
                                       const dropdownWidth = 160;
-                                      const dropdownHeight = 150; // approximate height
+                                      const dropdownHeight = 180; // approximate height
                                       let top =
                                         rect.bottom + window.scrollY + 8;
                                       let left =
@@ -510,7 +558,7 @@ const MonthlyBonus = () => {
                                           8;
                                       }
 
-                                      setStatusDropdownPosition({
+                                      setActionDropdownPosition({
                                         top,
                                         left,
                                       });
@@ -521,42 +569,71 @@ const MonthlyBonus = () => {
                                     <BsThreeDotsVertical />
                                   </button>
 
-                                  {statusUpdateIndex === index &&
-                                    statusDropdownPosition && (
+                                  {actionIndex === index &&
+                                    actionDropdownPosition && (
                                       <div
                                         ref={dropdownRef}
-                                        className="fixed z-[1200] w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg"
+                                        className="fixed z-[1200] w-40 bg-white border border-[#E3E3E5] shadow-lg rounded-lg overflow-hidden"
                                         style={{
-                                          top: statusDropdownPosition.top,
-                                          left: statusDropdownPosition.left,
+                                          top: actionDropdownPosition.top,
+                                          left: actionDropdownPosition.left,
                                         }}
                                       >
+                                        {/* Status Update Section */}
+                                        <div className="border-b border-[#E3E3E5]">
+                                          <p className="px-4 py-2 text-xs font-semibold text-[#71717A] bg-[#F7F7F7]">
+                                            Change Status
+                                          </p>
+                                          <button
+                                            onClick={() => {
+                                              handleStatusUpdate("Pending");
+                                            }}
+                                            disabled={loading}
+                                            className="w-full text-left px-4 py-2 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] disabled:opacity-50"
+                                          >
+                                            Pending
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              handleStatusUpdate("Approved");
+                                            }}
+                                            disabled={loading}
+                                            className="w-full text-left px-4 py-2 text-sm hover:bg-[#FCF2E8] text-green-600 border-t border-[#E3E3E5] disabled:opacity-50 font-medium"
+                                          >
+                                            Approved
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              handleStatusUpdate("Rejected");
+                                            }}
+                                            disabled={loading}
+                                            className="w-full text-left px-4 py-2 text-sm hover:bg-[#FCF2E8] text-red-600 border-t border-[#E3E3E5] disabled:opacity-50"
+                                          >
+                                            Rejected
+                                          </button>
+                                        </div>
+
+                                        {/* Disbursement Section */}
                                         <button
-                                          onClick={() =>
-                                            handleStatusUpdate("Pending")
+                                          onClick={() => {
+                                            handleDisbursement();
+                                          }}
+                                          disabled={
+                                            loading ||
+                                            employee.status !== "Approved"
                                           }
-                                          disabled={loading}
-                                          className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] disabled:opacity-50"
-                                        >
-                                          Pending
-                                        </button>
-                                        <button
-                                          onClick={() =>
-                                            handleStatusUpdate("Approved")
+                                          title={
+                                            employee.status !== "Approved"
+                                              ? "Only approved bonuses can be disbursed"
+                                              : "Process disbursement"
                                           }
-                                          disabled={loading}
-                                          className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-[#2F2F33] border-t border-[#E3E3E5] disabled:opacity-50"
+                                          className={`w-full text-left px-4 py-3 text-sm font-medium border-t border-[#E3E3E5] ${
+                                            employee.status === "Approved"
+                                              ? "hover:bg-[#FCF2E8] text-[#E37915] disabled:opacity-50"
+                                              : "text-[#71717A] bg-[#F7F7F7] cursor-not-allowed opacity-50"
+                                          }`}
                                         >
-                                          Approved
-                                        </button>
-                                        <button
-                                          onClick={() =>
-                                            handleStatusUpdate("Rejected")
-                                          }
-                                          disabled={loading}
-                                          className="w-full text-left px-4 py-3 text-sm hover:bg-[#FCF2E8] text-red-600 border-t border-[#E3E3E5] disabled:opacity-50"
-                                        >
-                                          Rejected
+                                          💰 Disburse Bonus
                                         </button>
                                       </div>
                                     )}
@@ -568,7 +645,7 @@ const MonthlyBonus = () => {
                           <tr>
                             <td colSpan={10} className="px-6 py-8 text-center">
                               <p className="text-[#71717A]">
-                                No employees found matching your filters.
+                                No employees added to the bonus list yet
                               </p>
                             </td>
                           </tr>

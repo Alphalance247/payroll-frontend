@@ -1,11 +1,8 @@
 "use client";
-import Button from "@/app/common/Button";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Search } from "lucide-react";
-import { useState } from "react";
 import { getAdminTimesheet } from "@/stores/admin-dashboard/timesheet/time-sheet";
-import StartEndDate from "../common/startEndDate";
 import Spinner from "@/app/common/spinner";
 import ErrorFetch from "@/app/common/errorFetch";
 import { useFilter } from "@/app/hooks/useFilter";
@@ -13,18 +10,18 @@ import { useFilter } from "@/app/hooks/useFilter";
 const EmpoyeeTimeSheet = () => {
   // const [searchQuery, setSearchQuery] = useState("");
   const { data, fetchAdminTimesheet, loading, error } = getAdminTimesheet();
-  const [start_date, setStartDate] = useState("");
-  const [end_date, setEndDate] = useState("");
+  // const [start_date, setStartDate] = useState("");
+  // const [end_date, setEndDate] = useState("");
 
   const { filteredData, setSearchQuery, searchQuery } = useFilter(
     data?.current_week_data || [],
-    ["name"]
+    ["name"],
   );
 
   return (
     <section className="mt-6">
       <div className="flex justify-between items-center mb-10">
-        <div className="flex gap-x-3 items-center">
+        {/* <div className="flex gap-x-3 items-center">
           <div>
             <StartEndDate
               start_date={start_date}
@@ -45,7 +42,7 @@ const EmpoyeeTimeSheet = () => {
               This week
             </Button>
           </div>
-        </div>
+        </div> */}
         {/* <div className="flex gap-x-2 items-center">
           <Button variant="secondary" className="flex items-center gap-x-2">
             {" "}

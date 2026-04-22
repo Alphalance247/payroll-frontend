@@ -67,6 +67,16 @@ const FixedBonusModal = ({
     fetchDenomination();
   }, []);
 
+  const { data: dataDetails, refetch: refetchBonusDetail } =
+    useEmployeeBonusDetail({ id: id });
+
+  // Refetch bonus details when modal opens (edit mode)
+  useEffect(() => {
+    if (id && btnType === "edit" && refetchBonusDetail) {
+      refetchBonusDetail();
+    }
+  }, [id, btnType, refetchBonusDetail]);
+
   const handleChange = (
     event:
       | React.ChangeEvent<HTMLInputElement>
@@ -76,8 +86,6 @@ const FixedBonusModal = ({
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
-
-  const { data: dataDetails } = useEmployeeBonusDetail({ id: id });
 
   const {
     data,
@@ -103,7 +111,9 @@ const FixedBonusModal = ({
         pay_deno: dataDetails?.data?.pay_deno === "Dollars" ? "1" : "2",
         amount:
           dataDetails?.data?.amount != null
-            ? String(dataDetails?.data?.amount)
+            ? String(
+                Number(String(dataDetails?.data?.amount).replace(/,/g, "")),
+              )
             : "",
       }));
     } else {

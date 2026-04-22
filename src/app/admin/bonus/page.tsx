@@ -28,6 +28,8 @@ const Bonus = () => {
   const [filterMonth, setFilterMonth] = useState("");
   const [isBonusMenuOpen, setIsBonusMenuOpen] = useState(false);
   const bonusMenuRef = useRef<HTMLDivElement | null>(null);
+  const [isBonusViewMenuOpen, setIsBonusViewMenuOpen] = useState(false);
+  const bonusViewMenuRef = useRef<HTMLDivElement | null>(null);
   const [showPaySlipModal, setShowPayslipModal] = useState(false);
   const [showNonPaySlipModal, setShownonpayslipModal] = useState(false);
   const [showFixedBonusModal, setShowFixedBonusModal] = useState(false);
@@ -79,6 +81,13 @@ const Bonus = () => {
         !bonusMenuRef.current.contains(event.target as Node)
       ) {
         setIsBonusMenuOpen(false);
+      }
+
+      if (
+        bonusViewMenuRef.current &&
+        !bonusViewMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsBonusViewMenuOpen(false);
       }
 
       const targetNode = event.target as Node;
@@ -232,7 +241,10 @@ const Bonus = () => {
           {showFixedBonusModal && (
             <FixedBonusModal
               refetch={refetch}
-              onModalClose={() => setShowFixedBonusModal(false)}
+              onModalClose={() => {
+                setShowFixedBonusModal(false);
+                refetch();
+              }}
               id={employeeDetails?.id}
               btnType={btnType}
             />
@@ -373,9 +385,66 @@ const Bonus = () => {
           )}
 
           <div className="flex items-center gap-x-4">
-            <Link href="/admin/bonus-breakdown">
-              <Button>Bonus Breakdown</Button>
-            </Link>
+            <div className="relative flex z-30" ref={bonusViewMenuRef}>
+              <Button
+                className="flex items-center gap-x-2 shadow-sm hover:shadow-md transition-shadow"
+                variant="primary"
+                onButtonClick={() => setIsBonusViewMenuOpen((prev) => !prev)}
+              >
+                View Bonus
+                <span
+                  className={`transition-transform text-xs ${
+                    isBonusViewMenuOpen ? "rotate-180" : ""
+                  }`}
+                >
+                  ▼
+                </span>
+              </Button>
+
+              {isBonusViewMenuOpen && (
+                <div className="absolute right-0 top-12 w-56 bg-white border border-[#E3E3E5] shadow-2xl rounded-xl overflow-hidden animate-fadeIn z-50">
+                  <div className="bg-gradient-to-r from-[#FCF2E8] via-white to-white px-4 py-3 border-b border-[#F1F1F2]">
+                    <p className="text-xs uppercase tracking-wide text-[#A1A1A6] font-semibold">
+                      Select View
+                    </p>
+                  </div>
+                  <div className="p-3 flex flex-col gap-2">
+                    <Link href="/admin/bonus-breakdown">
+                      <button
+                        className="flex items-center justify-between w-full px-3 py-3 rounded-lg border border-transparent hover:border-[#E37915] hover:bg-[#FCF2E8] transition-colors text-left"
+                        onClick={() => setIsBonusViewMenuOpen(false)}
+                      >
+                        <div>
+                          <p className="text-sm font-semibold text-[#2F2F33]">
+                            Bonus Breakdown
+                          </p>
+                          <p className="text-xs text-[#71717A]">
+                            View detailed bonus breakdown by quarter
+                          </p>
+                        </div>
+                        <span className="text-[#E37915] font-semibold">→</span>
+                      </button>
+                    </Link>
+                    <Link href="/admin/bonus/quarterly-bonus">
+                      <button
+                        className="flex items-center justify-between w-full px-3 py-3 rounded-lg border border-transparent hover:border-[#E37915] hover:bg-[#FCF2E8] transition-colors text-left"
+                        onClick={() => setIsBonusViewMenuOpen(false)}
+                      >
+                        <div>
+                          <p className="text-sm font-semibold text-[#2F2F33]">
+                            Quarterly Bonus
+                          </p>
+                          <p className="text-xs text-[#71717A]">
+                            Manage quarterly bonus approvals and disbursements
+                          </p>
+                        </div>
+                        <span className="text-[#E37915] font-semibold">→</span>
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="relative flex gap-x-2 z-30" ref={bonusMenuRef}>
               <Button
