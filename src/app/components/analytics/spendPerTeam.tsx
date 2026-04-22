@@ -7,8 +7,10 @@ import { useState } from "react";
 import { getPayrollAnalysis } from "@/stores/getPayrollAnalysis";
 
 const SpendPerTeam = () => {
-  const [selectedTeam, setSelectedTeam] = useState("Development");
   const { data } = getPayrollAnalysis();
+  const [selectedTeam, setSelectedTeam] = useState(
+    data?.Teams[0]?.team_name || "",
+  );
   return (
     <section className="mt-8">
       <div className="border border-[#d9d9d9] rounded-lg">

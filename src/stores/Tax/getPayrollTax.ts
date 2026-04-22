@@ -14,6 +14,7 @@ interface payrollTaxDataStore {
       };
     };
   }[];
+  total_monthly_tax: number;
 }
 
 interface payrollTaxStore {

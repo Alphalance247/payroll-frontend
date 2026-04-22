@@ -69,13 +69,6 @@ const Tax = () => {
                   onChange={(e) => setSelectedYear(e.target.value)}
                 >
                   <option value="">Select year</option>
-                  <option value="2005">2005</option>
-                  <option value="2006">2006</option>
-                  <option value="2007">2007</option>
-                  <option value="2020">2020</option>
-                  <option value="2021">2021</option>
-                  <option value="2022">2022</option>
-                  <option value="2023">2023</option>
                   <option value="2024">2024</option>
                   <option value="2025">2025</option>
                   <option value="2026">2026</option>
@@ -157,110 +150,124 @@ const Tax = () => {
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
-                  <thead className="bg-[#F7F7F7]">
-                    <tr>
-                      <th className="px-6 py-[14px] text-sm font-medium w-[40px] text-[#71717A]">
-                        S/N
-                      </th>
-                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
-                        <p className="flex gap-x-1 cursor-pointer items-center">
-                          Name{" "}
-                          <span>
-                            <RiExpandUpDownFill fill="#2F2F33" size={12} />
-                          </span>
-                        </p>
-                      </th>
-                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                        <p className="flex gap-x-1 cursor-pointer items-center">
-                          Monthly Tax
-                          <span>
-                            <IoMdInformationCircle fill="#71717A" size={16} />
-                          </span>
-                        </p>
-                      </th>
-                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                        <p className="flex gap-x-1 cursor-pointer items-center">
-                          Annual Tax
-                          <span>
-                            <IoMdInformationCircle fill="#71717A" size={16} />
-                          </span>
-                        </p>
-                      </th>
-
-                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                        <p className="flex gap-x-1 cursor-pointer items-center">
-                          Remmited
-                          <span>
-                            <IoMdInformationCircle fill="#71717A" size={16} />
-                          </span>
-                        </p>
-                      </th>
-                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                        <p className="flex gap-x-1 cursor-pointer items-center">
-                          NHIS
-                          <span>
-                            <IoMdInformationCircle fill="#71717A" size={16} />
-                          </span>
-                        </p>
-                      </th>
-                    </tr>
-                  </thead>
-                  {payrollTax?.data?.length === 0 ? (
-                    <tbody>
+              <>
+                {payrollTax?.data && payrollTax.data.length > 0 && (
+                  <div className="px-6 py-4 bg-blue-50 border-b border-[#E3E3E5] rounded-t-lg">
+                    <div className="flex items-center gap-x-4">
+                      <span className="text-sm font-medium text-[#2F2F33]">
+                        Total Monthly Tax:
+                      </span>
+                      <span className="text-xl font-bold text-[#E37915]">
+                        ₦ {payrollTax.total_monthly_tax.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
+                    <thead className="bg-[#F7F7F7]">
                       <tr>
-                        <td colSpan={6} className="text-center py-8">
-                          No Details found for the selected month
-                        </td>
-                      </tr>
-                    </tbody>
-                  ) : (
-                    <tbody>
-                      {payrollTax?.data?.map((emp, i) => (
-                        <tr
-                          key={i}
-                          className="border-b border-[#E3E3E5] last:border-b-0"
-                        >
-                          <td className="px-6 py-4">{i + 1}</td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                                {emp?.payslip?.employee?.fullname
-                                  .split(" ")
-                                  .map((n) => n[0])
-                                  .join("")}
-                              </div>
-                              <span className="text-[#2F2F33] text-sm font-medium">
-                                {emp?.payslip?.employee?.fullname}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
-                            >
-                              ₦ {emp.tax_amount_monthly.toLocaleString()}
+                        <th className="px-6 py-[14px] text-sm font-medium w-[40px] text-[#71717A]">
+                          S/N
+                        </th>
+                        <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
+                          <p className="flex gap-x-1 cursor-pointer items-center">
+                            Name{" "}
+                            <span>
+                              <RiExpandUpDownFill fill="#2F2F33" size={12} />
                             </span>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                            ₦ {emp.tax_amount_yearly.toLocaleString()}
-                          </td>
+                          </p>
+                        </th>
+                        <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                          <p className="flex gap-x-1 cursor-pointer items-center">
+                            Monthly Tax
+                            <span>
+                              <IoMdInformationCircle fill="#71717A" size={16} />
+                            </span>
+                          </p>
+                        </th>
+                        <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                          <p className="flex gap-x-1 cursor-pointer items-center">
+                            Annual Tax
+                            <span>
+                              <IoMdInformationCircle fill="#71717A" size={16} />
+                            </span>
+                          </p>
+                        </th>
 
-                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                            {" "}
-                            {emp.remmited ? "Yes" : "No"}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                            {" "}
-                            ₦ 0
+                        <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                          <p className="flex gap-x-1 cursor-pointer items-center">
+                            Remmited
+                            <span>
+                              <IoMdInformationCircle fill="#71717A" size={16} />
+                            </span>
+                          </p>
+                        </th>
+                        <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                          <p className="flex gap-x-1 cursor-pointer items-center">
+                            NHIS
+                            <span>
+                              <IoMdInformationCircle fill="#71717A" size={16} />
+                            </span>
+                          </p>
+                        </th>
+                      </tr>
+                    </thead>
+                    {payrollTax?.data?.length === 0 ? (
+                      <tbody>
+                        <tr>
+                          <td colSpan={6} className="text-center py-8">
+                            No Details found for the selected month
                           </td>
                         </tr>
-                      ))}
-                    </tbody>
-                  )}
-                </table>
-              </div>
+                      </tbody>
+                    ) : (
+                      <tbody>
+                        {payrollTax?.data?.map((emp, i) => (
+                          <tr
+                            key={i}
+                            className="border-b border-[#E3E3E5] last:border-b-0"
+                          >
+                            <td className="px-6 py-4">{i + 1}</td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
+                                  {emp?.payslip?.employee?.fullname
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")}
+                                </div>
+                                <span className="text-[#2F2F33] text-sm font-medium">
+                                  {emp?.payslip?.employee?.fullname}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span
+                                className={`inline-block px-3 py-1 text-xs text-[#000000] font-medium`}
+                              >
+                                ₦ {emp.tax_amount_monthly.toLocaleString()}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                              ₦ {emp.tax_amount_yearly.toLocaleString()}
+                            </td>
+
+                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                              {" "}
+                              {emp.remmited ? "Yes" : "No"}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                              {" "}
+                              ₦ 0
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    )}
+                  </table>
+                </div>{" "}
+              </>
             )}
           </div>
         </div>

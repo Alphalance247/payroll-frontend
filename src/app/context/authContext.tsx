@@ -70,7 +70,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoggingOut(true);
       // Add a small delay to show the loading state
       await new Promise((resolve) => setTimeout(resolve, 3000));
-
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
       localStorage.removeItem("user");

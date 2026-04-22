@@ -28,7 +28,7 @@ const Login = () => {
       const { name, value } = event.target;
       setUserData((prev) => ({ ...prev, [name]: value }));
     },
-    []
+    [],
   );
 
   const handleSubmit = useCallback(
@@ -38,7 +38,7 @@ const Login = () => {
       try {
         const response = await axios.post(
           `${environment?.baseUrl}/account/login/token`,
-          userData
+          userData,
         );
 
         if (response.status >= 200 && response.status < 300) {
@@ -48,12 +48,11 @@ const Login = () => {
           // Store the tokens
           localStorage.setItem("access", access);
           localStorage.setItem("refresh", refresh);
-
           // Use the login function from auth context
           login({ email, fullname, is_payroll_staff, uid });
 
           toast.success(
-            response?.data?.statusmessage || "Login successful Redirecting..."
+            response?.data?.statusmessage || "Login successful Redirecting...",
           );
 
           setUserData({ email: "", password: "" });
@@ -72,7 +71,7 @@ const Login = () => {
             } else {
               if (decodedRedirectPath.startsWith("/admin")) {
                 toast.error(
-                  "Access denied. Redirecting to employee dashboard."
+                  "Access denied. Redirecting to employee dashboard.",
                 );
                 router.push("/employee");
               } else {
@@ -101,7 +100,7 @@ const Login = () => {
         setLoading(false);
       }
     },
-    [userData, router, login]
+    [userData, router, login],
   );
 
   return (
