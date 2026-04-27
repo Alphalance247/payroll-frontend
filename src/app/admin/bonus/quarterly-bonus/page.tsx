@@ -80,14 +80,14 @@ const MonthlyBonus = () => {
       id: bonus.id,
       sn: index + 1,
       name: bonus.employee.fullname || "Unknown Employee",
-      // Use approved_state for status (pending, approved, rejected)
+      amount: bonus.amount,
       status: (bonus.approved_state.charAt(0).toUpperCase() +
         bonus.approved_state.slice(1)) as "Pending" | "Approved" | "Rejected",
-      lastDisbursed: bonus.paid ? bonus.date_paid : bonus.date_approved,
+      period: bonus.period,
+      lastDisbursed: bonus.paid,
     }));
   }, [bonusData?.data]);
 
-  // Generate year options (current year and previous 5 years)
   const filteredEmployees = employeeData.filter((employee) => {
     const matchesSearch = employee.name
       .toLowerCase()
@@ -144,7 +144,7 @@ const MonthlyBonus = () => {
 
       // Make PATCH requests for each bonus
       const updatePromises = ids.map((bonusId) =>
-        axiosInstance.patch(`/employees/bonuses/bonus/${bonusId}`, {
+        axiosInstance.patch(`/employees/quarterly-bonus-split/${bonusId}`, {
           approved_state: approvedState,
         }),
       );
@@ -202,9 +202,12 @@ const MonthlyBonus = () => {
 
       // Make PATCH requests for each bonus to mark as paid
       const disbursePromises = ids.map((bonusId) =>
-        axiosInstance.patch(`/employees/bonuses/bonus/${bonusId}`, {
-          paid: true,
-        }),
+        axiosInstance.post(
+          `/employees/bonuses/disburse-quarterly-bonus/${bonusId}`,
+          {
+            paid: true,
+          },
+        ),
       );
 
       await Promise.all(disbursePromises);
@@ -460,7 +463,7 @@ const MonthlyBonus = () => {
                           </th>
 
                           <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                            Status
+                            Approval Status
                           </th>
                           <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
                             Last Disbursed
@@ -495,8 +498,31 @@ const MonthlyBonus = () => {
                                 <td className="px-6 py-4 text-sm text-[#2F2F33]">
                                   {employee.sn}
                                 </td>
+
                                 <td className="px-6 py-4 text-sm text-[#2F2F33] font-medium">
                                   {employee.name}
+                                </td>
+
+                                <td className="px-6 py-4 text-sm text-[#2F2F33] font-medium">
+                                  {employee?.amount
+                                    ? `₦ ${employee?.amount.toLocaleString()}`
+                                    : "N/A"}
+                                </td>
+
+                                <td className="px-6 py-4 text-sm">
+                                  {employee?.lastDisbursed ? (
+                                    <span className="text-xs bg-[#E9F9EF] border border-[#188C43] text-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
+                                      disbursed
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs bg-[#FFF5E5] border border-[#F6A723] text-[#B76A00] rounded-2xl capitalize w-fit px-2 py-1">
+                                      not disbursed
+                                    </span>
+                                  )}
+                                </td>
+
+                                <td className="px-6 py-4 text-sm text-[#2F2F33] font-medium">
+                                  {employee?.period || "N/A"}
                                 </td>
 
                                 <td className="px-6 py-4 text-sm">
@@ -508,9 +534,7 @@ const MonthlyBonus = () => {
                                     {employee.status}
                                   </span>
                                 </td>
-                                <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                                  {employee.lastDisbursed}
-                                </td>
+
                                 <td className="px-6 py-4 text-sm text-[#2F2F33] relative">
                                   <button
                                     onClick={(e) => {

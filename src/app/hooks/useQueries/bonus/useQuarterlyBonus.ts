@@ -5,18 +5,20 @@ import { AxiosError } from "axios";
 interface QuarterlyBonusResponse {
   message: string;
   data: {
-    client_bonus: number;
     id: number;
     employee: {
       fullname: string;
       id: string;
     };
-    approved_state: string;
     paid: string;
     date_paid: string;
-    date_approved: string;
+    amount: number;
+    approved_state: string;
+    period: string;
+    approved: boolean;
   }[];
   total_amount: number;
+  quarter: string;
 }
 
 const fetchQuarterlyBonus = async (month?: string, year?: string) => {
