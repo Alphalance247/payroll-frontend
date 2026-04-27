@@ -248,7 +248,7 @@ const MonthlyBonus = () => {
     },
     {
       label: "Quarter",
-      value: "0",
+      value: bonusData?.quarter || "N/A",
       icon: "/assets/payroll/3.svg",
     },
   ];
