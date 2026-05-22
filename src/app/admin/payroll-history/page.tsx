@@ -29,7 +29,7 @@ const PayrollHistory = () => {
         `employees/reports/payment-disbursement?year=${selectedYear}`,
         {
           responseType: "blob", // Important: Tell axios to handle response as blob
-        }
+        },
       );
 
       if (res.status === 200 || res.status === 201) {

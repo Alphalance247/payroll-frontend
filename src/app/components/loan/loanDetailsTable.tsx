@@ -38,7 +38,7 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRefs.current.every(
-          (ref) => ref && !ref.contains(event.target as Node)
+          (ref) => ref && !ref.contains(event.target as Node),
         )
       ) {
         setOpenDropdown(null);
@@ -52,7 +52,7 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
   return (
     <div className="bg-white rounded-lg border border-[#E3E3E5] mt-10">
       <h2 className="text-base font-semibold py-5 pl-6 text-[#2F2F33]">
-        Pending Loan Details
+        Loan Details
       </h2>
 
       <div className="overflow-x-auto">
@@ -62,7 +62,7 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
               <th className="px-6 py-[14px] w-[40px]">
                 <input type="checkbox" className="rounded border-gray-300" />
               </th>
-              <th className="px-6 py-[14px] text-start text-sm font-medium w-[200px] text-[#71717A]">
+              <th className="px-6 py-[14px] text-start text-sm font-medium w-[20px] text-[#71717A]">
                 Request ID
               </th>
               <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[230px]">
@@ -78,6 +78,12 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
               <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                 <p className="flex gap-x-1 cursor-pointer items-center">
                   Amount
+                </p>
+              </th>
+
+              <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                <p className="flex gap-x-1 cursor-pointer items-center">
+                  Estimated Repayment Date
                 </p>
               </th>
 
@@ -105,29 +111,28 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
               {data?.data.map((emp, i) => (
                 <tr
                   key={i}
-                  className="border-b border-[#E3E3E5] last:border-b-0"
+                  className="border-b border-[#E3E3E5] last:border-b-0 cursor-pointer hover:bg-[#FAFAFA] transition-colors group"
+                  onClick={() => {
+                    fetchLoanDetails(emp?.id);
+                    setIsOpen(true);
+                  }}
                 >
-                  <td className="px-6 py-4">
+                  <td
+                    className="px-6 py-4"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <input
                       type="checkbox"
                       className="rounded border-gray-300"
                     />
                   </td>
-                  <td
-                    className="px-6 py-4 text-[#2F2F33] text-base cursor-pointer hover:underline"
-                    onClick={() => {
-                      fetchLoanDetails(emp?.id);
-                      setIsOpen(true);
-                    }}
-                  >
+                  <td className="px-6 py-4 text-[#2F2F33] text-base">
                     {emp?.id}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[#2F2F33] text-base">
-                        {emp?.employee}
-                      </span>
-                    </div>
+                    <span className="text-[#2F2F33] text-base font-medium">
+                      {emp?.employee}
+                    </span>
                   </td>
                   <td className="px-6 py-4 text-[#2F2F33] text-base">
                     {emp?.repayment_schedule}
@@ -135,43 +140,70 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
                   <td className="px-6 py-4 text-base text-[#2F2F33]">
                     ₦ {emp?.amount}
                   </td>
-
                   <td className="px-6 py-4 text-base text-[#2F2F33]">
-                    {" "}
                     {emp?.date_disburse || "N/A"}
                   </td>
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    <div className="relative">
+                  <td className="px-6 py-4 text-base text-[#2F2F33]">
+                    {emp?.date_disburse || "N/A"}
+                  </td>
+                  <td
+                    className="px-6 py-4 text-sm text-[#2F2F33]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center justify-end gap-2">
+                      {/* Explicit "View Details" button */}
                       <button
-                        onClick={() =>
-                          setOpenDropdown(openDropdown === i ? null : i)
-                        }
-                        className="p-2 hover:bg-[#F0F0F3] rounded-lg transition-colors"
+                        onClick={() => {
+                          fetchLoanDetails(emp?.id);
+                          setIsOpen(true);
+                        }}
+                        className="text-xs font-semibold text-[#CF6E13] bg-[#FCF2E8] hover:bg-[#F8E4D0] px-3 py-1.5 rounded-md transition-colors whitespace-nowrap opacity-0 group-hover:opacity-100"
                       >
-                        <BsThreeDotsVertical />
+                        View Details
                       </button>
 
-                      {/* Dropdown Menu */}
-                      {openDropdown === i && (
-                        <div
-                          ref={(el) => {
-                            dropdownRefs.current[i] = el;
-                          }}
-                          className="absolute right-0 top-0 z-50 bg-white border border-[#E3E3E5] rounded-lg shadow-md w-[180px]"
+                      {/* Three-dot menu */}
+                      <div className="relative">
+                        <button
+                          onClick={() =>
+                            setOpenDropdown(openDropdown === i ? null : i)
+                          }
+                          className="p-2 hover:bg-[#F0F0F3] rounded-lg transition-colors"
                         >
-                          <button
-                            onClick={() => {
-                              setShowCommentDrawer(true);
-                              setOpenDropdown(null);
-                              setSelectedStatus(emp?.status);
-                              setSelectedId(emp?.id);
+                          <BsThreeDotsVertical />
+                        </button>
+
+                        {openDropdown === i && (
+                          <div
+                            ref={(el) => {
+                              dropdownRefs.current[i] = el;
                             }}
-                            className="w-full text-left px-4 py-3 text-sm text-[#2F2F33] hover:bg-[#F0F0F3] transition-colors border-b border-[#E3E3E5] last:border-b-0"
+                            className="absolute right-0 top-0 z-50 bg-white border border-[#E3E3E5] rounded-lg shadow-md w-[180px]"
                           >
-                            View Comments
-                          </button>
-                        </div>
-                      )}
+                            <button
+                              onClick={() => {
+                                fetchLoanDetails(emp?.id);
+                                setIsOpen(true);
+                                setOpenDropdown(null);
+                              }}
+                              className="w-full text-left px-4 py-3 text-sm text-[#2F2F33] hover:bg-[#F0F0F3] transition-colors border-b border-[#E3E3E5]"
+                            >
+                              View Details
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowCommentDrawer(true);
+                                setOpenDropdown(null);
+                                setSelectedStatus(emp?.status);
+                                setSelectedId(emp?.id);
+                              }}
+                              className="w-full text-left px-4 py-3 text-sm text-[#2F2F33] hover:bg-[#F0F0F3] transition-colors"
+                            >
+                              View Comments
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </td>
                 </tr>

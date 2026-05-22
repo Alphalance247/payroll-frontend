@@ -3,7 +3,6 @@ import DashboardLayout from "../../common/DashBoardLayout";
 import Heading from "../../common/heading";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import DropDownBtn from "../../common/dropDownBtn";
 import { Search } from "lucide-react";
 import LoanDetailsTable from "../../components/loan/loanDetailsTable";
 import { FiRefreshCw } from "react-icons/fi";
@@ -42,11 +41,11 @@ const Loan = () => {
   }, [fetchLoanRequestList]);
 
   const [activeBtn, setActiveBtn] = useState<string>("All requests");
-  const [selectedYear, setSelectedYear] = useState("");
+  // const [selectedYear, setSelectedYear] = useState("");
 
   const { filteredData, setSearchQuery, searchQuery, setFilter } = useFilter(
     data?.data || [],
-    ["employee"]
+    ["employee"],
   );
 
   const tabs: { id: number; name: string }[] = [
@@ -60,7 +59,7 @@ const Loan = () => {
     setSearchQuery(searchQuery);
   }, [searchQuery, setSearchQuery]);
 
-  const employeeTypeOptions = ["All", "Full Time", "Intern", "Part Time"];
+  // const employeeTypeOptions = ["All", "Full Time", "Intern", "Part Time"];
 
   return (
     <ProtectedRoute>
@@ -148,14 +147,14 @@ const Loan = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
             </div>
 
-            <DropDownBtn
+            {/* <DropDownBtn
               selectedValue={selectedYear}
               btnHeight="h-fit"
               subText="Year"
               onSelectOption={setSelectedYear}
               options={employeeTypeOptions}
               placeholder="2025"
-            />
+            /> */}
           </div>
 
           {loading ? (

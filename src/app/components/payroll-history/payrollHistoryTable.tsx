@@ -5,12 +5,9 @@ import EmployeeSearch, {
   type FilterOption,
   type SortByTeam,
 } from "../../components/payroll/employeeSearch";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { usePayrollHistoryDetails } from "@/app/hooks/useQueries/payroll-history/usePayrollHistoryDetails";
 
 const PayrollHistoryTable = ({ id }: { id: string }) => {
-  const [perPage, setPerPage] = useState(10);
-  const [page, setPage] = useState(1);
   const { data } = usePayrollHistoryDetails({ id: id });
 
   // Search and filter state
@@ -19,7 +16,7 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
   const [sortByTeam, setSortByTeam] = useState<SortByTeam>("All Teams");
   const currencySymbol = data?.data?.data?.rates?.find(
-    (rate) => rate.code === "NGN"
+    (rate) => rate.code === "NGN",
   )
     ? "₦"
     : "K";
@@ -55,7 +52,7 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
               .localeCompare(b?.employee?.fullname?.split(" ").slice(-1)[0]);
           case "team":
             return a?.employee?.team?.name.localeCompare(
-              b?.employee?.team?.name
+              b?.employee?.team?.name,
             );
           default:
             return 0;
@@ -82,7 +79,7 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
 
       <div className="bg-white rounded-lg border border-[#E3E3E5]">
         <h2 className="text-base font-semibold py-5 pl-6 text-[#2F2F33]">
-          Design & Development Team
+          Employees
         </h2>
 
         <div className="overflow-x-auto">
@@ -91,12 +88,6 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
               <tr>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[350px]">
                   Name
-                </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
-                  Regular Hours
-                </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
-                  Overtime
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[170px]">
                   Salary
@@ -111,9 +102,15 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
                   Net Pay
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
+                  Regular Hours
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
+                  Overtime
+                </th>
+
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
                   Status
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]"></th>
               </tr>
             </thead>
             <tbody>
@@ -135,34 +132,34 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
                       </span>
                     </div>
                   </td>
+
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {/* {emp.regularHours.toFixed(2)} */} 650
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {/* {emp.overtimeHours.toFixed(2)} */} 500
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.official_base_pay?.toLocaleString()}
+                    {currencySymbol} {emp?.official_base_pay}
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.tax?.toLocaleString()}
+                    {currencySymbol} {emp?.tax}
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.debt?.toLocaleString()}
+                    {currencySymbol} {emp?.debt}
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.net_pay?.toLocaleString()}
+                    {currencySymbol} {emp?.net_pay}
                   </td>
+
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {emp?.main_hours || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {emp?.average_hours?.toFixed(2) || "N/A"}
+                  </td>
+
                   <td className="px-6 py-4 text-sm text-[#188C43] ">
                     <span className="text-xs bg-[#E9F9EF] border border-[#188C43] rounded-2xl capitalize w-fit px-2 py-1">
                       {emp?.paid ? "paid" : "pending"}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#188C43] ">
-                    <BsThreeDotsVertical />
                   </td>
                 </tr>
               ))}
@@ -176,31 +173,30 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
                   Total
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ₦{data?.data?.data?.total_payout}
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ₦{data?.data?.data?.total_tax}
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ₦{data?.data?.data?.total_debt}
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ₦{data?.data?.data?.total_payout}
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   {}
                 </td>
-                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  {data?.data?.data?.total_hours}
-                </td>
-                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{Number(data?.data?.data?.total_payout)?.toLocaleString()}
-                </td>
-                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{Number(data?.data?.data?.total_tax)?.toLocaleString()}
-                </td>
-                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{Number(data?.data?.data?.total_tax)?.toLocaleString()}
-                </td>
-                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{Number(data?.data?.data?.total_payout)?.toLocaleString()}
-                </td>
+
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]"></td>
+
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]"></td>
               </tr>
             </tfoot>
           </table>
         </div>
 
-        <div className="flex items-center justify-between px-6 py-4">
+        {/* <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-[#2F2F33]">
             <span>Show</span>
             <select
@@ -232,7 +228,7 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
               Next
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

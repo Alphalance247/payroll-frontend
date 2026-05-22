@@ -23,11 +23,11 @@ export interface data {
       approved_by: {
         fullname: string;
       };
+      total_hours: string;
+      total_debt: string;
       total_payout: string;
       payday: string;
-      total_hours: string;
       total_tax: string;
-
       rates: payrollRate[];
       payslips: {
         id: string;
@@ -35,6 +35,9 @@ export interface data {
         tax: string;
         paid: boolean;
         debt: string;
+        main_hours: number;
+        average_hours: number;
+        total_hours: string;
         gross_pay: string;
         status: string;
         official_base_pay: number;

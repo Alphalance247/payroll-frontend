@@ -18,7 +18,7 @@ const HistoryOverview = ({
       payrollId: `PR-${historyID}`,
       totalPayroll: `₦ ${fundStatus}`,
       payhead: "Payroll ID",
-      subhead: "Total Amount paid out",
+      subhead: "Unique identifier for the payroll",
       heading2: "Total Payroll",
       subhead2: "Total Amount paid out",
     },
@@ -52,7 +52,7 @@ const HistoryOverview = ({
               {data.payhead}
             </p>
             <p className="font-semibold text-xl text-[#2F2F33] tracking-[-0.5px] mb-2">
-              {data.payrollId?.toString() || "N/A"}
+              {data.payrollId || "N/A"}
             </p>
             <p className="text-[#71717A] text-sm">{data.subhead}</p>
           </div>
@@ -62,7 +62,7 @@ const HistoryOverview = ({
               {data.heading2}
             </p>
             <p className="font-semibold text-xl text-[#2F2F33] tracking-[-0.5px] mb-2">
-              {data.totalPayroll?.toString() || "N/A"}
+              {data.totalPayroll || "N/A"}
             </p>
             <p className="text-[#71717A] text-sm">{data.subhead2}</p>
           </div>

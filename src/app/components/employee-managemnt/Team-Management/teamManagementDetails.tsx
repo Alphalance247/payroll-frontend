@@ -37,7 +37,7 @@ const TeamManagementDetails = ({
     const fetchEmployeeData = async () => {
       try {
         const res = await axiosInstance.get(
-          `/employees/teams/${teamManagementDetails}`
+          `/employees/teams/${teamManagementDetails}`,
         );
         setTeamData(res.data);
       } catch (err) {
@@ -68,7 +68,7 @@ const TeamManagementDetails = ({
               teamData?.data?.description ||
               "Dedicated to testing and validating our products to ensure they are reliable, efficient, and meet customer expectations"
             }
-            user={teamData?.data?.name || "Quality Assurance"}
+            user={teamData?.data?.name || "N/A"}
             subHeadClassName="w-[70%]"
           />
 

@@ -15,9 +15,6 @@ interface PayrollSummaryProps {
 }
 
 const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
-  const [perPage, setPerPage] = useState(10);
-  const [page, setPage] = useState(1);
-
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("firstName");
@@ -151,13 +148,6 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[400px]">
                   Name
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
-                  Team
-                </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
-                  Regular Hours
-                </th>
-
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Net Pay
                 </th>
@@ -167,6 +157,13 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Salary (NGN/USD)
                 </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
+                  Team
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
+                  Regular Hours
+                </th>
+
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Employee ID
                 </th>
@@ -216,6 +213,16 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                       </span>
                     </div>
                   </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {currencySymbol} {emp?.net_pay?.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {currencySymbol} {emp?.official_base_pay?.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {emp?.employee?.pay_deno === "Dollars" ? "$ " : "₦ "}
+                    {emp?.employee?.base_pay?.toLocaleString() || 0}
+                  </td>
                   <td className="px-6 py-4">
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs border border-[#414D57] bg-[#E7E9EA] text-[#000000] font-medium`}
@@ -227,16 +234,6 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     {emp?.total_hours?.toFixed(2) || "0.00"} hrs
                   </td>
 
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.net_pay?.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.official_base_pay?.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {emp?.employee?.pay_deno === "Dollars" ? "$ " : "₦ "}
-                    {emp?.employee?.base_pay?.toLocaleString() || 0}
-                  </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {emp?.employee?.employee_id}
                   </td>
@@ -311,40 +308,6 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
               </tr>
             </tfoot>
           </table>
-        </div>
-
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2 text-sm text-[#2F2F33]">
-            <span>Show</span>
-            <select
-              value={perPage}
-              onChange={(e) => setPerPage(Number(e.target.value))}
-              className="border border-[#E3E3E5] rounded px-2 py-1"
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-            <span>per page</span>
-          </div>
-
-          <div className="flex items-center gap-4 text-sm">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="text-[#2F2F33]"
-              disabled={page === 1}
-            >
-              Previous
-            </button>
-            <span className="text-[#2F2F33]">Page {page} of 2</span>
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              className="text-[#2F2F33]"
-              disabled={page === 2}
-            >
-              Next
-            </button>
-          </div>
         </div>
       </div>
     </section>

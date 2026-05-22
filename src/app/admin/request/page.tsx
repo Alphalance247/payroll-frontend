@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import Button from "../../common/Button";
 import { TfiExport } from "react-icons/tfi";
 import { Search } from "lucide-react";
-import DropDownBtn from "../../common/dropDownBtn";
 import { FiRefreshCw } from "react-icons/fi";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa6";
@@ -52,32 +50,32 @@ const Request = () => {
 
   const { filteredData, setSearchQuery, searchQuery, setFilter } = useFilter(
     data?.data || [],
-    ["created_by"]
+    ["created_by"],
   );
-  const [selectedTeam, setSelectedTeam] = useState("");
-  const [requestType, setRequestType] = useState("");
+  // const [selectedTeam, setSelectedTeam] = useState("");
+  // const [requestType, setRequestType] = useState("");
   const [markAll, setMarkAll] = useState(false);
-  const requestOption = ["All", "Salary", "Tax"];
-  const teamOptions = [
-    "All",
-    "DevOps",
-    "ITSM",
-    "Design",
-    "Cloud",
-    "Quality  Assurance",
-    "Development",
-    "Management",
-    "Domestic Staff",
-    "Advocate",
-    "Product Office",
-  ];
+  // const requestOption = ["All", "Salary", "Tax"];
+  // const teamOptions = [
+  //   "All",
+  //   "DevOps",
+  //   "ITSM",
+  //   "Design",
+  //   "Cloud",
+  //   "Quality  Assurance",
+  //   "Development",
+  //   "Management",
+  //   "Domestic Staff",
+  //   "Advocate",
+  //   "Product Office",
+  // ];
 
-  useEffect(() => {
-    setFilter("team", selectedTeam);
-    setFilter("team", selectedTeam === "All" ? "" : selectedTeam);
-    setFilter("query_type", requestType);
-    setFilter("query_type", requestType === "All" ? "" : requestType);
-  }, [selectedTeam, requestType, setFilter]);
+  // useEffect(() => {
+  //   setFilter("team", selectedTeam);
+  //   setFilter("team", selectedTeam === "All" ? "" : selectedTeam);
+  //   setFilter("query_type", requestType);
+  //   setFilter("query_type", requestType === "All" ? "" : requestType);
+  // }, [selectedTeam, requestType, setFilter]);
 
   return (
     <DashboardLayout>
@@ -144,7 +142,7 @@ const Request = () => {
         <section className="mt-4">
           <div className="flex items-center gap-x-3 justify-between">
             <div className="flex items-center gap-x-2">
-              <div className="relative w-[200px]">
+              <div className="relative w-[600px]">
                 <input
                   type="text"
                   placeholder="Search"
@@ -157,7 +155,7 @@ const Request = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
               </div>
 
-              <DropDownBtn
+              {/* <DropDownBtn
                 subText="Type"
                 btnHeight="h-auto"
                 width="w-auto"
@@ -175,10 +173,10 @@ const Request = () => {
                 onSelectOption={setSelectedTeam}
                 options={teamOptions}
                 selectedValue={selectedTeam}
-              />
+              /> */}
             </div>
 
-            <div>
+            {/* <div>
               <DropDownBtn
                 subText="Nov 1 – Nov 31, 2024"
                 btnHeight="h-[350px]"
@@ -187,7 +185,7 @@ const Request = () => {
                 options={requestOption}
                 selectedValue={selectedTeam}
               />
-            </div>
+            </div> */}
           </div>
 
           {loading ? (
@@ -313,21 +311,22 @@ const Request = () => {
                         {filteredData.map((emp) => (
                           <tr
                             key={emp?.id}
-                            className="border-b border-[#E3E3E5] last:border-b-0"
+                            className="border-b border-[#E3E3E5] last:border-b-0 cursor-pointer hover:bg-[#FAFAFA] transition-colors group"
+                            onClick={() => {
+                              fetchQueryDetails(emp?.id);
+                              setIsOpen(true);
+                            }}
                           >
-                            <td className="px-6 py-4">
+                            <td
+                              className="px-6 py-4"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <input
                                 type="checkbox"
                                 className="rounded border-gray-300"
                               />
                             </td>
-                            <td
-                              className="px-6 py-4 text-sm text-[#2F2F33] hover:underline hover:underline-offset-1 cursor-pointer"
-                              onClick={() => {
-                                fetchQueryDetails(emp?.id);
-                                setIsOpen(true);
-                              }}
-                            >
+                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
                               {emp?.id}
                             </td>
                             <td className="px-6 py-4">
@@ -344,7 +343,6 @@ const Request = () => {
                                 </span>
                               </div>
                             </td>
-
                             <td className="px-6 py-4 text-sm text-[#2F2F33]">
                               {emp?.team}
                             </td>
@@ -356,15 +354,41 @@ const Request = () => {
                             </td>
                             <td className="px-6 py-4">
                               <span
-                                className={`inline-block px-3 py-1 rounded-full text-sm border border-[#188C43] bg-[#E9F9EF] text-[#188C43] font-medium`}
+                                className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${
+                                  emp?.status === "Resolved"
+                                    ? "bg-[#E9F9EF] border-[#188C43] text-[#188C43]"
+                                    : emp?.status === "Open"
+                                      ? "bg-[#EFF6FF] border-[#3B82F6] text-[#3B82F6]"
+                                      : emp?.status === "In Progress"
+                                        ? "bg-[#FFF7ED] border-[#E37915] text-[#E37915]"
+                                        : emp?.status === "Blocked"
+                                          ? "bg-[#FEF2F2] border-[#DC2626] text-[#DC2626]"
+                                          : emp?.status === "Closed"
+                                            ? "bg-[#F3F4F6] border-[#6B7280] text-[#6B7280]"
+                                            : "bg-[#F3F4F6] border-[#6B7280] text-[#6B7280]"
+                                }`}
                               >
                                 {emp?.status}
                               </span>
                             </td>
-
-                            <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                              {" "}
-                              <BsThreeDotsVertical />
+                            <td
+                              className="px-6 py-4 text-sm text-[#2F2F33]"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => {
+                                    fetchQueryDetails(emp?.id);
+                                    setIsOpen(true);
+                                  }}
+                                  className="text-xs font-semibold text-[#CF6E13] bg-[#FCF2E8] hover:bg-[#F8E4D0] px-3 py-1.5 rounded-md transition-colors whitespace-nowrap opacity-0 group-hover:opacity-100"
+                                >
+                                  View Details
+                                </button>
+                                {/* <button className="p-2 hover:bg-[#F0F0F3] rounded-lg transition-colors">
+                                  <BsThreeDotsVertical />
+                                </button> */}
+                              </div>
                             </td>
                           </tr>
                         ))}

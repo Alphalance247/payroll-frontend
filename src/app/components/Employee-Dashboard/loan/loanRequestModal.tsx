@@ -30,7 +30,7 @@ const LoanRequestModal = ({ onModalClose }: { onModalClose: () => void }) => {
   }, [fetchLoanCategory]);
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
