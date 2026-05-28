@@ -9,18 +9,18 @@ const Overview = () => {
   const overviewData = [
     {
       heading: "Total Payroll",
-      subHead: `NGN ${data?.total_salary_paid.toLocaleString()}` || "6,000,000",
-      feature: "Total of 20 active teams",
+      subHead: `NGN ${data?.total_salary_paid.toLocaleString()}` || "NGN 0",
+      feature: "Total payroll paid out in the last 12 months",
     },
     {
       heading: "Active Employees",
       subHead: data?.active_employees || 0,
-      feature: "Total of 20 active teams",
+      feature: "Number of employees currently on the payroll",
     },
     {
       heading: "Total Hours Logged",
       subHead: teamData?.total_hours?.toFixed(2) || 0,
-      feature: "Last updated: 16 hours ago",
+      feature: "Total hours logged by all employees in the last 12 months",
     },
   ];
   return (

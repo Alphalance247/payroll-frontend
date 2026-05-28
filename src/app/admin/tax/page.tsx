@@ -11,6 +11,7 @@ import { useStore } from "zustand";
 import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import Heading from "../../common/heading";
+import toast from "react-hot-toast";
 
 const MONTHS = [
   "January",
@@ -33,6 +34,7 @@ const Tax = () => {
     loading: payrollTaxLoading,
     error: payrollTaxError,
     updateLoading,
+    updateError,
     fetchPayrollTax,
     updateRemittanceStatus,
   } = useStore(getPayrollTax);
@@ -82,11 +84,11 @@ const Tax = () => {
 
   const handleUpdateStatus = async () => {
     if (newStatus === null) return;
-    const success = await updateRemittanceStatus(
-      Array.from(selectedIds),
-      newStatus,
-    );
+    const success = await updateRemittanceStatus(Array.from(selectedIds), newStatus);
     if (success) {
+      toast.success(
+        `Remittance status updated to ${newStatus ? "Remitted" : "Pending"} for ${selectedIds.size} ${selectedIds.size === 1 ? "employee" : "employees"}`,
+      );
       setUpdateSuccess(true);
       setSelectedIds(new Set());
       setTimeout(() => {
@@ -94,6 +96,8 @@ const Tax = () => {
         setUpdateSuccess(false);
         setNewStatus(null);
       }, 1800);
+    } else {
+      toast.error(updateError || "Failed to update remittance status.");
     }
   };
 
@@ -321,7 +325,7 @@ const Tax = () => {
                                 </div>
                               </td>
                               <td className="px-6 py-4">
-                                <span className="text-xs text-[#2F2F33] font-medium">
+                                <span className="text-sm text-[#2F2F33] ">
                                   ₦ {emp.tax_amount_monthly}
                                 </span>
                               </td>

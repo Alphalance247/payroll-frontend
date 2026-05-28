@@ -18,6 +18,7 @@ interface loadData {
     employee: string;
     id: string;
     repayment_schedule: string;
+    estimated_repayment_date: string;
     status: string;
   }[];
 }
@@ -83,7 +84,7 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
 
               <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                 <p className="flex gap-x-1 cursor-pointer items-center">
-                  Estimated Repayment Date
+                  Estimated final repayment date
                 </p>
               </th>
 
@@ -141,11 +142,12 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
                     ₦ {emp?.amount}
                   </td>
                   <td className="px-6 py-4 text-base text-[#2F2F33]">
-                    {emp?.date_disburse || "N/A"}
+                    {emp?.estimated_repayment_date || "N/A"}
                   </td>
                   <td className="px-6 py-4 text-base text-[#2F2F33]">
                     {emp?.date_disburse || "N/A"}
                   </td>
+
                   <td
                     className="px-6 py-4 text-sm text-[#2F2F33]"
                     onClick={(e) => e.stopPropagation()}

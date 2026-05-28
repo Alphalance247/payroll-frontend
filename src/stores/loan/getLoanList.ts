@@ -18,6 +18,7 @@ interface loanListDataStore {
     employee: string;
     id: string;
     repayment_schedule: string;
+    estimated_repayment_date: string;
     status: string;
   }[];
 }
