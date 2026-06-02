@@ -71,11 +71,7 @@ const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
                         data?.data?.data?.approved_by?.fullname || "N/A"
                       }
                       approvalTimestamp={data?.data?.data?.payday || "N/A"}
-                      fundStatus={
-                        Number(
-                          data?.data?.data?.total_payout
-                        )?.toLocaleString() || "N/A"
-                      }
+                      fundStatus={data?.data?.data?.total_payout || "N/A"}
                       totalHours={data?.data?.data?.total_hours || "N/A"}
                     />
                     <PayrollHistoryTable id={historyID as string} />
@@ -84,7 +80,7 @@ const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
               </>
             )}
 
-            {activeTab === "Audit logs" && <p>Audit logs</p>}
+            {/* {activeTab === "Audit logs" && <p>Audit logs</p>} */}
           </div>
         </main>
       </DashboardLayout>

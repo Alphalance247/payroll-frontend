@@ -4,10 +4,8 @@ import { Search } from "lucide-react";
 const TeamSearch = ({
   searchQuery,
   onSearchChange,
-  selectedRole,
   selectedStatus,
   setSelectedStatus,
-  setSelectedRole,
 }: {
   searchQuery: string;
   onSearchChange: (value: string) => void;
@@ -17,7 +15,6 @@ const TeamSearch = ({
   setSelectedRole: (value: string) => void;
 }) => {
   const statusOptions = ["All", "active", "former", "suspended"];
-  const roleOptions = ["Graphic Designer", "UI/UX"];
   return (
     <div className="flex gap-x-2 mt-10 justify-between">
       <div className="relative w-full">
@@ -39,15 +36,6 @@ const TeamSearch = ({
           onSelectOption={setSelectedStatus}
           options={statusOptions}
           placeholder="Active"
-        />
-
-        <DropDownBtn
-          subText="Department"
-          btnHeight="h-fit"
-          placeholder="Designer"
-          onSelectOption={setSelectedRole}
-          options={roleOptions}
-          selectedValue={selectedRole}
         />
       </div>
     </div>

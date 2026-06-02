@@ -4,7 +4,6 @@ import EmployeeDetailsTable from "../../components/payroll/employeeData";
 import PayrollStepper from "../../components/payroll/payrollStepper";
 import RunPayrollHeading from "../../components/payroll/runPayrollHeading";
 import Link from "next/link";
-import toast from "react-hot-toast";
 import { usePayrollContext } from "../../context/payrollContext";
 import ProtectedRoute from "../../common/protectedRoute";
 import Button from "../../common/Button";
@@ -61,15 +60,6 @@ export default function RunPayrollPage() {
                           </button>
                         </Link>
                         <div className="flex items-center gap-2">
-                          <button
-                            className="px-4 py-2 text-sm text-[#2F2F33] border border-[#E3E3E5] rounded-lg"
-                            onClick={() => {
-                              toast.success("Save as Draft");
-                            }}
-                          >
-                            Save as Draft
-                          </button>
-
                           <Link href="/admin/run-payroll/review-approve">
                             <button className="px-4 py-2 text-sm text-white bg-[#E37915] rounded-lg">
                               Next

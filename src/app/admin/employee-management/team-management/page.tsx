@@ -52,7 +52,7 @@ const TeamManagement = () => {
             <TeamCard
               key={team.id}
               link={`/admin/employee-management/team-management/${team.id}`}
-              teamName={team.name.split(" ").slice(0, 2).join(" ")}
+              teamName={team.name.split(" ")?.slice(0, 3).join(" ")}
               teamLead={team?.lead?.fullname || "No Lead Assigned"}
               teamCount={team.members_count}
             />

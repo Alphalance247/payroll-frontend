@@ -106,10 +106,10 @@ const Payroll: React.FC<{
       subhead:
         `NGN ${data?.total_bonus_paid.toLocaleString()}` || "NGN 300,000",
     },
-    {
-      heading: "Total Expenses",
-      subhead: "Nil",
-    },
+    // {
+    //   heading: "Total Expenses",
+    //   subhead: "Nil",
+    // },
   ];
   return (
     <section>
@@ -135,7 +135,7 @@ const Payroll: React.FC<{
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-x-4 mb-6">
+      <div className="grid grid-cols-2 gap-x-4 mb-6">
         {payrollData.map((el, i) => {
           return (
             <PayrollCard key={i} heading={el?.heading} subhead={el?.subhead} />
@@ -160,7 +160,7 @@ const Payroll: React.FC<{
               chartConfig={chartConfig1}
               chartData={chartData1}
               total_salary_paid={formatCurrencyShort(
-                Number(data?.total_salary_paid)
+                Number(data?.total_salary_paid),
               )}
               text="paid out"
             />

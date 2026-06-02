@@ -29,10 +29,10 @@ interface EmployeeSearchProps {
 export default function EmployeeSearch({
   searchQuery,
   sortBy,
-  filterBy,
+  // filterBy,
   onSearchChange,
   onSortChange,
-  onFilterChange,
+  // onFilterChange,
   sortByTeam,
   onSortChangeTeam,
   showSortByTeam = false,
@@ -54,7 +54,7 @@ export default function EmployeeSearch({
         </div>
 
         <div className="flex items-center gap-4">
-          {showsortFilter && (
+          {/* {showsortFilter && (
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-[#71717A]">View</span>
               <select
@@ -69,7 +69,7 @@ export default function EmployeeSearch({
                 <option value="inactive">Inactive</option>
               </select>
             </div>
-          )}
+          )} */}
 
           {showsortFilter && (
             <div className="flex items-center gap-2">
