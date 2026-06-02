@@ -80,7 +80,7 @@ const PayrollHistoryDetailsPage = ({ historyID }: { historyID: string }) => {
               </>
             )}
 
-            {activeTab === "Audit logs" && <p>Audit logs</p>}
+            {/* {activeTab === "Audit logs" && <p>Audit logs</p>} */}
           </div>
         </main>
       </DashboardLayout>

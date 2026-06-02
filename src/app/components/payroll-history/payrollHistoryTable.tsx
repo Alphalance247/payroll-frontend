@@ -19,7 +19,7 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
     (rate) => rate.code === "NGN",
   )
     ? "₦"
-    : "K";
+    : "₦";
 
   // Filtered and sorted employees
   const filteredEmployees = useMemo(() => {

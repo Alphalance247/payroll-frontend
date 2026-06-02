@@ -339,7 +339,7 @@ export default function Home() {
                               Pay period
                             </p>
                             <p className="font-medium font-Graphik text-[#2F2F33] text-base">
-                              {upcomingPayrollData?.pay_period}
+                              {lastPayrollData?.pay_period}
                             </p>
                           </div>
                         </div>

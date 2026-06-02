@@ -203,7 +203,7 @@ const PayrollHistory = () => {
                             {/* Jan 1–Jan 31, 2025 */}
                           </td>
                           <td className="px-6 py-4 text-base text-[#2F2F33]">
-                            NGN {Number(emp?.total_salary).toLocaleString()}
+                            NGN {emp?.total_salary}
                           </td>
 
                           <td className="px-6 py-4 text-base text-[#2F2F33]">

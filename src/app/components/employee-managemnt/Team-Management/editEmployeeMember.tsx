@@ -2,18 +2,11 @@
 import ModalOverlay from "@/app/common/modal/modal";
 import Button from "@/app/common/Button";
 import Input from "@/app/common/input";
-import { useState } from "react";
-
-const DUMMY_TEAMS = [
-  "Engineering",
-  "Quality Assurance",
-  "Design",
-  "Marketing",
-  "Human Resources",
-  "Finance",
-  "Product",
-  "Operations",
-];
+import { useEffect, useState } from "react";
+import { getTeamList } from "@/stores/getTeamList";
+import axiosInstance from "@/app/utils/axios";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 const STATUS_OPTIONS = [
   {
@@ -51,6 +44,7 @@ interface EmployeeMember {
   email: string;
   status: string;
   role: string;
+  team_id: string;
 }
 
 const EditEmployeeMember = ({
@@ -62,11 +56,16 @@ const EditEmployeeMember = ({
 }) => {
   const [form, setForm] = useState({
     email: employee.email || "",
-    team: "",
+    team: employee.team_id || "",
     role: employee.role || "",
     status: employee.status || "active",
   });
   const [saving, setSaving] = useState(false);
+  const { data, fetchTeamList } = getTeamList();
+
+  useEffect(() => {
+    fetchTeamList();
+  }, [fetchTeamList]);
 
   const initials = employee.name
     .split(" ")
@@ -77,10 +76,23 @@ const EditEmployeeMember = ({
 
   const handleSave = async () => {
     setSaving(true);
-    // Integration placeholder — replace with API call
-    await new Promise((r) => setTimeout(r, 800));
-    setSaving(false);
-    onClose();
+    try {
+      await axiosInstance.patch(`/employees/employee/${employee.id}`, {
+        team: form.team || undefined,
+        job_role: form.role,
+        status: form.status,
+      });
+      toast.success("Employee details updated successfully");
+      onClose();
+    } catch (err) {
+      const message =
+        err instanceof AxiosError
+          ? err.response?.data?.message || err.message
+          : "Failed to update employee details";
+      toast.error(message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -131,7 +143,8 @@ const EditEmployeeMember = ({
               name="email"
               value={form.email}
               placeholder="email@company.com"
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              readonly
+              onChange={() => {}}
             />
           </div>
 
@@ -144,9 +157,9 @@ const EditEmployeeMember = ({
               onChange={(e) => setForm({ ...form, team: e.target.value })}
             >
               <option value="">Select a team</option>
-              {DUMMY_TEAMS.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+              {data?.data.map((t) => (
+                <option key={t?.id} value={t?.id}>
+                  {t?.name}
                 </option>
               ))}
             </select>

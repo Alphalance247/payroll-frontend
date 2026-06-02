@@ -129,6 +129,7 @@ const TeamManagementDetails = ({
               )}
             </>
           )}
+
           {isAddTeamMember && (
             <>
               {teamData && (

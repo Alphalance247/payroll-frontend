@@ -60,8 +60,8 @@ export const getPayrollTax = create<payrollTaxStore>((set) => ({
     try {
       const url = remmited
         ? "/employees/taxes/mark-multiple-paid"
-        : "/employees/taxes/mark-multiple-unpaid/";
-      await axiosInstance.post(url, { employee_ids: employeeIds });
+        : "/employees/taxes/mark-multiple-unpaid";
+      await axiosInstance.post(url, { tax_ids: employeeIds });
       set((state) => ({
         updateLoading: false,
         data: state.data

@@ -13,6 +13,7 @@ interface lastPayrollDataStore {
     };
     payment_method: string;
   };
+  pay_period: string;
 }
 
 interface lastPayrollStore {
