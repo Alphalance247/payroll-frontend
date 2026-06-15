@@ -59,6 +59,7 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
         }
       });
   }, [searchQuery, sortBy, filterBy, sortByTeam]);
+  
   return (
     <section className="mt-20">
       {data?.data?.teams && (
