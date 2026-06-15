@@ -84,11 +84,15 @@ const Tax = () => {
 
   const handleUpdateStatus = async () => {
     if (newStatus === null) return;
-    const success = await updateRemittanceStatus(Array.from(selectedIds), newStatus);
+    const success = await updateRemittanceStatus(
+      Array.from(selectedIds),
+      newStatus,
+    );
     if (success) {
       toast.success(
         `Remittance status updated to ${newStatus ? "Remitted" : "Pending"} for ${selectedIds.size} ${selectedIds.size === 1 ? "employee" : "employees"}`,
       );
+      fetchPayrollTax(selectedMonth || undefined, selectedYear || undefined);
       setUpdateSuccess(true);
       setSelectedIds(new Set());
       setTimeout(() => {
@@ -286,7 +290,7 @@ const Tax = () => {
                     ) : (
                       <tbody>
                         {employees.map((emp, i) => {
-                          const empId = emp.payslip.employee.id;
+                          const empId = emp?.id;
                           const isSelected = selectedIds.has(empId);
                           return (
                             <tr

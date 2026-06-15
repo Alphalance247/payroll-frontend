@@ -6,10 +6,12 @@ interface TaxRecord {
   tax_amount_monthly: number;
   tax_amount_yearly: number;
   remmited: boolean;
+  id: string;
   payslip: {
     employee: {
       fullname: string;
       id: string;
+      tax_id: string;
     };
   };
 }
