@@ -11,37 +11,6 @@ import {
 } from "@/components/ui/chart";
 import { getPayrollAnalysis } from "@/stores/getPayrollAnalysis";
 
-// const chartData = [
-//   {
-//     name: "Joshua\nEzeoke",
-//     value: 50000,
-//   },
-//   {
-//     name: "Daniel\nAlade",
-//     value: 60000,
-//   },
-//   {
-//     name: "Adetayo\nOyebanji",
-//     value: 75000,
-//   },
-//   {
-//     name: "James\nAdelabu",
-//     value: 30000,
-//   },
-//   {
-//     name: "Sandra\nOyinmeachi",
-//     value: 70000,
-//   },
-//   {
-//     name: "Matthew\nKelvin",
-//     value: 90000,
-//   },
-//   {
-//     name: "Margaret\nOkechukwu",
-//     value: 50000,
-//   },
-// ];
-
 const chartConfig = {
   value: {
     label: "Value",
@@ -51,9 +20,8 @@ const chartConfig = {
 
 const formatYAxis = (value: number): string => {
   if (value === 0) return "0";
-  if (value === 500000) return "500k";
-  if (value === 1000000) return "1M";
-
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
   return value.toString();
 };
 
@@ -94,10 +62,13 @@ export function SpendingChart({ selectedTeam }: { selectedTeam: string }) {
             >
               <BarChart
                 accessibilityLayer
-                data={
+                data={(
                   data?.Teams.find((team) => team.team_name === selectedTeam)
-                    ?.employees
-                }
+                    ?.employees ?? []
+                ).map((emp) => ({
+                  ...emp,
+                  amount: parseFloat(String(emp.amount).replace(/,/g, "")) || 0,
+                }))}
                 margin={{ top: 40, right: 30, left: 40, bottom: 20 }}
                 layout="horizontal"
                 className="w-full"
@@ -120,10 +91,11 @@ export function SpendingChart({ selectedTeam }: { selectedTeam: string }) {
                 />
                 <YAxis
                   tickFormatter={formatYAxis}
-                  domain={[
-                    0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000,
+                  domain={[0, "auto"]}
+                  ticks={[
+                    0, 100000, 200000, 300000, 400000, 500000, 600000, 700000,
+                    800000, 900000, 1000000,
                   ]}
-                  ticks={[0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12 }}

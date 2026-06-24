@@ -11,6 +11,7 @@ import Link from "next/link";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
+import { getYearsInDescendingOrder } from "@/app/utils/dateOrdering";
 
 const PayrollHistory = () => {
   const { isError, error, refetch, isLoading, data } = usePayrollHistoryList();
@@ -18,9 +19,7 @@ const PayrollHistory = () => {
   const [selectedYear, setSelectedYear] = useState<string>("");
   const [loadingState, setLoadingState] = useState(false);
 
-  // Generate list of years (current year and previous 5 years)
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 6 }, (_, i) => currentYear - i);
+  const years = getYearsInDescendingOrder();
 
   const handleDownloadReport = async (selectedYear: string) => {
     setLoadingState(true);
@@ -152,7 +151,7 @@ const PayrollHistory = () => {
                 <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
                   <thead className="bg-[#F7F7F7]">
                     <tr>
-                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
+                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px] ">
                         <p className="flex gap-x-1 cursor-pointer items-center">
                           Payroll ID
                         </p>
@@ -171,6 +170,10 @@ const PayrollHistory = () => {
 
                       <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                         Approved By
+                      </th>
+
+                      <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                        Date of Approval
                       </th>
 
                       <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
@@ -208,6 +211,10 @@ const PayrollHistory = () => {
 
                           <td className="px-6 py-4 text-base text-[#2F2F33]">
                             {emp?.approved_by?.fullname}
+                          </td>
+
+                          <td className="px-6 py-4 text-base text-[#2F2F33]">
+                            {emp?.approved_on}
                           </td>
 
                           <td className="px-6 py-4 text-base text-[#2F2F33]">

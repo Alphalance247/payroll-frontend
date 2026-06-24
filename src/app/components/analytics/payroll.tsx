@@ -98,13 +98,11 @@ const Payroll: React.FC<{
   const payrollData = [
     {
       heading: "Total Salary Paid",
-      subhead:
-        `NGN ${data?.total_salary_paid.toLocaleString()}` || "NGN 10,600,000",
+      subhead: `NGN ${data?.total_salary_paid}` || "NGN 0",
     },
     {
       heading: "Total Bonus Paid",
-      subhead:
-        `NGN ${data?.total_bonus_paid.toLocaleString()}` || "NGN 300,000",
+      subhead: `NGN ${data?.total_bonus_paid}` || "NGN 0",
     },
     // {
     //   heading: "Total Expenses",
@@ -160,7 +158,7 @@ const Payroll: React.FC<{
               chartConfig={chartConfig1}
               chartData={chartData1}
               total_salary_paid={formatCurrencyShort(
-                Number(data?.total_salary_paid),
+                data?.total_salary_paid || "0",
               )}
               text="paid out"
             />

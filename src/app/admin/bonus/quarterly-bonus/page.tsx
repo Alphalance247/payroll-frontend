@@ -256,7 +256,7 @@ const MonthlyBonus = () => {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10">
+        <main className="pb-4 md:pb-6 lg:pb-10">
           {/* Loading State */}
           {isLoading && (
             <div className="flex items-center justify-center py-20">

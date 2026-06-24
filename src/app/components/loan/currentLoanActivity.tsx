@@ -40,12 +40,12 @@ const CurrentLoanActivity = ({
         `/employees/loan-update-admin/${data?.data?.id}`,
         {
           status,
-        }
+        },
       );
 
       if (res.status === 200) {
         toast.success(
-          isApproving ? "Loan successfully approved" : "Loan Declined"
+          isApproving ? "Loan successfully approved" : "Loan Declined",
         );
         setIsOpen(false);
       }
@@ -77,21 +77,31 @@ const CurrentLoanActivity = ({
       </h4>
 
       <div className="flex gap-x-6 px-6 pb-6">
-        <p className="text-base font-semibold text-[#2F2F33]">
+        <p className="text-base font-semibold text-[#2F2F33] shrink-0">
           ₦{data?.data?.amount}
         </p>
         <div className="w-full">
-          <p className="text-sm font-normal text-[#262626] mb-1">
-            {data?.data?.repayment_progress}%
-          </p>
-          <div className="bg-[#E0E0E0] h-[5px] w-full">
+          <div className="flex justify-between items-center mb-1">
+            <p className="text-sm font-normal text-[#262626]">
+              Repayment Progress
+            </p>
+            <p className="text-sm font-semibold text-[#2F2F33]">
+              {data?.data?.repayment_progress ?? 0}%
+            </p>
+          </div>
+          <div className="bg-[#E0E0E0] h-[6px] w-full rounded-full overflow-hidden">
             <div
-              className={` ${
-                Number(data?.data?.repayment_progress) >= 0
-                  ? "bg-slate-400"
-                  : "bg-[#198038]"
-              } w-[${data?.data?.repayment_progress}%] h-[5px] rounded-sm`}
-            ></div>
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${data?.data?.repayment_progress ?? 0}%`,
+                backgroundColor:
+                  Number(data?.data?.repayment_progress) >= 100
+                    ? "#198038"
+                    : Number(data?.data?.repayment_progress) >= 50
+                      ? "#E37915"
+                      : "#26547C",
+              }}
+            />
           </div>
         </div>
       </div>
