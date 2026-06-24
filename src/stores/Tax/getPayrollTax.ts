@@ -13,6 +13,7 @@ interface TaxRecord {
       id: string;
       tax_id: string;
     };
+    paid: boolean;
   };
 }
 

@@ -18,24 +18,24 @@ let chartData: {
 }[] = [];
 
 const chartConfig = {
-  Development: {
-    label: "Design & Development",
+  "AI In Software": {
+    label: "AI In Software",
     color: "#8B5CF6",
   },
-  DEVOPS: {
-    label: "DEVOPS",
+  "Operational Excellence Team": {
+    label: "Operational Excellence Team",
     color: "#118AB2",
   },
   Advocate: {
     label: "Advocate",
     color: "#2E6171",
   },
-  Cloud: {
-    label: "Cloud",
+  "Senior Leadership Team": {
+    label: "Senior Leadership Team",
     color: "#FFD166",
   },
-  "Quality  Assurance": {
-    label: "Quality Assurance",
+  "Enterprise Strategy Team": {
+    label: "Enterprise Strategy Team",
     color: "#070D13",
   },
   "Legal & Compliance": {
@@ -46,16 +46,16 @@ const chartConfig = {
     label: "Product Office",
     color: "#5F3309",
   },
-  ITSM: {
-    label: "ITSM",
+  "Service Management": {
+    label: "Service Management",
     color: "#26547C",
   },
   "Domestic Staff": {
     label: "Domestic Staff",
     color: "#A6B1E1",
   },
-  Management: {
-    label: "Artificial Intelligence",
+  "Cloud Upgrade": {
+    label: "Cloud Upgrade",
     color: "#67E8F9",
   },
   Design: {
@@ -66,7 +66,7 @@ const chartConfig = {
 
 // Format currency in Naira
 const formatNaira = (value: number) => {
-  return `₦ ${value.toLocaleString()}`;
+  return `₦ ${value}`;
 };
 
 export function TeamPayrollChart() {
@@ -76,9 +76,11 @@ export function TeamPayrollChart() {
   // Map backend data to include fill color
   chartData = backendData.map((item) => ({
     ...item,
+    team_total_money:
+      parseFloat(String(item.team_total_money).replace(/,/g, "")) || 0,
     fill:
       chartConfig[item.team_name as keyof typeof chartConfig]?.color ||
-      "#CCCCCC", // fallback color
+      "#CCCCCC",
   }));
 
   const COLORS = chartData.map((item) => item.fill);
@@ -97,7 +99,13 @@ export function TeamPayrollChart() {
                 <ChartTooltipContent
                   className="bg-white"
                   formatter={(value, name) => {
-                    return [formatNaira(Number(value)), name];
+                    return [
+                      formatNaira(Number(value)).replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        ",",
+                      ),
+                      name,
+                    ];
                   }}
                 />
               }
@@ -137,7 +145,7 @@ export function TeamPayrollChart() {
                           className="fill-foreground text-3xl font-bold"
                         >
                           ₦{" "}
-                          {formatCurrencyShort(Number(data?.total_salary_paid))}
+                          {formatCurrencyShort(data?.total_salary_paid || "0")}
                         </tspan>
                         <tspan
                           x={viewBox.cx}

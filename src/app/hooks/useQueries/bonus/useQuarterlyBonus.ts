@@ -21,15 +21,12 @@ interface QuarterlyBonusResponse {
   quarter: string;
 }
 
-const fetchQuarterlyBonus = async (month?: string, year?: string) => {
+const fetchQuarterlyBonus = async (quarter?: string) => {
   let url = "/employees/quarterly-bonus-split";
   const params = new URLSearchParams();
 
-  if (month && month !== "") {
-    params.append("month", month);
-  }
-  if (year && year !== "") {
-    params.append("year", year);
+  if (quarter && quarter !== "") {
+    params.append("quarter", quarter);
   }
 
   if (params.toString()) {
@@ -41,11 +38,11 @@ const fetchQuarterlyBonus = async (month?: string, year?: string) => {
   return res.data;
 };
 
-export const useQuarterlyBonus = (month?: string, year?: string) => {
+export const useQuarterlyBonus = (quarter?: string) => {
   return useQuery<QuarterlyBonusResponse | null, AxiosError>({
-    queryKey: ["quarterly-bonus", month, year],
-    queryFn: () => fetchQuarterlyBonus(month, year),
-    staleTime: 1000 * 60 * 5, // data fresh for 5 minutes
+    queryKey: ["quarterly-bonus", quarter],
+    queryFn: () => fetchQuarterlyBonus(),
+    staleTime: 1000 * 60 * 5,
     retry: 1,
   });
 };

@@ -9,6 +9,7 @@ interface data {
   total_salary: string;
   total_payout: string;
   approved_state: string;
+  approved_on: string;
   id: string;
   created: string;
 }
