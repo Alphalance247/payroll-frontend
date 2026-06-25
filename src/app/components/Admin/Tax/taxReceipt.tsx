@@ -3,11 +3,22 @@ import { useState, useRef } from "react";
 import toast from "react-hot-toast";
 import ModalOverlay from "@/app/common/modal/modal";
 import Button from "@/app/common/Button";
-import { Upload, Eye, Download, X, FileText, Loader2 } from "lucide-react";
+import {
+  Upload,
+  Eye,
+  Download,
+  X,
+  FileText,
+  Loader2,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import Image from "next/image";
 import {
   useTaxReceiptList,
   useUploadTaxReceipt,
+  useEditTaxReceipt,
+  useDeleteTaxReceipt,
   type TaxReceiptRecord,
 } from "@/app/hooks/useQueries/tax/useTaxReceipts";
 import {
@@ -19,9 +30,16 @@ import {
 const TaxReceipt = () => {
   const { data: receipts = [], isLoading } = useTaxReceiptList();
   const uploadMutation = useUploadTaxReceipt();
+  const editMutation = useEditTaxReceipt();
+  const deleteMutation = useDeleteTaxReceipt();
 
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingReceipt, setEditingReceipt] = useState<TaxReceiptRecord | null>(
+    null,
+  );
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [selectedReceipt, setSelectedReceipt] =
     useState<TaxReceiptRecord | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -29,6 +47,15 @@ const TaxReceipt = () => {
     "pdf" | "image" | "other" | "loading"
   >("loading");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
+
+  const [editForm, setEditForm] = useState({
+    month: "",
+    year: "",
+    reference: "",
+    note: "",
+    receipt: null as File | null,
+  });
 
   const resolveFileType = async (url: string) => {
     setPreviewFileType("loading");
@@ -64,7 +91,7 @@ const TaxReceipt = () => {
   const [form, setForm] = useState({
     month: "",
     year: "",
-    reference_id: "",
+    reference: "",
     note: "",
     receipt: null as File | null,
   });
@@ -82,7 +109,7 @@ const TaxReceipt = () => {
   };
 
   const resetForm = () => {
-    setForm({ month: "", year: "", reference_id: "", note: "", receipt: null });
+    setForm({ month: "", year: "", reference: "", note: "", receipt: null });
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -96,7 +123,7 @@ const TaxReceipt = () => {
     payload.append("month", form.month);
     payload.append("year", form.year);
     payload.append("receipt", form.receipt);
-    if (form.reference_id) payload.append("reference_id", form.reference_id);
+    if (form.reference) payload.append("reference", form.reference);
     if (form.note) payload.append("note", form.note);
 
     uploadMutation.mutate(payload, {
@@ -120,6 +147,64 @@ const TaxReceipt = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const openEditModal = (r: TaxReceiptRecord) => {
+    setEditingReceipt(r);
+    setEditForm({
+      month: r.month,
+      year: r.year,
+      reference: r.reference ?? "",
+      note: r.note ?? "",
+      receipt: null,
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEdit = () => {
+    if (!editingReceipt) return;
+    if (!editForm.month || !editForm.year) {
+      toast.error("Month and year are required");
+      return;
+    }
+    const payload = new FormData();
+    payload.append("month", editForm.month);
+    payload.append("year", editForm.year);
+    payload.append("reference", editForm.reference);
+    payload.append("note", editForm.note);
+    if (editForm.receipt) payload.append("receipt", editForm.receipt);
+
+    editMutation.mutate(
+      { id: editingReceipt.id, payload },
+      {
+        onSuccess: () => {
+          toast.success("Receipt updated successfully");
+          setShowEditModal(false);
+          setEditingReceipt(null);
+        },
+        onError: (err) => {
+          toast.error(
+            err.response?.statusText ||
+              err.message ||
+              "Failed to update receipt",
+          );
+        },
+      },
+    );
+  };
+
+  const handleDelete = (id: number) => {
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        toast.success("Receipt deleted successfully");
+        setConfirmDeleteId(null);
+      },
+      onError: (err) => {
+        toast.error(
+          err.response?.statusText || err.message || "Failed to delete receipt",
+        );
+      },
+    });
   };
 
   return (
@@ -201,7 +286,7 @@ const TaxReceipt = () => {
                       {r.year}
                     </td>
                     <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                      {r.reference_id || "—"}
+                      {r.reference || "—"}
                     </td>
                     <td className="px-6 py-4 text-sm text-[#71717A] max-w-[200px] truncate">
                       {r.note || "—"}
@@ -234,6 +319,20 @@ const TaxReceipt = () => {
                           title="Download receipt"
                         >
                           <Download size={16} className="text-[#71717A]" />
+                        </button>
+                        <button
+                          onClick={() => openEditModal(r)}
+                          className="p-1.5 rounded-md hover:bg-[#E3E3E5] transition-colors"
+                          title="Edit receipt"
+                        >
+                          <Pencil size={16} className="text-[#71717A]" />
+                        </button>
+                        <button
+                          onClick={() => setConfirmDeleteId(r.id)}
+                          className="p-1.5 rounded-md hover:bg-red-50 transition-colors"
+                          title="Delete receipt"
+                        >
+                          <Trash2 size={16} className="text-red-400" />
                         </button>
                       </div>
                     </td>
@@ -325,9 +424,9 @@ const TaxReceipt = () => {
                 <input
                   type="text"
                   placeholder="e.g. TXN-2024-001"
-                  value={form.reference_id}
+                  value={form.reference}
                   onChange={(e) =>
-                    setForm({ ...form, reference_id: e.target.value })
+                    setForm({ ...form, reference: e.target.value })
                   }
                   className="border border-[#D7DEDD] rounded-lg px-3 py-2.5 text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915]"
                 />
@@ -442,6 +541,223 @@ const TaxReceipt = () => {
         </ModalOverlay>
       )}
 
+      {/* Edit Modal */}
+      {showEditModal && editingReceipt && (
+        <ModalOverlay
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingReceipt(null);
+          }}
+        >
+          <div className="relative z-50 bg-white rounded-xl shadow-lg w-full max-w-[520px] mx-4 flex flex-col overflow-hidden border border-[#E3E3E5]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#E3E3E5]">
+              <div>
+                <h3 className="text-base font-semibold text-[#2F2F33]">
+                  Edit Tax Receipt
+                </h3>
+                <p className="text-xs text-[#71717A] mt-0.5">
+                  Update receipt details
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditingReceipt(null);
+                }}
+                className="p-1.5 rounded-md hover:bg-[#F7F7F7] transition-colors"
+              >
+                <X size={18} className="text-[#71717A]" />
+              </button>
+            </div>
+            <div className="px-6 py-5 flex flex-col gap-4 overflow-y-auto max-h-[70vh]">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-[#2F2F33]">
+                    Month <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={editForm.month}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, month: e.target.value })
+                    }
+                    className="border border-[#D7DEDD] rounded-lg px-3 py-2.5 text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] bg-white"
+                  >
+                    <option value="">Select month</option>
+                    {getMonthsFromCurrentMonth().map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-[#2F2F33]">
+                    Year <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={editForm.year}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, year: e.target.value })
+                    }
+                    className="border border-[#D7DEDD] rounded-lg px-3 py-2.5 text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] bg-white"
+                  >
+                    <option value="">Select year</option>
+                    {getYearsInDescendingOrder().map((y) => (
+                      <option key={y} value={String(y)}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-[#2F2F33]">
+                  Reference ID
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. TXN-2024-001"
+                  value={editForm.reference}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, reference: e.target.value })
+                  }
+                  className="border border-[#D7DEDD] rounded-lg px-3 py-2.5 text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915]"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-[#2F2F33]">
+                  Note
+                </label>
+                <textarea
+                  placeholder="Add any relevant notes..."
+                  rows={3}
+                  value={editForm.note}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, note: e.target.value })
+                  }
+                  className="border border-[#D7DEDD] rounded-lg px-3 py-2.5 text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] resize-none"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-[#2F2F33]">
+                  Replace Receipt File{" "}
+                  <span className="text-xs text-[#71717A] font-normal">
+                    (optional)
+                  </span>
+                </label>
+                <div
+                  onClick={() => editFileInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-lg p-5 flex flex-col items-center gap-2 cursor-pointer transition-colors ${editForm.receipt ? "border-green-400 bg-green-50" : "border-[#D7DEDD] hover:border-[#E37915] hover:bg-orange-50/40"}`}
+                >
+                  {editForm.receipt ? (
+                    <>
+                      <FileText size={24} className="text-green-600" />
+                      <p className="text-sm font-medium text-green-700 text-center">
+                        {editForm.receipt.name}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditForm({ ...editForm, receipt: null });
+                          if (editFileInputRef.current)
+                            editFileInputRef.current.value = "";
+                        }}
+                        className="text-xs text-red-500 hover:underline"
+                      >
+                        Remove file
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Upload size={24} className="text-[#71717A]" />
+                      <p className="text-sm text-[#71717A]">
+                        Click to upload a new file
+                      </p>
+                    </>
+                  )}
+                  <input
+                    ref={editFileInputRef}
+                    type="file"
+                    className="hidden"
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        receipt: e.target.files?.[0] ?? null,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-[#E3E3E5] flex justify-end gap-3 bg-[#F7F7F7]">
+              <Button
+                variant="secondary"
+                onButtonClick={() => {
+                  setShowEditModal(false);
+                  setEditingReceipt(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                className="flex items-center gap-x-2 min-w-[120px] justify-center"
+                onButtonClick={handleEdit}
+                disabled={editMutation.isPending}
+              >
+                {editMutation.isPending ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Pencil size={16} />
+                )}
+                {editMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </div>
+        </ModalOverlay>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {confirmDeleteId !== null && (
+        <ModalOverlay onClose={() => setConfirmDeleteId(null)}>
+          <div className="relative z-50 bg-white rounded-xl shadow-lg w-full max-w-[400px] mx-4 border border-[#E3E3E5]">
+            <div className="px-6 py-5">
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mx-auto mb-4">
+                <Trash2 size={22} className="text-red-500" />
+              </div>
+              <h3 className="text-base font-semibold text-[#2F2F33] text-center">
+                Delete Receipt
+              </h3>
+              <p className="text-sm text-[#71717A] text-center mt-2">
+                This action cannot be undone. The receipt and all its details
+                will be permanently removed.
+              </p>
+            </div>
+            <div className="px-6 py-4 border-t border-[#E3E3E5] flex justify-end gap-3 bg-[#F7F7F7] rounded-b-xl">
+              <Button
+                variant="secondary"
+                onButtonClick={() => setConfirmDeleteId(null)}
+              >
+                Cancel
+              </Button>
+              <button
+                onClick={() => handleDelete(confirmDeleteId)}
+                disabled={deleteMutation.isPending}
+                className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-60 min-w-[100px] justify-center"
+              >
+                {deleteMutation.isPending ? (
+                  <Loader2 size={15} className="animate-spin" />
+                ) : (
+                  <Trash2 size={15} />
+                )}
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </ModalOverlay>
+      )}
+
       {/* Preview Modal */}
       {showPreviewModal && selectedReceipt && (
         <ModalOverlay
@@ -459,8 +775,8 @@ const TaxReceipt = () => {
                 </h3>
                 <p className="text-xs text-[#71717A] mt-0.5">
                   {getMonthName(selectedReceipt.month)} {selectedReceipt.year}
-                  {selectedReceipt.reference_id
-                    ? ` · Ref: ${selectedReceipt.reference_id}`
+                  {selectedReceipt.reference
+                    ? ` · Ref: ${selectedReceipt.reference}`
                     : ""}
                 </p>
               </div>

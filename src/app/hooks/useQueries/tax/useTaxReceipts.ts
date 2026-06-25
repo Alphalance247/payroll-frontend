@@ -7,7 +7,7 @@ export interface TaxReceiptRecord {
   month: string;
   year: string;
   receipt: string;
-  reference_id: string;
+  reference: string;
   note: string;
 }
 
@@ -39,6 +39,48 @@ export const useUploadTaxReceipt = () => {
   const queryClient = useQueryClient();
   return useMutation<unknown, AxiosError, FormData>({
     mutationFn: uploadTaxReceipt,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+};
+
+const editTaxReceipt = async ({
+  id,
+  payload,
+}: {
+  id: number;
+  payload: FormData;
+}) => {
+  const res = await axiosInstance.patch(
+    `/employees/taxes/remittance-receipts/${id}`,
+    payload,
+    { headers: { "Content-Type": "multipart/form-data" } },
+  );
+  return res.data;
+};
+
+export const useEditTaxReceipt = () => {
+  const queryClient = useQueryClient();
+  return useMutation<unknown, AxiosError, { id: number; payload: FormData }>({
+    mutationFn: editTaxReceipt,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+};
+
+const deleteTaxReceipt = async (id: number) => {
+  const res = await axiosInstance.delete(
+    `/employees/taxes/remittance-receipts/${id}`,
+  );
+  return res.data;
+};
+
+export const useDeleteTaxReceipt = () => {
+  const queryClient = useQueryClient();
+  return useMutation<unknown, AxiosError, number>({
+    mutationFn: deleteTaxReceipt,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
