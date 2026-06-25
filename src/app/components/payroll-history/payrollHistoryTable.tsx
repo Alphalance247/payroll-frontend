@@ -59,7 +59,7 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
         }
       });
   }, [searchQuery, sortBy, filterBy, sortByTeam]);
-  
+
   return (
     <section className="mt-20">
       {data?.data?.teams && (
@@ -154,7 +154,7 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
                     {emp?.main_hours || "N/A"}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {emp?.average_hours?.toFixed(2) || "N/A"}
+                    {emp?.average_hours || "0"}
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#188C43] ">
