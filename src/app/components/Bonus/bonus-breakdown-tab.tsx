@@ -124,6 +124,7 @@ const BonusBreakdownTab = () => {
       name: bonus.employee.fullname || "Unknown Employee",
       clientHours: bonus.client_hours.toString(),
       nonClientHours: bonus.non_client_hours.toString(),
+      total_hours: bonus.total_hours.toString(),
       clientBonus: bonus.client_bonus_str,
       nonClientBonus: bonus.non_client_bonus_str,
       status: (bonus.approved_state.charAt(0).toUpperCase() +
@@ -499,7 +500,7 @@ const BonusBreakdownTab = () => {
                         Non-Client Hours
                       </th>
                       <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                        Total Hours,
+                        Total Hours
                       </th>
                       <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
                         Bonus
@@ -567,7 +568,7 @@ const BonusBreakdownTab = () => {
                                 {employee.nonClientHours} h
                               </td>
                               <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                                {employee.nonClientBonus} h
+                                {employee.total_hours} h
                               </td>
                               <td className="px-6 py-4 text-sm text-[#2F2F33]">
                                 ₦ {employee.clientBonus}

@@ -39,6 +39,7 @@ interface BonusRecord {
     project_id: string;
     hours: number;
   }[];
+  total_hours: number;
   non_client_bonus_str: string;
 }
 
