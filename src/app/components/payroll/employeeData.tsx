@@ -239,7 +239,7 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {emp?.total_hours?.toFixed(2) || "0.00"} hrs
+                    {emp?.total_hours || "0.00"} hrs
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
