@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import axiosInstance from "@/app/utils/axios";
 import OverviewCard from "@/app/common/employee-dashboard/common/overviewCard";
 import { useQuarterlyBonus } from "@/app/hooks/useQueries/bonus/useQuarterlyBonus";
+import { getYearsInDescendingOrder } from "@/app/utils/dateOrdering";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -21,8 +22,18 @@ const getStatusColor = (status: string) => {
   }
 };
 
+const QUARTERS = [
+  { label: "1", value: "1" },
+  { label: "2", value: "2" },
+  { label: "3", value: "3" },
+  { label: "4", value: "4" },
+];
+
 const QuarterlyBonus = () => {
-  const [selectedQuarter, setSelectedQuarter] = useState<string>("Q1");
+  const [selectedQuarter, setSelectedQuarter] = useState("");
+  const [selectedYear, setSelectedYear] = useState(
+    String(new Date().getFullYear()),
+  );
   const [tableFilters, setTableFilters] = useState({
     search: "",
     bonusType: "",
@@ -66,7 +77,7 @@ const QuarterlyBonus = () => {
     isLoading,
     error,
     refetch,
-  } = useQuarterlyBonus(selectedQuarter);
+  } = useQuarterlyBonus(selectedQuarter, selectedYear);
 
   // Transform API data to employee table format
   const employeeData = useMemo(() => {
@@ -285,21 +296,41 @@ const QuarterlyBonus = () => {
               </p>
             </div>
 
-            {/* Quarter Filter */}
-            <div className="flex items-center gap-2">
-              {["", "Q1", "Q2", "Q3", "Q4"].map((q) => (
-                <button
-                  key={q || "all"}
-                  onClick={() => setSelectedQuarter(q)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
-                    selectedQuarter === q
-                      ? "bg-[#E37915] text-white border-[#E37915]"
-                      : "bg-white text-[#2F2F33] border-[#E3E3E5] hover:border-[#E37915] hover:text-[#E37915]"
-                  }`}
-                >
-                  {q || "All"}
-                </button>
-              ))}
+            {/* Quarter + Year Filters */}
+            <div className="flex items-center gap-3">
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="border border-[#E3E3E5] rounded-lg px-3 py-2 text-sm text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] bg-white"
+              >
+                <option value="" disabled>
+                  Select year
+                </option>
+                {getYearsInDescendingOrder().map((y) => (
+                  <option key={y} value={String(y)}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+              <div className="flex items-center gap-1 bg-[#F7F7F7] border border-[#E3E3E5] rounded-lg p-1">
+                {QUARTERS.map((q) => (
+                  <button
+                    key={q.value}
+                    onClick={() =>
+                      setSelectedQuarter(
+                        selectedQuarter === q.value ? "" : q.value,
+                      )
+                    }
+                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedQuarter === q.value
+                        ? "bg-[#E37915] text-white"
+                        : "text-[#71717A] hover:text-[#2F2F33]"
+                    }`}
+                  >
+                    {q.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 mb-8">
@@ -657,7 +688,7 @@ const QuarterlyBonus = () => {
                       <tr>
                         <td colSpan={10} className="px-6 py-8 text-center">
                           <p className="text-[#71717A]">
-                            No bonus data available for{" "}
+                            No bonus data available for Q
                             {selectedQuarter || "this period"}
                           </p>
                         </td>

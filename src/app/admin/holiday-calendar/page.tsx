@@ -2,7 +2,7 @@
 import ProtectedRoute from "../../common/protectedRoute";
 import DashboardLayout from "../../common/DashBoardLayout";
 import DropDownBtn from "../../common/dropDownBtn";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Button from "../../common/Button";
 import { FiPlus, FiEdit2 } from "react-icons/fi";
 import { IoMenuOutline } from "react-icons/io5";
@@ -33,10 +33,10 @@ export default function HolidayCalendar() {
   const [eventType, setEventType] = useState("");
   const [holidayName, setHolidayName] = useState("");
   const [holidayStatus, setHolidayStatus] = useState(false);
-
   const [selectedHolidayIds, setSelectedHolidayIds] = useState<Set<string>>(
     new Set(),
   );
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [bulkStatusValue, setBulkStatusValue] = useState<string>("");
   const [isApplyingBulkUpdate, setIsApplyingBulkUpdate] = useState(false);
   const [isApplyingBulkDelete, setIsApplyingBulkDelete] = useState(false);
@@ -54,9 +54,23 @@ export default function HolidayCalendar() {
     ["country"],
   );
 
-  const allHolidays = filteredData || [];
+  const allHolidays = useMemo(() => filteredData || [], [filteredData]);
+
+  const visibleHolidays = useMemo(
+    () => selectedStatus ? allHolidays.filter((h) => h.status === selectedStatus) : allHolidays,
+    [allHolidays, selectedStatus],
+  );
+
+  const visibleEvents = useMemo(
+    () => selectedStatus
+      ? (holidayData?.data?.events ?? []).filter(() => selectedStatus === "approved")
+      : (holidayData?.data?.events ?? []),
+    [holidayData?.data?.events, selectedStatus],
+  );
+
   const isAllSelected =
-    selectedHolidayIds.size === allHolidays.length && allHolidays.length > 0;
+    selectedHolidayIds.size === (visibleHolidays.length + visibleEvents.length) &&
+    (visibleHolidays.length + visibleEvents.length) > 0;
 
   const clearSelections = useCallback(() => {
     setSelectedHolidayIds(new Set());
@@ -80,8 +94,8 @@ export default function HolidayCalendar() {
     // Check if any selected items are no longer in filtered data
     const selectedStillVisible = Array.from(selectedHolidayIds).some(
       (id) =>
-        filteredData.some((h) => h.id === id) ||
-        holidayData?.data?.events?.some((e) => e.id === id),
+        visibleHolidays.some((h) => h.id === id) ||
+        visibleEvents.some((e) => e.id === id),
     );
 
     if (previousCount > 0 && !selectedStillVisible) {
@@ -89,12 +103,7 @@ export default function HolidayCalendar() {
       toast.error("Selections cleared due to filter change");
       clearSelections();
     }
-  }, [
-    filteredData,
-    holidayData?.data?.events,
-    selectedHolidayIds,
-    clearSelections,
-  ]);
+  }, [visibleHolidays, visibleEvents, selectedHolidayIds, clearSelections]);
 
   // ============ TOGGLE INDIVIDUAL HOLIDAY ============
   const toggleHolidaySelection = (holidayId: string) => {
@@ -122,10 +131,8 @@ export default function HolidayCalendar() {
     } else {
       // Select all visible holidays
       const allIds = new Set([
-        ...(holidayData?.data?.events?.map(
-          (event: { id: string }) => event.id,
-        ) || []),
-        ...(filteredData.map((holiday: { id: string }) => holiday.id) || []),
+        ...visibleEvents.map((event: { id: string }) => event.id),
+        ...visibleHolidays.map((holiday: { id: string }) => holiday.id),
       ]);
       setSelectedHolidayIds(allIds);
     }
@@ -226,6 +233,28 @@ export default function HolidayCalendar() {
             <CreateEvent onModalClose={() => setEventModal(!eventModal)} />
           )}
 
+          {/* Status filter pills */}
+          <div className="flex items-center gap-2 mb-6">
+            {[
+              { label: "All", value: "" },
+              { label: "In Review", value: "in review" },
+              { label: "Approved", value: "approved" },
+              { label: "Rejected", value: "rejected" },
+            ].map((opt) => (
+              <button
+                key={opt.value || "all"}
+                onClick={() => setSelectedStatus(opt.value)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                  selectedStatus === opt.value
+                    ? "bg-[#E37915] text-white border-[#E37915]"
+                    : "bg-white text-[#71717A] border-[#E3E3E5] hover:border-[#E37915] hover:text-[#E37915]"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
           <div className="flex items-center justify-between mb-10">
             <StartEndDate
               start_date={start_date}
@@ -317,8 +346,7 @@ export default function HolidayCalendar() {
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]"></th>
                   </tr>
                 </thead>
-                {filteredData?.length === 0 &&
-                holidayData?.data?.events?.length === 0 ? (
+                {visibleHolidays.length === 0 && visibleEvents.length === 0 ? (
                   <tbody>
                     <tr>
                       <td colSpan={6} className="text-center py-8">
@@ -328,7 +356,7 @@ export default function HolidayCalendar() {
                   </tbody>
                 ) : (
                   <tbody>
-                    {holidayData?.data?.events?.map((event, i) => (
+                    {visibleEvents.map((event, i) => (
                       <tr
                         key={i}
                         className={`border-b border-[#E3E3E5] last:border-b-0 transition-colors ${
@@ -386,7 +414,7 @@ export default function HolidayCalendar() {
                       </tr>
                     ))}
 
-                    {filteredData?.map((emp, i) => (
+                    {visibleHolidays.map((emp, i) => (
                       <tr
                         key={i}
                         className={`border-b border-[#E3E3E5] last:border-b-0 transition-colors ${
@@ -497,8 +525,7 @@ export default function HolidayCalendar() {
                 {selectedHolidayIds.size}
               </span>
               <span className="text-sm text-[#2F2F33] font-medium">
-                {selectedHolidayIds.size ===
-                filteredData.length + (holidayData?.data?.events?.length || 0)
+                {selectedHolidayIds.size === visibleHolidays.length + visibleEvents.length
                   ? `All ${selectedHolidayIds.size} selected`
                   : `${selectedHolidayIds.size} selected`}
               </span>

@@ -22,6 +22,7 @@ interface employeeListDataStore {
   data: data[];
   total_bonus_paid: string;
   total_salary_paid: string;
+  total_tax_paid: string;
   active_employees: number;
   tax: string;
   loan: string;
@@ -38,7 +39,7 @@ interface payrollAnalysisStore {
   error: string | null;
   fetchPayrollAnalysis: (
     start_date?: string,
-    end_date?: string
+    end_date?: string,
   ) => Promise<void>;
 }
 

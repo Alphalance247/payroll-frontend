@@ -2,6 +2,7 @@
 import DropDownBtn from "@/app/common/dropDownBtn";
 import Spinner from "@/app/common/spinner";
 import { getLeaveRequestStore } from "@/stores/leave-request/leaveRequestList";
+import { getTeamList } from "@/stores/getTeamList";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -13,11 +14,22 @@ import ShowCommentSideBar from "../Employee-Dashboard/leave-request/showCommentS
 
 const LeaveRequest = () => {
   const { data, loading } = getLeaveRequestStore();
+  const { data: teamData, fetchTeamList } = getTeamList();
+
+  useEffect(() => {
+    fetchTeamList();
+  }, [fetchTeamList]);
+
+  const teamOptions = [
+    "All",
+    ...(teamData?.data?.map((t) => t.name) ?? []),
+  ];
   const [leaveId, setLeaveId] = useState("");
   const [leaveStatusModal, setLeaveStatusModal] = useState(false);
   const [leaveName, setLeaveName] = useState("");
   const [selectedTeam, setSelectedTeam] = useState("");
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [expandedReasonId, setExpandedReasonId] = useState<number | null>(null);
   const [showCommentDrawer, setShowCommentDrawer] = useState(false);
   const [requestStatus, setRequestStatus] = useState<string>("");
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -45,19 +57,6 @@ const LeaveRequest = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const teamOptions = [
-    "All",
-    "DevOps",
-    "ITSM",
-    "Design",
-    "Cloud",
-    "Quality  Assurance",
-    "Development",
-    "Management",
-    "Domestic Staff",
-    "Advocate",
-    "Product Office",
-  ];
 
   return (
     <section className="mt-6">
@@ -206,8 +205,20 @@ const LeaveRequest = () => {
                         {emp?.remaining}
                       </td>
 
-                      <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                        {emp?.reason}
+                      <td className="px-6 py-4 text-sm text-[#2F2F33] max-w-[200px]">
+                        <div>
+                          <p className={expandedReasonId === i ? "" : "line-clamp-2"}>
+                            {emp?.reason}
+                          </p>
+                          {emp?.reason && emp.reason.length > 80 && (
+                            <button
+                              onClick={() => setExpandedReasonId(expandedReasonId === i ? null : i)}
+                              className="text-[#E37915] text-xs mt-1 hover:underline"
+                            >
+                              {expandedReasonId === i ? "Read less" : "Read more"}
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span

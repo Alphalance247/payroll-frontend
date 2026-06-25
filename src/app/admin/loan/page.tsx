@@ -146,15 +146,6 @@ const Loan = () => {
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
             </div>
-
-            {/* <DropDownBtn
-              selectedValue={selectedYear}
-              btnHeight="h-fit"
-              subText="Year"
-              onSelectOption={setSelectedYear}
-              options={employeeTypeOptions}
-              placeholder="2025"
-            /> */}
           </div>
 
           {loading ? (

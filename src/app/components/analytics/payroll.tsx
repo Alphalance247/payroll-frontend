@@ -104,10 +104,14 @@ const Payroll: React.FC<{
       heading: "Total Bonus Paid",
       subhead: `NGN ${data?.total_bonus_paid}` || "NGN 0",
     },
-    // {
-    //   heading: "Total Expenses",
-    //   subhead: "Nil",
-    // },
+    {
+      heading: "Total Tax Paid",
+      subhead: `NGN ${data?.tax}` || "NGN 0",
+    },
+    {
+      heading: "Total Loan Disbursed",
+      subhead: `NGN ${data?.loan}` || "NGN 0",
+    },
   ];
   return (
     <section>
@@ -133,7 +137,7 @@ const Payroll: React.FC<{
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 mb-6">
+      <div className="grid grid-cols-4 gap-x-4 mb-6">
         {payrollData.map((el, i) => {
           return (
             <PayrollCard key={i} heading={el?.heading} subhead={el?.subhead} />
