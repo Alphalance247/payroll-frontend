@@ -1,3 +1,4 @@
+import { useState } from "react";
 import HeadingSubHead from "@/app/common/headingSubHead";
 import PayrollCard from "@/app/common/payrollCard";
 import { DoughnutChart1 } from "../charts/chart-pie-donut-text";
@@ -5,9 +6,12 @@ import { ChartConfig } from "@/components/ui/chart";
 import { LoanTrendChart } from "../charts/loanTrendChart";
 import { getLoanAnalytics } from "@/stores/getLoanAnalytics";
 import { formatCurrencyShort } from "@/app/utils/formatCurrency";
+import StartEndDate from "../common/startEndDate";
 
 const Loan = () => {
-  const { data: loanData } = getLoanAnalytics();
+  const { data: loanData, fetchLoanAnalytics } = getLoanAnalytics();
+  const [start_date, setStartDate] = useState("");
+  const [end_date, setEndDate] = useState("");
 
   const data = [
     {
@@ -82,22 +86,15 @@ const Loan = () => {
           />
         </div>
 
-        {/* <div className="relative">
-          <div
-            className="flex items-center gap-x-4 px-4 py-3 bg-white border border-[#d9d9d9]  rounded-lg cursor-pointer w-fit"
-            // onClick={handleOpen}
-          >
-            <p className="">
-              <span className="text-base font-Graphik text-[#2F2F33] tracking-[-0.3px]">
-                Last 12 months
-              </span>{" "}
-              <span className="font-medium text-[15px] leading-5 text-[#262626] ">
-                {""}
-              </span>
-            </p>
-            <FaCaretDown size={20} color="black" />
-          </div>
-        </div> */}
+        <StartEndDate
+          start_date={start_date}
+          end_date={end_date}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+          onFetch={() => {
+            fetchLoanAnalytics(start_date, end_date);
+          }}
+        />
       </div>
 
       <div className="grid grid-cols-3 gap-x-4 mb-6">

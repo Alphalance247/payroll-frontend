@@ -12,12 +12,12 @@ import {
 import { useEffect, useState } from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { type LoanCategoryData } from "@/stores/analytics/getLoanCategory";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { getLoanCategory } from "@/stores/analytics/getLoanCategory";
 
 const chartConfig = {
   "Travel Allowance": {
@@ -73,26 +73,31 @@ const ALL_MONTHS = [
   "Dec",
 ];
 
-export function LoanAmountsCharts() {
+export function LoanAmountsCharts({ data }: { data?: LoanCategoryData }) {
   const barSize = useResponsiveBarSize();
-  const { data } = getLoanCategory();
+  // const { data } = getLoanCategory();
 
   // Index backend data by month name for O(1) lookup
   const backendByMonth: Record<string, Record<string, number>> = {};
-  data?.monthly_data.forEach((item) => {
-    const shortMonth = item.month?.slice(0, 3);
-    backendByMonth[shortMonth] = item.categories.reduce(
-      (
-        acc: Record<string, number>,
-        curr: { category: string; total_amount: number },
-      ) => {
-        acc[curr.category] =
-          parseFloat(String(curr.total_amount).replace(/,/g, "")) || 0;
-        return acc;
-      },
-      {},
-    );
-  });
+  data?.monthly_data.forEach(
+    (item: {
+      month: string;
+      categories: { category: string; total_amount: number }[];
+    }) => {
+      const shortMonth = item.month?.slice(0, 3);
+      backendByMonth[shortMonth] = item.categories.reduce(
+        (
+          acc: Record<string, number>,
+          curr: { category: string; total_amount: number },
+        ) => {
+          acc[curr.category] =
+            parseFloat(String(curr.total_amount).replace(/,/g, "")) || 0;
+          return acc;
+        },
+        {},
+      );
+    },
+  );
 
   // Always render all 12 months; missing months get 0 for all categories
   const chartData = ALL_MONTHS.map((month) => ({
@@ -141,7 +146,9 @@ export function LoanAmountsCharts() {
                 <YAxis
                   domain={[0, 5000000]}
                   ticks={[0, 1000000, 2000000, 3000000, 4000000, 5000000]}
-                  tickFormatter={(v: number) => v === 0 ? "0" : `${v / 1000000}M`}
+                  tickFormatter={(v: number) =>
+                    v === 0 ? "0" : `${v / 1000000}M`
+                  }
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12 }}

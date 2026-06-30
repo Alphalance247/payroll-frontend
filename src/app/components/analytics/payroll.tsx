@@ -163,7 +163,7 @@ const Payroll: React.FC<{
               chartConfig={chartConfig1}
               chartData={chartData1}
               total_salary_paid={formatCurrencyShort(
-                data?.total_salary_paid || "0",
+                data?.total_payroll || "0",
               )}
               text="paid out"
             />

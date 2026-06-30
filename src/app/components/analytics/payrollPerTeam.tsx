@@ -10,8 +10,8 @@ const PayrollPerTeam = () => {
             withSubHead={true}
             headingClassName="text-base"
             subHeadClassName="text-sm"
-            heading="Payroll spend breakdown"
-            subHead="Shows a breakdown of payroll expenses by team."
+            heading="Salary breakdown by team"
+            subHead="Shows a breakdown of salary expenses by team."
           />
         </div>
 
