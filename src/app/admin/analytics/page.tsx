@@ -172,7 +172,7 @@ const PayrollAnalytics = () => {
                 onFetch={() => {
                   fetchTeamHoursLogged(
                     timeTrackingStartDate,
-                    timeTrackingEndDate
+                    timeTrackingEndDate,
                   );
                 }}
               />

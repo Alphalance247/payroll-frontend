@@ -3,49 +3,6 @@ import { EmployeesPerTeamChart } from "../charts/employeesPerTeamChart";
 import { getTeamHoursLogged } from "@/stores/getTeamHoursLogged";
 
 const WorkHoursBreakDown = () => {
-  // const chartData = [
-  //   {
-  //     name: "Artificial Intelligence",
-  //     value: 800,
-  //   },
-  //   {
-  //     name: "Advocate",
-  //     value: 600,
-  //   },
-  //   {
-  //     name: "Cloud",
-  //     value: 700,
-  //   },
-  //   {
-  //     name: "Design & Development",
-  //     value: 300,
-  //   },
-  //   {
-  //     name: "Domestics ",
-  //     value: 700,
-  //   },
-  //   {
-  //     name: "Devops",
-  //     value: 900,
-  //   },
-  //   {
-  //     name: "ITSM",
-  //     value: 500,
-  //   },
-  //   {
-  //     name: "Product",
-  //     value: 600,
-  //   },
-  //   {
-  //     name: "Quality Assurance",
-  //     value: 200,
-  //   },
-  //   {
-  //     name: "Legal & Compliance",
-  //     value: 100,
-  //   },
-  // ];
-
   const { data: teamHoursLoggedData } = getTeamHoursLogged();
 
   const chartData = teamHoursLoggedData?.employee_data.map((el) => {
@@ -64,7 +21,7 @@ const WorkHoursBreakDown = () => {
               headingClassName="text-base"
               subHeadClassName="text-sm"
               heading="Time Tracking"
-              subHead="0% of your NGN payroll this year was allocated to paying out salaries"
+              subHead="Shows a breakdown of hours logged by employees across different teams."
             />
           </div>
 

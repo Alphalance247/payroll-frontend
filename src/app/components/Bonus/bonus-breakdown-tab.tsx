@@ -509,7 +509,7 @@ const BonusBreakdownTab = () => {
                         Status
                       </th>
                       <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]">
-                        Last Disbursed
+                        Date Approved
                       </th>
                       <th className="px-6 py-3 text-left text-sm font-semibold text-[#2F2F33]"></th>
                     </tr>

@@ -1,5 +1,4 @@
 import HeadingSubHead from "@/app/common/headingSubHead";
-import { FaCaretDown } from "react-icons/fa";
 import PayrollCard from "@/app/common/payrollCard";
 import { DoughnutChart1 } from "../charts/chart-pie-donut-text";
 import { ChartConfig } from "@/components/ui/chart";
@@ -25,25 +24,28 @@ const Loan = () => {
     },
   ];
 
+  const toNum = (val: string | number | undefined) =>
+    parseFloat(String(val ?? "0").replace(/,/g, "")) || 0;
+
   const chartData1 = [
     {
       browser: "Approved",
-      visitors: loanData?.approved || 0,
+      visitors: toNum(loanData?.approved),
       fill: "bg-[#F5B971]",
     },
     {
       browser: "Pending",
-      visitors: loanData?.pending || 0,
+      visitors: toNum(loanData?.pending),
       fill: "bg-[#78D6E0]",
     },
     {
       browser: "Rejected",
-      visitors: loanData?.rejected || 0,
+      visitors: toNum(loanData?.rejected),
       fill: "bg-[#2E6171]",
     },
     {
       browser: "Disbursed",
-      visitors: loanData?.disbursed || 0,
+      visitors: toNum(loanData?.disbursed),
       fill: "bg-[#009BC0]",
     },
   ];
@@ -66,6 +68,7 @@ const Loan = () => {
       color: "#009BC0",
     },
   } satisfies ChartConfig;
+
   return (
     <section className="mt-10">
       <div className="flex justify-between items-center mb-6">
@@ -75,11 +78,11 @@ const Loan = () => {
             headingClassName="text-base"
             subHeadClassName="text-sm"
             heading="Loan"
-            subHead="0% of your NGN payroll this year was allocated to paying out salaries"
+            subHead=" Shows a breakdown of loan distribution and trends over time."
           />
         </div>
 
-        <div className="relative">
+        {/* <div className="relative">
           <div
             className="flex items-center gap-x-4 px-4 py-3 bg-white border border-[#d9d9d9]  rounded-lg cursor-pointer w-fit"
             // onClick={handleOpen}
@@ -94,7 +97,7 @@ const Loan = () => {
             </p>
             <FaCaretDown size={20} color="black" />
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-3 gap-x-4 mb-6">
@@ -122,7 +125,7 @@ const Loan = () => {
                 chartConfig={chartConfig1}
                 chartData={chartData1}
                 total_salary_paid={formatCurrencyShort(
-                  Number(loanData?.disbursed) || 0
+                  toNum(loanData?.disbursed),
                 )}
                 text="disbursed"
               />

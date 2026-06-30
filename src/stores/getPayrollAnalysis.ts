@@ -21,8 +21,10 @@ interface TeamData {
 interface employeeListDataStore {
   data: data[];
   total_bonus_paid: string;
+  total_payroll: string;
   total_salary_paid: string;
   total_tax_paid: string;
+  total_loan_repaid: string;
   active_employees: number;
   tax: string;
   loan: string;

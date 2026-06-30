@@ -14,6 +14,7 @@ interface employees {
 interface teamHoursLoggedDataStore {
   avg_hours: number;
   total_hours: number;
+  client_hours: number;
   employee_data: employees[];
 }
 
@@ -23,7 +24,7 @@ interface teamHoursLoggedStore {
   error: string | null;
   fetchTeamHoursLogged: (
     start_date?: string,
-    end_date?: string
+    end_date?: string,
   ) => Promise<void>;
 }
 

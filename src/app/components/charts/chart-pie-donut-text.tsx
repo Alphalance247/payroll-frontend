@@ -92,6 +92,17 @@ export function DoughnutChart1({
     )
     .map((config) => config.color);
 
+  // Lock color per browser name so filtering doesn't shift the palette
+  const colorMap = React.useMemo(() => {
+    return Object.fromEntries(
+      chartData.map((item, i) => [item.browser, COLORS[i % COLORS.length]])
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chartData]);
+
+  // Only pass non-zero items to the Pie so 0-value segments don't stack
+  const pieData = chartData.filter((item) => item.visitors > 0);
+
   return (
     <>
       <CardContent className="flex-1 pb-0">
@@ -121,18 +132,18 @@ export function DoughnutChart1({
               }
             />
             <Pie
-              data={chartData}
+              data={pieData}
               dataKey="visitors"
               nameKey="browser"
               innerRadius={75}
-              strokeWidth={5}
+              strokeWidth={2}
               labelLine={false}
               label={renderCustomizedLabel}
             >
-              {chartData.map((entry, index) => (
+              {pieData.map((entry) => (
                 <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
+                  key={`cell-${entry.browser}`}
+                  fill={colorMap[entry.browser]}
                 />
               ))}
 

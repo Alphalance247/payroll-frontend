@@ -8,7 +8,7 @@ const LoanAmounts = () => {
         <HeadingSubHead
           withSubHead={true}
           headingClassName="text-base"
-          heading="Loan Amounts by Category"
+          heading="Monthly loan disbursed"
           subHead="Track which type of loan is most popular."
         />
       </div>

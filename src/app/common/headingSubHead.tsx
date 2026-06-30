@@ -28,7 +28,7 @@ const HeadingSubHead: React.FC<subHeadProps> = ({
             subHeadClassName || "text-base"
           }`}
         >
-          {subHead || "Wednesday, 20 February, 2024"}
+          {subHead || ""}
         </p>
       )}
     </>
