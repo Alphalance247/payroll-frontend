@@ -1,124 +1,69 @@
 "use client";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  XAxis,
-  YAxis,
-  LabelList,
-} from "recharts";
-import { useEffect, useState } from "react";
-
+import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { getYearlyJobType } from "@/stores/analytics/getYearlyJobType";
 
-const chartConfig = {
-  Contractors: {
-    label: "Contractors",
-    color: "hsl(195, 30%, 40%)",
-  },
+const ALL_MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+] as const;
 
-  "Full-time": {
-    label: "Full-time",
-    color: "hsl(35, 90%, 75%)",
-  },
+const SHORT_MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+const chartConfig: ChartConfig = {
+  "Full Time": { label: "Full Time", color: "#F5B971" },
+  "Part Time": { label: "Part Time", color: "#78D6E0" },
+  Contract: { label: "Contract", color: "#2E6171" },
+  Intern: { label: "Intern", color: "#009BC0" },
 };
 
-function useResponsiveBarSize() {
-  const [barSize, setBarSize] = useState(4000);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setBarSize(250); // Mobile bar size
-      } else if (window.innerWidth < 1024) {
-        setBarSize(350); // Tablet bar size
-      } else {
-        setBarSize(400); // Desktop bar size
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  return barSize;
-}
-
-export function EmploymentsTypeChart() {
-  const barSize = useResponsiveBarSize();
-
+export function EmploymentsTypeChart({
+  selectedTeam,
+}: {
+  selectedTeam: string;
+}) {
   const { data: yearlyJobTypeData } = getYearlyJobType();
 
-  const chartData = [
-    {
-      month: "Jan",
-      Contractors: yearlyJobTypeData?.data?.January?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.January?.["Full time"],
-    },
-    {
-      month: "Feb",
-      Contractors: yearlyJobTypeData?.data?.February?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.February?.["Full time"],
-    },
-    {
-      month: "Mar",
-      Contractors: yearlyJobTypeData?.data?.March?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.March?.["Full time"],
-    },
-    {
-      month: "Apr",
-      Contractors: yearlyJobTypeData?.data?.April?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.April?.["Full time"],
-    },
-    {
-      month: "May",
-      Contractors: yearlyJobTypeData?.data?.May?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.May?.["Full time"],
-    },
-    {
-      month: "Jun",
-      Contractors: yearlyJobTypeData?.data?.June?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.June?.["Full time"],
-    },
-    {
-      month: "Jul",
-      Contractors: yearlyJobTypeData?.data?.July?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.July?.["Full time"],
-    },
-    {
-      month: "Aug",
-      Contractors: yearlyJobTypeData?.data?.August?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.August?.["Full time"],
-    },
-    {
-      month: "Sep",
-      Contractors: yearlyJobTypeData?.data?.September?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.September?.["Full time"],
-    },
-    {
-      month: "Oct",
-      Contractors: yearlyJobTypeData?.data?.October?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.October?.["Full time"],
-    },
-    {
-      month: "Nov",
-      Contractors: yearlyJobTypeData?.data?.November?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.November?.["Full time"],
-    },
-    {
-      month: "Dec",
-      Contractors: yearlyJobTypeData?.data?.December?.Contractors,
-      "Full-time": yearlyJobTypeData?.data?.December?.["Full time"],
-    },
-  ];
+  const chartData = ALL_MONTHS.map((month, i) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const teamData = (yearlyJobTypeData?.data as any)?.[month]?.[selectedTeam];
+    return {
+      month: SHORT_MONTHS[i],
+      "Full Time": teamData?.["Full Time"] ?? 0,
+      "Part Time": teamData?.["Part Time"] ?? 0,
+      Contract: teamData?.Contract ?? 0,
+      Intern: teamData?.Intern ?? 0,
+    };
+  });
 
   return (
     <Card className="border-0 shadow-none w-full">
@@ -129,18 +74,12 @@ export function EmploymentsTypeChart() {
               <BarChart
                 accessibilityLayer
                 data={chartData}
-                margin={{ top: 40, right: 30, left: -20, bottom: 15 }}
+                margin={{ top: 20, right: 30, left: -20, bottom: 15 }}
                 layout="horizontal"
                 className="w-full"
-                barCategoryGap={8}
-                barGap={0}
+                barCategoryGap="25%"
+                barGap={2}
               >
-                <LabelList
-                  position="top"
-                  offset={12}
-                  className="text-[black] bg-black"
-                  fontSize={30}
-                />
                 <CartesianGrid
                   horizontal
                   vertical
@@ -156,43 +95,33 @@ export function EmploymentsTypeChart() {
                   height={40}
                 />
                 <YAxis
-                  //   tickFormatter={formatYAxis}
-                  domain={[0, 70]}
-                  ticks={[0, 10, 20, 30, 40, 50, 60, 70]}
+                  domain={[0, "auto"]}
+                  allowDecimals={false}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12 }}
-                  width={100}
-                  //   label={{
-                  //     value: "Total Amount (USD)",
-                  //     angle: -90,
-                  //     position: "insideLeft",
-                  //     style: { textAnchor: "middle" },
-                  //     offset: -40,
-                  //   }}
-                  className="font-Graphik text-[#71717A] text-sm font-medium"
+                  width={40}
                 />
                 <ChartTooltip
                   cursor={false}
                   content={<ChartTooltipContent className="bg-white" />}
                 />
-
                 <Bar
-                  dataKey="Full-time"
-                  fill={chartConfig["Full-time"].color}
-                  radius={[0, 0, 0, 0]}
-                  barSize={barSize}
-                  stackId="a"
+                  dataKey="Full Time"
+                  fill="#F5B971"
+                  radius={[2, 2, 0, 0]}
                 />
-
                 <Bar
-                  dataKey="Contractors"
-                  fill={chartConfig.Contractors.color}
-                  radius={[0, 0, 0, 0]}
-                  barSize={barSize}
-                  stackId="a"
-                ></Bar>
-
+                  dataKey="Part Time"
+                  fill="#78D6E0"
+                  radius={[2, 2, 0, 0]}
+                />
+                <Bar
+                  dataKey="Contract"
+                  fill="#2E6171"
+                  radius={[2, 2, 0, 0]}
+                />
+                <Bar dataKey="Intern" fill="#009BC0" radius={[2, 2, 0, 0]} />
                 <Legend
                   verticalAlign="bottom"
                   height={36}

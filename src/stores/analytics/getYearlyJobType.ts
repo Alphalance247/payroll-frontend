@@ -6,52 +6,693 @@ import { AxiosError } from "axios";
 interface yearlyJobTypeDataStore {
   data: {
     January: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
     February: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
     March: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
     April: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
     May: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
     June: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
+
     July: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
     August: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
+
     September: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
+
     October: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
+
     November: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
+
     December: {
-      "Full time": number;
-      Contractors: number;
+      "AI In Software": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+
+      Advocate: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Cloud Upgrade": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      Design: {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Domestic Staff": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Enterprise Strategy Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Operational Excellence Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Senior Leadership Team": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
+      "Service Management": {
+        "Full Time": number;
+        "Part Time": number;
+        Contract: number;
+        Intern: number;
+      };
     };
   };
 }

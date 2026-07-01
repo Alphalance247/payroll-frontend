@@ -14,6 +14,13 @@ interface loanAnalyticsDataStore {
   rejected: string;
   "disbursed %": number;
   disbursed: string;
+
+  trends: {
+    period: string;
+    total_applications: number;
+    approved: number;
+    rejected: number;
+  }[];
 }
 
 interface loanAnalyticsStore {
