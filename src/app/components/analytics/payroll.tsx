@@ -106,13 +106,14 @@ const Payroll: React.FC<{
     },
     {
       heading: "Total Tax Paid",
-      subhead: `NGN ${data?.tax}` || "NGN 0",
+      subhead: `NGN ${data?.total_tax_paid}` || "NGN 0",
     },
     {
-      heading: "Total Loan Disbursed",
-      subhead: `NGN ${data?.loan}` || "NGN 0",
+      heading: "Total Loan Recovered",
+      subhead: `NGN ${data?.total_loan_repaid}` || "NGN 0",
     },
   ];
+
   return (
     <section>
       <div className="flex justify-between items-center mb-6">
@@ -122,7 +123,7 @@ const Payroll: React.FC<{
             headingClassName="text-base"
             subHeadClassName="text-sm"
             heading="Payroll"
-            subHead="0% of your NGN payroll this year was allocated to paying out salaries"
+            subHead=" Shows a breakdown of payroll distribution and trends over time."
           />
         </div>
 
@@ -153,7 +154,7 @@ const Payroll: React.FC<{
               headingClassName="text-base"
               subHeadClassName="text-sm"
               heading="Payroll spend breakdown"
-              subHead="0% of your NGN payroll this year was allocated to paying out salaries"
+              subHead="Shows a breakdown of payroll expenses."
             />
           </div>
 
@@ -162,7 +163,7 @@ const Payroll: React.FC<{
               chartConfig={chartConfig1}
               chartData={chartData1}
               total_salary_paid={formatCurrencyShort(
-                data?.total_salary_paid || "0",
+                data?.total_payroll || "0",
               )}
               text="paid out"
             />
@@ -175,7 +176,7 @@ const Payroll: React.FC<{
               headingClassName="text-base"
               subHeadClassName="text-sm"
               heading="Payroll spend by Employment Type"
-              subHead="0% of your payroll NGN was allocated to paying out employees in teams."
+              // subHead="Shows a breakdown of payroll expenses by employment type."
             />
           </div>
 

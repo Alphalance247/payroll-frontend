@@ -37,7 +37,7 @@ const TimeTracking = ({
     },
     {
       heading: "Billed Hours",
-      subhead: "40:10:00",
+      subhead: teamHoursLoggedData?.client_hours?.toFixed(2) || "0",
     },
   ];
 
@@ -50,7 +50,7 @@ const TimeTracking = ({
             headingClassName="text-base"
             subHeadClassName="text-sm"
             heading="Time Tracking"
-            subHead="0% of your NGN payroll this year was allocated to paying out salaries"
+            subHead=" Shows a breakdown of time tracking distribution and trends over time."
           />
         </div>
 
@@ -82,8 +82,8 @@ const TimeTracking = ({
               withSubHead={true}
               headingClassName="text-base"
               subHeadClassName="text-sm"
-              heading="Total Number of Employees in Each Team"
-              subHead="0% of your NGN payroll this year was allocated to paying out salaries"
+              heading="Total Hours Logged by Team"
+              subHead=""
             />
           </div>
 

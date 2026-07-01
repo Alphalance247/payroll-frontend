@@ -10,8 +10,8 @@ const PayrollPerTeam = () => {
             withSubHead={true}
             headingClassName="text-base"
             subHeadClassName="text-sm"
-            heading="Payroll spend breakdown"
-            subHead="0% of your NGN payroll this year was allocated to paying out salaries"
+            heading="Salary breakdown by team"
+            subHead="Shows a breakdown of salary expenses by team."
           />
         </div>
 

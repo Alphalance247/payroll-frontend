@@ -9,7 +9,7 @@ const Overview = () => {
   const overviewData = [
     {
       heading: "Total Payroll",
-      subHead: `NGN ${data?.total_salary_paid.toLocaleString()}` || "NGN 0",
+      subHead: `NGN ${data?.total_payroll?.toLocaleString()}` || "NGN 0",
       feature: "Total payroll paid out in the last 12 months",
     },
     {
@@ -23,6 +23,7 @@ const Overview = () => {
       feature: "Total hours logged by all employees in the last 12 months",
     },
   ];
+
   return (
     <section className="mb-10 mt-10">
       {/* <p className="text-base font-Graphik text-[#2F2F33] font-semibold tracking-[-0.3%] mb-4">

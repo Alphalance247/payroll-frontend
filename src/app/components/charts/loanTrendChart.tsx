@@ -8,33 +8,33 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-const chartData = [
-  {
-    month: "Total applications",
-    ["Total applications"]: 6,
-    Approved: 40,
-    Rejected: 17,
-  },
-  { month: "Approved", ["Total applications"]: 30, Approved: 20, Rejected: 6 },
-  { month: "Rejected", ["Total applications"]: 23, Approved: 12, Rejected: 77 },
-];
+import { getLoanAnalytics } from "@/stores/getLoanAnalytics";
 
 const chartConfig = {
-  ["Total applications"]: {
-    label: "Total applications",
+  total_applications: {
+    label: "Total Applications",
     color: "#8A508F",
   },
-  Approved: {
+  approved: {
     label: "Approved",
     color: "#F4A261",
   },
-  Rejected: {
+  rejected: {
     label: "Rejected",
-    color: "#F4A261",
+    color: "#118AB2",
   },
 } satisfies ChartConfig;
 
 export function LoanTrendChart() {
+  const { data: loanData } = getLoanAnalytics();
+
+  const chartData = (loanData?.trends ?? []).map((item) => ({
+    month: item.period,
+    total_applications: item.total_applications,
+    approved: item.approved,
+    rejected: item.rejected,
+  }));
+
   return (
     <div>
       <CardContent>
@@ -45,10 +45,7 @@ export function LoanTrendChart() {
           <AreaChart
             accessibilityLayer
             data={chartData}
-            margin={{
-              left: 0,
-              right: 12,
-            }}
+            margin={{ left: 0, right: 12 }}
           >
             <CartesianGrid
               horizontal
@@ -61,11 +58,10 @@ export function LoanTrendChart() {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              //   tickFormatter={(value) => value.slice(0, 3)}
             />
             <YAxis
-              domain={[0, 100]}
-              ticks={[0, 20, 40, 60, 80, 100]}
+              domain={[0, "auto"]}
+              allowDecimals={false}
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 12 }}
@@ -76,44 +72,29 @@ export function LoanTrendChart() {
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Area
-              dataKey="Approved"
-              type="natural"
-              fill="#F4A2614D"
-              fillOpacity={0.4}
-              stroke="#F4A2614D"
-              stackId="a"
-            />
-            <Area
-              dataKey="Rejected"
-              type="natural"
-              fill="#118AB2"
-              fillOpacity={0.4}
-              stroke="#118AB2"
-              stackId="a"
-            />
-            <Area
-              dataKey="Total applications"
+              dataKey="total_applications"
               type="natural"
               fill="#8A508F"
-              fillOpacity={0.4}
-              stroke="#642968"
-              stackId="a"
+              fillOpacity={0.2}
+              stroke="#8A508F"
+            />
+            <Area
+              dataKey="approved"
+              type="natural"
+              fill="#F4A261"
+              fillOpacity={0.2}
+              stroke="#F4A261"
+            />
+            <Area
+              dataKey="rejected"
+              type="natural"
+              fill="#118AB2"
+              fillOpacity={0.2}
+              stroke="#118AB2"
             />
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      {/* <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
-            </div>
-          </div>
-        </div>
-      </CardFooter> */}
     </div>
   );
 }

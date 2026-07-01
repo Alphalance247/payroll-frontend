@@ -12,7 +12,7 @@ interface data {
 interface teamAnalyticsDataStore {
   team_count: data[];
   total_teams: number;
-  active_employee: number;
+  active_employees: number;
   Full_time: number;
   contractors: number;
   total_hours: number;
@@ -20,7 +20,7 @@ interface teamAnalyticsDataStore {
     {
       country: string;
       team_count: number;
-    }
+    },
   ];
 }
 

@@ -11,48 +11,6 @@ const EachTeamEmployee = () => {
       count: el.Count,
     })) || [];
 
-  // const chartData = [
-  //   {
-  //     name: "Artificial Intelligence",
-  //     value: 8,
-  //   },
-  //   {
-  //     name: "Advocate",
-  //     value: 6,
-  //   },
-  //   {
-  //     name: "Cloud",
-  //     value: 7,
-  //   },
-  //   {
-  //     name: "Design & Development",
-  //     value: 3,
-  //   },
-  //   {
-  //     name: "Domestics ",
-  //     value: 7,
-  //   },
-  //   {
-  //     name: "Devops",
-  //     value: 9,
-  //   },
-  //   {
-  //     name: "ITSM",
-  //     value: 5,
-  //   },
-  //   {
-  //     name: "Product",
-  //     value: 6,
-  //   },
-  //   {
-  //     name: "Quality Assurance",
-  //     value: 2,
-  //   },
-  //   {
-  //     name: "Legal & Compliance",
-  //     value: 1,
-  //   },
-  // ];
   return (
     <section className="mt-10">
       <div className="border border-[#d9d9d9]  rounded-lg">
@@ -62,7 +20,7 @@ const EachTeamEmployee = () => {
             headingClassName="text-base"
             subHeadClassName="text-sm"
             heading="Total Number of Employees in Each Team"
-            subHead="0% of your NGN payroll this year was allocated to paying out salaries"
+            subHead="Shows a breakdown of the total number of employees in each team."
           />
         </div>
         <div>

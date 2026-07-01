@@ -3,7 +3,7 @@ import { create } from "zustand";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 
-interface loanCategoryDataStore {
+export interface LoanCategoryData {
   monthly_data: {
     month: string;
     categories: {
@@ -14,10 +14,10 @@ interface loanCategoryDataStore {
 }
 
 interface loanCategoryStore {
-  data: loanCategoryDataStore | null;
+  data: LoanCategoryData | null;
   loading: boolean;
   error: string | null;
-  fetchLoanCategory: (start_date?: string, end_date?: string) => Promise<void>;
+  fetchLoanCategory: (year?: string) => Promise<void>;
 }
 
 export const getLoanCategory = create<loanCategoryStore>((set) => ({
@@ -25,13 +25,12 @@ export const getLoanCategory = create<loanCategoryStore>((set) => ({
   loading: false,
   error: null,
 
-  fetchLoanCategory: async (start_date?: string, end_date?: string) => {
+  fetchLoanCategory: async (year?: string) => {
     set({ loading: true, error: null });
     try {
-      let url = "/employees/loan-category";
-      if (start_date && end_date) {
-        url += `?start_date=${start_date}&end_date=${end_date}`;
-      }
+      const url = year
+        ? `/employees/loan-category?year=${year}`
+        : "/employees/loan-category";
       const res = await axiosInstance.get(url);
       set({ data: res.data, loading: false });
     } catch (err) {

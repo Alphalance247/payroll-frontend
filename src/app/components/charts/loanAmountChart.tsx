@@ -12,86 +12,12 @@ import {
 import { useEffect, useState } from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { type LoanCategoryData } from "@/stores/analytics/getLoanCategory";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { getLoanCategory } from "@/stores/analytics/getLoanCategory";
-// const chartData = [
-//   {
-//     month: "Jan",
-//     "Travel Allowance": 80,
-//     "Official Fund": 50,
-//     "Personal Loan": 100,
-//   },
-//   {
-//     month: "Feb",
-//     "Travel Allowance": 60,
-//     "Official Fund": 140,
-//     "Personal Loan": 100,
-//   },
-//   {
-//     month: "Mar",
-//     "Travel Allowance": 70,
-//     "Official Fund": 120,
-//     "Personal Loan": 300,
-//   },
-//   {
-//     month: "Apr",
-//     "Travel Allowance": 30,
-//     "Official Fund": 30,
-//     "Personal Loan": 200,
-//   },
-//   {
-//     month: "May",
-//     "Travel Allowance": 75,
-//     "Official Fund": 80,
-//     "Personal Loan": 60,
-//   },
-//   {
-//     month: "Jun",
-//     "Travel Allowance": 100,
-//     "Official Fund": 70,
-//     "Personal Loan": 90,
-//   },
-//   {
-//     month: "Jul",
-//     "Travel Allowance": 60,
-//     "Official Fund": 130,
-//     "Personal Loan": 110,
-//   },
-//   {
-//     month: "Aug",
-//     "Travel Allowance": 40,
-//     "Official Fund": 90,
-//     "Personal Loan": 120,
-//   },
-//   {
-//     month: "Sep",
-//     "Travel Allowance": 100,
-//     "Official Fund": 150,
-//     "Personal Loan": 130,
-//   },
-//   {
-//     month: "Oct",
-//     "Travel Allowance": 60,
-//     "Official Fund": 100,
-//     "Personal Loan": 80,
-//   },
-//   {
-//     month: "Nov",
-//     "Travel Allowance": 30,
-//     "Official Fund": 180,
-//     "Personal Loan": 120,
-//   },
-//   {
-//     month: "Dec",
-//     ["Travel Allowance"]: 70,
-//     "Official Fund": 80,
-//     "Personal Loan": 100,
-//   },
-// ];
 
 const chartConfig = {
   "Travel Allowance": {
@@ -132,23 +58,54 @@ function useResponsiveBarSize() {
   return barSize;
 }
 
-export function LoanAmountsCharts() {
-  const barSize = useResponsiveBarSize();
-  const { data } = getLoanCategory();
-  console.log(data?.monthly_data);
+const ALL_MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
-  const chartData = data?.monthly_data.map((item) => ({
-    month: item.month,
-    ...item.categories.reduce(
-      (
-        acc: Record<string, number>,
-        curr: { category: string; total_amount: number }
-      ) => {
-        acc[curr.category] = curr.total_amount;
-        return acc;
-      },
-      {}
-    ),
+export function LoanAmountsCharts({ data }: { data?: LoanCategoryData }) {
+  const barSize = useResponsiveBarSize();
+  // const { data } = getLoanCategory();
+
+  // Index backend data by month name for O(1) lookup
+  const backendByMonth: Record<string, Record<string, number>> = {};
+  data?.monthly_data.forEach(
+    (item: {
+      month: string;
+      categories: { category: string; total_amount: number }[];
+    }) => {
+      const shortMonth = item.month?.slice(0, 3);
+      backendByMonth[shortMonth] = item.categories.reduce(
+        (
+          acc: Record<string, number>,
+          curr: { category: string; total_amount: number },
+        ) => {
+          acc[curr.category] =
+            parseFloat(String(curr.total_amount).replace(/,/g, "")) || 0;
+          return acc;
+        },
+        {},
+      );
+    },
+  );
+
+  // Always render all 12 months; missing months get 0 for all categories
+  const chartData = ALL_MONTHS.map((month) => ({
+    month,
+    "Official Fund": 0,
+    "Travel Allowance": 0,
+    "Personal Loan": 0,
+    ...(backendByMonth[month] ?? {}),
   }));
 
   return (
@@ -187,12 +144,15 @@ export function LoanAmountsCharts() {
                   height={40}
                 />
                 <YAxis
-                  domain={[0, 8000000]}
-                  ticks={[0, 2000000, 4000000, 6000000, 8000000]}
+                  domain={[0, 5000000]}
+                  ticks={[0, 1000000, 2000000, 3000000, 4000000, 5000000]}
+                  tickFormatter={(v: number) =>
+                    v === 0 ? "0" : `${v / 1000000}M`
+                  }
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12 }}
-                  width={100}
+                  width={50}
                   className="font-Graphik text-[#71717A] text-sm font-medium"
                 />
                 <ChartTooltip

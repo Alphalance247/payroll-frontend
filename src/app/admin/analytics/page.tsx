@@ -48,7 +48,11 @@ const PayrollAnalytics = () => {
   } = getPayrollBreakdown();
   const { fetchYearlyJobType, loading: yearlyJobTypeLoading } =
     getYearlyJobType();
-  const { fetchLoanCategory } = getLoanCategory();
+  const {
+    fetchLoanCategory,
+    loading: loanCategoryLoading,
+    data: loanCategoryData,
+  } = getLoanCategory();
 
   useEffect(() => {
     fetchPayrollAnalysis();
@@ -172,7 +176,7 @@ const PayrollAnalytics = () => {
                 onFetch={() => {
                   fetchTeamHoursLogged(
                     timeTrackingStartDate,
-                    timeTrackingEndDate
+                    timeTrackingEndDate,
                   );
                 }}
               />
@@ -187,7 +191,16 @@ const PayrollAnalytics = () => {
           ) : (
             <>
               <Loan />
-              <LoanAmounts />
+            </>
+          )}
+
+          {loanCategoryLoading ? (
+            <div className="flex justify-center items-center h-full mt-10">
+              <Loader2 className="animate-spin" />
+            </div>
+          ) : (
+            <>
+              <LoanAmounts data={loanCategoryData ?? undefined} />
             </>
           )}
         </main>
