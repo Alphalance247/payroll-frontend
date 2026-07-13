@@ -43,6 +43,8 @@ export interface data {
         official_base_pay: number;
         employee: {
           fullname: string;
+          base_pay: number;
+          pay_deno: string;
           team: {
             name: string;
           };

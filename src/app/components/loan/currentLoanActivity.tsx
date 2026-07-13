@@ -5,6 +5,7 @@ import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { useDisburse } from "@/app/hooks/useQueries/loan-request/useDisburse";
 
 const CurrentLoanActivity = ({
   setIsOpen,
@@ -14,6 +15,9 @@ const CurrentLoanActivity = ({
   const { data } = getLoanDetails();
   const [loading, setIsLoading] = useState(false);
   const [loadingReject, setIsLoadingReject] = useState(false);
+  const { handleDisburse, disbursing: loadingDisburse } = useDisburse(() =>
+    setIsOpen(false),
+  );
   const loanHistoryData = data?.data;
   const requestDetails = [
     {
@@ -146,7 +150,14 @@ const CurrentLoanActivity = ({
               className="w-full"
               onButtonClick={() => handleApproveRequest("not approved")}
             >
-              {loadingReject ? "declining...." : "Reject Request"}
+              {loadingReject ? "Declining..." : "Reject Request"}
+            </Button>
+            <Button
+              variant="primary"
+              className="w-full"
+              onButtonClick={() => handleDisburse(data?.data?.id ?? "")}
+            >
+              {loadingDisburse ? "Disbursing..." : "Disburse Loan"}
             </Button>
           </div>
         )}
