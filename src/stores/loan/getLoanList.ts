@@ -15,6 +15,7 @@ interface loanListDataStore {
     category: string;
     date_disburse: string;
     due_date: string;
+    disburse: boolean;
     employee: string;
     id: string;
     repayment_schedule: string;

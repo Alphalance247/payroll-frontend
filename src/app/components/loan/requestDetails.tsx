@@ -92,24 +92,25 @@ const RequestDetails = () => {
 
         <div className="px-6 py-3  flex justify-between items-center">
           <p className="text-sm font-medium text-[#71717A]">Status</p>
-          <p
-            className={`text-sm font-medium text-[#2F2F33] bg-[#E7E9EA] border rounded-lg px-[10px] py-1   ${
-              requestData?.status === "approved"
+          <span
+            className={`text-sm font-medium border rounded-lg px-[10px] py-1 ${
+              requestData?.disburse
+                ? "bg-[#EBF5FF] border-[#1A73E8] text-[#1A73E8]"
+                : requestData?.status === "approved"
                 ? "bg-[#E9F9EF] border-[#188C43] text-[#188C43]"
                 : requestData?.status === "pending"
                 ? "bg-[#FFF4E5] border-[#FFA500] text-[#FFA500]"
                 : "bg-[#FDEBEB] border-[#D42626] text-[#D42626]"
             }`}
           >
-            <span className="text-[#0C1720]">
-              {" "}
-              {requestData?.status === "approved"
-                ? "Approved"
-                : requestData?.status === "pending"
-                ? "Pending"
-                : "Decline"}{" "}
-            </span>
-          </p>
+            {requestData?.disburse
+              ? "Disbursed"
+              : requestData?.status === "approved"
+              ? "Approved"
+              : requestData?.status === "pending"
+              ? "Pending"
+              : "Declined"}
+          </span>
         </div>
       </div>
     </div>

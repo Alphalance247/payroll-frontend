@@ -19,7 +19,7 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
     (rate) => rate.code === "NGN",
   )
     ? "₦"
-    : "₦";
+    : "$";
 
   // Filtered and sorted employees
   const filteredEmployees = useMemo(() => {
@@ -91,7 +91,13 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
                   Name
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[170px]">
-                  Salary
+                  Base Salary
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[170px]">
+                  Converted Salary
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[170px]">
+                  Net Pay
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[150px]">
                   Tax
@@ -99,9 +105,7 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
                   Deductions
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                  Net Pay
-                </th>
+
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]">
                   Regular Hours
                 </th>
@@ -135,7 +139,16 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.official_base_pay}
+                    {emp?.employee?.pay_deno === "Dollars" ? "$" : "₦"}{" "}
+                    {emp?.employee?.base_pay}
+                  </td>
+
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {currencySymbol} {emp?.gross_pay}
+                  </td>
+
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {currencySymbol} {emp?.net_pay}
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
@@ -144,10 +157,6 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {currencySymbol} {emp?.debt}
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.net_pay}
                   </td>
 
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
@@ -177,14 +186,15 @@ const PayrollHistoryTable = ({ id }: { id: string }) => {
                   ₦{data?.data?.data?.total_payout}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
+                  ₦{data?.data?.data?.total_payout}
+                </td>
+                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ₦{data?.data?.data?.total_tax}
                 </td>
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   ₦{data?.data?.data?.total_debt}
                 </td>
-                <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
-                  ₦{data?.data?.data?.total_payout}
-                </td>
+
                 <td className="px-6 py-4 text-base font-semibold text-[#2F2F33]">
                   {}
                 </td>

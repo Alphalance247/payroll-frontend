@@ -8,6 +8,7 @@ import CurrentLoanActivity from "./currentLoanActivity";
 import { getLoanDetails } from "@/stores/loan/getLoanDetails";
 import Spinner from "@/app/common/spinner";
 import ShowCommentSideBar from "../Employee-Dashboard/loan/showCommentSideBar";
+import { useDisburse } from "@/app/hooks/useQueries/loan-request/useDisburse";
 
 interface loadData {
   data: {
@@ -20,14 +21,40 @@ interface loadData {
     repayment_schedule: string;
     estimated_repayment_date: string;
     status: string;
+    disburse: boolean;
   }[];
 }
+
+const statusBadge = (status: string, disburse: boolean) => {
+  if (disburse)
+    return {
+      label: "Disbursed",
+      className: "bg-[#EBF5FF] border-[#1A73E8] text-[#1A73E8]",
+    };
+  if (status === "approved")
+    return {
+      label: "Approved",
+      className: "bg-[#E9F9EF] border-[#188C43] text-[#188C43]",
+    };
+  if (status === "pending")
+    return {
+      label: "Pending",
+      className: "bg-[#FFF4E5] border-[#FFA500] text-[#FFA500]",
+    };
+  return {
+    label: "Declined",
+    className: "bg-[#FDEBEB] border-[#D42626] text-[#D42626]",
+  };
+};
 
 const LoanDetailsTable = ({ data }: { data: loadData }) => {
   // const { data } = getLoanRequestList();
 
   const [isOpen, setIsOpen] = useState(false);
   const { fetchLoanDetails, loading } = getLoanDetails();
+  const { handleDisburse, disbursing: disbursingId } = useDisburse(() =>
+    setOpenDropdown(null),
+  );
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [showCommentDrawer, setShowCommentDrawer] = useState(false);
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -93,6 +120,11 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
                   Date Disbursed
                 </p>
               </th>
+              <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
+                <p className="flex gap-x-1 cursor-pointer items-center">
+                  Status
+                </p>
+              </th>
               <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                 <p className="flex gap-x-1 cursor-pointer items-center"></p>
               </th>
@@ -148,6 +180,22 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
                     {emp?.date_disburse || "N/A"}
                   </td>
 
+                  <td className="px-6 py-4">
+                    {(() => {
+                      const { label, className } = statusBadge(
+                        emp?.status,
+                        emp?.disburse,
+                      );
+                      return (
+                        <span
+                          className={`text-sm font-medium border rounded-lg px-[10px] py-1 ${className}`}
+                        >
+                          {label}
+                        </span>
+                      );
+                    })()}
+                  </td>
+
                   <td
                     className="px-6 py-4 text-sm text-[#2F2F33]"
                     onClick={(e) => e.stopPropagation()}
@@ -192,6 +240,18 @@ const LoanDetailsTable = ({ data }: { data: loadData }) => {
                             >
                               View Details
                             </button>
+                            {emp?.status === "approved" &&
+                              emp?.disburse === false && (
+                                <button
+                                  onClick={() => handleDisburse(emp?.id)}
+                                  disabled={disbursingId === emp?.id}
+                                  className="w-full text-left px-4 py-3 text-sm font-medium text-[#CF6E13] hover:bg-[#FCF2E8] transition-colors border-b border-[#E3E3E5] disabled:opacity-50"
+                                >
+                                  {disbursingId === emp?.id
+                                    ? "Disbursing..."
+                                    : "Disburse Loan"}
+                                </button>
+                              )}
                             <button
                               onClick={() => {
                                 setShowCommentDrawer(true);
