@@ -152,11 +152,12 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                   Base Salary
                   {/* (NGN/USD) */}
                 </th>
-                {/* <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                  Net Pay
-                </th> */}
+
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Converted Salary
+                </th>
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  Net Pay
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Tax
@@ -218,11 +219,12 @@ const EmployeeDetailsTable: React.FC<PayrollSummaryProps> = ({ payroll }) => {
                     {emp?.employee?.pay_deno === "Dollars" ? "$ " : "₦ "}
                     {emp?.employee?.base_pay || 0}
                   </td>
-                  {/* <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.net_pay?.toLocaleString()}
-                  </td> */}
+
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                    {currencySymbol} {emp?.official_base_pay}
+                    {currencySymbol} {emp?.gross_pay}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-[#2F2F33]">
+                    {currencySymbol} {emp?.net_pay}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#2F2F33]">
                     {currencySymbol} {emp?.tax}
