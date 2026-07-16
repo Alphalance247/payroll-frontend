@@ -24,6 +24,7 @@ export interface Payslip {
   net_pay: string;
   official_base_pay: number;
   bonus: number;
+  gross_pay: string;
   rent: string;
   pension: string;
   nhf: string;
