@@ -61,7 +61,7 @@ const Sidebar = () => {
         setOpenDropdown({ section: sectionIdx, sub: subIdx }); // Open the clicked dropdown
       }
     },
-    [openDropdown]
+    [openDropdown],
   );
 
   const handleNavClick = useCallback(() => {
@@ -99,6 +99,26 @@ const Sidebar = () => {
             {
               link: "/admin/bonus",
               text: "Bonus",
+            },
+          ],
+        },
+        {
+          text: "Bonuses",
+          icons: <MdOutlinePayment size={20} />,
+          arrowDown: <IoIosArrowDown size={20} />,
+          dropdownText: [
+            {
+              link: "/admin/bonuses/active-bonuses",
+              text: "Active Bonuses",
+            },
+
+            {
+              link: "/admin/bonuses/pending-approval",
+              text: "Pending Approval",
+            },
+            {
+              link: "/admin/bonuses/bonus-history",
+              text: "Bonus History",
             },
           ],
         },
@@ -374,7 +394,7 @@ const Sidebar = () => {
                                               {item?.text}
                                             </li>
                                           </Link>
-                                        )
+                                        ),
                                       )}
                                     </div>
                                   )}
