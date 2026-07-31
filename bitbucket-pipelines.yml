@@ -401,46 +401,58 @@ definitions:
             docker compose ps &&
             docker image prune -f"
 
-    # There is currently only ONE server, the development one, so every branch
-    # deploys here and the dev server reflects whatever was pushed most recently.
-    # Named once and reused by every branch pipeline below, so the environment
-    # name and step name cannot drift apart per-branch.
+    # The dev server. Reached by a push to `dev` and by nothing else.
     #
     # Bitbucket will not run two deployments to the same environment
     # concurrently — a second push queues behind the first rather than racing it
-    # on the host. It does NOT order them by push time, so with several people
-    # pushing at once, "most recent push wins" holds only loosely.
+    # on the host.
     - step: &deploy-dev
         <<: *deploy
         name: Deploy to Development environment
         deployment: development
 
+    # The production server. Reached only by a push to `master`, which in
+    # practice means Bitbucket merging a pull request.
+    #
+    # This environment must define its OWN SSH_HOST and DEPLOY_PATH, pointing at
+    # the production host. If they are copied from the development environment a
+    # merge to master will redeploy the dev box and production will never update
+    # — the deploy reports success either way, because the SSH connection and the
+    # compose rebuild both succeed.
+    - step: &deploy-production
+        <<: *deploy
+        name: Deploy to Production environment
+        deployment: production
+
 # Pipeline definitions for different branches
+#
+# Two deploying branches, and nothing else reaches a server:
+#
+#   dev             -> development environment (the dev box)
+#   master (main)   -> production environment
+#
+# A branch that matches an entry under `branches:` does NOT also run `default`,
+# so each of the sections below is complete on its own. In every one of them the
+# deploy runs last, so lint/test/build gate it — a red build reaches no host.
 pipelines:
-  # Default pipeline. This is the one that matters for "every branch deploys":
-  # it runs for any branch with no explicit rule below, which is nearly all of
-  # them — the `feat/name/topic` branches are NOT matched by 'feature/*',
-  # because a Bitbucket `*` does not cross a `/`.
+  # Any branch with no explicit rule below — feature branches, in practice. Note
+  # the team's `feat/name/topic` branches land here rather than under a
+  # 'feature/*' rule, because a Bitbucket `*` does not cross a `/`.
+  #
+  # Checks only, no deploy. Feature branches used to deploy to the dev box,
+  # which meant whoever pushed last took it from whoever was using it; now only
+  # `dev` moves that server.
   default:
     - parallel:
         - step: *lint
         - step: *test
     - step: *build
     - step: *security-scan
-    - step: *deploy-dev
 
   # Branch-specific pipelines
   branches:
-    # Feature branches
-    'feature/*':
-      - parallel:
-          - step: *lint
-          - step: *test
-      - step: *build
-      - step: *report-to-compass
-      - step: *deploy-dev
-
-    # Development branch
+    # Development branch. A push here deploys to the dev server; a merged pull
+    # request into dev is such a push, so it deploys too.
     dev:
       - parallel:
           - step: *lint
@@ -450,8 +462,20 @@ pipelines:
       - step: *report-to-compass
       - step: *deploy-dev
 
-    # Main/Production branch. This repo's production branch is `master`; `main`
-    # is matched too so the rule keeps working if the branch is ever renamed.
+    # Production branch. This repo's production branch is `master`; `main` is
+    # matched too so the rule keeps working if the branch is ever renamed.
+    #
+    # This pipeline runs on a push to master, and the only intended push is
+    # Bitbucket merging a pull request — that merge IS the release, so the
+    # deploy is no longer behind a manual trigger. It also no longer deploys to
+    # development first: master touching the dev box would overwrite whatever
+    # dev was testing.
+    #
+    # Nothing in a pipeline file can require that a push arrived via a pull
+    # request; that has to be enforced on the branch. Set Repository settings ->
+    # Branch restrictions on master to prevent direct pushes and require a pull
+    # request, or a local `git push origin master` will release straight to
+    # production.
     "{main,master}":
       - parallel:
           - step: *lint
@@ -459,18 +483,12 @@ pipelines:
       - step: *build
       - step: *security-scan
       - step: *report-to-compass
-      # master deploys to development too, so "every branch lands on the dev
-      # server" has no exception. It runs before the production step because a
-      # pipeline's deployment steps have to go test -> staging -> production, and
-      # because a manual step would otherwise block everything after it.
-      - step: *deploy-dev
-      - step:
-          <<: *deploy
-          name: Deploy to Production
-          deployment: production
-          trigger: manual
+      - step: *deploy-production
 
-  # Pull request pipeline
+  # The pre-merge check for both flows above. A pull-request pipeline builds the
+  # source branch merged into its destination, which the branch build never
+  # tests. No deploy step is defined here, so a pull request never reaches a
+  # server.
   pull-requests:
     '**':
       - parallel:
