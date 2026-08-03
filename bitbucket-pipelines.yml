@@ -160,10 +160,22 @@ definitions:
               -o BatchMode=yes \
               -o ConnectTimeout=15 \
               "$SSH_USER@$SSH_HOST" \
-              "DEPLOY_PATH='$DEPLOY_PATH' BRANCH='$BITBUCKET_BRANCH' COMMIT='$BITBUCKET_COMMIT' HEALTH_HOST='${HEALTH_HOST:-localhost}' bash -s" <<'REMOTE'
+              "DEPLOY_PATH='$DEPLOY_PATH' BRANCH='$BITBUCKET_BRANCH' COMMIT='$BITBUCKET_COMMIT' REPO_SLUG='$BITBUCKET_REPO_SLUG' HEALTH_HOST='${HEALTH_HOST:-localhost}' bash -s" <<'REMOTE'
             set -eu
 
             cd "$DEPLOY_PATH"
+
+            # Fail early and legibly when DEPLOY_PATH points at another repo's
+            # checkout. Without this, git gets as far as trying to check out a
+            # commit that does not exist here and reports only
+            # "fatal: unable to read tree <sha>".
+            origin="$(git remote get-url origin)"
+            case "$origin" in
+              *"$REPO_SLUG"*) ;;
+              *) echo "FATAL: DEPLOY_PATH=$DEPLOY_PATH is a checkout of $origin, not $REPO_SLUG."
+                 echo "       Point DEPLOY_PATH at this repo's directory on the server."
+                 exit 1 ;;
+            esac
 
             echo "==> Syncing $DEPLOY_PATH to $COMMIT"
             git fetch --all --prune
