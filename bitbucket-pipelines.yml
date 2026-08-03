@@ -227,9 +227,26 @@ definitions:
             echo "==> Deploying this compose file"
             cat docker-compose.yml
 
+            # The server may have the compose v2 plugin (`docker compose`) or
+            # only the standalone v1 binary (`docker-compose`). A docker CLI
+            # without the plugin does not recognise `compose`, so it parses -d
+            # as a global flag and dies with "unknown shorthand flag: 'd' in
+            # -d" -- an error that never mentions compose at all.
+            if docker compose version >/dev/null 2>&1; then
+              DC="docker compose"
+            elif command -v docker-compose >/dev/null 2>&1; then
+              DC="docker-compose"
+              echo "NOTE: compose v2 plugin not found, falling back to docker-compose v1."
+            else
+              echo "FATAL: neither 'docker compose' nor 'docker-compose' is installed."
+              echo "       Install it with: sudo apt-get install -y docker-compose-plugin"
+              exit 1
+            fi
+            echo "==> Using $DC"
+
             echo "==> Building and starting"
-            docker compose up -d --build
-            docker compose ps
+            $DC up -d --build
+            $DC ps
 
             echo "==> Waiting for the frontend to answer on :3000"
             if command -v curl >/dev/null 2>&1; then
@@ -247,8 +264,8 @@ definitions:
               done
               if [ "$ok" -ne 1 ]; then
                 echo "FATAL: nothing answering on 127.0.0.1:3000 -- nginx will keep returning 502."
-                docker compose ps
-                docker compose logs --tail=200 frontend
+                $DC ps
+                $DC logs --tail=200 frontend
                 exit 1
               fi
             else
