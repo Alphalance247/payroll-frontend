@@ -233,15 +233,32 @@ definitions:
             # as a global flag and dies with "unknown shorthand flag: 'd' in
             # -d" -- an error that never mentions compose at all.
             if docker compose version >/dev/null 2>&1; then
-              DC="docker compose"
+              COMPOSE="docker compose"
             elif command -v docker-compose >/dev/null 2>&1; then
-              DC="docker-compose"
+              COMPOSE="docker-compose"
               echo "NOTE: compose v2 plugin not found, falling back to docker-compose v1."
             else
               echo "FATAL: neither 'docker compose' nor 'docker-compose' is installed."
-              echo "       Install it with: sudo apt-get install -y docker-compose-plugin"
+              echo "       On Ubuntu 24.04+:  sudo apt install -y docker-compose-v2"
               exit 1
             fi
+
+            # Reaching the daemon needs either membership of the `docker` group
+            # or passwordless sudo. With neither, every compose call fails with
+            # "permission denied ... /var/run/docker.sock".
+            if docker info >/dev/null 2>&1; then
+              SUDO=""
+            elif sudo -n docker info >/dev/null 2>&1; then
+              SUDO="sudo -n"
+              echo "NOTE: $(id -un) is not in the docker group; falling back to sudo."
+            else
+              echo "FATAL: cannot reach the Docker daemon as $(id -un)."
+              echo "       Fix on the server:  sudo usermod -aG docker $(id -un)"
+              echo "       Group membership applies to new logins, so the next deploy picks it up."
+              exit 1
+            fi
+
+            DC="$SUDO $COMPOSE"
             echo "==> Using $DC"
 
             echo "==> Building and starting"
@@ -272,7 +289,7 @@ definitions:
               echo "curl not installed on the server; skipping health check."
             fi
 
-            docker image prune -f
+            $SUDO docker image prune -f
             REMOTE
           - echo "Deployed ${BITBUCKET_BRANCH}@${BITBUCKET_COMMIT}"
 
