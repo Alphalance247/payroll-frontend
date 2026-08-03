@@ -152,23 +152,99 @@ definitions:
             chmod 600 ~/.ssh/id_ed25519
             printf '%s' "$KNOWN_HOSTS_B64" | tr -d '\n\r \t' | base64 -d > ~/.ssh/known_hosts
             chmod 644 ~/.ssh/known_hosts
-          - >
-            ssh -i ~/.ssh/id_ed25519
-            -p "${SSH_PORT:-22}"
-            -o IdentitiesOnly=yes
-            -o StrictHostKeyChecking=yes
-            -o BatchMode=yes
-            -o ConnectTimeout=15
-            "$SSH_USER@$SSH_HOST"
-            "set -e &&
-            cd '$DEPLOY_PATH' &&
-            git fetch --all --prune &&
-            git reset --hard &&
-            git checkout -B '$BITBUCKET_BRANCH' '$BITBUCKET_COMMIT' &&
-            { test -f docker-compose.yml || test -f compose.yaml; } &&
-            docker compose up -d --build &&
-            docker compose ps &&
-            docker image prune -f"
+          - |
+            ssh -i ~/.ssh/id_ed25519 \
+              -p "${SSH_PORT:-22}" \
+              -o IdentitiesOnly=yes \
+              -o StrictHostKeyChecking=yes \
+              -o BatchMode=yes \
+              -o ConnectTimeout=15 \
+              "$SSH_USER@$SSH_HOST" \
+              "DEPLOY_PATH='$DEPLOY_PATH' BRANCH='$BITBUCKET_BRANCH' COMMIT='$BITBUCKET_COMMIT' HEALTH_HOST='${HEALTH_HOST:-localhost}' bash -s" <<'REMOTE'
+            set -eu
+
+            cd "$DEPLOY_PATH"
+
+            echo "==> Syncing $DEPLOY_PATH to $COMMIT"
+            git fetch --all --prune
+            git reset --hard
+            git checkout -B "$BRANCH" "$COMMIT"
+
+            test -f docker-compose.yml || { echo "FATAL: docker-compose.yml not found in $DEPLOY_PATH"; exit 1; }
+
+            # -----------------------------------------------------------------
+            # Deploy-time patches. These apply to this checkout only -- the
+            # `git reset --hard` above discards them on the next deploy -- and
+            # each is a no-op once the same fix is committed to the repo.
+            # -----------------------------------------------------------------
+
+            # 1. The Dockerfile runner stage does
+            #      COPY --from=builder /app/.next/standalone ./
+            #    and runs `node server.js`. next build only emits
+            #    .next/standalone when next.config.ts sets output: "standalone".
+            #    Without it that COPY fails, the image never builds, nothing
+            #    binds :3000, and nginx has no upstream -- the 502.
+            if ! grep -q 'output:[[:space:]]*"standalone"' next.config.ts; then
+              echo "==> Patching next.config.ts: output: \"standalone\""
+              sed -i 's|^const nextConfig: NextConfig = {|const nextConfig: NextConfig = {\n  output: "standalone",|' next.config.ts
+              grep -q 'output:[[:space:]]*"standalone"' next.config.ts \
+                || { echo "FATAL: could not patch next.config.ts -- fix it in the repo"; exit 1; }
+            fi
+
+            # 2. docker-compose.yml bind-mounts the source tree over /app and
+            #    hangs empty anonymous volumes on /app/.next and
+            #    /app/node_modules. That hides server.js and the compiled build
+            #    from the image, so the container crash-loops on
+            #    MODULE_NOT_FOUND behind `restart: always` -- also a 502.
+            if grep -qE '^[[:space:]]*-[[:space:]]*\.:/app[[:space:]]*$' docker-compose.yml; then
+              echo "==> Removing source bind-mounts from docker-compose.yml"
+              sed -i -E '/^[[:space:]]*-[[:space:]]*(\.:\/app|\/app\/\.next|\/app\/node_modules|\/srv\/static\/_next\/static:\/app\/\.next\/static)[[:space:]]*$/d' docker-compose.yml
+              # drop the `volumes:` key left with no entries under it
+              awk '{ l[NR] = $0 }
+                   END { for (i = 1; i <= NR; i++) {
+                           if (l[i] ~ /^[[:space:]]*volumes:[[:space:]]*$/ && (i == NR || l[i+1] !~ /^[[:space:]]*-[[:space:]]/)) continue
+                           print l[i]
+                         } }' docker-compose.yml > docker-compose.yml.tmp
+              mv docker-compose.yml.tmp docker-compose.yml
+            fi
+
+            # 3. The image is a production standalone build; NODE_ENV=development
+            #    makes next serve as though it were a dev server.
+            sed -i -E 's|^([[:space:]]*-[[:space:]]*)NODE_ENV=development[[:space:]]*$|\1NODE_ENV=production|' docker-compose.yml
+
+            echo "==> Deploying this compose file"
+            cat docker-compose.yml
+
+            echo "==> Building and starting"
+            docker compose up -d --build
+            docker compose ps
+
+            echo "==> Waiting for the frontend to answer on :3000"
+            if command -v curl >/dev/null 2>&1; then
+              ok=0
+              for _ in $(seq 1 30); do
+                code="$(curl -s -o /dev/null -w '%{http_code}' -m 5 -H "Host: $HEALTH_HOST" http://127.0.0.1:3000/ || true)"
+                # Any HTTP status proves something is listening; a bare TCP
+                # failure ("000") is exactly what nginx turns into a 502.
+                if [ -n "$code" ] && [ "$code" != "000" ]; then
+                  echo "Frontend answered HTTP $code"
+                  ok=1
+                  break
+                fi
+                sleep 5
+              done
+              if [ "$ok" -ne 1 ]; then
+                echo "FATAL: nothing answering on 127.0.0.1:3000 -- nginx will keep returning 502."
+                docker compose ps
+                docker compose logs --tail=200 frontend
+                exit 1
+              fi
+            else
+              echo "curl not installed on the server; skipping health check."
+            fi
+
+            docker image prune -f
+            REMOTE
           - echo "Deployed ${BITBUCKET_BRANCH}@${BITBUCKET_COMMIT}"
 
     - step: &deploy-test
