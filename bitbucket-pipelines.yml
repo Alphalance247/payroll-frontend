@@ -9,6 +9,14 @@ definitions:
     node: ~/.npm
     nextcache: .next/cache
 
+  services:
+    # The image build runs inside this daemon, so its memory limit -- not the
+    # step's -- is what webpack has to fit in. The default is 1024MB, which is
+    # roughly what the dev server had when the build was being OOM-killed.
+    # `size: 2x` above gives the step 8192MB in total to divide up.
+    docker:
+      memory: 4096
+
   steps:
     - step: &lint
         name: Lint Code
@@ -135,13 +143,21 @@ definitions:
             esac
 
     - step: &deploy
-        name: Deploy over SSH
-        image: alpine:3.22
-        clone:
-          enabled: false
+        name: Build image in CI and deploy over SSH
+        # The image is built here, on an 8GB runner, and shipped to the server
+        # as a tarball. The dev server only loads and starts it. Building on
+        # the server is what produced "Next.js build worker exited with code:
+        # null and signal: SIGKILL" -- the kernel OOM killer, on a box already
+        # running the payroll backend, Postgres and Redis.
+        #
+        # docker:*-cli ships git, openssh-client and ca-certificates, so the
+        # clone and the ssh calls below need no extra packages. The clone is
+        # enabled now (it was not before) because the build needs the source.
+        image: docker:29-cli
+        services:
+          - docker
         max-time: 30
         script:
-          - apk add --no-cache openssh-client openssh-keygen
           - |
             set -e
             for v in SSH_PRIVATE_KEY_B64 KNOWN_HOSTS_B64 SSH_HOST SSH_USER DEPLOY_PATH; do
@@ -152,15 +168,82 @@ definitions:
             chmod 600 ~/.ssh/id_ed25519
             printf '%s' "$KNOWN_HOSTS_B64" | tr -d '\n\r \t' | base64 -d > ~/.ssh/known_hosts
             chmod 644 ~/.ssh/known_hosts
-          - |
-            ssh -i ~/.ssh/id_ed25519 \
+
+            # Bitbucket runs each script item in its own shell, so shell
+            # variables do not survive between them. A wrapper on disk does.
+            cat > /usr/local/bin/dssh <<'WRAPPER'
+            #!/bin/sh
+            exec ssh -i ~/.ssh/id_ed25519 \
               -p "${SSH_PORT:-22}" \
               -o IdentitiesOnly=yes \
               -o StrictHostKeyChecking=yes \
               -o BatchMode=yes \
               -o ConnectTimeout=15 \
-              "$SSH_USER@$SSH_HOST" \
-              "DEPLOY_PATH='$DEPLOY_PATH' BRANCH='$BITBUCKET_BRANCH' COMMIT='$BITBUCKET_COMMIT' REPO_SLUG='$BITBUCKET_REPO_SLUG' HEALTH_HOST='${HEALTH_HOST:-localhost}' bash -s" <<'REMOTE'
+              "$SSH_USER@$SSH_HOST" "$@"
+            WRAPPER
+            chmod +x /usr/local/bin/dssh
+          - |
+            set -e
+            export DOCKER_BUILDKIT=1
+            IMAGE="payroll-frontend:$BITBUCKET_COMMIT"
+
+            # The Dockerfile runner stage does
+            #   COPY --from=builder /app/.next/standalone ./
+            # and runs `node server.js`. next build only emits
+            # .next/standalone when next.config.ts sets output: "standalone",
+            # so without it that COPY fails and no image is produced.
+            #
+            # This patches the CI checkout only -- it is thrown away with the
+            # container -- and goes no-op once the line is committed upstream.
+            # awk, not sed: busybox sed does not reliably expand \n in a
+            # replacement, and this image is alpine.
+            if ! grep -q 'output:[[:space:]]*"standalone"' next.config.ts; then
+              echo "==> Patching next.config.ts: output: \"standalone\""
+              awk '{ print }
+                   /^const nextConfig: NextConfig = \{/ && !done { print "  output: \"standalone\","; done = 1 }' \
+                  next.config.ts > next.config.ts.tmp
+              mv next.config.ts.tmp next.config.ts
+              grep -q 'output:[[:space:]]*"standalone"' next.config.ts \
+                || { echo "FATAL: could not patch next.config.ts -- fix it in the repo"; exit 1; }
+            fi
+
+            echo "==> Building $IMAGE"
+            docker build -t "$IMAGE" .
+            docker image inspect "$IMAGE" --format '==> Built {{.Id}}, {{.Size}} bytes'
+          - |
+            set -e
+            IMAGE="payroll-frontend:$BITBUCKET_COMMIT"
+
+            # Reaching the daemon on the server needs either membership of the
+            # `docker` group or passwordless sudo. Find out which before
+            # piping a few hundred MB at it.
+            REMOTE_SUDO="$(dssh 'if docker info >/dev/null 2>&1; then echo ""; elif sudo -n docker info >/dev/null 2>&1; then echo "sudo -n"; else echo FATAL; fi')"
+            case "$REMOTE_SUDO" in
+              FATAL)
+                echo "FATAL: cannot reach the Docker daemon on $SSH_HOST as $SSH_USER."
+                echo "       Fix on the server:  sudo usermod -aG docker $SSH_USER"
+                echo "       Group membership applies to new logins, so the next deploy picks it up."
+                exit 1 ;;
+              "sudo -n")
+                echo "NOTE: $SSH_USER is not in the docker group; using sudo on the server." ;;
+            esac
+
+            if dssh "$REMOTE_SUDO docker image inspect $IMAGE >/dev/null 2>&1"; then
+              echo "==> $IMAGE is already on the server; skipping the transfer"
+            else
+              echo "==> Shipping $IMAGE over SSH"
+              # docker load sniffs the gzip itself, so the tarball is never
+              # written to disk on either end.
+              docker save "$IMAGE" | gzip -1 | dssh "$REMOTE_SUDO docker load"
+              # A pipeline's exit status is its last command's, so a failed
+              # `docker save` behind a successful ssh would pass silently.
+              # Confirm the image is actually there instead.
+              dssh "$REMOTE_SUDO docker image inspect $IMAGE >/dev/null 2>&1" \
+                || { echo "FATAL: $IMAGE did not land on the server."; exit 1; }
+              echo "==> Loaded $IMAGE on $SSH_HOST"
+            fi
+          - |
+            dssh "DEPLOY_PATH='$DEPLOY_PATH' BRANCH='$BITBUCKET_BRANCH' COMMIT='$BITBUCKET_COMMIT' REPO_SLUG='$BITBUCKET_REPO_SLUG' IMAGE='payroll-frontend:$BITBUCKET_COMMIT' HEALTH_HOST='${HEALTH_HOST:-localhost}' bash -s" <<'REMOTE'
             set -eu
 
             cd "$DEPLOY_PATH"
@@ -185,22 +268,36 @@ definitions:
             test -f docker-compose.yml || { echo "FATAL: docker-compose.yml not found in $DEPLOY_PATH"; exit 1; }
 
             # -----------------------------------------------------------------
-            # Deploy-time patches. These apply to this checkout only -- the
-            # `git reset --hard` above discards them on the next deploy -- and
-            # each is a no-op once the same fix is committed to the repo.
+            # Deploy-time patches. Only docker-compose.yml is patched here now
+            # -- next.config.ts is handled in CI, where the build happens.
+            # These apply to this checkout only (the `git reset --hard` above
+            # discards them on the next deploy) and each is a no-op once the
+            # same fix is committed to the repo.
             # -----------------------------------------------------------------
 
-            # 1. The Dockerfile runner stage does
-            #      COPY --from=builder /app/.next/standalone ./
-            #    and runs `node server.js`. next build only emits
-            #    .next/standalone when next.config.ts sets output: "standalone".
-            #    Without it that COPY fails, the image never builds, nothing
-            #    binds :3000, and nginx has no upstream -- the 502.
-            if ! grep -q 'output:[[:space:]]*"standalone"' next.config.ts; then
-              echo "==> Patching next.config.ts: output: \"standalone\""
-              sed -i 's|^const nextConfig: NextConfig = {|const nextConfig: NextConfig = {\n  output: "standalone",|' next.config.ts
-              grep -q 'output:[[:space:]]*"standalone"' next.config.ts \
-                || { echo "FATAL: could not patch next.config.ts -- fix it in the repo"; exit 1; }
+            # 1. compose still declares `build: {context: ., dockerfile: ...}`,
+            #    which is exactly the server-side build this pipeline just
+            #    stopped doing. Point it at the image CI shipped instead.
+            if grep -qE '^[[:space:]]*build:[[:space:]]*$' docker-compose.yml; then
+              echo "==> Pointing docker-compose.yml at $IMAGE"
+              awk -v img="$IMAGE" '
+                /^[[:space:]]*build:[[:space:]]*$/ && !inbuild {
+                  match($0, /^[[:space:]]*/)
+                  indent = substr($0, 1, RLENGTH)
+                  print indent "image: " img
+                  inbuild = 1
+                  next
+                }
+                inbuild {
+                  # everything indented deeper than `build:` belongs to it
+                  match($0, /^[[:space:]]*/)
+                  if (RLENGTH > length(indent)) next
+                  inbuild = 0
+                }
+                { print }' docker-compose.yml > docker-compose.yml.tmp
+              mv docker-compose.yml.tmp docker-compose.yml
+              grep -q "image: $IMAGE" docker-compose.yml \
+                || { echo "FATAL: could not point docker-compose.yml at $IMAGE"; exit 1; }
             fi
 
             # 2. docker-compose.yml bind-mounts the source tree over /app and
@@ -261,8 +358,12 @@ definitions:
             DC="$SUDO $COMPOSE"
             echo "==> Using $DC"
 
-            echo "==> Building and starting"
-            $DC up -d --build
+            # --no-build is belt and braces: the `build:` key is gone, so
+            # there is nothing to build, and if the image were somehow missing
+            # compose says so instead of quietly starting a build on a box
+            # that cannot finish one.
+            echo "==> Starting $IMAGE"
+            $DC up -d --no-build
             $DC ps
 
             echo "==> Waiting for the frontend to answer on :3000"
@@ -289,7 +390,15 @@ definitions:
               echo "curl not installed on the server; skipping health check."
             fi
 
+            # Every deploy loads a new payroll-frontend:<sha>. Nothing untags
+            # the old ones, so without this the disk fills with a couple of
+            # hundred MB per deploy. `prune -f` alone would not touch them:
+            # they are tagged, not dangling.
+            echo "==> Reclaiming disk"
             $SUDO docker image prune -f
+            $SUDO docker images --format '{{.Repository}}:{{.Tag}}' payroll-frontend 2>/dev/null \
+              | grep -vxF "$IMAGE" \
+              | xargs -r $SUDO docker rmi 2>/dev/null || true
             REMOTE
           - echo "Deployed ${BITBUCKET_BRANCH}@${BITBUCKET_COMMIT}"
 
