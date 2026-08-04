@@ -184,7 +184,18 @@ definitions:
             chmod +x /usr/local/bin/dssh
           - |
             set -e
-            export DOCKER_BUILDKIT=1
+            # Atlassian disables the buildx plugin and refuses privileged
+            # containers on cloud runners. With BuildKit on, `docker build`
+            # routes through buildx, finds no usable `docker` driver, falls
+            # back to the docker-container driver and tries to boot a
+            # privileged buildkit container -- which the daemon rejects:
+            #   authorization denied by plugin pipelines: --privileged=true is not allowed
+            # DOCKER_BUILDKIT=0 is Atlassian's documented opt-out; it uses the
+            # daemon's classic builder instead. The Dockerfile's `# syntax=`
+            # line is then just a comment, which is fine: multi-stage,
+            # COPY --from and COPY --chown all predate BuildKit, and nothing
+            # here uses RUN --mount or any other BuildKit-only feature.
+            export DOCKER_BUILDKIT=0
             IMAGE="payroll-frontend:$BITBUCKET_COMMIT"
 
             # The Dockerfile runner stage does
