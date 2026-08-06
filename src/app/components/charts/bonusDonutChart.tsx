@@ -113,7 +113,7 @@ export default function BonusDonutChart({
       </ChartContainer>
 
       {/* Legend */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         {data.map((d) => {
           const pct = total > 0 ? ((d.value / total) * 100).toFixed(0) : "0";
           return (

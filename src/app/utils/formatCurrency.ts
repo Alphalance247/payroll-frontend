@@ -1,3 +1,26 @@
+export function parseAmount(value: string | number | null | undefined): number {
+  if (typeof value === "number") return isFinite(value) ? value : 0;
+  if (!value) return 0;
+  const parsed = parseFloat(String(value).replace(/[₦$,]/g, ""));
+  return isFinite(parsed) ? parsed : 0;
+}
+
+export function formatNaira(value: string | number | null | undefined): string {
+  return `₦${parseAmount(value).toLocaleString(undefined, {
+    maximumFractionDigits: 0,
+  })}`;
+}
+
+export function sumNairaAmount(
+  records: { naira_amount?: string | number | null }[],
+): string {
+  const total = records.reduce(
+    (sum, record) => sum + parseAmount(record.naira_amount),
+    0,
+  );
+  return formatNaira(total);
+}
+
 export function formatCurrencyShort(value: string | number): string {
   const numValue =
     typeof value === "string" ? parseFloat(value.replace(/,/g, "")) : value;

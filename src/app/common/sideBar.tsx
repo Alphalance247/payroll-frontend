@@ -20,10 +20,11 @@ import { BsBarChartLine } from "react-icons/bs";
 import { TbSettings2 } from "react-icons/tb";
 import { usePathname } from "next/navigation";
 import { IoIosArrowDown } from "react-icons/io";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FaRegUser } from "react-icons/fa6";
 import { HiOutlineClipboardCheck } from "react-icons/hi";
 import { Search } from "lucide-react";
+import { LuGift } from "react-icons/lu";
 
 interface dropDownText {
   link: string;
@@ -43,29 +44,34 @@ interface sideBarData {
   subHeadings: SubHeading[];
 }
 
+const SIDEBAR_STORAGE_KEY = "sidebar_open_dropdown";
+
 const Sidebar = () => {
   const pathname = usePathname();
-  const [openDropdown, setOpenDropdown] = useState<{
-    section: number;
-    sub: number;
-  } | null>(null);
-  const handleDropDown = useCallback(
-    (sectionIdx: number, subIdx: number) => {
-      if (
-        openDropdown &&
-        openDropdown.section === sectionIdx &&
-        openDropdown.sub === subIdx
-      ) {
-        setOpenDropdown(null); // Close if already open
-      } else {
-        setOpenDropdown({ section: sectionIdx, sub: subIdx }); // Open the clicked dropdown
-      }
-    },
-    [openDropdown],
-  );
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(SIDEBAR_STORAGE_KEY);
+      if (stored) setOpenDropdown(stored);
+    } catch {}
+  }, []);
+
+  const handleDropDown = useCallback((sectionIdx: number, subIdx: number) => {
+    const key = `${sectionIdx}-${subIdx}`;
+    setOpenDropdown((prev) => {
+      const next = prev === key ? null : key;
+      try {
+        if (next) localStorage.setItem(SIDEBAR_STORAGE_KEY, next);
+        else localStorage.removeItem(SIDEBAR_STORAGE_KEY);
+      } catch {}
+      return next;
+    });
+  }, []);
 
   const handleNavClick = useCallback(() => {
-    setOpenDropdown(null); // Close any open dropdown when a non-dropdown nav link is clicked
+    setOpenDropdown(null);
+    try { localStorage.removeItem(SIDEBAR_STORAGE_KEY); } catch {}
   }, []);
 
   const sideBarData: sideBarData[] = [
@@ -104,7 +110,7 @@ const Sidebar = () => {
         },
         {
           text: "Bonuses",
-          icons: <MdOutlinePayment size={20} />,
+          icons: <LuGift size={20} />,
           arrowDown: <IoIosArrowDown size={20} />,
           dropdownText: [
             {
@@ -117,7 +123,7 @@ const Sidebar = () => {
               text: "Pending Approval",
             },
             {
-              link: "/admin/bonuses/bonus-history",
+              link: "/admin/bonuses",
               text: "Bonus History",
             },
           ],
@@ -331,10 +337,7 @@ const Sidebar = () => {
                       {item?.subHeadings &&
                         item?.subHeadings?.map((items, subIdx) => {
                           const isDropdown = !!items?.dropdownText;
-                          const isOpen =
-                            openDropdown &&
-                            openDropdown.section === sectionIdx &&
-                            openDropdown.sub === subIdx;
+                          const isOpen = openDropdown === `${sectionIdx}-${subIdx}`;
                           return (
                             <div key={subIdx}>
                               {items?.link && !isDropdown ? (
@@ -376,7 +379,7 @@ const Sidebar = () => {
                                     )}
                                   </div>
                                   {isOpen && (
-                                    <div className="flex flex-col gap-y-2 border-l-[#414D57] border-l pl-4">
+                                    <div className="flex flex-col gap-y-2 border-l-[#414D57] border-l pl-4 ml-8">
                                       {items?.dropdownText?.map(
                                         (item, dropIdx) => (
                                           <Link
@@ -386,7 +389,7 @@ const Sidebar = () => {
                                           >
                                             <li
                                               className={`text-sm font-medium rounded-lg py-[10px] pl-4 ${
-                                                pathname?.startsWith(item?.link)
+                                                pathname === (item?.link?.replace(/\/+$/, "") ?? "")
                                                   ? "bg-[#414D57] text-white"
                                                   : "bg-transparent text-[white]"
                                               }`}

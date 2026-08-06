@@ -1,58 +1,64 @@
 "use client";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import { TiArrowUnsorted } from "react-icons/ti";
 import { FaChevronRight } from "react-icons/fa6";
 import { FaChevronLeft, FaCaretDown } from "react-icons/fa";
 import { Search, Upload } from "lucide-react";
-import { useFilter } from "@/app/hooks/useFilter";
 import TableActionMenu from "@/app/common/tableActionMenu";
 import BonusSideDrawer, {
   type BonusDrawerData,
 } from "@/app/common/sideDrawer/bonusSideDrawer";
 import BonusEmptyState from "@/app/components/Bonus/bonusEmptyState";
-import { Badge, stageBadge, disburseBadge } from "@/app/components/bonuses/bonusBadge";
-
-interface AllBonusRecord {
-  id: number;
-  name: string;
-  bonusAmount: string;
-  bonusNaira: string;
-  disburseStatus: string;
-  bonusType: string;
-  approvalStatus: string;
-  dateAdded: string;
-}
-
-const MOCK_DATA: AllBonusRecord[] = [
-  { id: 1, name: "Lanre Ademoye", bonusAmount: "$200", bonusNaira: "₦300,000", disburseStatus: "Disbursed", bonusType: "Fixed bonus", approvalStatus: "Approved", dateAdded: "2026-06-26" },
-  { id: 2, name: "Lanre Ademoye", bonusAmount: "$200", bonusNaira: "₦300,000", disburseStatus: "Disbursed", bonusType: "Fixed bonus", approvalStatus: "Approved", dateAdded: "2026-06-26" },
-  { id: 3, name: "Lanre Ademoye", bonusAmount: "$200", bonusNaira: "₦300,000", disburseStatus: "Disbursed", bonusType: "Fixed bonus", approvalStatus: "Approved", dateAdded: "2026-06-26" },
-];
+import {
+  Badge,
+  stageBadge,
+  disburseBadge,
+} from "@/app/components/bonuses/bonusBadge";
+import LoadingState from "@/app/common/loadingState";
+import type { BonusHistoryData } from "@/app/hooks/useQueries/bonuses/useAllBonusHistory";
 
 interface AllBonusTableProps {
+  data?: BonusHistoryData | null;
+  isLoading?: boolean;
+  isError?: boolean;
   currentPage?: number;
   totalPages?: number;
   pageSize?: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   setModalMode?: (mode: "add" | "edit" | null) => void;
+  showBonusTypeColumn?: boolean;
 }
 
 const AllBonusTable = ({
+  data,
+  isLoading = false,
+  isError = false,
   currentPage = 1,
   totalPages = 2,
   pageSize = 10,
   onPageChange,
   onPageSizeChange,
   setModalMode,
+  showBonusTypeColumn = true,
 }: AllBonusTableProps) => {
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [drawerData, setDrawerData] = useState<BonusDrawerData | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const { filteredData: searchFiltered, setSearchQuery, searchQuery } =
-    useFilter(MOCK_DATA, ["name", "bonusType"]);
+  const rawData = data?.data ?? [];
+
+  const searchFiltered = useMemo(() => {
+    if (!searchQuery) return rawData;
+    const q = searchQuery.toLowerCase();
+    return rawData.filter(
+      (r) =>
+        r.employee.fullname.toLowerCase().includes(q) ||
+        r.bonus_type.toLowerCase().includes(q),
+    );
+  }, [rawData, searchQuery]);
 
   const isAllSelected =
     searchFiltered.length > 0 &&
@@ -90,10 +96,19 @@ const AllBonusTable = ({
         </button>
       </div>
 
-      {searchFiltered.length === 0 ? (
+      {isLoading ? (
+        <LoadingState message="Loading bonuses..." />
+      ) : isError ? (
+        <p className="text-sm text-center text-[#CF6E13] py-10">
+          Failed to load bonuses. Please try again.
+        </p>
+      ) : searchFiltered.length === 0 ? (
         <BonusEmptyState setModalMode={setModalMode ?? (() => {})} />
       ) : (
-        <div className="overflow-x-auto rounded-lg relative" style={{ overflowY: "visible" }}>
+        <div
+          className="overflow-x-auto rounded-lg relative"
+          style={{ overflowY: "visible" }}
+        >
           <table className="w-full min-w-[1000px] border-b border-[#E3E3E5]">
             <thead className="bg-[#F7F7F7]">
               <tr>
@@ -113,9 +128,11 @@ const AllBonusTable = ({
                     <RiExpandUpDownFill fill="#2F2F33" size={12} />
                   </p>
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[180px]">
-                  Bonus type
-                </th>
+                {showBonusTypeColumn && (
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[180px]">
+                    Bonus type
+                  </th>
+                )}
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
                   <p className="flex gap-x-1 cursor-pointer items-center">
                     Amount
@@ -129,10 +146,10 @@ const AllBonusTable = ({
                   </p>
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
-                  Disburse status
+                  Approval status
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
-                  Status
+                  Disburse status
                 </th>
                 <th className="px-6 py-[14px] w-[60px]" />
               </tr>
@@ -140,6 +157,7 @@ const AllBonusTable = ({
             <tbody>
               {searchFiltered.map((record) => {
                 const isSelected = selectedIds.includes(record.id);
+                const name = record.employee.fullname;
                 return (
                   <tr
                     key={record.id}
@@ -153,32 +171,44 @@ const AllBonusTable = ({
                         className="rounded border-gray-300 cursor-pointer"
                         checked={isSelected}
                         onChange={() => toggleSelect(record.id)}
-                        aria-label={`Select ${record.name}`}
+                        aria-label={`Select ${name}`}
                       />
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <div className="h-8 w-8 rounded-full bg-[#26547C] text-white flex items-center justify-center text-sm font-medium uppercase flex-shrink-0">
-                          {record.name
+                          {name
                             .split(" ")
                             .slice(0, 2)
                             .map((n) => n[0])
                             .join("")}
                         </div>
                         <span className="text-sm font-medium capitalize">
-                          {record.name.split(" ").slice(0, 2).join(" ")}
+                          {name.split(" ").slice(0, 2).join(" ")}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm">{record.bonusType || "—"}</td>
-                    <td className="px-6 py-4 text-sm">{record.bonusAmount}</td>
-                    <td className="px-6 py-4 text-sm">{record.bonusNaira}</td>
+                    {showBonusTypeColumn && (
+                      <td className="px-6 py-4 text-sm">
+                        {record.bonus_type || "—"}
+                      </td>
+                    )}
+                    <td className="px-6 py-4 text-sm">
+                      {record?.pay_deno === "naira" ? "₦ " : "$ "}
+                      {record?.amount || "—"}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm">
+                      {record?.converted_amount || "—"}
+                    </td>
+
                     <td className="px-6 py-4">
-                      <Badge config={stageBadge(record.approvalStatus)} />
+                      <Badge config={stageBadge(record?.approval_status)} />
                     </td>
                     <td className="px-6 py-4">
-                      <Badge config={disburseBadge(record.disburseStatus)} />
+                      <Badge config={disburseBadge(record.paid)} />
                     </td>
+
                     <td className="px-6 py-4 text-sm">
                       <TableActionMenu
                         items={[
@@ -186,13 +216,8 @@ const AllBonusTable = ({
                             label: "View Details",
                             onClick: () =>
                               setDrawerData({
-                                employeeName: record.name,
-                                employeeRole: "—",
-                                bonusType: record.bonusType,
-                                totalHours: "—",
-                                amount: record.bonusNaira,
-                                projects: [],
-                                timeline: [],
+                                bonusId: record.id,
+                                employeeName: name,
                               }),
                           },
                           {
@@ -222,7 +247,11 @@ const AllBonusTable = ({
                   <option value={25}>25</option>
                   <option value={50}>50</option>
                 </select>
-                <FaCaretDown className="absolute right-2.5 pointer-events-none" color="#000000" size={14} />
+                <FaCaretDown
+                  className="absolute right-2.5 pointer-events-none"
+                  color="#000000"
+                  size={14}
+                />
               </div>
               <span>per page</span>
             </div>
@@ -230,9 +259,13 @@ const AllBonusTable = ({
             <div className="flex items-center gap-4">
               <div className="text-sm text-slate-500 font-medium">
                 Page{" "}
-                <span className="text-slate-900 font-semibold">{currentPage}</span>
-                {" "}of{" "}
-                <span className="text-slate-900 font-semibold">{totalPages}</span>
+                <span className="text-slate-900 font-semibold">
+                  {currentPage}
+                </span>{" "}
+                of{" "}
+                <span className="text-slate-900 font-semibold">
+                  {totalPages}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <button

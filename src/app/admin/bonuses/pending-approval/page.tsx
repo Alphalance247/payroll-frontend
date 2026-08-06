@@ -1,6 +1,7 @@
 "use client";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import { useRef, useState } from "react";
+import { format } from "date-fns";
 import Heading from "@/app/common/heading";
 import Button from "@/app/common/Button";
 import { TiArrowUnsorted } from "react-icons/ti";
@@ -9,8 +10,9 @@ import { FaChevronLeft } from "react-icons/fa";
 import { FaCaretDown } from "react-icons/fa6";
 import { Search, Plus, RefreshCw, X, Check } from "lucide-react";
 import SelectionActionBar from "@/app/common/selectionActionBar";
-import BonusModal, { type BonusFormData } from "@/app/components/bonuses/bonusModal";
-import { useFilter } from "@/app/hooks/useFilter";
+import BonusModal, {
+  type BonusFormData,
+} from "@/app/components/bonuses/bonusModal";
 import CustomDropdown from "@/app/common/customDropdown";
 import DateRangePicker, {
   type DateRangeValue,
@@ -19,22 +21,43 @@ import TableActionMenu from "@/app/common/tableActionMenu";
 import BonusSideDrawer, {
   type BonusDrawerData,
 } from "@/app/common/sideDrawer/bonusSideDrawer";
-// import { Badge, stageBadge, disburseBadge } from "./bonusBadge";
 import BonusEmptyState from "@/app/components/Bonus/bonusEmptyState";
 import DisburseConfirmationModal from "@/app/components/bonuses/disburseConfirmationModal";
 import RequestChangesModal from "@/app/components/bonuses/requestChangesModal";
 import ApproveBonusModal from "@/app/components/bonuses/approveBonusModal";
 import RejectBonusModal from "@/app/components/bonuses/rejectBonusModal";
-import { Badge, disburseBadge } from "@/app/components/bonuses/bonusBadge";
+import { Badge, stageBadge } from "@/app/components/bonuses/bonusBadge";
 import DashboardLayout from "@/app/common/DashBoardLayout";
+import LoadingState from "@/app/common/loadingState";
+import ErrorFetch from "@/app/common/errorFetch";
+import { useInReviewBonusList } from "@/app/hooks/useQueries/bonuses/useInReviewBonusList";
+import { sumNairaAmount } from "@/app/utils/formatCurrency";
+import {
+  useReviewBonus,
+  useReviewMultipleBonuses,
+  type ReviewAction,
+} from "@/app/hooks/useQueries/bonuses/useReviewBonus";
 
 const BONUS_TYPE_OPTIONS = [
   { label: "All bonus", value: "all" },
-  { label: "Fixed bonus", value: "Fixed bonus" },
-  { label: "Client-facing bonus", value: "Client facing bonus" },
-  { label: "Quarterly bonus", value: "Quarterly bonus" },
-  { label: "Discretionary bonus", value: "Discretionary bonus" },
+  { label: "Fixed bonus", value: "fixed" },
+  { label: "Client-facing bonus", value: "client" },
+  { label: "Quarterly bonus", value: "quarterly" },
+  { label: "Discretionary bonus", value: "non-client" },
 ];
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "—";
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(new Date(dateStr));
+  } catch {
+    return dateStr;
+  }
+};
 
 const PendingApproval = ({
   currentPage = 1,
@@ -51,101 +74,107 @@ const PendingApproval = ({
 }) => {
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<number[]>([]);
-
-  const toggleSelectEmployee = (id: number) =>
-    setSelectedEmployeeIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
   const [selectedBonusTypes, setSelectedBonusTypes] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRangeValue>({
     from: null,
     to: null,
   });
+  const [searchQuery, setSearchQuery] = useState("");
   const [drawerData, setDrawerData] = useState<BonusDrawerData | null>(null);
   const [modalMode, setModalMode] = useState<"add" | "edit" | null>(null);
-  const [editInitialData, setEditInitialData] = useState<Partial<BonusFormData>>({});
+  const [editInitialData, setEditInitialData] = useState<
+    Partial<BonusFormData>
+  >({});
   const [requestChangesOpen, setRequestChangesOpen] = useState(false);
-  const [requestChangesSubmitting, setRequestChangesSubmitting] = useState(false);
   const [approveOpen, setApproveOpen] = useState(false);
-  const [approving, setApproving] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
-  const [rejecting, setRejecting] = useState(false);
+
+  const { mutate: reviewSingle, isPending: singlePending } = useReviewBonus();
+  const { mutate: reviewMultiple, isPending: multiplePending } =
+    useReviewMultipleBonuses();
+  const isReviewing = singlePending || multiplePending;
+
+  const handleReview = (
+    action: ReviewAction,
+    comment: string,
+    onDone: () => void,
+  ) => {
+    const opts = {
+      onSuccess: () => {
+        onDone();
+        setSelectedEmployeeIds([]);
+      },
+    };
+    if (selectedEmployeeIds.length === 1) {
+      reviewSingle({ bonusId: selectedEmployeeIds[0], action, comment }, opts);
+    } else {
+      reviewMultiple(
+        { action, comment, bonus_ids: selectedEmployeeIds.map(String) },
+        opts,
+      );
+    }
+  };
   const [disburseOpen, setDisburseOpen] = useState(false);
   const [disbursing, setDisbursing] = useState(false);
 
-  const bonusData: {
-    id: 1;
-    name: string;
-    bonusAmount: string;
-    bonusNaira: string;
-    disburseStatus: string;
-    bonusType: string;
-    approvalStatus: string;
-    dateAdded: string;
-    reason: string;
-    datePaid: string;
-    deno: string;
-  }[] = [
-    {
-      id: 1,
-      name: "John Doe",
-      bonusAmount: "$500",
-      bonusNaira: "₦200,000",
-      disburseStatus: "Disbursed",
-      bonusType: "Client facing bonus",
-      approvalStatus: "Approved",
-      dateAdded: "2023-08-01",
-      reason: "Exceeded sales targets",
-      datePaid: "2023-08-15",
-      deno: "Dollars",
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      bonusAmount: "$500",
-      bonusNaira: "₦200,000",
-      disburseStatus: "Disbursed",
-      bonusType: "Client facing bonus",
-      approvalStatus: "Approved",
-      dateAdded: "2023-08-01",
-      reason: "Exceeded sales targets",
-      datePaid: "2023-08-15",
-      deno: "Dollars",
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      bonusAmount: "$500",
-      bonusNaira: "₦200,000",
-      disburseStatus: "Disbursed",
-      bonusType: "Client facing bonus",
-      approvalStatus: "Approved",
-      dateAdded: "2023-08-01",
-      reason: "Exceeded sales targets",
-      datePaid: "2023-08-15",
-      deno: "Dollars",
-    },
-  ];
+  // Pass bonus_type to the API — backend handles that filter
+  const bonusTypeParam =
+    selectedBonusTypes.length > 0 && !selectedBonusTypes.includes("all")
+      ? selectedBonusTypes[0]
+      : undefined;
+
+  const startDate = dateRange.from
+    ? format(dateRange.from, "yyyy-MM-dd")
+    : undefined;
+  const endDate = dateRange.to ? format(dateRange.to, "yyyy-MM-dd") : undefined;
 
   const {
-    filteredData: searchFiltered,
-    setSearchQuery,
-    searchQuery,
-  } = useFilter(bonusData || [], ["name"]);
+    data: inReviewBonusData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useInReviewBonusList(
+    undefined,
+    undefined,
+    bonusTypeParam,
+    startDate,
+    endDate,
+  );
 
-  const filteredData =
-    selectedBonusTypes.length === 0 || selectedBonusTypes.includes("all")
-      ? searchFiltered
-      : searchFiltered.filter((item) =>
-          selectedBonusTypes.includes(item.bonusType),
-        );
+  const rawBonusData = inReviewBonusData?.data || [];
+
+  // Only search stays on the frontend
+  const filteredData = searchQuery
+    ? rawBonusData.filter(
+        (emp) =>
+          emp.employee?.fullname
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          emp.bonus_type?.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    : rawBonusData;
+
+  const toggleSelectEmployee = (id: number) =>
+    setSelectedEmployeeIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
 
   const isAllSelected =
     filteredData.length > 0 &&
     filteredData.every((emp) => selectedEmployeeIds.includes(emp.id));
 
   const toggleSelectAll = () =>
-    setSelectedEmployeeIds(isAllSelected ? [] : filteredData.map((emp) => emp.id));
+    setSelectedEmployeeIds(
+      isAllSelected ? [] : filteredData.map((emp) => emp.id),
+    );
+
+  // Bulk actions target the checked rows, or all filtered rows when none are checked
+  const targetRecords =
+    selectedEmployeeIds.length > 0
+      ? filteredData.filter((emp) => selectedEmployeeIds.includes(emp.id))
+      : filteredData;
+
   return (
     <DashboardLayout>
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10 relative">
@@ -154,6 +183,7 @@ const PendingApproval = ({
             user="Pending Approval"
             subHead="Review and approve submitted bonus records before they proceed to payroll."
             flexDirection="column"
+            withGap={false}
           />
 
           <div className="flex items-center gap-x-2">
@@ -171,12 +201,20 @@ const PendingApproval = ({
                 {
                   label: "Request change",
                   icon: <RefreshCw size={14} strokeWidth={2} />,
-                  onClick: () => setRequestChangesOpen(true),
+                  onClick: () => {
+                    // bulk — target every record currently in the list
+                    setSelectedEmployeeIds(rawBonusData.map((emp) => emp.id));
+                    setRequestChangesOpen(true);
+                  },
                 },
                 {
                   label: "Reject bonus",
                   icon: <X size={14} strokeWidth={2.5} />,
-                  onClick: () => setRejectOpen(true),
+                  onClick: () => {
+                    // bulk — target every record currently in the list
+                    setSelectedEmployeeIds(rawBonusData.map((emp) => emp.id));
+                    setRejectOpen(true);
+                  },
                   variant: "danger",
                 },
               ]}
@@ -219,17 +257,15 @@ const PendingApproval = ({
               />
             ) : (
               <>
-                <div className="flex gap-x-2 justify-between">
-                  <div className="relative w-[273px]">
-                    <input
-                      type="text"
-                      placeholder="Search bonus"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-[8px] border border-[#E3E3E5] rounded-lg text-base focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
-                    />
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
-                  </div>
+                <div className="relative w-[273px]">
+                  <input
+                    type="text"
+                    placeholder="Search bonus"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-[8px] border border-[#E3E3E5] rounded-lg text-base focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
+                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] w-4 h-4" />
                 </div>
                 <div className="flex items-center gap-x-2">
                   <DateRangePicker
@@ -248,7 +284,37 @@ const PendingApproval = ({
               </>
             )}
           </div>
-          {filteredData.length === 0 ? (
+
+          {isLoading ? (
+            <LoadingState message="Loading bonus data..." />
+          ) : isError ? (
+            <ErrorFetch
+              message={
+                error?.message || "Error fetching bonuses, please try again."
+              }
+              onRefetch={() => refetch()}
+            />
+          ) : rawBonusData.length === 0 && bonusTypeParam ? (
+            <div className="flex flex-col items-center justify-center py-20 px-6 gap-3 text-center">
+              <p className="text-sm font-semibold text-[#2F2F33]">
+                No{" "}
+                {BONUS_TYPE_OPTIONS.find((o) => o.value === bonusTypeParam)
+                  ?.label ?? "bonus"}{" "}
+                records pending approval
+              </p>
+              <p className="text-sm text-[#71717A] max-w-[320px]">
+                There are no pending bonuses matching the selected filter. Try a
+                different type or clear the filter to see all records.
+              </p>
+              <button
+                type="button"
+                onClick={() => setSelectedBonusTypes([])}
+                className="mt-1 text-sm font-medium text-[#E37915] hover:underline"
+              >
+                Clear filter
+              </button>
+            </div>
+          ) : rawBonusData.length === 0 ? (
             <BonusEmptyState setModalMode={setModalMode} />
           ) : (
             <div
@@ -268,7 +334,7 @@ const PendingApproval = ({
                         aria-label="Select all employees"
                       />
                     </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px]">
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Employee
                         <span>
@@ -276,11 +342,9 @@ const PendingApproval = ({
                         </span>
                       </p>
                     </th>
-
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                       Bonus type
                     </th>
-
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Amount
@@ -289,7 +353,6 @@ const PendingApproval = ({
                         </span>
                       </p>
                     </th>
-
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Converted (Naira)
@@ -298,31 +361,28 @@ const PendingApproval = ({
                         </span>
                       </p>
                     </th>
-
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                       Submitted On
                     </th>
-
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                      {" "}
                       Payment
                     </th>
-
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]"></th>
                   </tr>
                 </thead>
-                {filteredData?.length === 0 ? (
-                  <tbody>
+                <tbody>
+                  {filteredData.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-8">
-                        No Details found for the selected month
+                      <td
+                        colSpan={8}
+                        className="text-center py-12 text-sm text-[#71717A]"
+                      >
+                        No results found for &ldquo;{searchQuery}&rdquo;
                       </td>
                     </tr>
-                  </tbody>
-                ) : (
-                  <tbody>
-                    {filteredData?.map((emp) => {
-                      const isSelected = selectedEmployeeIds.includes(emp?.id);
+                  ) : (
+                    filteredData.map((emp) => {
+                      const isSelected = selectedEmployeeIds.includes(emp.id);
                       return (
                         <tr
                           key={emp.id}
@@ -335,37 +395,44 @@ const PendingApproval = ({
                               type="checkbox"
                               className="rounded border-gray-300 cursor-pointer"
                               checked={isSelected}
-                              onChange={() => toggleSelectEmployee(emp?.id)}
-                              aria-label={`Select ${emp?.name || "employee"}`}
+                              onChange={() => toggleSelectEmployee(emp.id)}
+                              aria-label={`Select ${emp.employee?.fullname || "employee"}`}
                             />
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
                               <div className="h-8 w-8 rounded-full uppercase bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                                {emp?.name
-                                  .split(" ")
+                                {emp.employee?.fullname
+                                  ?.split(" ")
                                   .slice(0, 2)
                                   .map((n) => n[0])
                                   .join("")}
                               </div>
-                              <span className=" capitalize text-sm font-medium">
-                                {emp?.name?.split(" ").slice(0, 2).join(" ")}
+                              <span className="capitalize text-sm font-medium">
+                                {emp.employee?.fullname
+                                  ?.split(" ")
+                                  .slice(0, 2)
+                                  .join(" ")}
                               </span>
                             </div>
                           </td>
                           <td className="px-6 py-4 text-sm">
-                            {emp?.bonusType || "—"}
+                            {emp.bonus_type || "—"}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            {emp?.pay_deno === "naira" ? "₦ " : "$ "}
+                            {emp?.amount || "—"}
                           </td>
 
-                          <td className="px-6 py-4 text-sm">$200</td>
-
-                          <td className="px-6 py-4 text-sm ">₦300,000</td>
-
-                          <td className="px-6 py-4">Jun 26th, 2026</td>
+                          <td className="px-6 py-4 text-sm">
+                            ₦{emp?.naira_amount?.toLocaleString() || "—"}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            {formatDate(emp.created)}
+                          </td>
                           <td className="px-6 py-4">
-                            <Badge config={disburseBadge(emp.disburseStatus)} />
+                            <Badge config={stageBadge(emp.approval_status)} />
                           </td>
-
                           <td className="px-6 py-4 text-sm text-[#2F2F33]">
                             <TableActionMenu
                               items={[
@@ -373,26 +440,30 @@ const PendingApproval = ({
                                   label: "View Details",
                                   onClick: () =>
                                     setDrawerData({
-                                      employeeName: emp.name,
-                                      employeeRole: "—",
-                                      bonusType: emp.bonusType,
-                                      totalHours: "—",
-                                      amount: emp.bonusNaira,
-                                      projects: [],
-                                      timeline: [],
+                                      bonusId: emp.id,
+                                      employeeName: emp.employee?.fullname,
                                     }),
                                 },
                                 {
                                   label: "Approve bonus",
-                                  onClick: () => setApproveOpen(true),
+                                  onClick: () => {
+                                    setSelectedEmployeeIds([emp.id]);
+                                    setApproveOpen(true);
+                                  },
                                 },
                                 {
                                   label: "Request for change",
-                                  onClick: () => setRequestChangesOpen(true),
+                                  onClick: () => {
+                                    setSelectedEmployeeIds([emp.id]);
+                                    setRequestChangesOpen(true);
+                                  },
                                 },
                                 {
                                   label: "Reject bonus",
-                                  onClick: () => setRejectOpen(true),
+                                  onClick: () => {
+                                    setSelectedEmployeeIds([emp.id]);
+                                    setRejectOpen(true);
+                                  },
                                   variant: "danger",
                                 },
                               ]}
@@ -400,12 +471,12 @@ const PendingApproval = ({
                           </td>
                         </tr>
                       );
-                    })}
-                  </tbody>
-                )}
+                    })
+                  )}
+                </tbody>
               </table>
+
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 w-full border-t border-slate-200 bg-white">
-                {/* Items per page selector */}
                 <div className="flex items-center gap-2 text-sm text-slate-500">
                   <span>Show:</span>
                   <div className="relative inline-flex items-center">
@@ -420,8 +491,6 @@ const PendingApproval = ({
                       <option value={25}>25</option>
                       <option value={50}>50</option>
                     </select>
-                    {/* Chevron Down Icon */}
-
                     <FaCaretDown
                       className="w-4 h-4 text-slate-500 absolute right-2.5 pointer-events-none"
                       color="#000000"
@@ -431,9 +500,7 @@ const PendingApproval = ({
                   <span>per page</span>
                 </div>
 
-                {/* Page Info and Navigation Buttons */}
                 <div className="flex items-center gap-4">
-                  {/* Page counter text */}
                   <div className="text-sm text-slate-500 font-medium">
                     Page{" "}
                     <span className="text-slate-900 font-semibold">
@@ -444,10 +511,7 @@ const PendingApproval = ({
                       {totalPages}
                     </span>
                   </div>
-
-                  {/* Navigation buttons */}
                   <div className="flex items-center gap-2">
-                    {/* Previous Button */}
                     <button
                       type="button"
                       disabled={currentPage <= 1}
@@ -457,8 +521,6 @@ const PendingApproval = ({
                     >
                       <FaChevronLeft color="#2F2F33" />
                     </button>
-
-                    {/* Next Button */}
                     <button
                       type="button"
                       disabled={currentPage >= totalPages}
@@ -474,54 +536,37 @@ const PendingApproval = ({
             </div>
           )}
         </div>
+
         <RejectBonusModal
           isOpen={rejectOpen}
           onClose={() => setRejectOpen(false)}
-          isSubmitting={rejecting}
-          onConfirm={async (reason) => {
-            setRejecting(true);
-            try {
-              // TODO: call reject API with reason
-              console.log("Reject reason:", reason);
-            } finally {
-              setRejecting(false);
-              setRejectOpen(false);
-            }
-          }}
+          isSubmitting={isReviewing}
+          onConfirm={(reason) =>
+            handleReview("rejected", reason, () => setRejectOpen(false))
+          }
         />
 
         <ApproveBonusModal
           isOpen={approveOpen}
           onClose={() => setApproveOpen(false)}
-          isSubmitting={approving}
-          recordCount={filteredData.length}
-          totalValue="₦0"
-          onConfirm={async () => {
-            setApproving(true);
-            try {
-              // TODO: call approve API
-            } finally {
-              setApproving(false);
-              setApproveOpen(false);
-            }
-          }}
+          isSubmitting={isReviewing}
+          recordCount={selectedEmployeeIds.length || filteredData.length}
+          totalValue={sumNairaAmount(targetRecords)}
+          onConfirm={() =>
+            handleReview("approved", "Bonus", () => setApproveOpen(false))
+          }
         />
 
         <RequestChangesModal
           isOpen={requestChangesOpen}
           onClose={() => setRequestChangesOpen(false)}
-          isSubmitting={requestChangesSubmitting}
+          isSubmitting={isReviewing}
           recordCount={selectedEmployeeIds.length || filteredData.length}
-          onConfirm={async (reason) => {
-            setRequestChangesSubmitting(true);
-            try {
-              // TODO: call request-changes API with reason
-              console.log("Request changes reason:", reason);
-            } finally {
-              setRequestChangesSubmitting(false);
-              setRequestChangesOpen(false);
-            }
-          }}
+          onConfirm={(reason) =>
+            handleReview("change_requested", reason, () =>
+              setRequestChangesOpen(false),
+            )
+          }
         />
 
         {modalMode && (
@@ -537,13 +582,13 @@ const PendingApproval = ({
           isOpen={disburseOpen}
           onClose={() => setDisburseOpen(false)}
           isSubmitting={disbursing}
-          recordCount={filteredData.length}
+          recordCount={selectedEmployeeIds.length || filteredData.length}
           totalValue="₦0"
           bonusTypeSummary={[]}
           onConfirm={async () => {
             setDisbursing(true);
             try {
-              // TODO: call disburse API with _file
+              // TODO: call disburse API
             } finally {
               setDisbursing(false);
               setDisburseOpen(false);

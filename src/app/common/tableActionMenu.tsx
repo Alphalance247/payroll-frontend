@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { ChevronDown } from "lucide-react";
+import Button from "./Button";
 
 export interface ActionMenuItem {
   label: string;
@@ -29,7 +30,11 @@ const variantClass: Record<NonNullable<ActionMenuItem["variant"]>, string> = {
   warning: "text-[#CF6E13]",
 };
 
-const TableActionMenu = ({ items, trigger, className }: TableActionMenuProps) => {
+const TableActionMenu = ({
+  items,
+  trigger,
+  className,
+}: TableActionMenuProps) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -50,10 +55,11 @@ const TableActionMenu = ({ items, trigger, className }: TableActionMenuProps) =>
       onClick={(e) => e.stopPropagation()}
     >
       {trigger ? (
-        <button
-          type="button"
-          onClick={() => setOpen((p) => !p)}
-          className="flex items-center gap-x-1.5 px-3 py-[7px] rounded-[8px] border border-[#D3D3D6] bg-white text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors focus:outline-none"
+        <Button
+          // type="button"
+          variant="secondary"
+          onButtonClick={() => setOpen((p) => !p)}
+          className="flex items-center gap-x-1.5 px-3 py-[7px] rounded-[8px] border border-[#D3D3D6] text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors focus:outline-none"
         >
           {trigger}
           <ChevronDown
@@ -61,12 +67,12 @@ const TableActionMenu = ({ items, trigger, className }: TableActionMenuProps) =>
             strokeWidth={2.5}
             className={`flex-shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           />
-        </button>
+        </Button>
       ) : (
         <button
           type="button"
           onClick={() => setOpen((p) => !p)}
-          className="p-2 rounded-lg text-[#71717A] hover:bg-[#F0F0F3] transition-colors focus:outline-none"
+          className="p-2 rounded-lg text-[#71717A] hover:bg-[#F0F0F3] bg-[white] transition-colors focus:outline-none"
           aria-label="More options"
         >
           <BsThreeDotsVertical size={16} />

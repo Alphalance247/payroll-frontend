@@ -1,6 +1,7 @@
 "use client";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import { useRef, useState } from "react";
+import { format } from "date-fns";
 import Heading from "@/app/common/heading";
 import Button from "@/app/common/Button";
 import { TiArrowUnsorted } from "react-icons/ti";
@@ -17,16 +18,27 @@ import TableActionMenu from "@/app/common/tableActionMenu";
 import BonusSideDrawer, {
   type BonusDrawerData,
 } from "@/app/common/sideDrawer/bonusSideDrawer";
-import BonusEmptyState from "../Bonus/bonusEmptyState";
-import DisburseConfirmationModal from "./disburseConfirmationModal";
+import DisburseEmptyState from "./disburseEmptyState";
+import DisburseConfirmationModal, {
+  type BonusTypeSummary,
+} from "./disburseConfirmationModal";
+import DisburseSingleModal from "./disburseSingleModal";
 import { Badge, stageBadge, disburseBadge } from "./bonusBadge";
+import LoadingState from "@/app/common/loadingState";
+import ErrorFetch from "@/app/common/errorFetch";
+import { useApprovedBonusList } from "@/app/hooks/useQueries/bonuses/useApprovedBonusList";
+import { formatNaira, sumNairaAmount } from "@/app/utils/formatCurrency";
+import {
+  useDisburseBonus,
+  useDisburseMultipleBonuses,
+} from "@/app/hooks/useQueries/bonuses/useDisburseBonus";
 
 const BONUS_TYPE_OPTIONS = [
   { label: "All bonus", value: "all" },
-  { label: "Fixed bonus", value: "Fixed bonus" },
-  { label: "Client-facing bonus", value: "Client facing bonus" },
-  { label: "Quarterly bonus", value: "Quarterly bonus" },
-  { label: "Discretionary bonus", value: "Discretionary bonus" },
+  { label: "Fixed bonus", value: "fixed" },
+  { label: "Client-facing bonus", value: "client" },
+  { label: "Quarterly bonus", value: "quarterly" },
+  { label: "Discretionary bonus", value: "non-client" },
 ];
 
 const DisburseModal = ({
@@ -43,84 +55,89 @@ const DisburseModal = ({
   onPageSizeChange?: (size: number) => void;
 }) => {
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
-  const [selectedEmployeeIds] = useState<number[]>([]);
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<number[]>([]);
   const [selectedBonusTypes, setSelectedBonusTypes] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRangeValue>({
     from: null,
     to: null,
   });
   const [drawerData, setDrawerData] = useState<BonusDrawerData | null>(null);
-  const [modalMode, setModalMode] = useState<"add" | "edit" | null>(null);
   const [disburseOpen, setDisburseOpen] = useState(false);
-  const [disbursing, setDisbursing] = useState(false);
-  console.log("selectedBonusTypes", modalMode);
+  const [disburseSingleOpen, setDisburseSingleOpen] = useState(false);
 
-  const bonusData: {
-    id: 1;
-    name: string;
-    bonusAmount: string;
-    bonusNaira: string;
-    disburseStatus: string;
-    bonusType: string;
-    approvalStatus: string;
-    dateAdded: string;
-    reason: string;
-    datePaid: string;
-    deno: string;
-  }[] = [
-    {
-      id: 1,
-      name: "John Doe",
-      bonusAmount: "$500",
-      bonusNaira: "₦200,000",
-      disburseStatus: "Disbursed",
-      bonusType: "Client facing bonus",
-      approvalStatus: "Approved",
-      dateAdded: "2023-08-01",
-      reason: "Exceeded sales targets",
-      datePaid: "2023-08-15",
-      deno: "Dollars",
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      bonusAmount: "$500",
-      bonusNaira: "₦200,000",
-      disburseStatus: "Disbursed",
-      bonusType: "Client facing bonus",
-      approvalStatus: "Approved",
-      dateAdded: "2023-08-01",
-      reason: "Exceeded sales targets",
-      datePaid: "2023-08-15",
-      deno: "Dollars",
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      bonusAmount: "$500",
-      bonusNaira: "₦200,000",
-      disburseStatus: "Disbursed",
-      bonusType: "Client facing bonus",
-      approvalStatus: "Approved",
-      dateAdded: "2023-08-01",
-      reason: "Exceeded sales targets",
-      datePaid: "2023-08-15",
-      deno: "Dollars",
-    },
-  ];
+  const toggleSelectEmployee = (id: number) =>
+    setSelectedEmployeeIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+
+  const { mutate: disburseSingle, isPending: isDisbursingSingle } =
+    useDisburseBonus(() => {
+      setDisburseSingleOpen(false);
+      setSelectedEmployeeIds([]);
+    });
+
+  const { mutate: disburseMultiple, isPending: isDisbursingMultiple } =
+    useDisburseMultipleBonuses(() => {
+      setDisburseOpen(false);
+      setSelectedEmployeeIds([]);
+    });
+
+  // Derive a single bonus_type param — "all" or empty means no filter
+  const bonusTypeParam =
+    selectedBonusTypes.length > 0 && !selectedBonusTypes.includes("all")
+      ? selectedBonusTypes[0]
+      : undefined;
+
+  const startDate = dateRange.from
+    ? format(dateRange.from, "yyyy-MM-dd")
+    : undefined;
+  const endDate = dateRange.to ? format(dateRange.to, "yyyy-MM-dd") : undefined;
 
   const {
-    filteredData: searchFiltered,
-    setSearchQuery,
-    searchQuery,
-  } = useFilter(bonusData || [], ["name"]);
+    data: approvedBonusData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useApprovedBonusList(
+    undefined,
+    undefined,
+    bonusTypeParam,
+    startDate,
+    endDate,
+  );
 
-  const filteredData =
-    selectedBonusTypes.length === 0 || selectedBonusTypes.includes("all")
-      ? searchFiltered
-      : searchFiltered.filter((item) =>
-          selectedBonusTypes.includes(item.bonusType),
-        );
+  const rawBonusData = approvedBonusData?.data || [];
+
+  const { filteredData, setSearchQuery, searchQuery } = useFilter(
+    rawBonusData,
+    ["employee.fullname", "bonus_type"],
+  );
+
+  const isAllSelected =
+    filteredData.length > 0 &&
+    filteredData.every((emp) => selectedEmployeeIds.includes(emp.id));
+
+  const toggleSelectAll = () =>
+    setSelectedEmployeeIds(
+      isAllSelected ? [] : filteredData.map((emp) => emp.id),
+    );
+
+  const selectedRecords = filteredData.filter((emp) =>
+    selectedEmployeeIds.includes(emp.id),
+  );
+  const bonusTypeSummary: BonusTypeSummary[] = BONUS_TYPE_OPTIONS.filter(
+    (opt) => opt.value !== "all",
+  )
+    .map((opt) => ({
+      label: opt.label,
+      count: selectedRecords.filter((emp) => emp.bonus_type === opt.value)
+        .length,
+    }))
+    .filter((s) => s.count > 0);
+
+  const singleTarget = selectedRecords.length === 1 ? selectedRecords[0] : null;
+
   return (
     <div>
       <div className="flex items-center justify-between z-0 mb-8">
@@ -131,9 +148,14 @@ const DisburseModal = ({
         />
 
         <Button
-          className="flex items-center gap-x-2 shadow-sm hover:shadow-md transition-shadow"
+          className={`flex items-center gap-x-2 shadow-sm hover:shadow-md transition-shadow ${selectedEmployeeIds.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
           variant="primary"
-          onButtonClick={() => setDisburseOpen(true)}
+          disabled={selectedEmployeeIds.length === 0}
+          onButtonClick={() =>
+            selectedEmployeeIds.length === 1
+              ? setDisburseSingleOpen(true)
+              : setDisburseOpen(true)
+          }
         >
           Disburse Bonus
         </Button>
@@ -171,8 +193,17 @@ const DisburseModal = ({
             />
           </div>
         </div>
-        {filteredData.length === 0 ? (
-          <BonusEmptyState setModalMode={setModalMode} />
+        {isLoading ? (
+          <LoadingState message="Loading bonus data..." />
+        ) : isError ? (
+          <ErrorFetch
+            message={
+              error?.message || "Error fetching bonuses, please try again."
+            }
+            onRefetch={() => refetch()}
+          />
+        ) : filteredData.length === 0 ? (
+          <DisburseEmptyState />
         ) : (
           <div
             className="overflow-x-auto rounded-lg z-0 relative"
@@ -186,9 +217,9 @@ const DisburseModal = ({
                       type="checkbox"
                       ref={selectAllCheckboxRef}
                       className="rounded border-gray-300 cursor-pointer"
-                      // checked={isAllSelected}
-                      // onChange={toggleSelectAll}
-                      // disabled={employees.length === 0}
+                      checked={isAllSelected}
+                      onChange={toggleSelectAll}
+                      disabled={filteredData.length === 0}
                       aria-label="Select all employees"
                     />
                   </th>
@@ -228,7 +259,7 @@ const DisburseModal = ({
                   </th>
 
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
-                    Stage
+                    Status
                   </th>
 
                   <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
@@ -263,39 +294,48 @@ const DisburseModal = ({
                             type="checkbox"
                             className="rounded border-gray-300 cursor-pointer"
                             checked={isSelected}
-                            //   onChange={() => toggleSelectEmployee(emp?.id)}
-                            aria-label={`Select ${emp?.name || "employee"}`}
-                            //   disabled={emp?.paid}
+                            onChange={() => toggleSelectEmployee(emp?.id)}
+                            aria-label={`Select ${emp?.employee?.fullname || "employee"}`}
                           />
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
                             <div className="h-8 w-8 rounded-full uppercase bg-[#26547C] text-white flex items-center justify-center text-sm font-medium">
-                              {emp?.name
-                                .split(" ")
+                              {emp?.employee?.fullname
+                                ?.split(" ")
                                 .slice(0, 2)
                                 .map((n) => n[0])
                                 .join("")}
                             </div>
                             <span className=" capitalize text-sm font-medium">
-                              {emp?.name?.split(" ").slice(0, 2).join(" ")}
+                              {emp?.employee?.fullname
+                                ?.split(" ")
+                                .slice(0, 2)
+                                .join(" ")}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm">
-                          {emp?.bonusType || "—"}
+                          {emp?.bonus_type || "—"}
                         </td>
-                        <td className="px-6 py-4 text-sm">71.50 h</td>
+                        <td className="px-6 py-4 text-sm">
+                          {emp?.total_hours ? `${emp.total_hours} h` : "—"}
+                        </td>
 
-                        <td className="px-6 py-4 text-sm">$200</td>
+                        <td className="px-6 py-4 text-sm">
+                          {emp?.pay_deno === "naira" ? "₦ " : "$ "}
+                          {emp?.amount || "—"}
+                        </td>
 
-                        <td className="px-6 py-4 text-sm ">₦300,000</td>
+                        <td className="px-6 py-4 text-sm ">
+                          ₦ {emp?.naira_amount?.toLocaleString() || "—"}
+                        </td>
 
                         <td className="px-6 py-4">
-                          <Badge config={stageBadge(emp.approvalStatus)} />
+                          <Badge config={stageBadge(emp.approved_state)} />
                         </td>
                         <td className="px-6 py-4">
-                          <Badge config={disburseBadge(emp.disburseStatus)} />
+                          <Badge config={disburseBadge(emp.paid)} />
                         </td>
 
                         <td className="px-6 py-4 text-sm text-[#2F2F33]">
@@ -305,19 +345,9 @@ const DisburseModal = ({
                                 label: "View Details",
                                 onClick: () =>
                                   setDrawerData({
-                                    employeeName: emp.name,
-                                    employeeRole: "—",
-                                    bonusType: emp.bonusType,
-                                    totalHours: "—",
-                                    amount: emp.bonusNaira,
-                                    projects: [],
-                                    timeline: [],
+                                    bonusId: emp.id,
+                                    employeeName: emp.employee?.fullname,
                                   }),
-                              },
-
-                              {
-                                label: "Submit for Approval",
-                                onClick: () => {},
                               },
                             ]}
                           />
@@ -399,20 +429,23 @@ const DisburseModal = ({
       <DisburseConfirmationModal
         isOpen={disburseOpen}
         onClose={() => setDisburseOpen(false)}
-        isSubmitting={disbursing}
-        recordCount={filteredData.length}
-        totalValue="₦0"
-        bonusTypeSummary={[]}
-        onConfirm={async () => {
-          setDisbursing(true);
-          try {
-            // TODO: call disburse API with _file
-          } finally {
-            setDisbursing(false);
-            setDisburseOpen(false);
-          }
-        }}
+        isSubmitting={isDisbursingMultiple}
+        recordCount={selectedRecords.length}
+        totalValue={sumNairaAmount(selectedRecords)}
+        bonusTypeSummary={bonusTypeSummary}
+        onConfirm={() => disburseMultiple(selectedEmployeeIds.map(String))}
       />
+
+      {singleTarget && (
+        <DisburseSingleModal
+          isOpen={disburseSingleOpen}
+          onClose={() => setDisburseSingleOpen(false)}
+          isSubmitting={isDisbursingSingle}
+          employeeName={singleTarget.employee?.fullname || "this employee"}
+          amount={formatNaira(singleTarget.naira_amount)}
+          onConfirm={() => disburseSingle(singleTarget.id)}
+        />
+      )}
 
       {drawerData && (
         <BonusSideDrawer

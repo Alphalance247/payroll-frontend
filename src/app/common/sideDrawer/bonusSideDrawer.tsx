@@ -2,27 +2,13 @@
 import SideDrawer from "@/app/common/sideDrawer/sideDrawer";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import Button from "@/app/common/Button";
-
-export interface BonusProjectRow {
-  projectKey: string;
-  projectName: string;
-  hoursLogged: string;
-}
-
-export interface BonusTimelineEvent {
-  title: string;
-  description: string;
-  timestamp: string;
-}
+import LoadingState from "@/app/common/loadingState";
+import { useGetBonusDetails } from "@/app/hooks/useQueries/bonuses/useGetBonusDetails";
 
 export interface BonusDrawerData {
+  bonusId: number;
   employeeName: string;
-  employeeRole: string;
-  bonusType: string;
-  totalHours: string;
-  amount: string;
-  projects: BonusProjectRow[];
-  timeline: BonusTimelineEvent[];
+  employeeRole?: string;
 }
 
 interface BonusSideDrawerProps {
@@ -62,11 +48,28 @@ const NavIconBtn = ({
 );
 
 const OverviewRow = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex items-center gap-2 border-b border-[#F0F0F3] pb-4 last:border-b-0 last:pb-0">
-    <span className="w-32 flex-shrink-0 text-xs font-medium text-[#71717A]">{label}</span>
-    <span className="text-sm font-medium text-[#2F2F33]">{value}</span>
+  <div className="flex items-start gap-2 border-b border-[#F0F0F3] pb-4 last:border-b-0 last:pb-0">
+    <span className="w-36 flex-shrink-0 text-xs font-medium text-[#71717A] pt-0.5">
+      {label}
+    </span>
+    <span className="text-sm font-medium text-[#2F2F33]">{value || "—"}</span>
   </div>
 );
+
+const formatDate = (dateString: string) => {
+  if (!dateString) return "—";
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(new Date(dateString));
+  } catch {
+    return dateString;
+  }
+};
+
+const getCurrencySymbol = (payDenoId: number) => (payDenoId === 2 ? "₦" : "$");
 
 const BonusSideDrawer = ({
   data,
@@ -76,6 +79,17 @@ const BonusSideDrawer = ({
   onPrev,
   onNext,
 }: BonusSideDrawerProps) => {
+  const {
+    data: bonusDetail,
+    isLoading,
+    isError,
+  } = useGetBonusDetails(data.bonusId);
+
+  const detail = bonusDetail?.data;
+  const timeline = bonusDetail?.timeline ?? [];
+  const changeRequests = bonusDetail?.change_requests ?? [];
+  const notYetSubmitted = detail?.approved_state?.toLowerCase() === "draft";
+
   return (
     <SideDrawer onClose={onClose}>
       <div className="relative z-50 w-[520px] h-full bg-white border-l border-[#E3E3E5] flex flex-col">
@@ -112,98 +126,119 @@ const BonusSideDrawer = ({
               <p className="text-base font-medium text-[#2F2F33]">
                 {data.employeeName}
               </p>
-              <p className="text-sm text-[#71717A]">{data.employeeRole}</p>
+              {data.employeeRole && (
+                <p className="text-sm text-[#71717A]">{data.employeeRole}</p>
+              )}
             </div>
           </div>
 
           <hr className="border-[#E3E3E5]" />
 
-          {/* Overview */}
-          <section className="flex flex-col gap-4">
-            <h3 className="text-base font-medium text-[#2F2F33]">Overview</h3>
-            <div className="flex flex-col gap-4">
-              <OverviewRow label="Bonus Type" value={data.bonusType} />
-              <OverviewRow label="Total hours" value={data.totalHours} />
-              <OverviewRow label="Amount" value={data.amount} />
-            </div>
-          </section>
-
-          <hr className="border-[#E3E3E5]" />
-
-          {/* Project details */}
-          <section className="flex flex-col gap-4">
-            <h3 className="text-base font-medium text-[#2F2F33]">
-              Project details
-            </h3>
-            <div className="rounded-lg border border-[#E3E3E5] overflow-hidden">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-[#F7F7F7] border-b border-[#E3E3E5]">
-                    <th className="px-4 py-3 text-left text-xs font-medium text-[#71717A] w-28">
-                      Project Key
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-[#71717A]">
-                      Project Name
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-[#71717A] w-32">
-                      Hours Logged
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.projects.map((row, i) => (
-                    <tr
-                      key={i}
-                      className="border-b border-[#E3E3E5] last:border-b-0"
-                    >
-                      <td className="px-4 py-4 text-sm font-medium text-[#2F2F33]">
-                        {row.projectKey}
-                      </td>
-                      <td className="px-4 py-4 text-sm text-[#2F2F33]">
-                        {row.projectName}
-                      </td>
-                      <td className="px-4 py-4 text-sm text-[#2F2F33]">
-                        {row.hoursLogged}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <hr className="border-[#E3E3E5]" />
-
-          {/* Timeline */}
-          <section className="flex flex-col gap-4">
-            <h3 className="text-base font-medium text-[#2F2F33]">Timeline</h3>
-            <div className="relative flex flex-col gap-6 pl-7 border-l-2 border-[#E3E3E5]">
-              {data.timeline.map((event, i) => (
-                <div key={i} className="relative flex flex-col gap-1">
-                  {/* dot */}
-                  <div className="absolute -left-[29px] top-1 w-4 h-4 rounded-full bg-[#2F2F33] ring-4 ring-white border-2 border-[#E3E3E5]" />
-                  <p className="text-sm font-medium text-[#2F2F33]">
-                    {event.title}
-                  </p>
-                  <p className="text-sm text-[#2F2F33]">{event.description}</p>
-                  <p className="text-sm text-[#71717A]">{event.timestamp}</p>
+          {isLoading ? (
+            <LoadingState message="Loading bonus details..." />
+          ) : isError ? (
+            <p className="text-sm text-center text-[#CF6E13] py-10">
+              Failed to load bonus details.
+            </p>
+          ) : detail ? (
+            <>
+              {/* Overview */}
+              <section className="flex flex-col gap-4">
+                <h3 className="text-base font-medium text-[#2F2F33]">
+                  Overview
+                </h3>
+                <div className="flex flex-col gap-4">
+                  <OverviewRow label="Bonus Type" value={detail.bonus_type} />
+                  <OverviewRow
+                    label="Amount"
+                    value={`${getCurrencySymbol(detail.pay_deno)} ${detail.amount}`}
+                  />
+                  <OverviewRow label="Status" value={detail.approved_state} />
+                  <OverviewRow
+                    label="Processing"
+                    value={detail.processing_status}
+                  />
+                  <OverviewRow
+                    label="Date Paid"
+                    value={formatDate(detail.date_paid)}
+                  />
+                  {detail.review_comment ? (
+                    <OverviewRow
+                      label="Review Comment"
+                      value={detail.review_comment}
+                    />
+                  ) : null}
                 </div>
-              ))}
-            </div>
-          </section>
+              </section>
+
+              {/* Change Requests */}
+              {changeRequests.length > 0 && (
+                <>
+                  <hr className="border-[#E3E3E5]" />
+                  <section className="flex flex-col gap-4">
+                    <h3 className="text-base font-medium text-[#2F2F33]">
+                      Change Requests
+                    </h3>
+                    <div className="flex flex-col gap-3">
+                      {changeRequests.map((req, i) => (
+                        <div
+                          key={i}
+                          className="rounded-lg border border-[#E3E3E5] p-4 flex flex-col gap-1.5"
+                        >
+                          <p className="text-sm text-[#2F2F33]">{req.note}</p>
+                          <p className="text-xs text-[#71717A]">
+                            {req.requested_by.fullname} &middot;{" "}
+                            {formatDate(req.created)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </>
+              )}
+
+              {/* Timeline */}
+              {timeline.length > 0 && (
+                <>
+                  <hr className="border-[#E3E3E5]" />
+                  <section className="flex flex-col gap-4">
+                    <h3 className="text-base font-medium text-[#2F2F33]">
+                      Timeline
+                    </h3>
+                    <div className="relative flex flex-col gap-6 pl-7 border-l-2 border-[#E3E3E5]">
+                      {timeline.map((event, i) => (
+                        <div key={i} className="relative flex flex-col gap-1">
+                          <div className="absolute -left-[29px] top-1 w-4 h-4 rounded-full bg-[#2F2F33] ring-4 ring-white border-2 border-[#E3E3E5]" />
+                          <p className="text-sm font-medium text-[#2F2F33]">
+                            {event.action_title}
+                          </p>
+                          <p className="text-sm text-[#2F2F33]">
+                            {event.action}
+                          </p>
+                          <p className="text-xs text-[#71717A]">
+                            {event.action_by.fullname} &middot;{" "}
+                            {formatDate(event.created)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </>
+              )}
+            </>
+          ) : null}
         </div>
 
         {/* ── Sticky footer ── */}
         <div className="flex-shrink-0 flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E3E3E5] bg-white">
-          <Button
-            variant="secondary"
-            onClick={onCancel ?? onClose}
-          >
+          <Button variant="secondary" onButtonClick={onCancel ?? onClose}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={onSubmit}>
-            Submit for Approval
-          </Button>
+          {notYetSubmitted && (
+            <Button variant="primary" onButtonClick={onSubmit}>
+              Submit for Approval
+            </Button>
+          )}
         </div>
       </div>
     </SideDrawer>

@@ -48,12 +48,11 @@ export default function DisburseConfirmationModal({
             Disburse Bonuses
           </h2>
           <p className="text-sm text-[#71717A] leading-relaxed">
-            You&apos;re about to disburse all{" "}
+            You&apos;re about to disburse{" "}
             <span className="font-semibold text-[#2F2F33]">
-              approved bonus records
-            </span>{" "}
-            that are ready for payment. Only bonuses that haven&apos;t been
-            disbursed will be processed.
+              {recordCount} selected bonus record{recordCount !== 1 ? "s" : ""}
+            </span>
+            . This action cannot be undone.
           </p>
         </div>
 

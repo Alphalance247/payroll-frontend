@@ -1,6 +1,10 @@
 "use client";
 import DashboardLayout from "@/app/common/DashBoardLayout";
 import AllBonusTab from "@/app/components/bonuses/allBonus";
+import ClientBonusTab from "@/app/components/bonuses/clientFacingTab";
+import FixedBonusTab from "@/app/components/bonuses/fixedBonusTab";
+import QuarterlyBonusTab from "@/app/components/bonuses/quarterlyBonusTab";
+import DiscretionaryBonusTab from "@/app/components/bonuses/discretionaryBonusTab";
 import { useState } from "react";
 
 const BonusHistory = () => {
@@ -33,6 +37,10 @@ const BonusHistory = () => {
         </div>
 
         {activeTab === "All bonus" && <AllBonusTab />}
+        {activeTab === "Fixed bonus" && <FixedBonusTab />}
+        {activeTab === "Client-facing bonus" && <ClientBonusTab />}
+        {activeTab === "Quarterly bonus" && <QuarterlyBonusTab />}
+        {activeTab === "Discretionary bonus" && <DiscretionaryBonusTab />}
       </main>
     </DashboardLayout>
   );

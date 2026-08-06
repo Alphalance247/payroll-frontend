@@ -45,8 +45,11 @@ export default function RequestChangesModal({
           <p className="text-sm text-[#71717A] leading-relaxed">
             {recordCount === 1 ? (
               <>
-                This <span className="font-semibold text-[#2F2F33]">bonus record</span> will
-                be returned to HR for review.
+                This{" "}
+                <span className="font-semibold text-[#2F2F33]">
+                  bonus record
+                </span>{" "}
+                will be returned to HR for review.
               </>
             ) : (
               <>

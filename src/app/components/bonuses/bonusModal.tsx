@@ -1,13 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ModalOverlay from "@/app/common/modal/modal";
 import Button from "@/app/common/Button";
 import { ChevronDown } from "lucide-react";
+import { useEmployeeListData } from "@/app/hooks/useQueries/useEmployeeData";
+import {
+  useAddBonus,
+  type AddBonusPayload,
+} from "@/app/hooks/useQueries/bonuses/useAddBonus";
+import { useEditBonus } from "@/app/hooks/useQueries/bonuses/useEditBonus";
 
 export interface BonusFormData {
   employeeId: string;
   bonusType: string;
-  currency: string;
+  currency: number | string;
   amount: string;
   notes: string;
 }
@@ -24,6 +30,7 @@ export interface BonusTypeOption {
 
 interface BonusModalProps {
   mode: "add" | "edit";
+  bonusId?: number;
   initialData?: Partial<BonusFormData>;
   employeeOptions?: EmployeeOption[];
   bonusTypeOptions?: BonusTypeOption[];
@@ -33,13 +40,17 @@ interface BonusModalProps {
 }
 
 const DEFAULT_BONUS_TYPES: BonusTypeOption[] = [
-  { label: "Fixed bonus", value: "Fixed bonus" },
-  { label: "Client-facing bonus", value: "Client facing bonus" },
-  { label: "Quarterly bonus", value: "Quarterly bonus" },
-  { label: "Discretionary bonus", value: "Discretionary bonus" },
+  { label: "All bonus", value: "all" },
+  { label: "Fixed bonus", value: "fixed" },
+  { label: "Client-facing bonus", value: "client" },
+  { label: "Quarterly bonus", value: "quarterly" },
+  { label: "Discretionary bonus", value: "non-client" },
 ];
 
-const CURRENCIES = ["NGN", "USD", "GBP", "EUR"];
+const CURRENCIES = [
+  { id: 1, name: "Dollars", code: "USD" },
+  { id: 2, name: "naira", code: "NGN" },
+];
 
 const SelectField = ({
   label,
@@ -86,11 +97,10 @@ const SelectField = ({
 
 const BonusModal = ({
   mode,
+  bonusId,
   initialData,
-  employeeOptions = [],
   bonusTypeOptions = DEFAULT_BONUS_TYPES,
   onClose,
-  onSaveDraft,
   onSubmit,
 }: BonusModalProps) => {
   const [form, setForm] = useState<BonusFormData>({
@@ -100,16 +110,23 @@ const BonusModal = ({
     amount: initialData?.amount ?? "",
     notes: initialData?.notes ?? "",
   });
+
+  useEffect(() => {
+    if (!initialData) return;
+    setForm({
+      employeeId: initialData.employeeId ?? "",
+      bonusType: initialData.bonusType ?? "",
+      currency: initialData.currency ?? "NGN",
+      amount: initialData.amount != null ? String(initialData.amount) : "",
+      notes: initialData.notes ?? "",
+    });
+  }, [initialData]);
+
+  console.log("initialData", initialData);
+
   const [createAnother, setCreateAnother] = useState(false);
-
-  const set = (field: keyof BonusFormData) => (value: string) =>
-    setForm((prev) => ({ ...prev, [field]: value }));
-
-  const isAdd = mode === "add";
-  const title = isAdd ? "Add Bonus" : "Edit Bonus";
-  const submitLabel = isAdd ? "Save Bonus" : "Update Bonus";
-
-  const handleSubmit = () => {
+  const { data: employeeData } = useEmployeeListData();
+  const { mutate: addBonus, isPending: isAdding } = useAddBonus(() => {
     onSubmit(form, createAnother);
     if (createAnother) {
       setForm({
@@ -120,7 +137,54 @@ const BonusModal = ({
         notes: "",
       });
     }
+  });
+  const { mutate: editBonus, isPending: isEditing } = useEditBonus(() => {
+    onSubmit(form, createAnother);
+  });
+  const isPending = isAdding || isEditing;
+
+  const set = (field: keyof BonusFormData) => (value: string) =>
+    setForm((prev) => ({ ...prev, [field]: value }));
+
+  const isAdd = mode === "add";
+  const title = isAdd ? "Add Bonus" : "Edit Bonus";
+  const submitLabel = isAdd ? "Save Bonus" : "Update Bonus";
+
+  const buildPayload = (): AddBonusPayload => ({
+    amount: Number(form.amount),
+    reason: form.notes,
+    bonus_type: form.bonusType as AddBonusPayload["bonus_type"],
+    review_comment: "",
+    paid: false,
+    pay_deno: CURRENCIES.find((c) => c.code === form.currency)?.id ?? 0,
+    employee: Number(form.employeeId),
+  });
+
+  const handleSubmit = () => {
+    if (isAdd) {
+      addBonus(buildPayload());
+    } else if (bonusId != null) {
+      const payload = buildPayload();
+      editBonus({
+        bonusId,
+        amount: payload.amount,
+        reason: payload.reason,
+        bonus_type: payload.bonus_type,
+        pay_deno: payload.pay_deno,
+        employee: payload.employee,
+      });
+    } else {
+      onSubmit(form, createAnother);
+    }
   };
+
+  // const handleSaveDraft = () => {
+  //   if (isAdd) {
+  //     addBonus(buildPayload());
+  //   } else {
+  //     onSaveDraft?.(form);
+  //   }
+  // };
 
   return (
     <ModalOverlay onClose={onClose}>
@@ -140,9 +204,9 @@ const BonusModal = ({
             onChange={set("employeeId")}
             placeholder="Select an employee"
           >
-            {employeeOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
+            {employeeData?.employees?.map((opt) => (
+              <option key={opt?.id} value={opt?.id}>
+                {opt?.fullname}
               </option>
             ))}
           </SelectField>
@@ -179,8 +243,8 @@ const BonusModal = ({
                   className="appearance-none h-full pl-3 pr-7 text-sm font-medium text-[#2F2F33] bg-[#F7F7F7] border-r border-[#E3E3E5] focus:outline-none cursor-pointer"
                 >
                   {CURRENCIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
+                    <option key={c?.id} value={c?.code}>
+                      {c?.code}
                     </option>
                   ))}
                 </select>
@@ -239,13 +303,19 @@ const BonusModal = ({
           )}
 
           <div className="flex items-center gap-2">
-            {onSaveDraft && (
-              <Button variant="secondary" onButtonClick={() => onSaveDraft(form)}>
-                Save Draft
-              </Button>
-            )}
-            <Button variant="primary" onButtonClick={handleSubmit}>
-              {submitLabel}
+            <Button
+              variant="secondary"
+              // disabled={isPending}
+              onButtonClick={onClose}
+            >
+              cancel
+            </Button>
+            <Button
+              variant="primary"
+              disabled={isPending}
+              onButtonClick={handleSubmit}
+            >
+              {isPending ? "Saving..." : submitLabel}
             </Button>
           </div>
         </div>

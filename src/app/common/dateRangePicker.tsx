@@ -241,31 +241,49 @@ const DateRangePicker = ({
             {/* Right — calendar */}
             <div className="flex flex-col">
               {/* Date display row */}
-              <div className="flex items-center gap-x-3 px-5 pt-4 pb-3 border-b border-[#F0F0F3]">
+              <div className="grid grid-cols-2 items-center justify-between gap-x-3 px-5 pt-4 pb-3">
                 <div className="flex flex-col items-start">
-                  <span className="text-[10px] font-medium text-[#71717A] uppercase tracking-wide mb-0.5">
-                    Start
+                  <span className="text-sm font-medium text-[#2F2F33] tracking-wide mb-[6px]">
+                    Start date
                   </span>
-                  <span
-                    className={`text-sm font-medium ${pending.from ? "text-[#2F2F33]" : "text-[#A0A0A8]"}`}
-                  >
-                    {startLabel}
-                  </span>
+
+                  <div className="border-[#D3D3D6] border rounded-[8px] px-[14px] py-[6px] flex items-center gap-x-2 w-full">
+                    <Calendar
+                      size={14}
+                      strokeWidth={2}
+                      className="flex-shrink-0"
+                      color={"#667085"}
+                    />
+
+                    <span
+                      className={`text-sm font-medium ${pending.from ? "text-[#2F2F33]" : "text-[#A0A0A8]"}`}
+                    >
+                      {startLabel}
+                    </span>
+                  </div>
                 </div>
-                <ChevronRight
+                {/* <ChevronRight
                   size={14}
                   strokeWidth={2}
                   className="text-[#D3D3D6] mt-3 flex-shrink-0"
-                />
-                <div className="flex flex-col items-start">
-                  <span className="text-[10px] font-medium text-[#71717A] uppercase tracking-wide mb-0.5">
-                    End
+                /> */}
+                <div className="flex flex-col items-start w-full">
+                  <span className="text-sm font-medium text-[#2F2F33] tracking-wide mb-[6px]">
+                    End date
                   </span>
-                  <span
-                    className={`text-sm font-medium ${pending.to ? "text-[#2F2F33]" : "text-[#A0A0A8]"}`}
-                  >
-                    {endLabel}
-                  </span>
+                  <div className="border-[#D3D3D6] border rounded-[8px] px-[14px] py-[6px] flex items-center gap-x-2 w-full">
+                    <Calendar
+                      size={14}
+                      strokeWidth={2}
+                      className="flex-shrink-0"
+                      color={"#667085"}
+                    />
+                    <span
+                      className={`text-sm font-medium  ${pending.to ? "text-[#2F2F33]" : "text-[#A0A0A8]"}`}
+                    >
+                      {endLabel}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -280,13 +298,14 @@ const DateRangePicker = ({
                   showOutsideDays={false}
                   classNames={{
                     months: "flex gap-x-6",
-                    month_caption: "flex items-center justify-center mb-3",
+                    month_caption:
+                      "flex items-center gap-y-1 justify-center mb-3",
                     caption_label: "text-sm font-semibold text-[#2F2F33]",
                     nav: "flex items-center",
                     button_previous:
-                      "absolute left-1 top-0 p-1.5 rounded-md hover:bg-[#F0F0F3] text-[#71717A] transition-colors",
+                      "absolute left-[12rem] top-[6.3rem] p-1.5 rounded-md hover:bg-[#F0F0F3] text-[#71717A] transition-colors",
                     button_next:
-                      "absolute right-1 top-0 p-1.5 rounded-md hover:bg-[#F0F0F3] text-[#71717A] transition-colors",
+                      "absolute right-[1rem] top-[6rem] p-1.5 rounded-md hover:bg-[#F0F0F3] text-[#71717A] transition-colors",
                     month_grid: "w-full border-collapse",
                     weekdays: "flex mb-1",
                     weekday:
