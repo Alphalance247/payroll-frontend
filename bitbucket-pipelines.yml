@@ -1,0 +1,634 @@
+image: node:18-alpine
+
+options:
+  size: 2x
+  max-time: 10
+
+definitions:
+  caches:
+    node: ~/.npm
+    nextcache: .next/cache
+
+  services:
+    # The image build runs inside this daemon, so its memory limit -- not the
+    # step's -- is what webpack has to fit in. The default is 1024MB, which is
+    # roughly what the dev server had when the build was being OOM-killed.
+    # `size: 2x` above gives the step 8192MB in total to divide up.
+    docker:
+      memory: 4096
+
+  steps:
+    # Production can only be reached by merging a PR from `dev` into `prod`.
+    # The branch restriction on `prod` stops direct pushes; this step is the
+    # other half -- it stops a PR into `prod` from any branch but `dev`, and
+    # proves the commit already went through the dev/test environment.
+    #
+    # PR pipelines are keyed on the PR's SOURCE branch, and Bitbucket reads
+    # bitbucket-pipelines.yml from the source branch too. So a `dev -> prod` PR
+    # is governed by DEV's copy of this file. Keep prod's copy in sync, or a
+    # `prod -> dev` back-merge runs nothing at all.
+    - step: &guard
+        name: Promotion guard
+        image: alpine:3.22
+        clone:
+          depth: full           # needs history to prove the commit is on dev
+        script:
+          - apk add --no-cache git
+          - |
+            set -e
+            DEST="${BITBUCKET_PR_DESTINATION_BRANCH:-}"
+            if [ "$DEST" != "prod" ]; then
+              echo "PR destination is '${DEST:-<none>}' -- production guard not applicable."
+              exit 0
+            fi
+
+            echo "PR targets prod -- verifying this change already went through the dev environment."
+
+            if [ "$BITBUCKET_BRANCH" != "dev" ]; then
+              echo "BLOCKED: prod only accepts PRs from 'dev'; this PR is from '$BITBUCKET_BRANCH'."
+              echo "Merge into dev first so the change deploys to the dev server, then open dev -> prod."
+              exit 1
+            fi
+
+            git fetch -q origin dev:refs/remotes/origin/dev
+            if ! git merge-base --is-ancestor "$BITBUCKET_COMMIT" origin/dev; then
+              echo "BLOCKED: commit $BITBUCKET_COMMIT is not contained in origin/dev,"
+              echo "so it was never deployed to the dev environment."
+              exit 1
+            fi
+
+            echo "OK: $BITBUCKET_COMMIT is on dev and has been through the dev server."
+
+    - step: &lint
+        name: Lint Code
+        caches:
+          - node
+        script:
+          - npm ci
+          - npm run lint
+
+    - step: &test
+        name: Run Tests with Coverage
+        caches:
+          - node
+        script:
+          - apk add --no-cache libc6-compat jq
+          - npm ci
+          - |
+            if jq -e '.scripts.test' package.json >/dev/null 2>&1; then
+              npm test -- --coverage
+            else
+              echo "No \"test\" script in package.json - skipping."
+            fi
+          - |
+            if [ -f coverage/coverage-summary.json ]; then
+              export UNIT_TEST_COVERAGE=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+              echo "Code coverage: ${UNIT_TEST_COVERAGE}%"
+            else
+              export UNIT_TEST_COVERAGE=0
+            fi
+        artifacts:
+          - coverage/**
+          - test-results/**
+
+    - step: &build
+        name: Build Application
+        caches:
+          - node
+          - nextcache
+        script:
+          - apk add --no-cache libc6-compat
+          - npm ci
+          - npm run build
+        artifacts:
+          - .next/**
+
+    - step: &security-scan
+        name: Security Scan
+        caches:
+          - node
+        script:
+          - npm ci
+          - npm audit --audit-level=moderate || true
+          - npm outdated || true
+
+    - step: &report-to-compass
+        name: Report Metrics to Compass
+        script:
+          - apk add --no-cache jq curl git
+          - |
+            if [ -f coverage/coverage-summary.json ]; then
+              export UNIT_TEST_COVERAGE=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+            else
+              export UNIT_TEST_COVERAGE=0
+            fi
+            echo "Unit test coverage: ${UNIT_TEST_COVERAGE}%"
+          - |
+            if [ -n "$BITBUCKET_PR_ID" ]; then
+              export OPEN_PULL_REQUESTS=1
+            else
+              PR_RESPONSE=$(curl -s -X GET \
+                "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pullrequests?state=OPEN" \
+                -H "Authorization: Bearer ${BITBUCKET_TOKEN:-}" \
+                2>/dev/null || echo '{"size":0}')
+              export OPEN_PULL_REQUESTS=$(echo "$PR_RESPONSE" | jq -r '.size // 0')
+            fi
+            echo "Open pull requests: ${OPEN_PULL_REQUESTS}"
+          - |
+            CLOSED_PR_RESPONSE=$(curl -s -X GET \
+              "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pullrequests?state=MERGED&pagelen=10" \
+              -H "Authorization: Bearer ${BITBUCKET_TOKEN:-}" \
+              2>/dev/null || echo '{"values":[]}')
+            export MEAN_TIME_TO_RESOLVE=$(echo "$CLOSED_PR_RESPONSE" | jq -r '
+              [.values[] |
+                ((.updated_on | fromdateiso8601) - (.created_on | fromdateiso8601)) / 3600
+              ] |
+              if length > 0 then (add / length) else 0 end | floor
+            ' 2>/dev/null || echo "0")
+            echo "Mean time to resolve: ${MEAN_TIME_TO_RESOLVE} hours"
+          - |
+            FAILED_BUILDS=$(curl -s -X GET \
+              "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/pipelines/?pagelen=20&sort=-created_on" \
+              -H "Authorization: Bearer ${BITBUCKET_TOKEN:-}" \
+              2>/dev/null || echo '{"values":[]}')
+            export RECENT_INCIDENTS=$(echo "$FAILED_BUILDS" | jq -r '
+              [.values[] | select(.state.name == "FAILED" or .state.name == "ERROR")] | length
+            ' 2>/dev/null || echo "0")
+            echo "Recent incidents: ${RECENT_INCIDENTS}"
+          - |
+            PAYLOAD=$(cat <<EOF
+            {
+              "metricSourceId": "bitbucket-pipelines-${BITBUCKET_BUILD_NUMBER}",
+              "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+              "metrics": [
+                { "metricAri": "ari:cloud:compass::metric/unit-test-coverage", "value": ${UNIT_TEST_COVERAGE} },
+                { "metricAri": "ari:cloud:compass::metric/open-pull-requests", "value": ${OPEN_PULL_REQUESTS} },
+                { "metricAri": "ari:cloud:compass::metric/mean-time-to-resolve", "value": ${MEAN_TIME_TO_RESOLVE} },
+                { "metricAri": "ari:cloud:compass::metric/recent-incidents", "value": ${RECENT_INCIDENTS} },
+                { "metricAri": "ari:cloud:compass::metric/build-status", "value": 1 }
+              ]
+            }
+            EOF
+            )
+            HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              "https://api.atlassian.com/compass/v1/components/${COMPASS_COMPONENT_ID}/metrics" \
+              -H "Authorization: Bearer ${COMPASS_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              -H "Accept: application/json" \
+              -d "${PAYLOAD}")
+            HTTP_CODE=$(echo "$HTTP_RESPONSE" | tail -n1)
+            case "$HTTP_CODE" in
+              2??) echo "Metrics sent to Compass." ;;
+              *)   echo "Failed to send metrics to Compass (HTTP ${HTTP_CODE}); continuing."
+                   echo "$HTTP_RESPONSE" | sed '$d' ;;
+            esac
+
+    - step: &deploy
+        name: Build image in CI and deploy over SSH
+        # The image is built here, on an 8GB runner, and shipped to the server
+        # as a tarball. The dev server only loads and starts it. Building on
+        # the server is what produced "Next.js build worker exited with code:
+        # null and signal: SIGKILL" -- the kernel OOM killer, on a box already
+        # running the payroll backend, Postgres and Redis.
+        #
+        # docker:*-cli ships git, openssh-client and ca-certificates, so the
+        # clone and the ssh calls below need no extra packages. The clone is
+        # enabled now (it was not before) because the build needs the source.
+        image: docker:29-cli
+        services:
+          - docker
+        max-time: 30
+        script:
+          - |
+            set -e
+            for v in SSH_PRIVATE_KEY_B64 KNOWN_HOSTS_B64 SSH_HOST SSH_USER DEPLOY_PATH; do
+              [ -n "$(printenv "$v")" ] || { echo "MISSING: $v is not set on the '$BITBUCKET_DEPLOYMENT_ENVIRONMENT' environment."; exit 1; }
+            done
+            mkdir -p ~/.ssh && chmod 700 ~/.ssh
+            printf '%s' "$SSH_PRIVATE_KEY_B64" | tr -d '\n\r \t' | base64 -d > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            printf '%s' "$KNOWN_HOSTS_B64" | tr -d '\n\r \t' | base64 -d > ~/.ssh/known_hosts
+            chmod 644 ~/.ssh/known_hosts
+
+            # Bitbucket runs each script item in its own shell, so shell
+            # variables do not survive between them. A wrapper on disk does.
+            cat > /usr/local/bin/dssh <<'WRAPPER'
+            #!/bin/sh
+            exec ssh -i ~/.ssh/id_ed25519 \
+              -p "${SSH_PORT:-22}" \
+              -o IdentitiesOnly=yes \
+              -o StrictHostKeyChecking=yes \
+              -o BatchMode=yes \
+              -o ConnectTimeout=15 \
+              "$SSH_USER@$SSH_HOST" "$@"
+            WRAPPER
+            chmod +x /usr/local/bin/dssh
+          - |
+            set -e
+            # Atlassian disables the buildx plugin and refuses privileged
+            # containers on cloud runners. With BuildKit on, `docker build`
+            # routes through buildx, finds no usable `docker` driver, falls
+            # back to the docker-container driver and tries to boot a
+            # privileged buildkit container -- which the daemon rejects:
+            #   authorization denied by plugin pipelines: --privileged=true is not allowed
+            # DOCKER_BUILDKIT=0 is Atlassian's documented opt-out; it uses the
+            # daemon's classic builder instead. The Dockerfile's `# syntax=`
+            # line is then just a comment, which is fine: multi-stage,
+            # COPY --from and COPY --chown all predate BuildKit, and nothing
+            # here uses RUN --mount or any other BuildKit-only feature.
+            export DOCKER_BUILDKIT=0
+            IMAGE="payroll-frontend:$BITBUCKET_COMMIT"
+
+            # The Dockerfile runner stage does
+            #   COPY --from=builder /app/.next/standalone ./
+            # and runs `node server.js`. next build only emits
+            # .next/standalone when next.config.ts sets output: "standalone",
+            # so without it that COPY fails and no image is produced.
+            #
+            # This patches the CI checkout only -- it is thrown away with the
+            # container -- and goes no-op once the line is committed upstream.
+            # awk, not sed: busybox sed does not reliably expand \n in a
+            # replacement, and this image is alpine.
+            if ! grep -q 'output:[[:space:]]*"standalone"' next.config.ts; then
+              echo "==> Patching next.config.ts: output: \"standalone\""
+              awk '{ print }
+                   /^const nextConfig: NextConfig = \{/ && !done { print "  output: \"standalone\","; done = 1 }' \
+                  next.config.ts > next.config.ts.tmp
+              mv next.config.ts.tmp next.config.ts
+              grep -q 'output:[[:space:]]*"standalone"' next.config.ts \
+                || { echo "FATAL: could not patch next.config.ts -- fix it in the repo"; exit 1; }
+            fi
+
+            echo "==> Building $IMAGE"
+            docker build -t "$IMAGE" .
+            docker image inspect "$IMAGE" --format '==> Built {{.Id}}, {{.Size}} bytes'
+          - |
+            set -e
+            IMAGE="payroll-frontend:$BITBUCKET_COMMIT"
+
+            # Reaching the daemon on the server needs either membership of the
+            # `docker` group or passwordless sudo. Find out which before
+            # piping a few hundred MB at it.
+            REMOTE_SUDO="$(dssh 'if docker info >/dev/null 2>&1; then echo ""; elif sudo -n docker info >/dev/null 2>&1; then echo "sudo -n"; else echo FATAL; fi')"
+            case "$REMOTE_SUDO" in
+              FATAL)
+                echo "FATAL: cannot reach the Docker daemon on $SSH_HOST as $SSH_USER."
+                echo "       Fix on the server:  sudo usermod -aG docker $SSH_USER"
+                echo "       Group membership applies to new logins, so the next deploy picks it up."
+                exit 1 ;;
+              "sudo -n")
+                echo "NOTE: $SSH_USER is not in the docker group; using sudo on the server." ;;
+            esac
+
+            # ---------------------------------------------------------------
+            # Reclaim disk BEFORE the transfer.
+            #
+            # There is a cleanup at the end of the deploy script below, but it
+            # only runs after a successful deploy, which made a full disk
+            # self-perpetuating:
+            #
+            #   failed to ingest "blobs/sha256/...": failed to copy:
+            #   failed to send write: write /var/snap/docker/common/...:
+            #   no space left on device
+            #
+            # The transfer dies -> the deploy script never runs -> the old
+            # images are never dropped -> the next run hits the same wall.
+            # Reclaiming here is what breaks that loop; the cleanup at the end
+            # stays, since it also catches the image this deploy supersedes.
+            #
+            # This matters doubly here: the server also runs the payroll
+            # backend, Postgres and Redis, so both pipelines fill one disk and
+            # either one can starve the other.
+            #
+            # NOTE: nothing here prunes volumes. The backend's Postgres data
+            # lives in a named volume and `docker volume prune` would destroy
+            # it -- from this pipeline, on the same host.
+            # ---------------------------------------------------------------
+            echo "==> Disk on $SSH_HOST before cleanup"
+            dssh "df -h; $REMOTE_SUDO docker system df" || true
+
+            # Stopped containers are usually leftovers from a deploy that died
+            # partway; compose recreates them from the named volumes on up.
+            echo "==> Dropping stopped containers and dangling images"
+            dssh "$REMOTE_SUDO docker container prune -f" || true
+            dssh "$REMOTE_SUDO docker image prune -f" || true
+
+            # Drop every payroll-frontend tag except the one being deployed.
+            # Docker refuses to delete an image backing a running container,
+            # so the currently-serving one survives by itself -- that refusal
+            # is the guard, which is why this tolerates failure.
+            echo "==> Dropping superseded payroll-frontend images"
+            dssh "$REMOTE_SUDO docker images --format '{{.Repository}}:{{.Tag}}' payroll-frontend 2>/dev/null | grep -vxF '$IMAGE' | xargs -r $REMOTE_SUDO docker rmi" || true
+
+            # Snap's docker keeps its data under /var/snap/docker/common, a
+            # stock install under /var/lib/docker. Ask the daemon rather than
+            # guessing -- this server is the snap flavour.
+            DOCKER_ROOT="$(dssh "$REMOTE_SUDO docker info --format '{{.DockerRootDir}}'" 2>/dev/null || true)"
+            [ -n "$DOCKER_ROOT" ] || DOCKER_ROOT=/var/lib/docker
+
+            avail_mb() {
+              mb="$(dssh "df -Pm '$DOCKER_ROOT' | awk 'NR==2 {print \$4}'" 2>/dev/null || true)"
+              # An empty or non-numeric answer would blow up the -lt tests
+              # below under `set -e`; treat it as "no space" and let the FATAL
+              # branch print the diagnostics.
+              case "$mb" in ''|*[!0-9]*) mb=0 ;; esac
+              echo "$mb"
+            }
+
+            AVAIL_MB="$(avail_mb)"
+            echo "==> ${AVAIL_MB}MB free on $DOCKER_ROOT after cleanup"
+
+            # Thresholds are headroom heuristics, not measurements. This image
+            # is a Next.js standalone build -- a few hundred MB, well under the
+            # backend's -- but `docker load` still needs the decompressed
+            # layers on disk before anything can start.
+            if [ "$AVAIL_MB" -lt 1500 ]; then
+              echo "WARNING: only ${AVAIL_MB}MB free -- pruning ALL unused images, not just this repo's."
+              echo "         Images backing running containers are untouched; anything else re-pulls on up."
+              dssh "$REMOTE_SUDO docker image prune -af" || true
+              dssh "$REMOTE_SUDO docker builder prune -af" || true
+              AVAIL_MB="$(avail_mb)"
+              echo "==> ${AVAIL_MB}MB free after the deeper prune"
+            fi
+
+            # Refuse to spend minutes streaming an image into a disk that
+            # cannot hold it. Failing here, with the numbers in the log, beats
+            # failing halfway through the ingest.
+            if [ "$AVAIL_MB" -lt 600 ]; then
+              echo "FATAL: ${AVAIL_MB}MB free on $DOCKER_ROOT is not enough to receive the image."
+              echo "       Docker has nothing left to reclaim, so the space is going to something else."
+              echo "       On the server:"
+              echo "         df -h"
+              echo "         sudo docker system df -v"
+              echo "         sudo du -xh --max-depth=1 / | sort -h | tail -20"
+              echo "         sudo journalctl --disk-usage    # then: sudo journalctl --vacuum-size=200M"
+              exit 1
+            fi
+
+            if dssh "$REMOTE_SUDO docker image inspect $IMAGE >/dev/null 2>&1"; then
+              echo "==> $IMAGE is already on the server; skipping the transfer"
+            else
+              echo "==> Shipping $IMAGE over SSH"
+              # docker load sniffs the gzip itself, so the tarball is never
+              # written to disk on either end.
+              docker save "$IMAGE" | gzip -1 | dssh "$REMOTE_SUDO docker load"
+              # A pipeline's exit status is its last command's, so a failed
+              # `docker save` behind a successful ssh would pass silently.
+              # Confirm the image is actually there instead.
+              dssh "$REMOTE_SUDO docker image inspect $IMAGE >/dev/null 2>&1" \
+                || { echo "FATAL: $IMAGE did not land on the server."; exit 1; }
+              echo "==> Loaded $IMAGE on $SSH_HOST"
+            fi
+          - |
+            dssh "DEPLOY_PATH='$DEPLOY_PATH' BRANCH='$BITBUCKET_BRANCH' COMMIT='$BITBUCKET_COMMIT' REPO_SLUG='$BITBUCKET_REPO_SLUG' IMAGE='payroll-frontend:$BITBUCKET_COMMIT' HEALTH_HOST='${HEALTH_HOST:-localhost}' bash -s" <<'REMOTE'
+            set -eu
+
+            cd "$DEPLOY_PATH"
+
+            # Fail early and legibly when DEPLOY_PATH points at another repo's
+            # checkout. Without this, git gets as far as trying to check out a
+            # commit that does not exist here and reports only
+            # "fatal: unable to read tree <sha>".
+            origin="$(git remote get-url origin)"
+            case "$origin" in
+              *"$REPO_SLUG"*) ;;
+              *) echo "FATAL: DEPLOY_PATH=$DEPLOY_PATH is a checkout of $origin, not $REPO_SLUG."
+                 echo "       Point DEPLOY_PATH at this repo's directory on the server."
+                 exit 1 ;;
+            esac
+
+            echo "==> Syncing $DEPLOY_PATH to $COMMIT"
+            git fetch --all --prune
+            git reset --hard
+            git checkout -B "$BRANCH" "$COMMIT"
+
+            test -f docker-compose.yml || { echo "FATAL: docker-compose.yml not found in $DEPLOY_PATH"; exit 1; }
+
+            # -----------------------------------------------------------------
+            # Deploy-time patches. Only docker-compose.yml is patched here now
+            # -- next.config.ts is handled in CI, where the build happens.
+            # These apply to this checkout only (the `git reset --hard` above
+            # discards them on the next deploy) and each is a no-op once the
+            # same fix is committed to the repo.
+            # -----------------------------------------------------------------
+
+            # 1. compose still declares `build: {context: ., dockerfile: ...}`,
+            #    which is exactly the server-side build this pipeline just
+            #    stopped doing. Point it at the image CI shipped instead.
+            if grep -qE '^[[:space:]]*build:[[:space:]]*$' docker-compose.yml; then
+              echo "==> Pointing docker-compose.yml at $IMAGE"
+              awk -v img="$IMAGE" '
+                /^[[:space:]]*build:[[:space:]]*$/ && !inbuild {
+                  match($0, /^[[:space:]]*/)
+                  indent = substr($0, 1, RLENGTH)
+                  print indent "image: " img
+                  inbuild = 1
+                  next
+                }
+                inbuild {
+                  # everything indented deeper than `build:` belongs to it
+                  match($0, /^[[:space:]]*/)
+                  if (RLENGTH > length(indent)) next
+                  inbuild = 0
+                }
+                { print }' docker-compose.yml > docker-compose.yml.tmp
+              mv docker-compose.yml.tmp docker-compose.yml
+              grep -q "image: $IMAGE" docker-compose.yml \
+                || { echo "FATAL: could not point docker-compose.yml at $IMAGE"; exit 1; }
+            fi
+
+            # 2. docker-compose.yml bind-mounts the source tree over /app and
+            #    hangs empty anonymous volumes on /app/.next and
+            #    /app/node_modules. That hides server.js and the compiled build
+            #    from the image, so the container crash-loops on
+            #    MODULE_NOT_FOUND behind `restart: always` -- also a 502.
+            if grep -qE '^[[:space:]]*-[[:space:]]*\.:/app[[:space:]]*$' docker-compose.yml; then
+              echo "==> Removing source bind-mounts from docker-compose.yml"
+              sed -i -E '/^[[:space:]]*-[[:space:]]*(\.:\/app|\/app\/\.next|\/app\/node_modules|\/srv\/static\/_next\/static:\/app\/\.next\/static)[[:space:]]*$/d' docker-compose.yml
+              # drop the `volumes:` key left with no entries under it
+              awk '{ l[NR] = $0 }
+                   END { for (i = 1; i <= NR; i++) {
+                           if (l[i] ~ /^[[:space:]]*volumes:[[:space:]]*$/ && (i == NR || l[i+1] !~ /^[[:space:]]*-[[:space:]]/)) continue
+                           print l[i]
+                         } }' docker-compose.yml > docker-compose.yml.tmp
+              mv docker-compose.yml.tmp docker-compose.yml
+            fi
+
+            # 3. The image is a production standalone build; NODE_ENV=development
+            #    makes next serve as though it were a dev server.
+            sed -i -E 's|^([[:space:]]*-[[:space:]]*)NODE_ENV=development[[:space:]]*$|\1NODE_ENV=production|' docker-compose.yml
+
+            echo "==> Deploying this compose file"
+            cat docker-compose.yml
+
+            # The server may have the compose v2 plugin (`docker compose`) or
+            # only the standalone v1 binary (`docker-compose`). A docker CLI
+            # without the plugin does not recognise `compose`, so it parses -d
+            # as a global flag and dies with "unknown shorthand flag: 'd' in
+            # -d" -- an error that never mentions compose at all.
+            if docker compose version >/dev/null 2>&1; then
+              COMPOSE="docker compose"
+            elif command -v docker-compose >/dev/null 2>&1; then
+              COMPOSE="docker-compose"
+              echo "NOTE: compose v2 plugin not found, falling back to docker-compose v1."
+            else
+              echo "FATAL: neither 'docker compose' nor 'docker-compose' is installed."
+              echo "       On Ubuntu 24.04+:  sudo apt install -y docker-compose-v2"
+              exit 1
+            fi
+
+            # Reaching the daemon needs either membership of the `docker` group
+            # or passwordless sudo. With neither, every compose call fails with
+            # "permission denied ... /var/run/docker.sock".
+            if docker info >/dev/null 2>&1; then
+              SUDO=""
+            elif sudo -n docker info >/dev/null 2>&1; then
+              SUDO="sudo -n"
+              echo "NOTE: $(id -un) is not in the docker group; falling back to sudo."
+            else
+              echo "FATAL: cannot reach the Docker daemon as $(id -un)."
+              echo "       Fix on the server:  sudo usermod -aG docker $(id -un)"
+              echo "       Group membership applies to new logins, so the next deploy picks it up."
+              exit 1
+            fi
+
+            DC="$SUDO $COMPOSE"
+            echo "==> Using $DC"
+
+            # --no-build is belt and braces: the `build:` key is gone, so
+            # there is nothing to build, and if the image were somehow missing
+            # compose says so instead of quietly starting a build on a box
+            # that cannot finish one.
+            echo "==> Starting $IMAGE"
+            $DC up -d --no-build
+            $DC ps
+
+            echo "==> Waiting for the frontend to answer on :3000"
+            if command -v curl >/dev/null 2>&1; then
+              ok=0
+              for _ in $(seq 1 30); do
+                code="$(curl -s -o /dev/null -w '%{http_code}' -m 5 -H "Host: $HEALTH_HOST" http://127.0.0.1:3000/ || true)"
+                # Any HTTP status proves something is listening; a bare TCP
+                # failure ("000") is exactly what nginx turns into a 502.
+                if [ -n "$code" ] && [ "$code" != "000" ]; then
+                  echo "Frontend answered HTTP $code"
+                  ok=1
+                  break
+                fi
+                sleep 5
+              done
+              if [ "$ok" -ne 1 ]; then
+                echo "FATAL: nothing answering on 127.0.0.1:3000 -- nginx will keep returning 502."
+                $DC ps
+                $DC logs --tail=200 frontend
+                exit 1
+              fi
+            else
+              echo "curl not installed on the server; skipping health check."
+            fi
+
+            # Every deploy loads a new payroll-frontend:<sha>. Nothing untags
+            # the old ones, so without this the disk fills with a couple of
+            # hundred MB per deploy. `prune -f` alone would not touch them:
+            # they are tagged, not dangling.
+            echo "==> Reclaiming disk"
+            $SUDO docker image prune -f
+            $SUDO docker images --format '{{.Repository}}:{{.Tag}}' payroll-frontend 2>/dev/null \
+              | grep -vxF "$IMAGE" \
+              | xargs -r $SUDO docker rmi 2>/dev/null || true
+            REMOTE
+          - echo "Deployed ${BITBUCKET_BRANCH}@${BITBUCKET_COMMIT}"
+
+    - step: &deploy-test
+        <<: *deploy
+        name: Deploy to Test environment
+        deployment: test
+
+    - step: &deploy-production
+        <<: *deploy
+        name: Deploy to Production environment
+        deployment: production
+
+pipelines:
+  default:
+    - parallel:
+        - step: *lint
+        - step: *test
+    - step: *build
+    - step: *security-scan
+
+  branches:
+    dev:
+      - parallel:
+          - step: *lint
+          - step: *test
+      - step: *build
+      - step: *security-scan
+      - step: *report-to-compass
+      - step: *deploy-test
+
+    # main/master deploy to the dev/test server, NOT production. They used to
+    # trigger *deploy-production, which was a second route to the production
+    # server that no branch restriction covered -- `prod` is now the only way in.
+    "{main,master}":
+      - parallel:
+          - step: *lint
+          - step: *test
+      - step: *build
+      - step: *security-scan
+      - step: *report-to-compass
+      - step: *deploy-test
+
+    # `prod` is the release branch: direct pushes are blocked by a branch
+    # restriction, so the only way to land here is by merging a pull request
+    # from `dev` (enforced by *guard on the PR), and that merge commit is what
+    # fires this pipeline.
+    #
+    # Bitbucket reads bitbucket-pipelines.yml from the branch being built, so
+    # this entry only takes effect once `prod` itself carries this file.
+    #
+    # ---- PRODUCTION DEPLOY IS ON HOLD ----------------------------------
+    # The payroll production server does not exist yet, so the deploy step is
+    # `trigger: manual`. The full gate runs automatically on every merge into
+    # prod and the pipeline finishes green; the deploy then waits for someone
+    # to press Run in the Bitbucket UI instead of failing at
+    #   "MISSING: SSH_PRIVATE_KEY_B64 is not set on the 'production' environment"
+    #
+    # To go live, in this order:
+    #   1. Set the five variables on the *Production* deployment environment:
+    #      SSH_PRIVATE_KEY_B64, KNOWN_HOSTS_B64, SSH_HOST, SSH_USER, DEPLOY_PATH
+    #      (Repository settings -> Deployments -> Production). They are
+    #      currently only populated on Test.
+    #   2. Delete the `trigger: manual` line below so it becomes
+    #      `- step: *deploy-production` again.
+    # --------------------------------------------------------------------
+    prod:
+      - parallel:
+          - step: *lint
+          - step: *test
+      - step: *build
+      - step: *security-scan
+      - step: *report-to-compass
+      - step:
+          <<: *deploy-production
+          trigger: manual
+
+  pull-requests:
+    # Source branch `prod`: a back-merge bringing a production hotfix back into
+    # dev. The guard is deliberately not here -- it only polices PRs whose
+    # DESTINATION is prod, so on this route it would print "not applicable"
+    # and exit 0. The gate is the check that matters.
+    prod:
+      - parallel:
+          - step: *lint
+          - step: *test
+      - step: *build
+      - step: *report-to-compass
+
+    "**":
+      - step: *guard
+      - parallel:
+          - step: *lint
+          - step: *test
+      - step: *build
+      - step: *report-to-compass
