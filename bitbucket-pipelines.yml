@@ -450,6 +450,26 @@ pipelines:
       - step: *report-to-compass
       - step: *deploy-production
 
+    # `prod` is the release branch: direct pushes are blocked by a branch
+    # restriction, so the only way to land here is by merging a pull request,
+    # and that merge commit is what fires this pipeline.
+    #
+    # This needs the five SSH_* / DEPLOY_PATH variables on the *Production*
+    # deployment environment. They are currently only set on Test, so until
+    # they are added the deploy step stops at "MISSING: ..." rather than
+    # deploying anything.
+    #
+    # Bitbucket reads bitbucket-pipelines.yml from the branch being built, so
+    # this entry only takes effect once `prod` itself carries this file.
+    prod:
+      - parallel:
+          - step: *lint
+          - step: *test
+      - step: *build
+      - step: *security-scan
+      - step: *report-to-compass
+      - step: *deploy-production
+
   pull-requests:
     "**":
       - parallel:
