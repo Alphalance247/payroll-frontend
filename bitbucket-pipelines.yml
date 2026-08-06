@@ -18,6 +18,47 @@ definitions:
       memory: 4096
 
   steps:
+    # Production can only be reached by merging a PR from `dev` into `prod`.
+    # The branch restriction on `prod` stops direct pushes; this step is the
+    # other half -- it stops a PR into `prod` from any branch but `dev`, and
+    # proves the commit already went through the dev/test environment.
+    #
+    # PR pipelines are keyed on the PR's SOURCE branch, and Bitbucket reads
+    # bitbucket-pipelines.yml from the source branch too. So a `dev -> prod` PR
+    # is governed by DEV's copy of this file. Keep prod's copy in sync, or a
+    # `prod -> dev` back-merge runs nothing at all.
+    - step: &guard
+        name: Promotion guard
+        image: alpine:3.22
+        clone:
+          depth: full           # needs history to prove the commit is on dev
+        script:
+          - apk add --no-cache git
+          - |
+            set -e
+            DEST="${BITBUCKET_PR_DESTINATION_BRANCH:-}"
+            if [ "$DEST" != "prod" ]; then
+              echo "PR destination is '${DEST:-<none>}' -- production guard not applicable."
+              exit 0
+            fi
+
+            echo "PR targets prod -- verifying this change already went through the dev environment."
+
+            if [ "$BITBUCKET_BRANCH" != "dev" ]; then
+              echo "BLOCKED: prod only accepts PRs from 'dev'; this PR is from '$BITBUCKET_BRANCH'."
+              echo "Merge into dev first so the change deploys to the dev server, then open dev -> prod."
+              exit 1
+            fi
+
+            git fetch -q origin dev:refs/remotes/origin/dev
+            if ! git merge-base --is-ancestor "$BITBUCKET_COMMIT" origin/dev; then
+              echo "BLOCKED: commit $BITBUCKET_COMMIT is not contained in origin/dev,"
+              echo "so it was never deployed to the dev environment."
+              exit 1
+            fi
+
+            echo "OK: $BITBUCKET_COMMIT is on dev and has been through the dev server."
+
     - step: &lint
         name: Lint Code
         caches:
@@ -441,6 +482,9 @@ pipelines:
       - step: *report-to-compass
       - step: *deploy-test
 
+    # main/master deploy to the dev/test server, NOT production. They used to
+    # trigger *deploy-production, which was a second route to the production
+    # server that no branch restriction covered -- `prod` is now the only way in.
     "{main,master}":
       - parallel:
           - step: *lint
@@ -448,19 +492,31 @@ pipelines:
       - step: *build
       - step: *security-scan
       - step: *report-to-compass
-      - step: *deploy-production
+      - step: *deploy-test
 
     # `prod` is the release branch: direct pushes are blocked by a branch
-    # restriction, so the only way to land here is by merging a pull request,
-    # and that merge commit is what fires this pipeline.
-    #
-    # This needs the five SSH_* / DEPLOY_PATH variables on the *Production*
-    # deployment environment. They are currently only set on Test, so until
-    # they are added the deploy step stops at "MISSING: ..." rather than
-    # deploying anything.
+    # restriction, so the only way to land here is by merging a pull request
+    # from `dev` (enforced by *guard on the PR), and that merge commit is what
+    # fires this pipeline.
     #
     # Bitbucket reads bitbucket-pipelines.yml from the branch being built, so
     # this entry only takes effect once `prod` itself carries this file.
+    #
+    # ---- PRODUCTION DEPLOY IS ON HOLD ----------------------------------
+    # The payroll production server does not exist yet, so the deploy step is
+    # `trigger: manual`. The full gate runs automatically on every merge into
+    # prod and the pipeline finishes green; the deploy then waits for someone
+    # to press Run in the Bitbucket UI instead of failing at
+    #   "MISSING: SSH_PRIVATE_KEY_B64 is not set on the 'production' environment"
+    #
+    # To go live, in this order:
+    #   1. Set the five variables on the *Production* deployment environment:
+    #      SSH_PRIVATE_KEY_B64, KNOWN_HOSTS_B64, SSH_HOST, SSH_USER, DEPLOY_PATH
+    #      (Repository settings -> Deployments -> Production). They are
+    #      currently only populated on Test.
+    #   2. Delete the `trigger: manual` line below so it becomes
+    #      `- step: *deploy-production` again.
+    # --------------------------------------------------------------------
     prod:
       - parallel:
           - step: *lint
@@ -468,10 +524,24 @@ pipelines:
       - step: *build
       - step: *security-scan
       - step: *report-to-compass
-      - step: *deploy-production
+      - step:
+          <<: *deploy-production
+          trigger: manual
 
   pull-requests:
+    # Source branch `prod`: a back-merge bringing a production hotfix back into
+    # dev. The guard is deliberately not here -- it only polices PRs whose
+    # DESTINATION is prod, so on this route it would print "not applicable"
+    # and exit 0. The gate is the check that matters.
+    prod:
+      - parallel:
+          - step: *lint
+          - step: *test
+      - step: *build
+      - step: *report-to-compass
+
     "**":
+      - step: *guard
       - parallel:
           - step: *lint
           - step: *test
