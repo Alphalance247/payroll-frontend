@@ -1,6 +1,8 @@
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export const environment = {
-  production: false,
-  baseUrl: "https://yen.ec2.alluvium.net/api",
+  production: API_BASE_URL,
+  baseUrl: API_BASE_URL,
   forgotPassword: "/account/request-password-reset-link",
   setPassword: "/account/set-new-password",
 };
