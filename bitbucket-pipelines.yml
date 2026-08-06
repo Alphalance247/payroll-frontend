@@ -280,6 +280,91 @@ definitions:
                 echo "NOTE: $SSH_USER is not in the docker group; using sudo on the server." ;;
             esac
 
+            # ---------------------------------------------------------------
+            # Reclaim disk BEFORE the transfer.
+            #
+            # There is a cleanup at the end of the deploy script below, but it
+            # only runs after a successful deploy, which made a full disk
+            # self-perpetuating:
+            #
+            #   failed to ingest "blobs/sha256/...": failed to copy:
+            #   failed to send write: write /var/snap/docker/common/...:
+            #   no space left on device
+            #
+            # The transfer dies -> the deploy script never runs -> the old
+            # images are never dropped -> the next run hits the same wall.
+            # Reclaiming here is what breaks that loop; the cleanup at the end
+            # stays, since it also catches the image this deploy supersedes.
+            #
+            # This matters doubly here: the server also runs the payroll
+            # backend, Postgres and Redis, so both pipelines fill one disk and
+            # either one can starve the other.
+            #
+            # NOTE: nothing here prunes volumes. The backend's Postgres data
+            # lives in a named volume and `docker volume prune` would destroy
+            # it -- from this pipeline, on the same host.
+            # ---------------------------------------------------------------
+            echo "==> Disk on $SSH_HOST before cleanup"
+            dssh "df -h; $REMOTE_SUDO docker system df" || true
+
+            # Stopped containers are usually leftovers from a deploy that died
+            # partway; compose recreates them from the named volumes on up.
+            echo "==> Dropping stopped containers and dangling images"
+            dssh "$REMOTE_SUDO docker container prune -f" || true
+            dssh "$REMOTE_SUDO docker image prune -f" || true
+
+            # Drop every payroll-frontend tag except the one being deployed.
+            # Docker refuses to delete an image backing a running container,
+            # so the currently-serving one survives by itself -- that refusal
+            # is the guard, which is why this tolerates failure.
+            echo "==> Dropping superseded payroll-frontend images"
+            dssh "$REMOTE_SUDO docker images --format '{{.Repository}}:{{.Tag}}' payroll-frontend 2>/dev/null | grep -vxF '$IMAGE' | xargs -r $REMOTE_SUDO docker rmi" || true
+
+            # Snap's docker keeps its data under /var/snap/docker/common, a
+            # stock install under /var/lib/docker. Ask the daemon rather than
+            # guessing -- this server is the snap flavour.
+            DOCKER_ROOT="$(dssh "$REMOTE_SUDO docker info --format '{{.DockerRootDir}}'" 2>/dev/null || true)"
+            [ -n "$DOCKER_ROOT" ] || DOCKER_ROOT=/var/lib/docker
+
+            avail_mb() {
+              mb="$(dssh "df -Pm '$DOCKER_ROOT' | awk 'NR==2 {print \$4}'" 2>/dev/null || true)"
+              # An empty or non-numeric answer would blow up the -lt tests
+              # below under `set -e`; treat it as "no space" and let the FATAL
+              # branch print the diagnostics.
+              case "$mb" in ''|*[!0-9]*) mb=0 ;; esac
+              echo "$mb"
+            }
+
+            AVAIL_MB="$(avail_mb)"
+            echo "==> ${AVAIL_MB}MB free on $DOCKER_ROOT after cleanup"
+
+            # Thresholds are headroom heuristics, not measurements. This image
+            # is a Next.js standalone build -- a few hundred MB, well under the
+            # backend's -- but `docker load` still needs the decompressed
+            # layers on disk before anything can start.
+            if [ "$AVAIL_MB" -lt 1500 ]; then
+              echo "WARNING: only ${AVAIL_MB}MB free -- pruning ALL unused images, not just this repo's."
+              echo "         Images backing running containers are untouched; anything else re-pulls on up."
+              dssh "$REMOTE_SUDO docker image prune -af" || true
+              dssh "$REMOTE_SUDO docker builder prune -af" || true
+              AVAIL_MB="$(avail_mb)"
+              echo "==> ${AVAIL_MB}MB free after the deeper prune"
+            fi
+
+            # Refuse to spend minutes streaming an image into a disk that
+            # cannot hold it. Failing here, with the numbers in the log, beats
+            # failing halfway through the ingest.
+            if [ "$AVAIL_MB" -lt 600 ]; then
+              echo "FATAL: ${AVAIL_MB}MB free on $DOCKER_ROOT is not enough to receive the image."
+              echo "       Docker has nothing left to reclaim, so the space is going to something else."
+              echo "       On the server:"
+              echo "         df -h"
+              echo "         sudo docker system df -v"
+              echo "         sudo du -xh --max-depth=1 / | sort -h | tail -20"
+              echo "         sudo journalctl --disk-usage    # then: sudo journalctl --vacuum-size=200M"
+              exit 1
+            fi
+
             if dssh "$REMOTE_SUDO docker image inspect $IMAGE >/dev/null 2>&1"; then
               echo "==> $IMAGE is already on the server; skipping the transfer"
             else
