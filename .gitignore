@@ -31,8 +31,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files — only ignore local overrides that may contain secrets
-.env.local
-.env.*.local
+
 
 # vercel
 .vercel
