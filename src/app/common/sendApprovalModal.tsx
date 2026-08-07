@@ -33,11 +33,8 @@ export interface SendApprovalModalProps {
   /** POST endpoint, e.g. "/employees/send-payroll-reviews" */
   endpoint: string;
   bonus_ids: string[];
-  /** Return the full request body given the selected employee IDs */
-  // buildPayload: (
-  //   bonus_ids: number[],
-  //   emails: string[],
-  // ) => Record<string, unknown>;
+  /** Optional override for the request body. When omitted, posts { bonus_ids, emails }. */
+  buildPayload?: (bonus_ids: string[], emails: string[]) => Record<string, unknown>;
   /** Called after a successful send */
   onSuccess?: () => void;
   /** Number of records being submitted — shown in the confirmation step */
@@ -52,7 +49,7 @@ export default function SendApprovalModal({
   title = "Send to",
   Subtitle,
   endpoint,
-  // buildPayload,
+  buildPayload,
   bonus_ids,
   onSuccess,
   recordCount = 0,
@@ -111,7 +108,10 @@ export default function SendApprovalModal({
 
     setSending(true);
     try {
-      const res = await axiosInstance.post(endpoint, { bonus_ids, emails });
+      const body = buildPayload
+        ? buildPayload(bonus_ids, emails)
+        : { bonus_ids, emails };
+      const res = await axiosInstance.post(endpoint, body);
       if (res.status === 200) {
         toast.success("Sent successfully");
         onSuccess?.();

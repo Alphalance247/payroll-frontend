@@ -59,19 +59,10 @@ const formatDate = (dateStr: string) => {
   }
 };
 
-const PendingApproval = ({
-  currentPage = 1,
-  totalPages = 2,
-  pageSize = 10,
-  onPageChange,
-  onPageSizeChange,
-}: {
-  currentPage?: number;
-  totalPages?: number;
-  pageSize?: number;
-  onPageChange?: (page: number) => void;
-  onPageSizeChange?: (size: number) => void;
-}) => {
+const PendingApproval = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<number[]>([]);
   const [selectedBonusTypes, setSelectedBonusTypes] = useState<string[]>([]);
@@ -490,7 +481,7 @@ const PendingApproval = ({
                     <select
                       value={pageSize}
                       onChange={(e) =>
-                        onPageSizeChange?.(Number(e.target.value))
+                        setPageSize(Number(e.target.value))
                       }
                       className="appearance-none bg-white border border-slate-300 rounded-lg px-3 py-1.5 pr-8 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer"
                     >
@@ -522,7 +513,7 @@ const PendingApproval = ({
                     <button
                       type="button"
                       disabled={currentPage <= 1}
-                      onClick={() => onPageChange?.(currentPage - 1)}
+                      onClick={() => setCurrentPage((p) => p - 1)}
                       aria-label="Previous Page"
                       className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
@@ -531,7 +522,7 @@ const PendingApproval = ({
                     <button
                       type="button"
                       disabled={currentPage >= totalPages}
-                      onClick={() => onPageChange?.(currentPage + 1)}
+                      onClick={() => setCurrentPage((p) => p + 1)}
                       aria-label="Next Page"
                       className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >

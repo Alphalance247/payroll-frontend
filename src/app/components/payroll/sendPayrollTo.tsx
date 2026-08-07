@@ -23,9 +23,10 @@ export default function SendPayrollTo({
       title="Send Payroll to"
       Subtitle="Select the admins you want to send this for approval."
       endpoint="/employees/send-payroll-reviews"
-      buildPayload={(employeeIds) => ({
+      bonus_ids={[]}
+      buildPayload={(_bonusIds, emails) => ({
         payroll_id: payrollId,
-        employee_ids: employeeIds,
+        employee_ids: emails,
       })}
       onSuccess={onSend}
     />
