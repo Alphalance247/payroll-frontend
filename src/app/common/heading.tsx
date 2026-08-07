@@ -5,6 +5,7 @@ interface subHeadProps {
   flexDirection: string;
   user: string;
   subHeadClassName?: string;
+  withGap?: boolean;
 }
 
 const Heading: React.FC<subHeadProps> = ({
@@ -12,12 +13,13 @@ const Heading: React.FC<subHeadProps> = ({
   flexDirection,
   user,
   subHeadClassName,
+  withGap = true,
 }) => {
   return (
     <div
       className={`${
         flexDirection === "column" ? "flex-col" : "flex-col-reverse"
-      } flex gap-y-4`}
+      } flex ${withGap ? "gap-y-4" : "gp-y-0"}`}
     >
       <h2
         className={`font-Graphik font-semibold text-[2rem] leading-[2.5rem] tracking-[-1px] text-[#2F2F33] mb-2`}
