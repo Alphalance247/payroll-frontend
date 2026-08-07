@@ -80,7 +80,7 @@ const TableActionMenu = ({
       )}
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 bg-white border border-[#E3E3E5] rounded-xl shadow-lg min-w-[180px] py-1 overflow-hidden">
+        <div className="absolute right-0 top-full mt-1 z-50 bg-white border border-[#E3E3E5] rounded-xl shadow-lg min-w-[180px] p-2 overflow-hidden">
           {items.map((item, i) => (
             <button
               key={i}
@@ -90,10 +90,9 @@ const TableActionMenu = ({
                 item.onClick();
                 setOpen(false);
               }}
-              className={`w-full flex items-center gap-x-2.5 px-4 py-2.5 text-sm text-left transition-colors
+              className={`w-full flex items-center gap-x-2.5 text-[#2F2F33] rounded-sm font-medium px-3 py-2 text-sm text-left transition-colors
                 ${variantClass[item.variant ?? "default"]}
-                ${item.disabled ? "opacity-40 cursor-not-allowed" : "hover:bg-[#F7F7F7]"}
-                ${i < items.length - 1 ? "border-b border-[#F0F0F3]" : ""}
+                ${item.disabled ? "opacity-40 cursor-not-allowed" : "hover:bg-[#F9FAFB]"}
               `}
             >
               {item.icon && (

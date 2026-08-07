@@ -48,7 +48,7 @@ const NavIconBtn = ({
 );
 
 const OverviewRow = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex items-start gap-2 border-b border-[#F0F0F3] pb-4 last:border-b-0 last:pb-0">
+  <div className="flex items-start gap-2  pb-4 last:border-b-0 last:pb-0">
     <span className="w-36 flex-shrink-0 text-xs font-medium text-[#71717A] pt-0.5">
       {label}
     </span>
@@ -205,20 +205,29 @@ const BonusSideDrawer = ({
                     <h3 className="text-base font-medium text-[#2F2F33]">
                       Timeline
                     </h3>
-                    <div className="relative flex flex-col gap-6 pl-7 border-l-2 border-[#E3E3E5]">
+                    <div className="flex flex-col">
                       {timeline.map((event, i) => (
-                        <div key={i} className="relative flex flex-col gap-1">
-                          <div className="absolute -left-[29px] top-1 w-4 h-4 rounded-full bg-[#2F2F33] ring-4 ring-white border-2 border-[#E3E3E5]" />
-                          <p className="text-sm font-medium text-[#2F2F33]">
-                            {event.action_title}
-                          </p>
-                          <p className="text-sm text-[#2F2F33]">
-                            {event.action}
-                          </p>
-                          <p className="text-xs text-[#71717A]">
-                            {event.action_by.fullname} &middot;{" "}
-                            {formatDate(event.created)}
-                          </p>
+                        <div key={i} className="flex gap-4">
+                          {/* dot + connector column */}
+                          <div className="flex flex-col items-center w-3 flex-shrink-0">
+                            <div className="w-4 h-4 rounded-full bg-[#2F2F33] border-[4px] border-[#BEBEC2] flex-shrink-0" />
+                            {i < timeline.length - 1 && (
+                              <div className="w-px flex-1 bg-[#E3E3E5]" />
+                            )}
+                          </div>
+                          {/* content */}
+                          <div className="flex flex-col gap-1 pb-6">
+                            <p className="text-sm font-medium text-[#2F2F33]">
+                              {event.action_title}
+                            </p>
+                            <p className="text-sm text-[#2F2F33]">
+                              {event.action}
+                            </p>
+                            <p className="text-xs text-[#71717A]">
+                              {event.action_by.fullname} &middot;{" "}
+                              {formatDate(event.created)}
+                            </p>
+                          </div>
                         </div>
                       ))}
                     </div>

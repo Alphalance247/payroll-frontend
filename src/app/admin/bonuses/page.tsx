@@ -81,6 +81,8 @@ const BonusHistory = () => {
       : undefined;
 
   const bonusTypeParam = TAB_BONUS_TYPE[activeTab];
+  const teamIdParam = moreFilters.teams[0] ?? undefined;
+  const countryParam = moreFilters.countries[0] ?? undefined;
 
   const { data, isLoading, isError, refetch } = useAllBonusHistory(
     undefined,
@@ -90,6 +92,8 @@ const BonusHistory = () => {
     endDate,
     approvalStatusParam,
     paidParam,
+    teamIdParam,
+    countryParam,
   );
 
   const filters: BonusFilters = {

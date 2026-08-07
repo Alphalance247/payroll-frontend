@@ -37,12 +37,8 @@ const BonusFilterBar = ({
   statusOptions,
   selectedStatuses,
   onStatusChange,
-  showBonusTypeFilter = false,
-  bonusTypeOptions = [],
-  selectedBonusTypes = [],
-  onBonusTypesChange,
+
   showMoreFilters = false,
-  moreFiltersValue,
   onMoreFiltersApply,
 }: BonusFilterBarProps) => {
   return (
@@ -55,15 +51,6 @@ const BonusFilterBar = ({
           position={false}
         />
         <div className="flex items-center gap-x-2">
-          {showBonusTypeFilter && (
-            <CustomDropdown
-              trigger="All bonus"
-              title="Select a bonus type"
-              options={bonusTypeOptions}
-              selected={selectedBonusTypes}
-              onChange={onBonusTypesChange ?? (() => {})}
-            />
-          )}
           <CustomDropdown
             trigger="Status"
             title="Select a status"
@@ -72,9 +59,7 @@ const BonusFilterBar = ({
             onChange={onStatusChange}
           />
           {showMoreFilters && (
-            <MoreFiltersDropdown
-              onApply={onMoreFiltersApply}
-            />
+            <MoreFiltersDropdown onApply={onMoreFiltersApply} />
           )}
         </div>
       </div>

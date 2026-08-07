@@ -11,7 +11,12 @@ const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
 ];
 
-const DiscretionaryBonusTab = ({ data, isLoading, isError, filters }: BonusTabProps) => {
+const DiscretionaryBonusTab = ({
+  data,
+  isLoading,
+  isError,
+  filters,
+}: BonusTabProps) => {
   return (
     <>
       <div className="mb-8">
@@ -29,9 +34,16 @@ const DiscretionaryBonusTab = ({ data, isLoading, isError, filters }: BonusTabPr
         statusOptions={STATUS_OPTIONS}
         selectedStatuses={filters.selectedStatuses}
         onStatusChange={filters.onStatusChange}
+        showMoreFilters
+        moreFiltersValue={filters.moreFilters}
+        onMoreFiltersApply={filters.onMoreFiltersApply}
       />
 
-      <DiscretionaryBonusTable data={data} isLoading={isLoading} isError={isError} />
+      <DiscretionaryBonusTable
+        data={data}
+        isLoading={isLoading}
+        isError={isError}
+      />
     </>
   );
 };

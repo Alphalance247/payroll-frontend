@@ -16,7 +16,13 @@ const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
 ];
 
-const FixedBonusTab = ({ data, isLoading, isError, refetch, filters }: BonusTabProps) => {
+const FixedBonusTab = ({
+  data,
+  isLoading,
+  isError,
+  refetch,
+  filters,
+}: BonusTabProps) => {
   const comparison = data?.metrics?.comparison;
   const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
 
@@ -50,6 +56,9 @@ const FixedBonusTab = ({ data, isLoading, isError, refetch, filters }: BonusTabP
         statusOptions={STATUS_OPTIONS}
         selectedStatuses={filters.selectedStatuses}
         onStatusChange={filters.onStatusChange}
+        showMoreFilters
+        moreFiltersValue={filters.moreFilters}
+        onMoreFiltersApply={filters.onMoreFiltersApply}
       />
 
       {isLoading ? (

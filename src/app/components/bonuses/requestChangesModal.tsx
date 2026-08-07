@@ -34,7 +34,7 @@ export default function RequestChangesModal({
   return (
     <ModalOverlay onClose={handleClose}>
       <div
-        className="relative z-50 w-full max-w-[480px] bg-white rounded-2xl shadow-xl flex flex-col"
+        className="relative z-50 w-full max-w-[480px] bg-white rounded-md shadow-xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

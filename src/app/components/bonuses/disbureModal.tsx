@@ -70,6 +70,21 @@ const DisburseModal = ({
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
 
+  const handleDisburseClick = () => {
+    let idsToDisburse = selectedEmployeeIds;
+    if (idsToDisburse.length === 0) {
+      idsToDisburse = filteredData
+        .filter((emp) => !emp.paid)
+        .map((emp) => emp.id);
+      setSelectedEmployeeIds(idsToDisburse);
+    }
+    if (idsToDisburse.length === 1) {
+      setDisburseSingleOpen(true);
+    } else if (idsToDisburse.length > 0) {
+      setDisburseOpen(true);
+    }
+  };
+
   const { mutate: disburseSingle, isPending: isDisbursingSingle } =
     useDisburseBonus(() => {
       setDisburseSingleOpen(false);
@@ -148,20 +163,15 @@ const DisburseModal = ({
         />
 
         <Button
-          className={`flex items-center gap-x-2 shadow-sm hover:shadow-md transition-shadow ${selectedEmployeeIds.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+          className="flex items-center gap-x-2 shadow-sm hover:shadow-md transition-shadow"
           variant="primary"
-          disabled={selectedEmployeeIds.length === 0}
-          onButtonClick={() =>
-            selectedEmployeeIds.length === 1
-              ? setDisburseSingleOpen(true)
-              : setDisburseOpen(true)
-          }
+          onButtonClick={handleDisburseClick}
         >
           Disburse Bonus
         </Button>
       </div>
 
-      <div className="bg-white rounded-lg border border-[#E3E3E5]">
+      <div className="bg-white rounded-md border border-[#E3E3E5]">
         <div className="flex items-center justify-between py-5 px-6 border-b border-[#E3E3E5]">
           <div className="flex gap-x-2 justify-between">
             <div className="relative w-[273px]">

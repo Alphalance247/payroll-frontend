@@ -35,6 +35,10 @@ const isRejected = (state?: string) => {
   return s === "rejected" || s === "declined";
 };
 
+const isDraft = (state?: string) => state?.toLowerCase() === "draft";
+const isReturned = (state?: string) =>
+  state?.toLowerCase() === "change requested";
+
 const BONUS_TYPE_OPTIONS = [
   { label: "All bonus", value: "all" },
   { label: "Fixed bonus", value: "fixed" },
@@ -177,10 +181,22 @@ const AwaitingApproval = ({
             </Button>
 
             <Button
-              className={`flex items-center gap-x-2 shadow-sm hover:shadow-md transition-shadow ${selectedEmployeeIds.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+              className="flex items-center gap-x-2 shadow-sm hover:shadow-md transition-shadow"
               variant="primary"
-              disabled={selectedEmployeeIds.length === 0}
-              onButtonClick={() => setSendApprovalOpen(true)}
+              onButtonClick={() => {
+                if (selectedEmployeeIds.length === 0) {
+                  setSelectedEmployeeIds(
+                    filteredData
+                      .filter((emp) =>
+                        returnedCount > 0
+                          ? isReturned(emp.approved_state)
+                          : isDraft(emp.approved_state),
+                      )
+                      .map((emp) => emp.id),
+                  );
+                }
+                setSendApprovalOpen(true);
+              }}
             >
               {returnedCount > 0
                 ? "Resubmit bonus for Approval"
@@ -263,7 +279,7 @@ const AwaitingApproval = ({
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Employee
                         <span>
-                          <RiExpandUpDownFill fill="#2F2F33" size={12} />
+                          <RiExpandUpDownFill fill="#D0D5DD" size={16} />
                         </span>
                       </p>
                     </th>
@@ -280,7 +296,7 @@ const AwaitingApproval = ({
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Amount
                         <span>
-                          <TiArrowUnsorted fill="#71717A" size={16} />
+                          <TiArrowUnsorted fill="#D0D5DD" size={16} />
                         </span>
                       </p>
                     </th>
@@ -289,7 +305,7 @@ const AwaitingApproval = ({
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Converted (Naira)
                         <span>
-                          <TiArrowUnsorted fill="#71717A" size={16} />
+                          <TiArrowUnsorted fill="#D0D5DD" size={16} />
                         </span>
                       </p>
                     </th>
@@ -399,7 +415,7 @@ const AwaitingApproval = ({
                                       //   : emp?.naira_amount != null
                                       //     ? String(emp.naira_amount)
                                       //     : undefined,
-                                      notes: emp?.naira_amount,
+                                      notes: emp?.reason,
                                     });
                                     setEditBonusId(emp.id);
                                     setModalMode("edit");

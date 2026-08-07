@@ -97,19 +97,21 @@ const PendingApproval = ({
   const handleReview = (
     action: ReviewAction,
     comment: string,
+    ids: number[],
     onDone: () => void,
   ) => {
+    if (ids.length === 0) return;
     const opts = {
       onSuccess: () => {
         onDone();
         setSelectedEmployeeIds([]);
       },
     };
-    if (selectedEmployeeIds.length === 1) {
-      reviewSingle({ bonusId: selectedEmployeeIds[0], action, comment }, opts);
+    if (ids.length === 1) {
+      reviewSingle({ bonusId: ids[0], action, comment }, opts);
     } else {
       reviewMultiple(
-        { action, comment, bonus_ids: selectedEmployeeIds.map(String) },
+        { action, comment, bonus_ids: ids.map(String) },
         opts,
       );
     }
@@ -223,7 +225,12 @@ const PendingApproval = ({
             <Button
               className="flex items-center gap-x-2 shadow-sm hover:shadow-md transition-shadow"
               variant="primary"
-              onButtonClick={() => setApproveOpen(true)}
+              onButtonClick={() => {
+                if (selectedEmployeeIds.length === 0) {
+                  setSelectedEmployeeIds(filteredData.map((emp) => emp.id));
+                }
+                setApproveOpen(true);
+              }}
             >
               Approve Bonus
             </Button>
@@ -542,7 +549,9 @@ const PendingApproval = ({
           onClose={() => setRejectOpen(false)}
           isSubmitting={isReviewing}
           onConfirm={(reason) =>
-            handleReview("rejected", reason, () => setRejectOpen(false))
+            handleReview("rejected", reason, selectedEmployeeIds, () =>
+              setRejectOpen(false),
+            )
           }
         />
 
@@ -553,7 +562,12 @@ const PendingApproval = ({
           recordCount={selectedEmployeeIds.length || filteredData.length}
           totalValue={sumNairaAmount(targetRecords)}
           onConfirm={() =>
-            handleReview("approved", "Bonus", () => setApproveOpen(false))
+            handleReview(
+              "approved",
+              "Bonus",
+              selectedEmployeeIds,
+              () => setApproveOpen(false),
+            )
           }
         />
 
@@ -563,7 +577,7 @@ const PendingApproval = ({
           isSubmitting={isReviewing}
           recordCount={selectedEmployeeIds.length || filteredData.length}
           onConfirm={(reason) =>
-            handleReview("change_requested", reason, () =>
+            handleReview("change_requested", reason, selectedEmployeeIds, () =>
               setRequestChangesOpen(false),
             )
           }

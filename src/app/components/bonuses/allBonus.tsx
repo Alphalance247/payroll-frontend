@@ -9,14 +9,6 @@ import ErrorFetch from "@/app/common/errorFetch";
 import type { BonusTabProps } from "@/app/admin/bonuses/page";
 import RecentBonusActivities from "./recentBonusActivities";
 
-const BONUS_TYPE_OPTIONS = [
-  { label: "All bonus", value: "all" },
-  { label: "Fixed bonus", value: "Fixed bonus" },
-  { label: "Client-facing bonus", value: "Client facing bonus" },
-  { label: "Quarterly bonus", value: "Quarterly bonus" },
-  { label: "Discretionary bonus", value: "Discretionary bonus" },
-];
-
 const STATUS_OPTIONS = [
   {
     label: "Approval status",
@@ -37,7 +29,13 @@ const STATUS_OPTIONS = [
   },
 ];
 
-const AllBonusTab = ({ data, isLoading, isError, refetch, filters }: BonusTabProps) => {
+const AllBonusTab = ({
+  data,
+  isLoading,
+  isError,
+  refetch,
+  filters,
+}: BonusTabProps) => {
   const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
   const compareBonusTypeData = data?.metrics?.comparison;
 
@@ -82,7 +80,6 @@ const AllBonusTab = ({ data, isLoading, isError, refetch, filters }: BonusTabPro
         selectedStatuses={filters.selectedStatuses}
         onStatusChange={filters.onStatusChange}
         showBonusTypeFilter
-        bonusTypeOptions={BONUS_TYPE_OPTIONS}
         selectedBonusTypes={filters.selectedBonusTypes}
         onBonusTypesChange={filters.onBonusTypesChange}
         showMoreFilters
@@ -109,7 +106,8 @@ const AllBonusTab = ({ data, isLoading, isError, refetch, filters }: BonusTabPro
               footer={{
                 type: "badge",
                 badge:
-                  data?.metrics?.comparison?.total_bonus_paid_change_percent ?? 0,
+                  data?.metrics?.comparison?.total_bonus_paid_change_percent ??
+                  0,
                 label: compareBonusTypeData?.compared_to || "",
               }}
             />
@@ -119,7 +117,9 @@ const AllBonusTab = ({ data, isLoading, isError, refetch, filters }: BonusTabPro
               footer={{
                 type: "badge",
                 badge:
-                  (data?.metrics?.comparison?.employee_count_change_percent ?? 0) || "",
+                  (data?.metrics?.comparison?.employee_count_change_percent ??
+                    0) ||
+                  "",
                 label: compareBonusTypeData?.compared_to || "",
               }}
             />
@@ -135,11 +135,13 @@ const AllBonusTab = ({ data, isLoading, isError, refetch, filters }: BonusTabPro
                 type: "breakdown",
                 items: [
                   {
-                    count: data?.metrics?.pending_actions?.awaiting_approval ?? 0,
+                    count:
+                      data?.metrics?.pending_actions?.awaiting_approval ?? 0,
                     label: "awaiting approval",
                   },
                   {
-                    count: data?.metrics?.pending_actions?.awaiting_payment ?? 0,
+                    count:
+                      data?.metrics?.pending_actions?.awaiting_payment ?? 0,
                     label: "awaiting payment",
                   },
                 ],
@@ -150,7 +152,8 @@ const AllBonusTab = ({ data, isLoading, isError, refetch, filters }: BonusTabPro
               value={data?.metrics?.average_bonus ?? "₦0"}
               footer={{
                 type: "badge",
-                badge: data?.metrics?.comparison?.average_bonus_change_percent ?? "",
+                badge:
+                  data?.metrics?.comparison?.average_bonus_change_percent ?? "",
                 label: compareBonusTypeData?.compared_to || "",
               }}
             />

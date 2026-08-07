@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import axiosInstance from "@/app/utils/axios";
@@ -159,6 +159,45 @@ export default function SendApprovalModal({
                 className="w-full pl-10 pr-4 py-2.5 border border-[#E3E3E5] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915]"
               />
             </div>
+
+            {/* Selected approver chips */}
+            {selectedAdmins.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {adminList?.employees
+                  ?.filter((a) => selectedAdmins.includes(a.employee.id))
+                  .map((a) => {
+                    const initials = a.employee.fullname
+                      .split(" ")
+                      .slice(0, 2)
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase();
+                    return (
+                      <span
+                        key={a.employee.id}
+                        className="flex items-center gap-1.5 pl-1 pr-2 py-1 bg-[#F0F0F3] rounded-full text-sm text-[#2F2F33]"
+                      >
+                        <span className="w-5 h-5 rounded-full bg-[#26547C] flex items-center justify-center flex-shrink-0">
+                          <span className="text-white text-[10px] font-medium leading-none">
+                            {initials[0]}
+                          </span>
+                        </span>
+                        <span className="font-medium text-xs">
+                          {a.employee.fullname}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleToggle(a.employee.id)}
+                          className="text-[#71717A] hover:text-[#2F2F33] transition-colors"
+                          aria-label={`Remove ${a.employee.fullname}`}
+                        >
+                          <X size={12} strokeWidth={2.5} />
+                        </button>
+                      </span>
+                    );
+                  })}
+              </div>
+            )}
           </div>
 
           {/* Admin list */}
@@ -218,7 +257,7 @@ export default function SendApprovalModal({
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#F0F0F3]">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 rounded-br-md rounded-bl-md border-t bg-[#F7F7F7] border-[#F0F0F3]">
             <Button variant="secondary" onButtonClick={onClose}>
               Cancel
             </Button>

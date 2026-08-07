@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { Check, ChevronDown, ChevronRight } from "lucide-react";
 
 export type DropdownOption = {
   label: string;
@@ -53,6 +53,33 @@ const RadioItem = ({
   </button>
 );
 
+const CheckboxItem = ({
+  label,
+  isSelected,
+  onClick,
+}: {
+  label: string;
+  isSelected: boolean;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="w-full flex items-center gap-x-3 px-4 py-2.5 text-sm hover:bg-[#F7F7F7] transition-colors"
+  >
+    <span
+      className={`w-[15px] h-[15px] rounded-[3px] border flex-shrink-0 flex items-center justify-center transition-colors ${
+        isSelected
+          ? "border-[#E37915] bg-[#E37915]"
+          : "border-[#C7C7CC] bg-white"
+      }`}
+    >
+      {isSelected && <Check size={9} strokeWidth={3} className="text-white" />}
+    </span>
+    <span className="text-left text-[#2F2F33]">{label}</span>
+  </button>
+);
+
 const CustomDropdown = ({
   trigger,
   title,
@@ -65,14 +92,16 @@ const CustomDropdown = ({
   className,
 }: CustomDropdownProps) => {
   const [open, setOpen] = useState(false);
-  const [hoveredParent, setHoveredParent] = useState<DropdownOption | null>(null);
+  const [expandedParent, setExpandedParent] = useState<DropdownOption | null>(
+    null,
+  );
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
-        setHoveredParent(null);
+        setExpandedParent(null);
       }
     };
     document.addEventListener("mousedown", handleOutsideClick);
@@ -89,7 +118,7 @@ const CustomDropdown = ({
     } else {
       onChange(selected[0] === value ? [] : [value]);
       setOpen(false);
-      setHoveredParent(null);
+      setExpandedParent(null);
     }
   };
 
@@ -113,7 +142,7 @@ const CustomDropdown = ({
         type="button"
         onClick={() => {
           setOpen((prev) => !prev);
-          setHoveredParent(null);
+          setExpandedParent(null);
         }}
         className={`flex items-center gap-x-1.5 px-3 p-[7px] rounded-[8px] border text-sm font-medium transition-colors focus:outline-none
           ${
@@ -132,22 +161,23 @@ const CustomDropdown = ({
 
       {/* ── Dropdown panel ── */}
       {open && (
-        <div
-          className="absolute top-full mt-2 right-0 z-50 flex bg-white border border-[#E3E3E5] rounded-xl shadow-lg overflow-hidden"
-          onMouseLeave={() => setHoveredParent(null)}
-        >
-          {/* Sub-options panel — slides in to the left on hover */}
-          {hoveredParent?.subOptions && (
-            <div className="border-r border-[#E3E3E5] min-w-[200px]">
+        <div className="absolute top-full mt-2 right-0 z-50">
+          {/* Sub-options panel — separate card to the left with a gap */}
+          {expandedParent?.subOptions && (
+            <div className="absolute right-[calc(100%+8px)] top-8 bg-white border border-[#E3E3E5] rounded-xl shadow-lg overflow-hidden min-w-[200px]">
               <div className="px-4 pt-3 pb-1.5 border-b border-[#F0F0F3]">
                 <p className="text-xs font-medium text-[#71717A]">
-                  Select {hoveredParent.label.toLowerCase()}
+                  Select {expandedParent.label.toLowerCase()}
                 </p>
               </div>
               <ul className="py-1" role="listbox">
-                {hoveredParent.subOptions.map((opt) => (
-                  <li key={opt.value} role="option" aria-selected={selected.includes(opt.value)}>
-                    <RadioItem
+                {expandedParent.subOptions.map((opt) => (
+                  <li
+                    key={opt.value}
+                    role="option"
+                    aria-selected={selected.includes(opt.value)}
+                  >
+                    <CheckboxItem
                       label={opt.label}
                       isSelected={selected.includes(opt.value)}
                       onClick={() => handleSelect(opt.value)}
@@ -159,7 +189,7 @@ const CustomDropdown = ({
           )}
 
           {/* Main options panel */}
-          <div className="min-w-[220px]">
+          <div className="bg-white border border-[#E3E3E5] rounded-xl shadow-lg overflow-hidden min-w-[220px]">
             {title && (
               <div className="px-4 pt-3 pb-1.5 border-b border-[#F0F0F3]">
                 <p className="text-xs font-medium text-[#71717A]">{title}</p>
@@ -170,16 +200,22 @@ const CustomDropdown = ({
               {options.map((opt) => {
                 const isSelected = selected.includes(opt.value);
                 const hasChildren = !!opt.subOptions?.length;
-                const isHovered = hoveredParent?.value === opt.value;
+                const isExpanded = expandedParent?.value === opt.value;
 
                 if (hasChildren) {
                   return (
-                    <li key={opt.value} role="option" aria-selected={isSelected}>
+                    <li
+                      key={opt.value}
+                      role="option"
+                      aria-selected={isSelected}
+                    >
                       <button
                         type="button"
-                        onMouseEnter={() => setHoveredParent(opt)}
+                        onClick={() =>
+                          setExpandedParent(isExpanded ? null : opt)
+                        }
                         className={`w-full flex items-center justify-between px-4 py-2.5 text-sm text-[#2F2F33] transition-colors ${
-                          isHovered ? "bg-[#F7F7F7]" : "hover:bg-[#F7F7F7]"
+                          isExpanded ? "bg-[#F7F7F7]" : "hover:bg-[#F7F7F7]"
                         }`}
                       >
                         <span>{opt.label}</span>

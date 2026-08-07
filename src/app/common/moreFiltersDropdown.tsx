@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Users, Globe } from "lucide-react";
 import Button from "@/app/common/Button";
 import { GoFilter } from "react-icons/go";
+import { useTeamList } from "@/app/hooks/useQueries/useTeamList";
 
 export interface MoreFiltersValue {
   teams: string[];
@@ -15,20 +16,29 @@ interface MoreFiltersDropdownProps {
   className?: string;
 }
 
-const TEAMS = [
-  "AI in Software",
-  "Advocate",
-  "Cloud Upgrade",
-  "Design",
-  "Domestic Staff",
-  "Enterprise Strategy",
-  "Operational Excellence",
-  "Service Management",
-];
-
-const COUNTRIES = ["Kenya", "Nigeria", "United Kingdom", "United States"];
+const COUNTRIES = ["kenya", "nigeria", "united kingdom", "united states"];
 
 type Category = "team" | "country";
+
+const CheckMark = ({ isChecked }: { isChecked: boolean }) => (
+  <span
+    className={`w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
+      isChecked ? "bg-[#E37915] border-[#E37915]" : "border-[#D1D1D6] bg-white"
+    }`}
+  >
+    {isChecked && (
+      <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+        <path
+          d="M1 3.5L3.5 6L8 1"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    )}
+  </span>
+);
 
 const CATEGORIES: { id: Category; label: string; icon: React.ReactNode }[] = [
   { id: "team", label: "Team", icon: <Users size={16} /> },
@@ -44,6 +54,7 @@ const MoreFiltersDropdown = ({
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
   const ref = useRef<HTMLDivElement>(null);
+  const { data: teamList = [], isLoading: teamsLoading } = useTeamList();
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -79,10 +90,6 @@ const MoreFiltersDropdown = ({
   };
 
   const totalSelected = selectedTeams.length + selectedCountries.length;
-  const currentOptions = activeCategory === "team" ? TEAMS : COUNTRIES;
-  const currentSelected =
-    activeCategory === "team" ? selectedTeams : selectedCountries;
-  const toggleCurrent = activeCategory === "team" ? toggleTeam : toggleCountry;
 
   return (
     <div ref={ref} className={`relative inline-block ${className ?? ""}`}>
@@ -146,52 +153,66 @@ const MoreFiltersDropdown = ({
                 </p>
               </div>
               <ul className="py-1 overflow-y-auto max-h-[280px]">
-                {currentOptions.map((opt) => {
-                  const isChecked = currentSelected.includes(opt);
-                  return (
-                    <li key={opt}>
-                      <button
-                        type="button"
-                        onClick={() => toggleCurrent(opt)}
-                        className="w-full flex items-center gap-x-3 px-4 py-2.5 text-sm hover:bg-[#F7F7F7] transition-colors"
-                      >
-                        <span
-                          className={`w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                            isChecked
-                              ? "bg-[#E37915] border-[#E37915]"
-                              : "border-[#D1D1D6] bg-white"
-                          }`}
-                        >
-                          {isChecked && (
-                            <svg
-                              width="9"
-                              height="7"
-                              viewBox="0 0 9 7"
-                              fill="none"
-                            >
-                              <path
-                                d="M1 3.5L3.5 6L8 1"
-                                stroke="white"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          )}
-                        </span>
-                        <span
-                          className={`text-left ${
-                            isChecked
-                              ? "font-medium text-[#2F2F33]"
-                              : "font-normal text-[#2F2F33]"
-                          }`}
-                        >
-                          {opt}
-                        </span>
-                      </button>
+                {activeCategory === "team" ? (
+                  teamsLoading ? (
+                    <li className="px-4 py-3 text-sm text-[#71717A]">
+                      Loading teams...
                     </li>
-                  );
-                })}
+                  ) : teamList.length === 0 ? (
+                    <li className="px-4 py-3 text-sm text-[#71717A]">
+                      No teams found
+                    </li>
+                  ) : (
+                    teamList.map((team) => {
+                      const id = String(team.id);
+                      const isChecked = selectedTeams.includes(id);
+                      return (
+                        <li key={id}>
+                          <button
+                            type="button"
+                            onClick={() => toggleTeam(id)}
+                            className="w-full flex items-center gap-x-3 px-4 py-2.5 text-sm hover:bg-[#F7F7F7] transition-colors"
+                          >
+                            <CheckMark isChecked={isChecked} />
+                            <span
+                              className={`text-left ${
+                                isChecked
+                                  ? "font-medium text-[#2F2F33]"
+                                  : "font-normal text-[#2F2F33]"
+                              }`}
+                            >
+                              {team.name}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })
+                  )
+                ) : (
+                  COUNTRIES.map((country) => {
+                    const isChecked = selectedCountries.includes(country);
+                    return (
+                      <li key={country}>
+                        <button
+                          type="button"
+                          onClick={() => toggleCountry(country)}
+                          className="w-full flex items-center gap-x-3 px-4 py-2.5 text-sm hover:bg-[#F7F7F7] transition-colors"
+                        >
+                          <CheckMark isChecked={isChecked} />
+                          <span
+                            className={`text-left ${
+                              isChecked
+                                ? "font-medium text-[#2F2F33]"
+                                : "font-normal text-[#2F2F33]"
+                            }`}
+                          >
+                            {country}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })
+                )}
               </ul>
             </div>
           </div>

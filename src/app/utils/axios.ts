@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 // Create axios instance
 const axiosInstance = axios.create({
-  baseURL: "https://yen.ec2.alluvium.net/api",
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -64,7 +66,7 @@ axiosInstance.interceptors.response.use(
         }
 
         const response = await axios.post(
-          "https://yen.ec2.alluvium.net/api/account/login/token/refresh",
+          `${API_BASE_URL}/account/login/token/refresh`,
           {
             refresh: refreshToken,
           }

@@ -65,6 +65,8 @@ const fetchAllBonusHistoryList = async (
   end_date?: string,
   approval_status?: string,
   paid?: string,
+  team_id?: string,
+  country?: string,
 ) => {
   let url = "/employees/v1/bonuses";
   const params = new URLSearchParams();
@@ -76,6 +78,8 @@ const fetchAllBonusHistoryList = async (
   if (end_date && end_date !== "") params.append("end_date", end_date);
   if (approval_status && approval_status !== "") params.append("approval_status", approval_status);
   if (paid && paid !== "") params.append("paid", paid);
+  if (team_id && team_id !== "") params.append("team_id", team_id);
+  if (country && country !== "") params.append("country", country);
 
   if (params.toString()) {
     url += `?${params.toString()}`;
@@ -94,6 +98,8 @@ export const useAllBonusHistory = (
   end_date?: string,
   approval_status?: string,
   paid?: string,
+  team_id?: string,
+  country?: string,
 ) => {
   return useQuery<BonusHistoryData | null, AxiosError>({
     queryKey: [
@@ -105,10 +111,12 @@ export const useAllBonusHistory = (
       end_date,
       approval_status,
       paid,
+      team_id,
+      country,
     ],
     queryFn: () =>
-      fetchAllBonusHistoryList(month, year, bonus_type, start_date, end_date, approval_status, paid),
-    staleTime: 1000 * 60 * 5, // data fresh for 5 minutes
+      fetchAllBonusHistoryList(month, year, bonus_type, start_date, end_date, approval_status, paid, team_id, country),
+    staleTime: 1000 * 60 * 5,
     retry: 1,
   });
 };
