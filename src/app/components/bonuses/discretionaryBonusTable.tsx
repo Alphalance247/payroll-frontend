@@ -28,6 +28,8 @@ interface DiscretionaryBonusTableProps {
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   setModalMode?: (mode: "add" | "edit" | null) => void;
+  emptyTitle?: string;
+  emptySubtitle?: string;
 }
 
 const DiscretionaryBonusTable = ({
@@ -40,6 +42,8 @@ const DiscretionaryBonusTable = ({
   onPageChange,
   onPageSizeChange,
   setModalMode,
+  emptyTitle,
+  emptySubtitle,
 }: DiscretionaryBonusTableProps) => {
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -97,13 +101,17 @@ const DiscretionaryBonusTable = ({
           Failed to load bonuses. Please try again.
         </p>
       ) : filteredData.length === 0 ? (
-        <BonusEmptyState setModalMode={setModalMode ?? (() => {})} />
+        <BonusEmptyState
+          setModalMode={setModalMode ?? undefined}
+          title={emptyTitle}
+          subtitle={emptySubtitle}
+        />
       ) : (
         <div
           className="overflow-x-auto rounded-lg relative"
           style={{ overflowY: "visible" }}
         >
-          <table className="w-full min-w-[900px] border-b border-[#E3E3E5]">
+          <table className="w-full min-w-[1100px] border-b border-[#E3E3E5]">
             <thead className="bg-[#F7F7F7]">
               <tr>
                 <th className="px-6 py-[14px] w-[40px]">
@@ -128,16 +136,16 @@ const DiscretionaryBonusTable = ({
                     <TiArrowUnsorted fill="#71717A" size={16} />
                   </p>
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[180px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   <p className="flex gap-x-1 cursor-pointer items-center">
                     Converted (₦)
                     <TiArrowUnsorted fill="#71717A" size={16} />
                   </p>
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Stage
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Payment
                 </th>
                 <th className="px-6 py-[14px] w-[60px]" />

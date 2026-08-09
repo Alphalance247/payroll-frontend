@@ -23,6 +23,7 @@ export interface BonusFilters {
   onBonusTypesChange: (val: string[]) => void;
   moreFilters: MoreFiltersValue;
   onMoreFiltersApply: (val: MoreFiltersValue) => void;
+  onClearFilters: () => void;
 }
 
 export interface BonusTabProps {
@@ -71,18 +72,36 @@ const BonusHistory = () => {
     ? format(dateRange.from, "yyyy-MM-dd")
     : undefined;
   const endDate = dateRange.to ? format(dateRange.to, "yyyy-MM-dd") : undefined;
-  const approvalStatusParam = selectedStatuses.find((s) =>
+
+  const approvalStatuses = selectedStatuses.filter((s) =>
     APPROVAL_STATUS_VALUES.has(s),
   );
-  const paidParam = selectedStatuses.includes("disbursed")
-    ? "true"
-    : selectedStatuses.includes("not_disbursed")
-      ? "false"
-      : undefined;
+  const approvalStatusParam =
+    approvalStatuses.length > 0 ? approvalStatuses.join(",") : undefined;
+
+  const hasDisbursed = selectedStatuses.includes("disbursed");
+  const hasNotDisbursed = selectedStatuses.includes("not_disbursed");
+  const paidParam =
+    hasDisbursed && !hasNotDisbursed
+      ? "true"
+      : hasNotDisbursed && !hasDisbursed
+        ? "false"
+        : undefined;
 
   const bonusTypeParam = TAB_BONUS_TYPE[activeTab];
-  const teamIdParam = moreFilters.teams[0] ?? undefined;
-  const countryParam = moreFilters.countries[0] ?? undefined;
+  const teamIdParam =
+    moreFilters.teams.length > 0 ? moreFilters.teams.join(",") : undefined;
+  const countryParam =
+    moreFilters.countries.length > 0
+      ? moreFilters.countries.join(",")
+      : undefined;
+
+  const handleClearFilters = () => {
+    setDateRange({ from: null, to: null });
+    setSelectedStatuses([]);
+    setSelectedBonusTypes([]);
+    setMoreFilters({ teams: [], countries: [] });
+  };
 
   const { data, isLoading, isError, refetch } = useAllBonusHistory(
     undefined,
@@ -105,6 +124,7 @@ const BonusHistory = () => {
     onBonusTypesChange: setSelectedBonusTypes,
     moreFilters,
     onMoreFiltersApply: setMoreFilters,
+    onClearFilters: handleClearFilters,
   };
 
   const tabProps: BonusTabProps = {

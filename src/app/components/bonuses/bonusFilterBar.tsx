@@ -29,6 +29,9 @@ export interface BonusFilterBarProps {
   showMoreFilters?: boolean;
   moreFiltersValue?: MoreFiltersValue;
   onMoreFiltersApply?: (val: MoreFiltersValue) => void;
+
+  // Clear all active filters
+  onClearFilters?: () => void;
 }
 
 const BonusFilterBar = ({
@@ -37,10 +40,18 @@ const BonusFilterBar = ({
   statusOptions,
   selectedStatuses,
   onStatusChange,
-
   showMoreFilters = false,
+  moreFiltersValue,
   onMoreFiltersApply,
+  onClearFilters,
 }: BonusFilterBarProps) => {
+  const hasActiveFilters =
+    selectedStatuses.length > 0 ||
+    !!dateRange.from ||
+    !!dateRange.to ||
+    (moreFiltersValue?.teams.length ?? 0) > 0 ||
+    (moreFiltersValue?.countries.length ?? 0) > 0;
+
   return (
     <div className="bg-white rounded-lg border border-[#E3E3E5] mb-4">
       <div className="flex items-center justify-between py-5 px-6">
@@ -57,9 +68,22 @@ const BonusFilterBar = ({
             options={statusOptions}
             selected={selectedStatuses}
             onChange={onStatusChange}
+            multiSelect
           />
           {showMoreFilters && (
-            <MoreFiltersDropdown onApply={onMoreFiltersApply} />
+            <MoreFiltersDropdown
+              value={moreFiltersValue}
+              onApply={onMoreFiltersApply}
+            />
+          )}
+          {hasActiveFilters && onClearFilters && (
+            <button
+              type="button"
+              onClick={onClearFilters}
+              className="text-sm font-medium text-[#E37915] hover:text-[#CF6E13] transition-colors whitespace-nowrap"
+            >
+              Clear Filters
+            </button>
           )}
         </div>
       </div>

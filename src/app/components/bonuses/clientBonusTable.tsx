@@ -29,6 +29,8 @@ interface ClientBonusTableProps {
   onPageSizeChange?: (size: number) => void;
   setModalMode?: (mode: "add" | "edit" | null) => void;
   showClientHoursColumn?: boolean;
+  emptyTitle?: string;
+  emptySubtitle?: string;
 }
 
 const ClientBonusTable = ({
@@ -42,6 +44,8 @@ const ClientBonusTable = ({
   onPageSizeChange,
   setModalMode,
   showClientHoursColumn = true,
+  emptyTitle,
+  emptySubtitle,
 }: ClientBonusTableProps) => {
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -99,13 +103,19 @@ const ClientBonusTable = ({
           Failed to load bonuses. Please try again.
         </p>
       ) : filteredData.length === 0 ? (
-        <BonusEmptyState setModalMode={setModalMode ?? (() => {})} />
+        <BonusEmptyState
+          setModalMode={setModalMode ?? undefined}
+          title={emptyTitle}
+          subtitle={emptySubtitle}
+        />
       ) : (
         <div
           className="overflow-x-auto rounded-lg relative"
           style={{ overflowY: "visible" }}
         >
-          <table className="w-full min-w-[1100px] border-b border-[#E3E3E5]">
+          <table
+            className={`w-full border-b border-[#E3E3E5] ${showClientHoursColumn ? "min-w-[1400px]" : "min-w-[1200px]"}`}
+          >
             <thead className="bg-[#F7F7F7]">
               <tr>
                 <th className="px-6 py-[14px] w-[40px]">
@@ -118,18 +128,18 @@ const ClientBonusTable = ({
                     aria-label="Select all"
                   />
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                   <p className="flex gap-x-1 cursor-pointer items-center">
                     Employee
                     <RiExpandUpDownFill fill="#2F2F33" size={12} />
                   </p>
                 </th>
                 {showClientHoursColumn && (
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[140px]">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                     Client Hours
                   </th>
                 )}
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[140px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Total Hours
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
@@ -138,16 +148,16 @@ const ClientBonusTable = ({
                     <TiArrowUnsorted fill="#71717A" size={16} />
                   </p>
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[180px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[220px]">
                   <p className="flex gap-x-1 cursor-pointer items-center">
                     Converted (₦)
                     <TiArrowUnsorted fill="#71717A" size={16} />
                   </p>
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[140px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[220px]">
                   Stage
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[140px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[220px]">
                   Payment
                 </th>
                 <th className="px-6 py-[14px] w-[60px]" />

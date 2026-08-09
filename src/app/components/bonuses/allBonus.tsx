@@ -85,6 +85,7 @@ const AllBonusTab = ({
         showMoreFilters
         moreFiltersValue={filters.moreFilters}
         onMoreFiltersApply={filters.onMoreFiltersApply}
+        onClearFilters={filters.onClearFilters}
       />
 
       {isLoading ? (
@@ -161,7 +162,7 @@ const AllBonusTab = ({
 
           {/* Chart + Recent activities row */}
           <div className="grid grid-cols-[3fr_2fr] gap-4 mt-4">
-            <div className="bg-white rounded-xl border border-[#E3E3E5] flex flex-col overflow-hidden">
+            <div className="bg-white rounded-xl border h-fit border-[#E3E3E5] flex flex-col overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E3E3E5]">
                 <span className="text-sm font-semibold text-[#2F2F33]">
                   Bonus value by type
@@ -181,7 +182,13 @@ const AllBonusTab = ({
         </>
       )}
 
-      <AllBonusTable data={data} isLoading={isLoading} isError={isError} />
+      <AllBonusTable
+        data={data}
+        isLoading={isLoading}
+        isError={isError}
+        emptyTitle="No bonuses yet"
+        emptySubtitle="There are no bonus records to display. New bonuses will appear here once they've been created or calculated."
+      />
     </>
   );
 };

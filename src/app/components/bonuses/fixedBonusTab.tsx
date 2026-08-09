@@ -59,6 +59,7 @@ const FixedBonusTab = ({
         showMoreFilters
         moreFiltersValue={filters.moreFilters}
         onMoreFiltersApply={filters.onMoreFiltersApply}
+        onClearFilters={filters.onClearFilters}
       />
 
       {isLoading ? (
@@ -112,6 +113,8 @@ const FixedBonusTab = ({
         isLoading={isLoading}
         isError={isError}
         showBonusTypeColumn={false}
+        emptyTitle="No fixed bonuses yet"
+        emptySubtitle="There are no fixed bonus records to display. Fixed bonuses will appear here once they've been added and approved."
       />
     </>
   );

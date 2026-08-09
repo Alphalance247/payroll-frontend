@@ -219,7 +219,7 @@ const DisburseModal = ({
             className="overflow-x-auto rounded-lg z-0 relative"
             style={{ overflowY: "visible" }}
           >
-            <table className="w-full min-w-[1000px] border-b border-[#E3E3E5]">
+            <table className="w-full min-w-[1300px] border-b border-[#E3E3E5]">
               <thead className="bg-[#F7F7F7]">
                 <tr>
                   <th className="px-6 py-[14px] w-[40px]">
@@ -233,7 +233,7 @@ const DisburseModal = ({
                       aria-label="Select all employees"
                     />
                   </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px] ">
                     <p className="flex gap-x-1 cursor-pointer items-center">
                       Employee
                       <span>
@@ -259,7 +259,7 @@ const DisburseModal = ({
                     </p>
                   </th>
 
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                     <p className="flex gap-x-1 cursor-pointer items-center">
                       Converted (Naira)
                       <span>
@@ -268,11 +268,11 @@ const DisburseModal = ({
                     </p>
                   </th>
 
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                     Status
                   </th>
 
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                     {" "}
                     Payment
                   </th>

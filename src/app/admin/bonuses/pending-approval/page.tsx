@@ -101,10 +101,7 @@ const PendingApproval = () => {
     if (ids.length === 1) {
       reviewSingle({ bonusId: ids[0], action, comment }, opts);
     } else {
-      reviewMultiple(
-        { action, comment, bonus_ids: ids.map(String) },
-        opts,
-      );
+      reviewMultiple({ action, comment, bonus_ids: ids.map(String) }, opts);
     }
   };
   const [disburseOpen, setDisburseOpen] = useState(false);
@@ -319,7 +316,7 @@ const PendingApproval = () => {
               className="overflow-x-auto rounded-lg z-0 relative"
               style={{ overflowY: "visible" }}
             >
-              <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
+              <table className="w-full min-w-[1400px] border-b border-[#E3E3E5]">
                 <thead className="bg-[#F7F7F7]">
                   <tr>
                     <th className="px-6 py-[14px] w-[40px]">
@@ -332,7 +329,7 @@ const PendingApproval = () => {
                         aria-label="Select all employees"
                       />
                     </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px]">
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Employee
                         <span>
@@ -351,7 +348,7 @@ const PendingApproval = () => {
                         </span>
                       </p>
                     </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Converted (Naira)
                         <span>
@@ -359,10 +356,10 @@ const PendingApproval = () => {
                         </span>
                       </p>
                     </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                       Submitted On
                     </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                       Payment
                     </th>
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]"></th>
@@ -480,9 +477,7 @@ const PendingApproval = () => {
                   <div className="relative inline-flex items-center">
                     <select
                       value={pageSize}
-                      onChange={(e) =>
-                        setPageSize(Number(e.target.value))
-                      }
+                      onChange={(e) => setPageSize(Number(e.target.value))}
                       className="appearance-none bg-white border border-slate-300 rounded-lg px-3 py-1.5 pr-8 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer"
                     >
                       <option value={10}>10</option>
@@ -553,11 +548,8 @@ const PendingApproval = () => {
           recordCount={selectedEmployeeIds.length || filteredData.length}
           totalValue={sumNairaAmount(targetRecords)}
           onConfirm={() =>
-            handleReview(
-              "approved",
-              "Bonus",
-              selectedEmployeeIds,
-              () => setApproveOpen(false),
+            handleReview("approved", "Bonus", selectedEmployeeIds, () =>
+              setApproveOpen(false),
             )
           }
         />

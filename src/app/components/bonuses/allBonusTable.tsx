@@ -29,6 +29,8 @@ interface AllBonusTableProps {
   onPageSizeChange?: (size: number) => void;
   setModalMode?: (mode: "add" | "edit" | null) => void;
   showBonusTypeColumn?: boolean;
+  emptyTitle?: string;
+  emptySubtitle?: string;
 }
 
 const AllBonusTable = ({
@@ -42,6 +44,8 @@ const AllBonusTable = ({
   onPageSizeChange,
   setModalMode,
   showBonusTypeColumn = true,
+  emptyTitle,
+  emptySubtitle,
 }: AllBonusTableProps) => {
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -103,13 +107,19 @@ const AllBonusTable = ({
           Failed to load bonuses. Please try again.
         </p>
       ) : searchFiltered.length === 0 ? (
-        <BonusEmptyState setModalMode={setModalMode ?? (() => {})} />
+        <BonusEmptyState
+          setModalMode={setModalMode ?? undefined}
+          title={emptyTitle}
+          subtitle={emptySubtitle}
+        />
       ) : (
         <div
           className="overflow-x-auto rounded-lg relative"
           style={{ overflowY: "visible" }}
         >
-          <table className="w-full min-w-[1000px] border-b border-[#E3E3E5]">
+          <table
+            className={`w-full  border-b border-[#E3E3E5] ${showBonusTypeColumn ? "min-w-[1300px]" : "min-w-[900px]"}`}
+          >
             <thead className="bg-[#F7F7F7]">
               <tr>
                 <th className="px-6 py-[14px] w-[40px]">
@@ -122,7 +132,7 @@ const AllBonusTable = ({
                     aria-label="Select all"
                   />
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[220px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                   <p className="flex gap-x-1 cursor-pointer items-center">
                     Employee
                     <RiExpandUpDownFill fill="#2F2F33" size={12} />
@@ -139,16 +149,16 @@ const AllBonusTable = ({
                     <TiArrowUnsorted fill="#71717A" size={16} />
                   </p>
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[180px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px]">
                   <p className="flex gap-x-1 cursor-pointer items-center">
                     Converted (Naira)
                     <TiArrowUnsorted fill="#71717A" size={16} />
                   </p>
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px]">
                   Approval status
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px]">
                   Disburse status
                 </th>
                 <th className="px-6 py-[14px] w-[60px]" />

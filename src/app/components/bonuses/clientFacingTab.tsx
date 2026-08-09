@@ -45,6 +45,7 @@ const ClientBonusTab = ({
         showMoreFilters
         moreFiltersValue={filters.moreFilters}
         onMoreFiltersApply={filters.onMoreFiltersApply}
+        onClearFilters={filters.onClearFilters}
       />
 
       {isLoading ? (
@@ -101,7 +102,13 @@ const ClientBonusTab = ({
         </div>
       )}
 
-      <ClientBonusTable data={data} isLoading={isLoading} isError={isError} />
+      <ClientBonusTable
+        data={data}
+        isLoading={isLoading}
+        isError={isError}
+        emptyTitle="No client bonuses yet"
+        emptySubtitle="There are no client-facing bonus records to display. Client bonuses are calculated from eligible billable hours and will appear here once processed."
+      />
     </>
   );
 };

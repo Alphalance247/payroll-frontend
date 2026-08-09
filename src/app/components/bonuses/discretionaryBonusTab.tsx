@@ -37,12 +37,15 @@ const DiscretionaryBonusTab = ({
         showMoreFilters
         moreFiltersValue={filters.moreFilters}
         onMoreFiltersApply={filters.onMoreFiltersApply}
+        onClearFilters={filters.onClearFilters}
       />
 
       <DiscretionaryBonusTable
         data={data}
         isLoading={isLoading}
         isError={isError}
+        emptyTitle="No discretionary bonuses yet"
+        emptySubtitle="There are no discretionary bonus records to display. These bonuses are manually awarded and will appear here once created and approved."
       />
     </>
   );

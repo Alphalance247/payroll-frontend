@@ -45,6 +45,7 @@ const QuarterlyBonusTab = ({
         showMoreFilters
         moreFiltersValue={filters.moreFilters}
         onMoreFiltersApply={filters.onMoreFiltersApply}
+        onClearFilters={filters.onClearFilters}
       />
 
       {isLoading ? (
@@ -98,6 +99,8 @@ const QuarterlyBonusTab = ({
         isLoading={isLoading}
         isError={isError}
         showClientHoursColumn={false}
+        emptyTitle="No quarterly bonuses yet"
+        emptySubtitle="There are no quarterly bonus records to display. Quarterly bonuses will appear here once they've been added and approved."
       />
     </>
   );
