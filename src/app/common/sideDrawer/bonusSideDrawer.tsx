@@ -159,6 +159,15 @@ const BonusSideDrawer = ({
                     value={detail.processing_status}
                   />
                   <OverviewRow
+                    label="Client hours"
+                    value={detail.client_hours}
+                  />
+                  <OverviewRow
+                    label="Non client hours"
+                    value={detail.non_client_hours}
+                  />
+                  <OverviewRow label="Total hours" value={detail.total_hours} />
+                  <OverviewRow
                     label="Date Paid"
                     value={formatDate(detail.date_paid)}
                   />
@@ -170,6 +179,59 @@ const BonusSideDrawer = ({
                   ) : null}
                 </div>
               </section>
+
+              {/* Project Details */}
+              {detail.hours_by_project !== undefined && (
+                <>
+                  <hr className="border-[#E3E3E5]" />
+                  <section className="flex flex-col gap-4">
+                    <h3 className="text-base font-medium text-[#2F2F33]">
+                      Project details
+                    </h3>
+                    {detail.hours_by_project.length === 0 ? (
+                      <p className="text-sm text-[#71717A] text-center py-6">
+                        No project hours logged for this bonus period.
+                      </p>
+                    ) : (
+                      <div className="rounded-lg border border-[#E3E3E5] overflow-hidden">
+                        <table className="w-full text-sm">
+                          <thead className="bg-[#F7F7F7]">
+                            <tr>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left w-[110px]">
+                                Project Key
+                              </th>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left">
+                                Project Name
+                              </th>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left w-[110px]">
+                                Hours Logged
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {detail.hours_by_project.map((proj) => (
+                              <tr
+                                key={proj.project_id}
+                                className="border-t border-[#E3E3E5]"
+                              >
+                                <td className="px-4 py-3 font-semibold text-[#2F2F33]">
+                                  {proj.project_key}
+                                </td>
+                                <td className="px-4 py-3 text-[#2F2F33]">
+                                  {proj.project_name}
+                                </td>
+                                <td className="px-4 py-3 text-[#2F2F33]">
+                                  {proj.hours}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </section>
+                </>
+              )}
 
               {/* Change Requests */}
               {changeRequests.length > 0 && (

@@ -7,6 +7,7 @@ import ClientBonusTable from "@/app/components/bonuses/clientBonusTable";
 import ErrorFetch from "@/app/common/errorFetch";
 import { formatNaira } from "@/app/utils/formatCurrency";
 import type { BonusTabProps } from "@/app/admin/bonuses/page";
+import { useExportBonuses } from "@/app/hooks/useQueries/bonuses/useExportBonuses";
 
 const STATUS_OPTIONS = [
   { label: "All", value: "all" },
@@ -22,6 +23,7 @@ const QuarterlyBonusTab = ({
   refetch,
   filters,
 }: BonusTabProps) => {
+  const { exportBonuses, isExporting } = useExportBonuses();
   const comparison = data?.metrics?.comparison;
   const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
 
@@ -101,6 +103,8 @@ const QuarterlyBonusTab = ({
         showClientHoursColumn={false}
         emptyTitle="No quarterly bonuses yet"
         emptySubtitle="There are no quarterly bonus records to display. Quarterly bonuses will appear here once they've been added and approved."
+        onExport={() => exportBonuses("quarterly")}
+        isExporting={isExporting}
       />
     </>
   );

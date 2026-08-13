@@ -3,6 +3,7 @@ import Heading from "@/app/common/heading";
 import DiscretionaryBonusTable from "@/app/components/bonuses/discretionaryBonusTable";
 import BonusFilterBar from "@/app/components/bonuses/bonusFilterBar";
 import type { BonusTabProps } from "@/app/admin/bonuses/page";
+import { useExportBonuses } from "@/app/hooks/useQueries/bonuses/useExportBonuses";
 
 const STATUS_OPTIONS = [
   { label: "All", value: "all" },
@@ -17,6 +18,8 @@ const DiscretionaryBonusTab = ({
   isError,
   filters,
 }: BonusTabProps) => {
+  const { exportBonuses, isExporting } = useExportBonuses();
+
   return (
     <>
       <div className="mb-8">
@@ -46,6 +49,8 @@ const DiscretionaryBonusTab = ({
         isError={isError}
         emptyTitle="No discretionary bonuses yet"
         emptySubtitle="There are no discretionary bonus records to display. These bonuses are manually awarded and will appear here once created and approved."
+        onExport={() => exportBonuses("discretionary")}
+        isExporting={isExporting}
       />
     </>
   );

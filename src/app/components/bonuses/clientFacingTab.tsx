@@ -7,6 +7,7 @@ import BonusFilterBar from "@/app/components/bonuses/bonusFilterBar";
 import ErrorFetch from "@/app/common/errorFetch";
 import { formatNaira } from "@/app/utils/formatCurrency";
 import type { BonusTabProps } from "@/app/admin/bonuses/page";
+import { useExportBonuses } from "@/app/hooks/useQueries/bonuses/useExportBonuses";
 
 const STATUS_OPTIONS = [
   { label: "All", value: "all" },
@@ -22,6 +23,7 @@ const ClientBonusTab = ({
   refetch,
   filters,
 }: BonusTabProps) => {
+  const { exportBonuses, isExporting } = useExportBonuses();
   const comparison = data?.metrics?.comparison;
   const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
 
@@ -108,6 +110,8 @@ const ClientBonusTab = ({
         isError={isError}
         emptyTitle="No client bonuses yet"
         emptySubtitle="There are no client-facing bonus records to display. Client bonuses are calculated from eligible billable hours and will appear here once processed."
+        onExport={() => exportBonuses("client_facing")}
+        isExporting={isExporting}
       />
     </>
   );

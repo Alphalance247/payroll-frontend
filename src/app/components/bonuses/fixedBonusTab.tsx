@@ -8,6 +8,7 @@ import ErrorFetch from "@/app/common/errorFetch";
 import { useMemo } from "react";
 import { formatNaira } from "@/app/utils/formatCurrency";
 import type { BonusTabProps } from "@/app/admin/bonuses/page";
+import { useExportBonuses } from "@/app/hooks/useQueries/bonuses/useExportBonuses";
 
 const STATUS_OPTIONS = [
   { label: "All", value: "all" },
@@ -23,6 +24,7 @@ const FixedBonusTab = ({
   refetch,
   filters,
 }: BonusTabProps) => {
+  const { exportBonuses, isExporting } = useExportBonuses();
   const comparison = data?.metrics?.comparison;
   const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
 
@@ -115,6 +117,8 @@ const FixedBonusTab = ({
         showBonusTypeColumn={false}
         emptyTitle="No fixed bonuses yet"
         emptySubtitle="There are no fixed bonus records to display. Fixed bonuses will appear here once they've been added and approved."
+        onExport={() => exportBonuses("fixed")}
+        isExporting={isExporting}
       />
     </>
   );

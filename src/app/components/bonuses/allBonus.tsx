@@ -1,3 +1,4 @@
+"use client";
 import { formatNaira, parseAmount } from "@/app/utils/formatCurrency";
 import Heading from "@/app/common/heading";
 import BonusDonutChart from "@/app/components/charts/bonusDonutChart";
@@ -8,6 +9,7 @@ import BonusFilterBar from "@/app/components/bonuses/bonusFilterBar";
 import ErrorFetch from "@/app/common/errorFetch";
 import type { BonusTabProps } from "@/app/admin/bonuses/page";
 import RecentBonusActivities from "./recentBonusActivities";
+import { useExportBonuses } from "@/app/hooks/useQueries/bonuses/useExportBonuses";
 
 const STATUS_OPTIONS = [
   {
@@ -36,6 +38,7 @@ const AllBonusTab = ({
   refetch,
   filters,
 }: BonusTabProps) => {
+  const { exportBonuses, isExporting } = useExportBonuses();
   const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
   const compareBonusTypeData = data?.metrics?.comparison;
 
@@ -188,6 +191,8 @@ const AllBonusTab = ({
         isError={isError}
         emptyTitle="No bonuses yet"
         emptySubtitle="There are no bonus records to display. New bonuses will appear here once they've been created or calculated."
+        onExport={() => exportBonuses()}
+        isExporting={isExporting}
       />
     </>
   );

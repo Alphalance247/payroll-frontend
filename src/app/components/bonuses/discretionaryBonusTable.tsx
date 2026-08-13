@@ -30,6 +30,8 @@ interface DiscretionaryBonusTableProps {
   setModalMode?: (mode: "add" | "edit" | null) => void;
   emptyTitle?: string;
   emptySubtitle?: string;
+  onExport?: () => void;
+  isExporting?: boolean;
 }
 
 const DiscretionaryBonusTable = ({
@@ -44,6 +46,8 @@ const DiscretionaryBonusTable = ({
   setModalMode,
   emptyTitle,
   emptySubtitle,
+  onExport,
+  isExporting = false,
 }: DiscretionaryBonusTableProps) => {
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -87,10 +91,12 @@ const DiscretionaryBonusTable = ({
 
         <button
           type="button"
-          className="flex items-center gap-x-2 px-4 py-2 rounded-lg border border-[#D3D3D6] bg-white text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
+          onClick={onExport}
+          disabled={isExporting}
+          className="flex items-center gap-x-2 px-4 py-2 rounded-lg border border-[#D3D3D6] bg-white text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Upload size={14} strokeWidth={2} />
-          Export
+          {isExporting ? "Exporting…" : "Export"}
         </button>
       </div>
 
