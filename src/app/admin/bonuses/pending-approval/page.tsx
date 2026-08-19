@@ -1,6 +1,8 @@
 "use client";
 import { RiExpandUpDownFill } from "react-icons/ri";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/authContext";
 import { format } from "date-fns";
 import Heading from "@/app/common/heading";
 import Button from "@/app/common/Button";
@@ -58,6 +60,15 @@ const formatDate = (dateStr: string) => {
 };
 
 const PendingApproval = () => {
+  const router = useRouter();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user && user.role !== "super_admin") {
+      router.replace("/admin/bonuses/active-bonuses");
+    }
+  }, [user, router]);
+
   const [currentPage, setCurrentPage] = useState<number | undefined>(undefined);
   const [pageSize, setPageSize] = useState<number | undefined>(undefined);
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
@@ -475,7 +486,10 @@ const PendingApproval = () => {
                 totalPages={inReviewBonusData?.pagination?.total_pages ?? 1}
                 pageSize={pageSize}
                 onPageChange={setCurrentPage}
-                onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setCurrentPage(1);
+                }}
               />
             </div>
           )}
