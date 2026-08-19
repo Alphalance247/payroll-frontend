@@ -71,7 +71,9 @@ const Sidebar = () => {
 
   const handleNavClick = useCallback(() => {
     setOpenDropdown(null);
-    try { localStorage.removeItem(SIDEBAR_STORAGE_KEY); } catch {}
+    try {
+      localStorage.removeItem(SIDEBAR_STORAGE_KEY);
+    } catch {}
   }, []);
 
   const sideBarData: sideBarData[] = [
@@ -116,6 +118,10 @@ const Sidebar = () => {
             {
               link: "/admin/bonuses/active-bonuses",
               text: "Active Bonuses",
+            },
+            {
+              link: "/admin/bonuses/project-bonuses",
+              text: "Project Bonuses",
             },
 
             {
@@ -337,7 +343,8 @@ const Sidebar = () => {
                       {item?.subHeadings &&
                         item?.subHeadings?.map((items, subIdx) => {
                           const isDropdown = !!items?.dropdownText;
-                          const isOpen = openDropdown === `${sectionIdx}-${subIdx}`;
+                          const isOpen =
+                            openDropdown === `${sectionIdx}-${subIdx}`;
                           return (
                             <div key={subIdx}>
                               {items?.link && !isDropdown ? (
@@ -389,7 +396,11 @@ const Sidebar = () => {
                                           >
                                             <li
                                               className={`text-sm font-medium rounded-lg py-[10px] pl-4 ${
-                                                pathname === (item?.link?.replace(/\/+$/, "") ?? "")
+                                                pathname ===
+                                                (item?.link?.replace(
+                                                  /\/+$/,
+                                                  "",
+                                                ) ?? "")
                                                   ? "bg-[#414D57] text-white"
                                                   : "bg-transparent text-[white]"
                                               }`}
