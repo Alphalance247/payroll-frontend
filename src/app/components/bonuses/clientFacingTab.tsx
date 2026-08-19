@@ -8,6 +8,7 @@ import ErrorFetch from "@/app/common/errorFetch";
 import { formatNaira } from "@/app/utils/formatCurrency";
 import type { BonusTabProps } from "@/app/admin/bonuses/page";
 import { useExportBonuses } from "@/app/hooks/useQueries/bonuses/useExportBonuses";
+import { useBonusTabData } from "@/app/hooks/useQueries/bonuses/useBonusTabData";
 
 const STATUS_OPTIONS = [
   { label: "All", value: "all" },
@@ -16,14 +17,17 @@ const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
 ];
 
-const ClientBonusTab = ({
-  data,
-  isLoading,
-  isError,
-  refetch,
-  filters,
-}: BonusTabProps) => {
+const ClientBonusTab = ({ filters }: BonusTabProps) => {
   const { exportBonuses, isExporting } = useExportBonuses();
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    pageSize,
+    onPageChange,
+    onPageSizeChange,
+  } = useBonusTabData("client", filters);
   const comparison = data?.metrics?.comparison;
   const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
 
@@ -72,12 +76,13 @@ const ClientBonusTab = ({
           />
           <BonusStatCard
             title="Total Client Hours"
-            value="2,105 hrs"
-            footer={{ type: "badge", badge: "+20%", label: "Vs last month" }}
+            value={data?.metrics?.total_hours || "0"}
+            footer={{ type: "badge", badge: "0", label: " last month" }}
           />
+
           <BonusStatCard
             title="Client Bonus Rate"
-            value="$4/hr"
+            value={`$${data?.metrics?.client_bonus_rate || "0"}/hr`}
             footer={{
               type: "breakdown",
               items: [
@@ -108,6 +113,11 @@ const ClientBonusTab = ({
         data={data}
         isLoading={isLoading}
         isError={isError}
+        currentPage={data?.pagination?.page ?? 1}
+        totalPages={data?.pagination?.total_pages ?? 1}
+        pageSize={pageSize}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
         emptyTitle="No client bonuses yet"
         emptySubtitle="There are no client-facing bonus records to display. Client bonuses are calculated from eligible billable hours and will appear here once processed."
         onExport={() => exportBonuses("client_facing")}

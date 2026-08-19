@@ -2,9 +2,8 @@
 import { useMemo, useRef, useState } from "react";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import { TiArrowUnsorted } from "react-icons/ti";
-import { FaChevronRight } from "react-icons/fa6";
-import { FaChevronLeft, FaCaretDown } from "react-icons/fa";
 import { Search, Upload } from "lucide-react";
+import TablePagination from "@/app/common/tablePagination";
 import TableActionMenu from "@/app/common/tableActionMenu";
 import BonusSideDrawer, {
   type BonusDrawerData,
@@ -249,62 +248,13 @@ const AllBonusTable = ({
             </tbody>
           </table>
 
-          {/* Pagination */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 w-full border-t border-slate-200 bg-white">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <span>Show:</span>
-              <div className="relative inline-flex items-center">
-                <select
-                  value={pageSize}
-                  onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
-                  className="appearance-none bg-white border border-slate-300 rounded-lg px-3 py-1.5 pr-8 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer"
-                >
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                </select>
-                <FaCaretDown
-                  className="absolute right-2.5 pointer-events-none"
-                  color="#000000"
-                  size={14}
-                />
-              </div>
-              <span>per page</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-slate-500 font-medium">
-                Page{" "}
-                <span className="text-slate-900 font-semibold">
-                  {currentPage}
-                </span>{" "}
-                of{" "}
-                <span className="text-slate-900 font-semibold">
-                  {totalPages}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  disabled={currentPage <= 1}
-                  onClick={() => onPageChange?.(currentPage - 1)}
-                  aria-label="Previous page"
-                  className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <FaChevronLeft color="#2F2F33" />
-                </button>
-                <button
-                  type="button"
-                  disabled={currentPage >= totalPages}
-                  onClick={() => onPageChange?.(currentPage + 1)}
-                  aria-label="Next page"
-                  className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <FaChevronRight color="#2F2F33" />
-                </button>
-              </div>
-            </div>
-          </div>
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            onPageChange={(page) => onPageChange?.(page)}
+            onPageSizeChange={(size) => onPageSizeChange?.(size)}
+          />
         </div>
       )}
 

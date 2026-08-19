@@ -8,6 +8,7 @@ import ErrorFetch from "@/app/common/errorFetch";
 import { formatNaira } from "@/app/utils/formatCurrency";
 import type { BonusTabProps } from "@/app/admin/bonuses/page";
 import { useExportBonuses } from "@/app/hooks/useQueries/bonuses/useExportBonuses";
+import { useBonusTabData } from "@/app/hooks/useQueries/bonuses/useBonusTabData";
 
 const STATUS_OPTIONS = [
   { label: "All", value: "all" },
@@ -16,14 +17,17 @@ const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
 ];
 
-const QuarterlyBonusTab = ({
-  data,
-  isLoading,
-  isError,
-  refetch,
-  filters,
-}: BonusTabProps) => {
+const QuarterlyBonusTab = ({ filters }: BonusTabProps) => {
   const { exportBonuses, isExporting } = useExportBonuses();
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    pageSize,
+    onPageChange,
+    onPageSizeChange,
+  } = useBonusTabData("quarterly", filters);
   const comparison = data?.metrics?.comparison;
   const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
 
@@ -72,8 +76,8 @@ const QuarterlyBonusTab = ({
           />
           <BonusStatCard
             title="Total Hours"
-            value="2,105 hrs"
-            footer={{ type: "badge", badge: "+20%", label: "Vs last month" }}
+            value={data?.metrics?.total_hours || "0"}
+            footer={{ type: "badge", badge: "0", label: " last month" }}
           />
           <BonusStatCard
             title="Number of Employee"
@@ -101,6 +105,11 @@ const QuarterlyBonusTab = ({
         isLoading={isLoading}
         isError={isError}
         showClientHoursColumn={false}
+        currentPage={data?.pagination?.page ?? 1}
+        totalPages={data?.pagination?.total_pages ?? 1}
+        pageSize={pageSize}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
         emptyTitle="No quarterly bonuses yet"
         emptySubtitle="There are no quarterly bonus records to display. Quarterly bonuses will appear here once they've been added and approved."
         onExport={() => exportBonuses("quarterly")}

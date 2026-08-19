@@ -55,7 +55,7 @@ export interface BonusDetail {
   updated: string;
   employee: number;
   payslip: number;
-  pay_deno: number;
+  pay_deno: string;
   approved_by: number;
   reviewers: number[];
 }

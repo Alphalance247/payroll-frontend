@@ -10,6 +10,7 @@ import ErrorFetch from "@/app/common/errorFetch";
 import type { BonusTabProps } from "@/app/admin/bonuses/page";
 import RecentBonusActivities from "./recentBonusActivities";
 import { useExportBonuses } from "@/app/hooks/useQueries/bonuses/useExportBonuses";
+import { useBonusTabData } from "@/app/hooks/useQueries/bonuses/useBonusTabData";
 
 const STATUS_OPTIONS = [
   {
@@ -31,14 +32,10 @@ const STATUS_OPTIONS = [
   },
 ];
 
-const AllBonusTab = ({
-  data,
-  isLoading,
-  isError,
-  refetch,
-  filters,
-}: BonusTabProps) => {
+const AllBonusTab = ({ filters }: BonusTabProps) => {
   const { exportBonuses, isExporting } = useExportBonuses();
+  const { data, isLoading, isError, refetch, pageSize, onPageChange, onPageSizeChange } =
+    useBonusTabData(undefined, filters);
   const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
   const compareBonusTypeData = data?.metrics?.comparison;
 
@@ -189,6 +186,11 @@ const AllBonusTab = ({
         data={data}
         isLoading={isLoading}
         isError={isError}
+        currentPage={data?.pagination?.page ?? 1}
+        totalPages={data?.pagination?.total_pages ?? 1}
+        pageSize={pageSize}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
         emptyTitle="No bonuses yet"
         emptySubtitle="There are no bonus records to display. New bonuses will appear here once they've been created or calculated."
         onExport={() => exportBonuses()}

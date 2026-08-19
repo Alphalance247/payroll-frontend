@@ -69,8 +69,6 @@ const formatDate = (dateString: string) => {
   }
 };
 
-const getCurrencySymbol = (payDenoId: number) => (payDenoId === 2 ? "₦" : "$");
-
 const BonusSideDrawer = ({
   data,
   onClose,
@@ -151,7 +149,7 @@ const BonusSideDrawer = ({
                   <OverviewRow label="Bonus Type" value={detail.bonus_type} />
                   <OverviewRow
                     label="Amount"
-                    value={`${getCurrencySymbol(detail.pay_deno)} ${detail.amount}`}
+                    value={`${detail?.pay_deno === "naira" ? "₦" : "$"} ${detail.amount}`}
                   />
                   <OverviewRow label="Status" value={detail.approved_state} />
                   <OverviewRow
