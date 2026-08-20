@@ -34,30 +34,37 @@ const STATUS_OPTIONS = [
 
 const AllBonusTab = ({ filters }: BonusTabProps) => {
   const { exportBonuses, isExporting } = useExportBonuses();
-  const { data, isLoading, isError, refetch, pageSize, onPageChange, onPageSizeChange } =
-    useBonusTabData(undefined, filters);
-  const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    pageSize,
+    onPageChange,
+    onPageSizeChange,
+  } = useBonusTabData(undefined, filters);
+  const bonusValueByType = data?.metrics;
   const compareBonusTypeData = data?.metrics?.comparison;
 
   const bonusTypeData = [
     {
-      label: "Fixed bonus",
-      value: parseAmount(bonusValueByType["Fixed bonus"]),
+      label: "Fixed bonus paid",
+      value: parseAmount(bonusValueByType?.total_fixed_paid),
       color: "#F5B971",
     },
     {
-      label: "Client bonus",
-      value: parseAmount(bonusValueByType["Client bonus"]),
+      label: "Client bonus paid",
+      value: parseAmount(bonusValueByType?.total_client_paid),
       color: "#78D6E0",
     },
     {
-      label: "Quarterly",
-      value: parseAmount(bonusValueByType["Quarterly bonus"]),
+      label: "Quarterly bonus paid",
+      value: parseAmount(bonusValueByType?.total_quarterly_paid),
       color: "#009BC0",
     },
     {
-      label: "Discretionary",
-      value: parseAmount(bonusValueByType["Discretionary bonus"]),
+      label: "Discretionary bonus paid",
+      value: parseAmount(bonusValueByType?.total_non_client_paid),
       color: "#2E6171",
     },
   ];
@@ -171,6 +178,7 @@ const AllBonusTab = ({ filters }: BonusTabProps) => {
               <BonusDonutChart
                 data={bonusTypeData}
                 formatValue={(v) => formatNaira(v)}
+                totalDisplay={data?.metrics?.total_bonus_paid ?? "₦0"}
               />
             </div>
 

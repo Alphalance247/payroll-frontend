@@ -90,7 +90,9 @@ const BonusHistory = () => {
         {activeTab === "Client-facing bonus" && (
           <ClientBonusTab filters={filters} />
         )}
-        {activeTab === "Quarterly bonus" && <QuarterlyBonusTab filters={filters} />}
+        {activeTab === "Quarterly bonus" && (
+          <QuarterlyBonusTab filters={filters} />
+        )}
         {activeTab === "Discretionary bonus" && (
           <DiscretionaryBonusTab filters={filters} />
         )}

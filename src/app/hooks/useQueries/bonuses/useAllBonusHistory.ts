@@ -49,6 +49,10 @@ export interface BonusHistoryData {
     bonus_value_by_type: {
       [key: string]: string;
     };
+    total_fixed_paid: string;
+    total_client_paid: string;
+    total_quarterly_paid: string;
+    total_non_client_paid: string;
     comparison: {
       compared_to: string;
       total_bonus_paid_change_percent: number;
