@@ -108,10 +108,10 @@ const Sidebar = () => {
               link: "/admin/payroll-history",
               text: "Payroll History",
             },
-            {
-              link: "/admin/bonus",
-              text: "Bonus",
-            },
+            // {
+            //   link: "/admin/bonus",
+            //   text: "Bonus",
+            // },
           ],
         },
         {
