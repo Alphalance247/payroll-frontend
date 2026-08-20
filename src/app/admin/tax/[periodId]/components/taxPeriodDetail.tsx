@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronDown, Info, XCircle, CheckCircle } from "lucide-react";
 import { GoChevronRight } from "react-icons/go";
 import DashboardLayout from "@/app/common/DashBoardLayout";
@@ -8,6 +9,10 @@ import Button from "@/app/common/Button";
 import PeriodEmployeeTable, {
   type EmployeeTaxRecord,
 } from "./periodEmployeeTable";
+import VerifyTaxRecordsModal, {
+  VerificationToast,
+  type VerificationResult,
+} from "./verifyTaxRecordsModal";
 
 const fromSlug = (slug: string) => {
   const parts = slug.split("-");
@@ -182,7 +187,7 @@ const MORE_ACTIONS = [
   { label: "Compare History" },
 ];
 
-const MoreActionsDropdown = () => {
+const MoreActionsDropdown = ({ onCompare }: { onCompare: () => void }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -195,12 +200,17 @@ const MoreActionsDropdown = () => {
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
 
+  const handleClick = (label: string) => {
+    setOpen(false);
+    if (label === "Compare History") onCompare();
+  };
+
   return (
     <div ref={ref} className="relative">
       <Button
         variant="secondary"
         onButtonClick={() => setOpen((p) => !p)}
-        className="flex items-center gap-x-2 "
+        className="flex items-center gap-x-2"
       >
         More Actions
         <ChevronDown
@@ -216,7 +226,7 @@ const MoreActionsDropdown = () => {
             <button
               key={item.label}
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={() => handleClick(item.label)}
               className="w-full text-left px-4 py-2.5 text-sm text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
             >
               {item.label}
@@ -233,7 +243,10 @@ interface TaxPeriodDetailProps {
 }
 
 const TaxPeriodDetail = ({ periodId }: TaxPeriodDetailProps) => {
+  const router = useRouter();
   const { full, short } = fromSlug(periodId);
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [verificationResult, setVerificationResult] = useState<VerificationResult>(null);
 
   return (
     <DashboardLayout>
@@ -261,8 +274,8 @@ const TaxPeriodDetail = ({ periodId }: TaxPeriodDetailProps) => {
             </p>
           </div>
           <div className="flex items-center gap-x-2 flex-shrink-0 mt-1">
-            <MoreActionsDropdown />
-            <Button variant="primary" onButtonClick={() => {}}>
+            <MoreActionsDropdown onCompare={() => setVerifyOpen(true)} />
+            <Button variant="primary" onButtonClick={() => setVerifyOpen(true)}>
               Verify with Excel
             </Button>
           </div>
@@ -278,6 +291,21 @@ const TaxPeriodDetail = ({ periodId }: TaxPeriodDetailProps) => {
         {/* Employee table */}
         <PeriodEmployeeTable records={DUMMY_EMPLOYEES} />
       </main>
+
+      <VerifyTaxRecordsModal
+        isOpen={verifyOpen}
+        onClose={() => setVerifyOpen(false)}
+        onComplete={(result) => setVerificationResult(result)}
+      />
+
+      <VerificationToast
+        result={verificationResult}
+        onDismiss={() => setVerificationResult(null)}
+        onViewReport={() => {
+          setVerificationResult(null);
+          router.push(`/admin/tax/${periodId}/verification-results`);
+        }}
+      />
     </DashboardLayout>
   );
 };
