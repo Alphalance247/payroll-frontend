@@ -40,7 +40,7 @@ const AllBonusTable = ({
   isError = false,
   currentPage = 1,
   totalPages = 2,
-  pageSize = 10,
+  pageSize = 20,
   onPageChange,
   onPageSizeChange,
   setModalMode,

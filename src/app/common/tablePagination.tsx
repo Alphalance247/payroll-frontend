@@ -15,7 +15,7 @@ interface TablePaginationProps {
 const TablePagination = ({
   currentPage,
   totalPages,
-  pageSize = 10,
+  pageSize = 20,
   onPageChange,
   onPageSizeChange,
 }: TablePaginationProps) => {
