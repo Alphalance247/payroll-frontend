@@ -1,12 +1,15 @@
 "use client";
 import { useState } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import DashboardLayout from "@/app/common/DashBoardLayout";
 import Heading from "@/app/common/heading";
 import Button from "@/app/common/Button";
 import TableActionMenu from "@/app/common/tableActionMenu";
 import TablePagination from "@/app/common/tablePagination";
+import AddProjectAccountModal from "@/app/components/bonuses/addProjectAccountModal";
+import type { ProjectAccountFormData } from "@/app/components/bonuses/addProjectAccountModal";
+import { IoFilter } from "react-icons/io5";
 
 interface Project {
   id: number;
@@ -14,7 +17,7 @@ interface Project {
   project_key: string;
   tempo_account: string;
   account_id: string;
-  status: string;
+  status: "active" | "inactive";
 }
 
 const DUMMY_PROJECTS: Project[] = Array.from({ length: 10 }, (_, i) => ({
@@ -23,21 +26,16 @@ const DUMMY_PROJECTS: Project[] = Array.from({ length: 10 }, (_, i) => ({
   project_key: "CHS",
   tempo_account: "USAV-USAV",
   account_id: "123456789",
-  status: "under review",
+  status: i % 3 === 0 ? "inactive" : "active",
 }));
 
 function statusBadge(status: string) {
-  const s = status?.toLowerCase();
-  if (s === "approved") return "bg-[#E9F9EF] text-[#1FB356]";
-  if (s === "rejected") return "bg-[#FDEBEB] text-[#D42626]";
-  return "bg-[#E6F4FF] text-[#2B7FD4]";
+  if (status === "inactive") return "bg-[#F1F1F2] text-[#71717A]";
+  return "bg-[#E9F9EF] text-[#1FB356]";
 }
 
 function statusLabel(status: string) {
-  const s = status?.toLowerCase();
-  if (s === "approved") return "Approved";
-  if (s === "rejected") return "Rejected";
-  return "Under review";
+  return status === "inactive" ? "Inactive" : "Active";
 }
 
 const ProjectsPage = () => {
@@ -45,6 +43,7 @@ const ProjectsPage = () => {
   const [pageSize, setPageSize] = useState<number | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [addModalOpen, setAddModalOpen] = useState(false);
 
   const filtered = searchQuery
     ? DUMMY_PROJECTS.filter((p) =>
@@ -63,6 +62,14 @@ const ProjectsPage = () => {
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
 
+  const handleAddSubmit = (
+    data: ProjectAccountFormData,
+    createAnother: boolean,
+  ) => {
+    console.log("New project account:", data, "createAnother:", createAnother);
+    if (!createAnother) setAddModalOpen(false);
+  };
+
   return (
     <DashboardLayout>
       <main className="py-4 md:py-6 lg:py-10 overflow-y-scroll px-10 relative">
@@ -74,7 +81,7 @@ const ProjectsPage = () => {
           />
           <Button
             variant="primary"
-            onButtonClick={() => {}}
+            onButtonClick={() => setAddModalOpen(true)}
             className="shadow-sm hover:shadow-md transition-shadow"
           >
             Add Project Account
@@ -98,8 +105,8 @@ const ProjectsPage = () => {
               type="button"
               className="flex items-center gap-x-2 px-4 py-2 rounded-lg border border-[#D3D3D6] bg-white text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
             >
-              <SlidersHorizontal size={14} strokeWidth={2} />
               Filter
+              <IoFilter color="#71717A" size={16} />
             </button>
           </div>
 
@@ -215,6 +222,12 @@ const ProjectsPage = () => {
           )}
         </div>
       </main>
+
+      <AddProjectAccountModal
+        isOpen={addModalOpen}
+        onClose={() => setAddModalOpen(false)}
+        onSubmit={handleAddSubmit}
+      />
     </DashboardLayout>
   );
 };
