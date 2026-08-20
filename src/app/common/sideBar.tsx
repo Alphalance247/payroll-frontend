@@ -120,14 +120,20 @@ const Sidebar = () => {
               text: "Active Bonuses",
             },
             {
-              link: "/admin/bonuses/project-bonuses",
-              text: "Project Bonuses",
+              link: "/admin/bonuses/tempo-account-project",
+              text: "Tempo Account Project",
+            },
+
+            {
+              link: "/admin/bonuses/fixed-bid-bonus",
+              text: "Fixed Bid Bonus",
             },
 
             {
               link: "/admin/bonuses/pending-approval",
               text: "Pending Approval",
             },
+
             {
               link: "/admin/bonuses",
               text: "Bonus History",
