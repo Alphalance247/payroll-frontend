@@ -49,6 +49,14 @@ interface data {
 interface dataType {
   data: data[];
   total_amount: string;
+  pagination?: {
+    has_next: boolean;
+    has_previous: boolean;
+    page: number;
+    page_size: number;
+    total_count: number;
+    total_pages: number;
+  };
 }
 
 const fetchApprovedBonusList = async (
@@ -57,6 +65,8 @@ const fetchApprovedBonusList = async (
   bonus_type?: string,
   start_date?: string,
   end_date?: string,
+  page?: number,
+  page_size?: number,
 ) => {
   let url = "/employees/bonuses/approved-unpaid";
   const params = new URLSearchParams();
@@ -80,6 +90,9 @@ const fetchApprovedBonusList = async (
     params.append("end_date", end_date);
   }
 
+  if (page !== undefined) params.append("page", page.toString());
+  if (page_size !== undefined) params.append("page_size", page_size.toString());
+
   if (params.toString()) {
     url += `?${params.toString()}`;
   }
@@ -95,6 +108,8 @@ export const useApprovedBonusList = (
   bonus_type?: string,
   start_date?: string,
   end_date?: string,
+  page?: number,
+  page_size?: number,
 ) => {
   return useQuery<dataType | null, AxiosError>({
     queryKey: [
@@ -104,9 +119,11 @@ export const useApprovedBonusList = (
       bonus_type,
       start_date,
       end_date,
+      page,
+      page_size,
     ],
     queryFn: () =>
-      fetchApprovedBonusList(month, year, bonus_type, start_date, end_date),
+      fetchApprovedBonusList(month, year, bonus_type, start_date, end_date, page, page_size),
     staleTime: 1000 * 60 * 5, // data fresh for 5 minutes
     retry: 1,
   });

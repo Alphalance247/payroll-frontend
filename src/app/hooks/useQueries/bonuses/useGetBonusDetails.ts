@@ -22,6 +22,14 @@ interface ChangeRequest {
   updated: string;
 }
 
+interface clientHoursByProject {
+  hours: string;
+  is_client: boolean;
+  project_id: string;
+  project_key: string;
+  project_name: string;
+}
+
 export interface BonusDetail {
   id: number;
   amount: number;
@@ -35,6 +43,10 @@ export interface BonusDetail {
   processing_status: string;
   date_paid: string;
   is_foundation: boolean;
+  total_hours: string;
+  non_client_hours: string;
+  hours_by_project: clientHoursByProject[];
+  client_hours: string;
   period_year: number;
   period_month: number;
   quarter: number;
@@ -43,7 +55,7 @@ export interface BonusDetail {
   updated: string;
   employee: number;
   payslip: number;
-  pay_deno: number;
+  pay_deno: string;
   approved_by: number;
   reviewers: number[];
 }

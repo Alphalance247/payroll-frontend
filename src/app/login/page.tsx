@@ -42,14 +42,21 @@ const Login = () => {
         );
 
         if (response.status >= 200 && response.status < 300) {
-          const { refresh, access, email, fullname, is_payroll_staff, uid } =
-            response.data;
+          const {
+            refresh,
+            access,
+            email,
+            fullname,
+            is_payroll_staff,
+            uid,
+            role,
+          } = response.data;
 
           // Store the tokens
           localStorage.setItem("access", access);
           localStorage.setItem("refresh", refresh);
           // Use the login function from auth context
-          login({ email, fullname, is_payroll_staff, uid });
+          login({ email, fullname, is_payroll_staff, uid, role });
 
           toast.success(
             response?.data?.statusmessage || "Login successful Redirecting...",

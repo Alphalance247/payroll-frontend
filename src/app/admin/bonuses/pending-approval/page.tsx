@@ -1,14 +1,14 @@
 "use client";
 import { RiExpandUpDownFill } from "react-icons/ri";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/authContext";
 import { format } from "date-fns";
 import Heading from "@/app/common/heading";
 import Button from "@/app/common/Button";
 import { TiArrowUnsorted } from "react-icons/ti";
-import { FaChevronRight } from "react-icons/fa6";
-import { FaChevronLeft } from "react-icons/fa";
-import { FaCaretDown } from "react-icons/fa6";
 import { Search, Plus, RefreshCw, X, Check } from "lucide-react";
+import TablePagination from "@/app/common/tablePagination";
 import SelectionActionBar from "@/app/common/selectionActionBar";
 import BonusModal, {
   type BonusFormData,
@@ -60,9 +60,17 @@ const formatDate = (dateStr: string) => {
 };
 
 const PendingApproval = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages] = useState(2);
-  const [pageSize, setPageSize] = useState(10);
+  const router = useRouter();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user && user.role !== "super_admin") {
+      router.replace("/admin/bonuses/active-bonuses");
+    }
+  }, [user, router]);
+
+  const [currentPage, setCurrentPage] = useState<number | undefined>(undefined);
+  const [pageSize, setPageSize] = useState<number | undefined>(undefined);
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<number[]>([]);
   const [selectedBonusTypes, setSelectedBonusTypes] = useState<string[]>([]);
@@ -101,10 +109,7 @@ const PendingApproval = () => {
     if (ids.length === 1) {
       reviewSingle({ bonusId: ids[0], action, comment }, opts);
     } else {
-      reviewMultiple(
-        { action, comment, bonus_ids: ids.map(String) },
-        opts,
-      );
+      reviewMultiple({ action, comment, bonus_ids: ids.map(String) }, opts);
     }
   };
   const [disburseOpen, setDisburseOpen] = useState(false);
@@ -133,6 +138,8 @@ const PendingApproval = () => {
     bonusTypeParam,
     startDate,
     endDate,
+    currentPage,
+    pageSize,
   );
 
   const rawBonusData = inReviewBonusData?.data || [];
@@ -319,7 +326,7 @@ const PendingApproval = () => {
               className="overflow-x-auto rounded-lg z-0 relative"
               style={{ overflowY: "visible" }}
             >
-              <table className="w-full min-w-[1200px] border-b border-[#E3E3E5]">
+              <table className="w-full min-w-[1400px] border-b border-[#E3E3E5]">
                 <thead className="bg-[#F7F7F7]">
                   <tr>
                     <th className="px-6 py-[14px] w-[40px]">
@@ -332,7 +339,7 @@ const PendingApproval = () => {
                         aria-label="Select all employees"
                       />
                     </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px]">
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Employee
                         <span>
@@ -351,7 +358,7 @@ const PendingApproval = () => {
                         </span>
                       </p>
                     </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                       <p className="flex gap-x-1 cursor-pointer items-center">
                         Converted (Naira)
                         <span>
@@ -359,10 +366,10 @@ const PendingApproval = () => {
                         </span>
                       </p>
                     </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                       Submitted On
                     </th>
-                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                    <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                       Payment
                     </th>
                     <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[100px]"></th>
@@ -474,63 +481,16 @@ const PendingApproval = () => {
                 </tbody>
               </table>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 w-full border-t border-slate-200 bg-white">
-                <div className="flex items-center gap-2 text-sm text-slate-500">
-                  <span>Show:</span>
-                  <div className="relative inline-flex items-center">
-                    <select
-                      value={pageSize}
-                      onChange={(e) =>
-                        setPageSize(Number(e.target.value))
-                      }
-                      className="appearance-none bg-white border border-slate-300 rounded-lg px-3 py-1.5 pr-8 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer"
-                    >
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                    </select>
-                    <FaCaretDown
-                      className="w-4 h-4 text-slate-500 absolute right-2.5 pointer-events-none"
-                      color="#000000"
-                      size={16}
-                    />
-                  </div>
-                  <span>per page</span>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="text-sm text-slate-500 font-medium">
-                    Page{" "}
-                    <span className="text-slate-900 font-semibold">
-                      {currentPage}
-                    </span>{" "}
-                    of{" "}
-                    <span className="text-slate-900 font-semibold">
-                      {totalPages}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      disabled={currentPage <= 1}
-                      onClick={() => setCurrentPage((p) => p - 1)}
-                      aria-label="Previous Page"
-                      className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <FaChevronLeft color="#2F2F33" />
-                    </button>
-                    <button
-                      type="button"
-                      disabled={currentPage >= totalPages}
-                      onClick={() => setCurrentPage((p) => p + 1)}
-                      aria-label="Next Page"
-                      className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <FaChevronRight color="#2F2F33" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <TablePagination
+                currentPage={inReviewBonusData?.pagination?.page ?? 1}
+                totalPages={inReviewBonusData?.pagination?.total_pages ?? 1}
+                pageSize={pageSize}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setCurrentPage(1);
+                }}
+              />
             </div>
           )}
         </div>
@@ -553,11 +513,8 @@ const PendingApproval = () => {
           recordCount={selectedEmployeeIds.length || filteredData.length}
           totalValue={sumNairaAmount(targetRecords)}
           onConfirm={() =>
-            handleReview(
-              "approved",
-              "Bonus",
-              selectedEmployeeIds,
-              () => setApproveOpen(false),
+            handleReview("approved", "Bonus", selectedEmployeeIds, () =>
+              setApproveOpen(false),
             )
           }
         />

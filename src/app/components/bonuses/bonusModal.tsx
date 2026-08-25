@@ -44,7 +44,7 @@ interface BonusModalProps {
 const DEFAULT_BONUS_TYPES: BonusTypeOption[] = [
   { label: "Fixed bonus", value: "fixed" },
   { label: "Client-facing bonus", value: "client" },
-  { label: "Discretionary bonus", value: "non-client" },
+  { label: "Discretionary bonus", value: "non_client" },
 ];
 
 const CURRENCIES = [

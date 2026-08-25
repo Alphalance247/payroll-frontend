@@ -2,9 +2,8 @@
 import { useMemo, useRef, useState } from "react";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import { TiArrowUnsorted } from "react-icons/ti";
-import { FaChevronRight } from "react-icons/fa6";
-import { FaChevronLeft, FaCaretDown } from "react-icons/fa";
 import { Search, Upload } from "lucide-react";
+import TablePagination from "@/app/common/tablePagination";
 import TableActionMenu from "@/app/common/tableActionMenu";
 import BonusSideDrawer, {
   type BonusDrawerData,
@@ -28,6 +27,10 @@ interface DiscretionaryBonusTableProps {
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   setModalMode?: (mode: "add" | "edit" | null) => void;
+  emptyTitle?: string;
+  emptySubtitle?: string;
+  onExport?: () => void;
+  isExporting?: boolean;
 }
 
 const DiscretionaryBonusTable = ({
@@ -36,10 +39,14 @@ const DiscretionaryBonusTable = ({
   isError = false,
   currentPage = 1,
   totalPages = 2,
-  pageSize = 10,
+  pageSize = 20,
   onPageChange,
   onPageSizeChange,
   setModalMode,
+  emptyTitle,
+  emptySubtitle,
+  onExport,
+  isExporting = false,
 }: DiscretionaryBonusTableProps) => {
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -83,10 +90,12 @@ const DiscretionaryBonusTable = ({
 
         <button
           type="button"
-          className="flex items-center gap-x-2 px-4 py-2 rounded-lg border border-[#D3D3D6] bg-white text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
+          onClick={onExport}
+          disabled={isExporting}
+          className="flex items-center gap-x-2 px-4 py-2 rounded-lg border border-[#D3D3D6] bg-white text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Upload size={14} strokeWidth={2} />
-          Export
+          {isExporting ? "Exporting…" : "Export"}
         </button>
       </div>
 
@@ -97,13 +106,17 @@ const DiscretionaryBonusTable = ({
           Failed to load bonuses. Please try again.
         </p>
       ) : filteredData.length === 0 ? (
-        <BonusEmptyState setModalMode={setModalMode ?? (() => {})} />
+        <BonusEmptyState
+          setModalMode={setModalMode ?? undefined}
+          title={emptyTitle}
+          subtitle={emptySubtitle}
+        />
       ) : (
         <div
           className="overflow-x-auto rounded-lg relative"
           style={{ overflowY: "visible" }}
         >
-          <table className="w-full min-w-[900px] border-b border-[#E3E3E5]">
+          <table className="w-full min-w-[1100px] border-b border-[#E3E3E5]">
             <thead className="bg-[#F7F7F7]">
               <tr>
                 <th className="px-6 py-[14px] w-[40px]">
@@ -128,16 +141,16 @@ const DiscretionaryBonusTable = ({
                     <TiArrowUnsorted fill="#71717A" size={16} />
                   </p>
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[180px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   <p className="flex gap-x-1 cursor-pointer items-center">
                     Converted (₦)
                     <TiArrowUnsorted fill="#71717A" size={16} />
                   </p>
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Stage
                 </th>
-                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[160px]">
+                <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
                   Payment
                 </th>
                 <th className="px-6 py-[14px] w-[60px]" />
@@ -217,62 +230,13 @@ const DiscretionaryBonusTable = ({
             </tbody>
           </table>
 
-          {/* Pagination */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 w-full border-t border-slate-200 bg-white">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <span>Show:</span>
-              <div className="relative inline-flex items-center">
-                <select
-                  value={pageSize}
-                  onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
-                  className="appearance-none bg-white border border-slate-300 rounded-lg px-3 py-1.5 pr-8 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer"
-                >
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                </select>
-                <FaCaretDown
-                  className="absolute right-2.5 pointer-events-none"
-                  color="#000000"
-                  size={14}
-                />
-              </div>
-              <span>per page</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-slate-500 font-medium">
-                Page{" "}
-                <span className="text-slate-900 font-semibold">
-                  {currentPage}
-                </span>{" "}
-                of{" "}
-                <span className="text-slate-900 font-semibold">
-                  {totalPages}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  disabled={currentPage <= 1}
-                  onClick={() => onPageChange?.(currentPage - 1)}
-                  aria-label="Previous page"
-                  className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <FaChevronLeft color="#2F2F33" />
-                </button>
-                <button
-                  type="button"
-                  disabled={currentPage >= totalPages}
-                  onClick={() => onPageChange?.(currentPage + 1)}
-                  aria-label="Next page"
-                  className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <FaChevronRight color="#2F2F33" />
-                </button>
-              </div>
-            </div>
-          </div>
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            onPageChange={(page) => onPageChange?.(page)}
+            onPageSizeChange={(size) => onPageSizeChange?.(size)}
+          />
         </div>
       )}
 

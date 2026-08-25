@@ -13,6 +13,7 @@ export interface MoreFiltersValue {
 
 interface MoreFiltersDropdownProps {
   onApply?: (value: MoreFiltersValue) => void;
+  value?: MoreFiltersValue;
   className?: string;
 }
 
@@ -47,14 +48,23 @@ const CATEGORIES: { id: Category; label: string; icon: React.ReactNode }[] = [
 
 const MoreFiltersDropdown = ({
   onApply,
+  value,
   className,
 }: MoreFiltersDropdownProps) => {
   const [open, setOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<Category>("team");
-  const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
-  const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
+  const [selectedTeams, setSelectedTeams] = useState<string[]>(value?.teams ?? []);
+  const [selectedCountries, setSelectedCountries] = useState<string[]>(value?.countries ?? []);
   const ref = useRef<HTMLDivElement>(null);
   const { data: teamList = [], isLoading: teamsLoading } = useTeamList();
+
+  // Sync internal state when external value changes (e.g., clear filters)
+  useEffect(() => {
+    if (!value) return;
+    setSelectedTeams([...value.teams]);
+    setSelectedCountries([...value.countries]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value?.teams.join(","), value?.countries.join(",")]);
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {

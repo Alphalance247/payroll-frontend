@@ -25,6 +25,14 @@ interface data {
 interface dataType {
   data: data[];
   total_amount: string;
+  pagination?: {
+    has_next: boolean;
+    has_previous: boolean;
+    page: number;
+    page_size: number;
+    total_count: number;
+    total_pages: number;
+  };
 }
 
 const fetchInReviewBonusList = async (
@@ -33,6 +41,8 @@ const fetchInReviewBonusList = async (
   bonus_type?: string,
   start_date?: string,
   end_date?: string,
+  page?: number,
+  page_size?: number,
 ) => {
   let url = "/employees/bonuses/in-review";
   const params = new URLSearchParams();
@@ -56,6 +66,9 @@ const fetchInReviewBonusList = async (
     params.append("end_date", end_date);
   }
 
+  if (page !== undefined) params.append("page", page.toString());
+  if (page_size !== undefined) params.append("page_size", page_size.toString());
+
   if (params.toString()) {
     url += `?${params.toString()}`;
   }
@@ -71,6 +84,8 @@ export const useInReviewBonusList = (
   bonus_type?: string,
   start_date?: string,
   end_date?: string,
+  page?: number,
+  page_size?: number,
 ) => {
   return useQuery<dataType | null, AxiosError>({
     queryKey: [
@@ -80,9 +95,11 @@ export const useInReviewBonusList = (
       bonus_type,
       start_date,
       end_date,
+      page,
+      page_size,
     ],
     queryFn: () =>
-      fetchInReviewBonusList(month, year, bonus_type, start_date, end_date),
+      fetchInReviewBonusList(month, year, bonus_type, start_date, end_date, page, page_size),
     staleTime: 1000 * 60 * 5, // data fresh for 5 minutes
     retry: 1,
   });

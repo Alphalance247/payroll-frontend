@@ -6,11 +6,6 @@ import FixedBonusTab from "@/app/components/bonuses/fixedBonusTab";
 import QuarterlyBonusTab from "@/app/components/bonuses/quarterlyBonusTab";
 import DiscretionaryBonusTab from "@/app/components/bonuses/discretionaryBonusTab";
 import { useState } from "react";
-import { format } from "date-fns";
-import {
-  useAllBonusHistory,
-  type BonusHistoryData,
-} from "@/app/hooks/useQueries/bonuses/useAllBonusHistory";
 import type { DateRangeValue } from "@/app/common/dateRangePicker";
 import type { MoreFiltersValue } from "@/app/common/moreFiltersDropdown";
 
@@ -23,26 +18,12 @@ export interface BonusFilters {
   onBonusTypesChange: (val: string[]) => void;
   moreFilters: MoreFiltersValue;
   onMoreFiltersApply: (val: MoreFiltersValue) => void;
+  onClearFilters: () => void;
 }
 
 export interface BonusTabProps {
-  data: BonusHistoryData | null | undefined;
-  isLoading: boolean;
-  isError: boolean;
-  refetch: () => void;
   filters: BonusFilters;
 }
-
-const TAB_BONUS_TYPE: Record<string, string | undefined> = {
-  "All bonus": undefined,
-  "Fixed bonus": "fixed",
-  "Client-facing bonus": "client",
-  "Quarterly bonus": "quarterly",
-  "Discretionary bonus": "non_client",
-};
-
-// Values that map to approval_status API param
-const APPROVAL_STATUS_VALUES = new Set(["pending", "approved", "rejected"]);
 
 const BonusHistory = () => {
   const [activeTab, setActiveTab] = useState("All bonus");
@@ -66,35 +47,12 @@ const BonusHistory = () => {
     countries: [],
   });
 
-  // Derive API params from filter state
-  const startDate = dateRange.from
-    ? format(dateRange.from, "yyyy-MM-dd")
-    : undefined;
-  const endDate = dateRange.to ? format(dateRange.to, "yyyy-MM-dd") : undefined;
-  const approvalStatusParam = selectedStatuses.find((s) =>
-    APPROVAL_STATUS_VALUES.has(s),
-  );
-  const paidParam = selectedStatuses.includes("disbursed")
-    ? "true"
-    : selectedStatuses.includes("not_disbursed")
-      ? "false"
-      : undefined;
-
-  const bonusTypeParam = TAB_BONUS_TYPE[activeTab];
-  const teamIdParam = moreFilters.teams[0] ?? undefined;
-  const countryParam = moreFilters.countries[0] ?? undefined;
-
-  const { data, isLoading, isError, refetch } = useAllBonusHistory(
-    undefined,
-    undefined,
-    bonusTypeParam,
-    startDate,
-    endDate,
-    approvalStatusParam,
-    paidParam,
-    teamIdParam,
-    countryParam,
-  );
+  const handleClearFilters = () => {
+    setDateRange({ from: null, to: null });
+    setSelectedStatuses([]);
+    setSelectedBonusTypes([]);
+    setMoreFilters({ teams: [], countries: [] });
+  };
 
   const filters: BonusFilters = {
     dateRange,
@@ -105,14 +63,7 @@ const BonusHistory = () => {
     onBonusTypesChange: setSelectedBonusTypes,
     moreFilters,
     onMoreFiltersApply: setMoreFilters,
-  };
-
-  const tabProps: BonusTabProps = {
-    data,
-    isLoading,
-    isError,
-    refetch,
-    filters,
+    onClearFilters: handleClearFilters,
   };
 
   return (
@@ -134,14 +85,16 @@ const BonusHistory = () => {
           ))}
         </div>
 
-        {activeTab === "All bonus" && <AllBonusTab {...tabProps} />}
-        {activeTab === "Fixed bonus" && <FixedBonusTab {...tabProps} />}
+        {activeTab === "All bonus" && <AllBonusTab filters={filters} />}
+        {activeTab === "Fixed bonus" && <FixedBonusTab filters={filters} />}
         {activeTab === "Client-facing bonus" && (
-          <ClientBonusTab {...tabProps} />
+          <ClientBonusTab filters={filters} />
         )}
-        {activeTab === "Quarterly bonus" && <QuarterlyBonusTab {...tabProps} />}
+        {activeTab === "Quarterly bonus" && (
+          <QuarterlyBonusTab filters={filters} />
+        )}
         {activeTab === "Discretionary bonus" && (
-          <DiscretionaryBonusTab {...tabProps} />
+          <DiscretionaryBonusTab filters={filters} />
         )}
       </main>
     </DashboardLayout>

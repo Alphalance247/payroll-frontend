@@ -1,3 +1,4 @@
+"use client";
 import { formatNaira, parseAmount } from "@/app/utils/formatCurrency";
 import Heading from "@/app/common/heading";
 import BonusDonutChart from "@/app/components/charts/bonusDonutChart";
@@ -8,6 +9,8 @@ import BonusFilterBar from "@/app/components/bonuses/bonusFilterBar";
 import ErrorFetch from "@/app/common/errorFetch";
 import type { BonusTabProps } from "@/app/admin/bonuses/page";
 import RecentBonusActivities from "./recentBonusActivities";
+import { useExportBonuses } from "@/app/hooks/useQueries/bonuses/useExportBonuses";
+import { useBonusTabData } from "@/app/hooks/useQueries/bonuses/useBonusTabData";
 
 const STATUS_OPTIONS = [
   {
@@ -29,35 +32,39 @@ const STATUS_OPTIONS = [
   },
 ];
 
-const AllBonusTab = ({
-  data,
-  isLoading,
-  isError,
-  refetch,
-  filters,
-}: BonusTabProps) => {
-  const bonusValueByType = data?.metrics?.bonus_value_by_type || {};
+const AllBonusTab = ({ filters }: BonusTabProps) => {
+  const { exportBonuses, isExporting } = useExportBonuses();
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    pageSize,
+    onPageChange,
+    onPageSizeChange,
+  } = useBonusTabData(undefined, filters);
+  const bonusValueByType = data?.metrics;
   const compareBonusTypeData = data?.metrics?.comparison;
 
   const bonusTypeData = [
     {
-      label: "Fixed bonus",
-      value: parseAmount(bonusValueByType["Fixed bonus"]),
+      label: "Fixed bonus paid",
+      value: parseAmount(bonusValueByType?.total_fixed_paid),
       color: "#F5B971",
     },
     {
-      label: "Client bonus",
-      value: parseAmount(bonusValueByType["Client bonus"]),
+      label: "Client bonus paid",
+      value: parseAmount(bonusValueByType?.total_client_paid),
       color: "#78D6E0",
     },
     {
-      label: "Quarterly",
-      value: parseAmount(bonusValueByType["Quarterly bonus"]),
+      label: "Quarterly bonus paid",
+      value: parseAmount(bonusValueByType?.total_quarterly_paid),
       color: "#009BC0",
     },
     {
-      label: "Discretionary",
-      value: parseAmount(bonusValueByType["Discretionary bonus"]),
+      label: "Discretionary bonus paid",
+      value: parseAmount(bonusValueByType?.total_non_client_paid),
       color: "#2E6171",
     },
   ];
@@ -85,6 +92,7 @@ const AllBonusTab = ({
         showMoreFilters
         moreFiltersValue={filters.moreFilters}
         onMoreFiltersApply={filters.onMoreFiltersApply}
+        onClearFilters={filters.onClearFilters}
       />
 
       {isLoading ? (
@@ -161,7 +169,7 @@ const AllBonusTab = ({
 
           {/* Chart + Recent activities row */}
           <div className="grid grid-cols-[3fr_2fr] gap-4 mt-4">
-            <div className="bg-white rounded-xl border border-[#E3E3E5] flex flex-col overflow-hidden">
+            <div className="bg-white rounded-xl border h-fit border-[#E3E3E5] flex flex-col overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E3E3E5]">
                 <span className="text-sm font-semibold text-[#2F2F33]">
                   Bonus value by type
@@ -170,6 +178,7 @@ const AllBonusTab = ({
               <BonusDonutChart
                 data={bonusTypeData}
                 formatValue={(v) => formatNaira(v)}
+                totalDisplay={data?.metrics?.total_bonus_paid ?? "₦0"}
               />
             </div>
 
@@ -181,7 +190,20 @@ const AllBonusTab = ({
         </>
       )}
 
-      <AllBonusTable data={data} isLoading={isLoading} isError={isError} />
+      <AllBonusTable
+        data={data}
+        isLoading={isLoading}
+        isError={isError}
+        currentPage={data?.pagination?.page ?? 1}
+        totalPages={data?.pagination?.total_pages ?? 1}
+        pageSize={pageSize}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
+        emptyTitle="No bonuses yet"
+        emptySubtitle="There are no bonus records to display. New bonuses will appear here once they've been created or calculated."
+        onExport={() => exportBonuses()}
+        isExporting={isExporting}
+      />
     </>
   );
 };

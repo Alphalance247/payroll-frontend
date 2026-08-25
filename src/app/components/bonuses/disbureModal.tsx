@@ -5,10 +5,8 @@ import { format } from "date-fns";
 import Heading from "@/app/common/heading";
 import Button from "@/app/common/Button";
 import { TiArrowUnsorted } from "react-icons/ti";
-import { FaChevronRight } from "react-icons/fa6";
-import { FaChevronLeft } from "react-icons/fa";
-import { FaCaretDown } from "react-icons/fa6";
 import { Search } from "lucide-react";
+import TablePagination from "@/app/common/tablePagination";
 import { useFilter } from "@/app/hooks/useFilter";
 import CustomDropdown from "@/app/common/customDropdown";
 import DateRangePicker, {
@@ -41,19 +39,9 @@ const BONUS_TYPE_OPTIONS = [
   { label: "Discretionary bonus", value: "non-client" },
 ];
 
-const DisburseModal = ({
-  currentPage = 1,
-  totalPages = 2,
-  pageSize = 10,
-  onPageChange,
-  onPageSizeChange,
-}: {
-  currentPage?: number;
-  totalPages?: number;
-  pageSize?: number;
-  onPageChange?: (page: number) => void;
-  onPageSizeChange?: (size: number) => void;
-}) => {
+const DisburseModal = () => {
+  const [page, setPage] = useState<number | undefined>(undefined);
+  const [pageSize, setPageSize] = useState<number | undefined>(undefined);
   const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<number[]>([]);
   const [selectedBonusTypes, setSelectedBonusTypes] = useState<string[]>([]);
@@ -120,6 +108,8 @@ const DisburseModal = ({
     bonusTypeParam,
     startDate,
     endDate,
+    page,
+    pageSize,
   );
 
   const rawBonusData = approvedBonusData?.data || [];
@@ -219,7 +209,7 @@ const DisburseModal = ({
             className="overflow-x-auto rounded-lg z-0 relative"
             style={{ overflowY: "visible" }}
           >
-            <table className="w-full min-w-[1000px] border-b border-[#E3E3E5]">
+            <table className="w-full min-w-[1300px] border-b border-[#E3E3E5]">
               <thead className="bg-[#F7F7F7]">
                 <tr>
                   <th className="px-6 py-[14px] w-[40px]">
@@ -233,7 +223,7 @@ const DisburseModal = ({
                       aria-label="Select all employees"
                     />
                   </th>
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[250px] ">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px] ">
                     <p className="flex gap-x-1 cursor-pointer items-center">
                       Employee
                       <span>
@@ -259,7 +249,7 @@ const DisburseModal = ({
                     </p>
                   </th>
 
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                     <p className="flex gap-x-1 cursor-pointer items-center">
                       Converted (Naira)
                       <span>
@@ -268,11 +258,11 @@ const DisburseModal = ({
                     </p>
                   </th>
 
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                     Status
                   </th>
 
-                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[200px]">
+                  <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left w-[300px]">
                     {" "}
                     Payment
                   </th>
@@ -368,71 +358,13 @@ const DisburseModal = ({
                 </tbody>
               )}
             </table>
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 w-full border-t border-slate-200 bg-white">
-              {/* Items per page selector */}
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <span>Show:</span>
-                <div className="relative inline-flex items-center">
-                  <select
-                    value={pageSize}
-                    onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
-                    className="appearance-none bg-white border border-slate-300 rounded-lg px-3 py-1.5 pr-8 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer"
-                  >
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                  </select>
-                  {/* Chevron Down Icon */}
-
-                  <FaCaretDown
-                    className="w-4 h-4 text-slate-500 absolute right-2.5 pointer-events-none"
-                    color="#000000"
-                    size={16}
-                  />
-                </div>
-                <span>per page</span>
-              </div>
-
-              {/* Page Info and Navigation Buttons */}
-              <div className="flex items-center gap-4">
-                {/* Page counter text */}
-                <div className="text-sm text-slate-500 font-medium">
-                  Page{" "}
-                  <span className="text-slate-900 font-semibold">
-                    {currentPage}
-                  </span>{" "}
-                  of{" "}
-                  <span className="text-slate-900 font-semibold">
-                    {totalPages}
-                  </span>
-                </div>
-
-                {/* Navigation buttons */}
-                <div className="flex items-center gap-2">
-                  {/* Previous Button */}
-                  <button
-                    type="button"
-                    disabled={currentPage <= 1}
-                    onClick={() => onPageChange?.(currentPage - 1)}
-                    aria-label="Previous Page"
-                    className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    <FaChevronLeft color="#2F2F33" />
-                  </button>
-
-                  {/* Next Button */}
-                  <button
-                    type="button"
-                    disabled={currentPage >= totalPages}
-                    onClick={() => onPageChange?.(currentPage + 1)}
-                    aria-label="Next Page"
-                    className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    <FaChevronRight color="#2F2F33" />
-                  </button>
-                </div>
-              </div>
-            </div>
+            <TablePagination
+              currentPage={approvedBonusData?.pagination?.page ?? 1}
+              totalPages={approvedBonusData?.pagination?.total_pages ?? 1}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+            />
           </div>
         )}
       </div>

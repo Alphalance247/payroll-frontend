@@ -231,11 +231,19 @@ const CustomDropdown = ({
 
                 return (
                   <li key={opt.value} role="option" aria-selected={isSelected}>
-                    <RadioItem
-                      label={opt.label}
-                      isSelected={isSelected}
-                      onClick={() => handleSelect(opt.value)}
-                    />
+                    {multiSelect ? (
+                      <CheckboxItem
+                        label={opt.label}
+                        isSelected={isSelected}
+                        onClick={() => handleSelect(opt.value)}
+                      />
+                    ) : (
+                      <RadioItem
+                        label={opt.label}
+                        isSelected={isSelected}
+                        onClick={() => handleSelect(opt.value)}
+                      />
+                    )}
                   </li>
                 );
               })}
