@@ -191,17 +191,26 @@ const BonusSideDrawer = ({
                         No project hours logged for this bonus period.
                       </p>
                     ) : (
-                      <div className="rounded-lg border border-[#E3E3E5] overflow-hidden">
-                        <table className="w-full text-sm">
+                      <div className="rounded-lg border border-[#E3E3E5] overflow-x-auto">
+                        <table className="min-w-[640px] w-full text-sm">
                           <thead className="bg-[#F7F7F7]">
                             <tr>
-                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left w-[110px]">
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
                                 Project Key
                               </th>
-                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left">
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
                                 Project Name
                               </th>
-                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left w-[110px]">
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
+                                Account Name
+                              </th>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
+                                Account ID
+                              </th>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
+                                Client Type
+                              </th>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
                                 Hours Logged
                               </th>
                             </tr>
@@ -212,14 +221,23 @@ const BonusSideDrawer = ({
                                 key={proj.project_id}
                                 className="border-t border-[#E3E3E5]"
                               >
-                                <td className="px-4 py-3 font-semibold text-[#2F2F33]">
-                                  {proj.project_key}
+                                <td className="px-4 py-3 font-semibold text-[#2F2F33] whitespace-nowrap">
+                                  {proj.project_key || "—"}
                                 </td>
-                                <td className="px-4 py-3 text-[#2F2F33]">
-                                  {proj.project_name}
+                                <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">
+                                  {proj.project_name || "—"}
                                 </td>
-                                <td className="px-4 py-3 text-[#2F2F33]">
-                                  {proj.hours}
+                                <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">
+                                  {proj.account_name || "—"}
+                                </td>
+                                <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">
+                                  {proj.account_id || "—"}
+                                </td>
+                                <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">
+                                  {proj.client_type || "—"}
+                                </td>
+                                <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">
+                                  {proj.hours || "—"}
                                 </td>
                               </tr>
                             ))}

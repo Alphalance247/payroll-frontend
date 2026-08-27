@@ -28,6 +28,10 @@ interface clientHoursByProject {
   project_id: string;
   project_key: string;
   project_name: string;
+  account_key: string;
+  account_name: string;
+  account_id: string;
+  client_type: string;
 }
 
 export interface BonusDetail {
