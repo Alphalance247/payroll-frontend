@@ -241,6 +241,18 @@ const BonusSideDrawer = ({
                                 </td>
                               </tr>
                             ))}
+                            <tr className="border-t border-[#E3E3E5] bg-[#F7F7F7]">
+                              <td className="px-4 py-3 text-xs font-semibold text-[#2F2F33] whitespace-nowrap">
+                                Total
+                              </td>
+                              <td className="px-4 py-3" />
+                              <td className="px-4 py-3" />
+                              <td className="px-4 py-3" />
+                              <td className="px-4 py-3" />
+                              <td className="px-4 py-3 text-xs font-semibold text-[#2F2F33] whitespace-nowrap">
+                                {detail?.total_hours || "—"}
+                              </td>
+                            </tr>
                           </tbody>
                         </table>
                       </div>
