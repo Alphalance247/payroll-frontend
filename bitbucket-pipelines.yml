@@ -398,7 +398,25 @@ definitions:
             esac
 
             echo "==> Syncing $DEPLOY_PATH to $COMMIT"
-            git fetch --all --prune
+            # Fetch ONLY origin. `--all` walks every remote configured on the
+            # server checkout, and one stray remote is enough to kill a deploy
+            # that had already fetched everything it needed. This is what it
+            # looked like on the payroll-backend server:
+            #
+            #   Fetching uat-origin
+            #   fatal: could not read Password for 'https://azeez4@bitbucket.org':
+            #          No such device or address
+            #   error: could not fetch uat-origin
+            #
+            # That remote is an HTTPS URL with no stored credentials, and this
+            # script runs over SSH with no TTY, so git cannot prompt for one and
+            # exits non-zero -- which `set -e` turns into a failed deploy, well
+            # after origin had already delivered the commit.
+            #
+            # Nothing below needs any remote but origin. GIT_TERMINAL_PROMPT=0
+            # makes a credential-less remote fail fast and legibly rather than
+            # block on a prompt nobody can answer.
+            GIT_TERMINAL_PROMPT=0 git fetch --prune origin
             git reset --hard
             git checkout -B "$BRANCH" "$COMMIT"
 
