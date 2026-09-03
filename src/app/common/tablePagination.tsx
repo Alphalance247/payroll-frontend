@@ -2,7 +2,7 @@
 import { FaChevronLeft, FaCaretDown } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa6";
 
-const PAGE_SIZE_OPTIONS = [5, 10, 15, 20];
+const PAGE_SIZE_OPTIONS = [20, 40, 60, 80, 100];
 
 interface TablePaginationProps {
   currentPage: number;
