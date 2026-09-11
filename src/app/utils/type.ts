@@ -109,6 +109,7 @@ export interface dataDetails {
   state: string;
   nok_name: string;
   nok_phone: string;
+  client_bonus_rate: string;
   nok_address: string;
   job_type: string;
   job_role: string;

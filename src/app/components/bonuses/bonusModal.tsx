@@ -17,6 +17,7 @@ export interface BonusFormData {
   bonusType: string;
   currency: number | string;
   amount: string;
+  rate: string;
   notes: string;
 }
 
@@ -118,6 +119,7 @@ const BonusModal = ({
     bonusType: initialData?.bonusType ?? "",
     currency: initialData?.currency ?? "NGN",
     amount: formatAmountForInput(initialData?.amount),
+    rate: initialData?.rate ?? "",
     notes: initialData?.notes ?? "",
   });
 
@@ -128,6 +130,7 @@ const BonusModal = ({
       bonusType: initialData.bonusType ?? "",
       currency: initialData.currency ?? "NGN",
       amount: formatAmountForInput(initialData.amount),
+      rate: initialData?.rate ?? "",
       notes: initialData.notes ?? "",
     });
   }, [initialData]);
@@ -144,6 +147,7 @@ const BonusModal = ({
         bonusType: "",
         currency: "NGN",
         amount: "",
+        rate: "",
         notes: "",
       });
     }
@@ -167,7 +171,10 @@ const BonusModal = ({
     review_comment: "",
     paid: false,
     pay_deno: CURRENCIES.find((c) => c.code === form.currency)?.id ?? 0,
-    employee: Number(form.employeeId),
+    employee: {
+      id: Number(form.employeeId),
+      rate: form.rate,
+    },
   });
 
   const handleSubmit = () => {
@@ -275,6 +282,36 @@ const BonusModal = ({
                 className="flex-1 px-3 py-2.5 text-sm text-[#2F2F33] placeholder:text-[#BEBEC2] bg-white focus:outline-none"
               />
             </div>
+          </div>
+
+          {/* Rate */}
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="rate"
+              className="text-sm font-medium text-[#2F2F33]"
+            >
+              Client Bonus Rate
+            </label>
+            <div className="flex rounded-lg border border-[#E3E3E5] overflow-hidden focus-within:ring-1 focus-within:ring-[#E37915] focus-within:border-[#E37915] transition-colors">
+              <span className="flex items-center px-3 text-sm font-medium text-[#2F2F33] bg-white border-r border-[#D1D5DB] select-none">
+                $
+              </span>
+              <input
+                id="rate"
+                type="text"
+                placeholder="0"
+                value={form.rate}
+                readOnly
+                className="flex-1 px-3 py-2.5 text-sm text-[#2F2F33] placeholder:text-[#BEBEC2] bg-[#F7F7F7] focus:outline-none cursor-not-allowed"
+              />
+              <span className="flex items-center px-3 text-sm text-[#71717A] bg-white border-l border-[#D1D5DB] select-none">
+                /hr
+              </span>
+            </div>
+            <p className="text-xs text-[#71717A]">
+              Rate is locked after processing. You can update it before the next
+              bonus is processed.
+            </p>
           </div>
 
           {/* Notes */}
