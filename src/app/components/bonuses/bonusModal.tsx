@@ -37,6 +37,7 @@ interface BonusModalProps {
   initialData?: Partial<BonusFormData>;
   employeeOptions?: EmployeeOption[];
   bonusTypeOptions?: BonusTypeOption[];
+
   onClose: () => void;
   onSaveDraft?: (data: BonusFormData) => void;
   onSubmit: (data: BonusFormData, createAnother: boolean) => void;
@@ -161,7 +162,8 @@ const BonusModal = ({
     setForm((prev) => ({ ...prev, [field]: value }));
 
   const isAdd = mode === "add";
-  const title = isAdd ? "Add Bonus" : "Edit Bonus";
+
+const title = isAdd ? "Add Bonus" : "Edit Bonus";
   const submitLabel = isAdd ? "Save Bonus" : "Update Bonus";
 
   const buildPayload = (): AddBonusPayload => ({
@@ -171,10 +173,6 @@ const BonusModal = ({
     review_comment: "",
     paid: false,
     pay_deno: CURRENCIES.find((c) => c.code === form.currency)?.id ?? 0,
-    employee: {
-      id: Number(form.employeeId),
-      rate: form.rate,
-    },
   });
 
   const handleSubmit = () => {
@@ -188,7 +186,6 @@ const BonusModal = ({
         reason: payload.reason,
         bonus_type: payload.bonus_type,
         pay_deno: payload.pay_deno,
-        employee: payload.employee,
       });
     } else {
       onSubmit(form, createAnother);
@@ -284,35 +281,37 @@ const BonusModal = ({
             </div>
           </div>
 
-          {/* Rate */}
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="rate"
-              className="text-sm font-medium text-[#2F2F33]"
-            >
-              Client Bonus Rate
-            </label>
-            <div className="flex rounded-lg border border-[#E3E3E5] overflow-hidden focus-within:ring-1 focus-within:ring-[#E37915] focus-within:border-[#E37915] transition-colors">
-              <span className="flex items-center px-3 text-sm font-medium text-[#2F2F33] bg-white border-r border-[#D1D5DB] select-none">
-                $
-              </span>
-              <input
-                id="rate"
-                type="text"
-                placeholder="0"
-                value={form.rate}
-                readOnly
-                className="flex-1 px-3 py-2.5 text-sm text-[#2F2F33] placeholder:text-[#BEBEC2] bg-[#F7F7F7] focus:outline-none cursor-not-allowed"
-              />
-              <span className="flex items-center px-3 text-sm text-[#71717A] bg-white border-l border-[#D1D5DB] select-none">
-                /hr
-              </span>
+          {/* Rate — only for client bonuses */}
+          {form.bonusType === "client" && (
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="rate"
+                className="text-sm font-medium text-[#2F2F33]"
+              >
+                Client Bonus Rate
+              </label>
+              <div className="flex rounded-lg border border-[#E3E3E5] overflow-hidden focus-within:ring-1 focus-within:ring-[#E37915] focus-within:border-[#E37915] transition-colors">
+                <span className="flex items-center px-3 text-sm font-medium text-[#2F2F33] bg-white border-r border-[#D1D5DB] select-none">
+                  $
+                </span>
+                <input
+                  id="rate"
+                  type="text"
+                  placeholder="0"
+                  value={form.rate}
+                  readOnly
+                  className="flex-1 px-3 py-2.5 text-sm text-[#2F2F33] placeholder:text-[#BEBEC2] bg-[#F7F7F7] focus:outline-none cursor-not-allowed"
+                />
+                <span className="flex items-center px-3 text-sm text-[#71717A] bg-white border-l border-[#D1D5DB] select-none">
+                  /hr
+                </span>
+              </div>
+              <p className="text-xs text-[#71717A]">
+                Rate is locked after processing. You can update it before the
+                next bonus is processed.
+              </p>
             </div>
-            <p className="text-xs text-[#71717A]">
-              Rate is locked after processing. You can update it before the next
-              bonus is processed.
-            </p>
-          </div>
+          )}
 
           {/* Notes */}
           <div className="flex flex-col gap-1.5">

@@ -111,6 +111,7 @@ const AwaitingApproval = ({}) => {
 
   // Apply search on top of the API-filtered data
   const rawBonusData = inReviewBonusData?.data || [];
+
   const returnedCount = rawBonusData.filter(
     (emp) => emp.approved_state?.toLowerCase() === "change requested",
   ).length;
@@ -479,6 +480,7 @@ const AwaitingApproval = ({}) => {
             modalMode === "edit" ? (editBonusId ?? undefined) : undefined
           }
           initialData={modalMode === "edit" ? editInitialData : undefined}
+
           onClose={() => setModalMode(null)}
           onSaveDraft={() => setModalMode(null)}
           onSubmit={(_data, createAnother) => {

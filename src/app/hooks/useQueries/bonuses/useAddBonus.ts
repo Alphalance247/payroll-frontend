@@ -11,10 +11,6 @@ export interface AddBonusPayload {
   paid: boolean;
   date_paid?: string;
   pay_deno: number | string;
-  employee: {
-    id: number;
-    rate: string;
-  };
 }
 
 const addBonus = async (payload: AddBonusPayload) => {
