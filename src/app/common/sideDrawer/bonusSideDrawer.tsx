@@ -90,7 +90,7 @@ const BonusSideDrawer = ({
 
   return (
     <SideDrawer onClose={onClose}>
-      <div className="relative z-50 w-[520px] h-full bg-white border-l border-[#E3E3E5] flex flex-col">
+      <div className="relative z-50 w-[786px] h-full bg-white border-l border-[#E3E3E5] flex flex-col">
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E3E3E5] flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -175,6 +175,10 @@ const BonusSideDrawer = ({
                       value={detail.review_comment}
                     />
                   ) : null}
+                  <OverviewRow
+                    label="Client Bonus Rate"
+                    value={`$ ${detail?.employee?.rate}/hr`}
+                  />
                 </div>
               </section>
 
@@ -191,11 +195,11 @@ const BonusSideDrawer = ({
                         No project hours logged for this bonus period.
                       </p>
                     ) : (
-                      <div className="rounded-lg border border-[#E3E3E5] overflow-x-auto">
+                      <div className="rounded-lg border border-[#E3E3E5] overflow-x-auto relative">
                         <table className="min-w-[640px] w-full text-sm">
                           <thead className="bg-[#F7F7F7]">
                             <tr>
-                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
+                              <th className="sticky left-0 z-10 bg-[#F7F7F7] px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
                                 Project Key
                               </th>
                               <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
@@ -221,7 +225,7 @@ const BonusSideDrawer = ({
                                 key={proj.project_id}
                                 className="border-t border-[#E3E3E5]"
                               >
-                                <td className="px-4 py-3 font-semibold text-[#2F2F33] whitespace-nowrap">
+                                <td className="sticky left-0 z-10 bg-white px-4 py-3 font-semibold text-[#2F2F33] whitespace-nowrap">
                                   {proj.project_key || "—"}
                                 </td>
                                 <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">

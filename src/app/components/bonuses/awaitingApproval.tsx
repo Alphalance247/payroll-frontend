@@ -52,8 +52,6 @@ const AwaitingApproval = ({}) => {
   const [pageSize, setPageSize] = useState<number | undefined>(undefined);
   const [page, setPage] = useState<number | undefined>(undefined);
 
-
-
   const toggleSelectEmployee = (id: number) =>
     setSelectedEmployeeIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
@@ -113,6 +111,7 @@ const AwaitingApproval = ({}) => {
 
   // Apply search on top of the API-filtered data
   const rawBonusData = inReviewBonusData?.data || [];
+
   const returnedCount = rawBonusData.filter(
     (emp) => emp.approved_state?.toLowerCase() === "change requested",
   ).length;
@@ -400,6 +399,7 @@ const AwaitingApproval = ({}) => {
                                           ? "NGN"
                                           : "USD",
                                       amount: emp?.naira_amount,
+                                      rate: emp?.employee?.rate,
                                       // emp?.naira_amount != null
                                       //   ? String(emp.naira_amount)
                                       //   : emp?.naira_amount != null
@@ -444,7 +444,10 @@ const AwaitingApproval = ({}) => {
                 totalPages={inReviewBonusData?.pagination?.total_pages ?? 1}
                 pageSize={pageSize}
                 onPageChange={setPage}
-                onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setPage(1);
+                }}
               />
             </div>
           )}
@@ -477,6 +480,7 @@ const AwaitingApproval = ({}) => {
             modalMode === "edit" ? (editBonusId ?? undefined) : undefined
           }
           initialData={modalMode === "edit" ? editInitialData : undefined}
+
           onClose={() => setModalMode(null)}
           onSaveDraft={() => setModalMode(null)}
           onSubmit={(_data, createAnother) => {

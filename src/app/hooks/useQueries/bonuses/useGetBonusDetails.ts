@@ -57,7 +57,12 @@ export interface BonusDetail {
   timesheet_met: boolean;
   created: string;
   updated: string;
-  employee: number;
+  client_bonus_rate: string;
+  employee: {
+    id: number;
+    fullname: string;
+    rate: string;
+  };
   payslip: number;
   pay_deno: string;
   approved_by: number;

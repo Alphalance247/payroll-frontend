@@ -43,6 +43,10 @@ const Job = ({
         employeeInfo?.base_pay
       }`,
     },
+    {
+      heading: "Client Bonus Rate",
+      subhead: `$ ${employeeInfo?.client_bonus_rate}/hr`,
+    },
   ];
 
   return (

@@ -10,7 +10,6 @@ export interface EditBonusPayload {
   reason: string;
   bonus_type: AddBonusPayload["bonus_type"];
   pay_deno: number | string;
-  employee: number;
 }
 
 const editBonus = async ({ bonusId, ...payload }: EditBonusPayload) => {

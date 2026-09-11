@@ -19,6 +19,7 @@ interface data {
   employee: {
     id: number;
     fullname: string;
+    rate: string;
   };
   reason: string;
 }
