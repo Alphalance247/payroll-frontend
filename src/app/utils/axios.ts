@@ -36,6 +36,33 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+// Ensures concurrent 401s share a single in-flight refresh call instead of
+// each firing its own request against the refresh endpoint.
+let refreshPromise: Promise<string> | null = null;
+
+const refreshAccessToken = async (): Promise<string> => {
+  const refreshToken = localStorage.getItem("refresh");
+  if (!refreshToken) {
+    throw new Error("No refresh token available");
+  }
+
+  const response = await axios.post(
+    `${API_BASE_URL}/account/login/token/refresh`,
+    {
+      refresh: refreshToken,
+    }
+  );
+
+  const { access, refresh } = response.data;
+  localStorage.setItem("access", access);
+  if (refresh) {
+    // Store the rotated refresh token when the backend issues one
+    localStorage.setItem("refresh", refresh);
+  }
+
+  return access;
+};
+
 // Add a response interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -59,21 +86,13 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Try to refresh the token
-        const refreshToken = localStorage.getItem("refresh");
-        if (!refreshToken) {
-          throw new Error("No refresh token available");
+        // Reuse an in-flight refresh call if one is already running
+        if (!refreshPromise) {
+          refreshPromise = refreshAccessToken().finally(() => {
+            refreshPromise = null;
+          });
         }
-
-        const response = await axios.post(
-          `${API_BASE_URL}/account/login/token/refresh`,
-          {
-            refresh: refreshToken,
-          }
-        );
-
-        const { access } = response.data;
-        localStorage.setItem("access", access);
+        const access = await refreshPromise;
 
         // Retry the original request with new token
         originalRequest.headers.Authorization = `Bearer ${access}`;
@@ -94,23 +113,5 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// const refreshToken = async () => {
-//   try {
-//     const response = await axios.post("/refresh-token", {
-//       refresh: refreshToken,
-//     });
-
-//     // Store new tokens
-//     const { access, refresh } = response.data;
-//     localStorage.setItem("access", access);
-//     localStorage.setItem("refresh", refresh); // New refresh token
-
-//     return access;
-//   } catch (error) {
-//     window.dispatchEvent(new CustomEvent("tokenExpired"));
-//     throw error;
-//   }
-// };
 
 export default axiosInstance;

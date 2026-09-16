@@ -9,6 +9,7 @@ interface data {
   job_role: string;
   job_type: string;
   country: string;
+  client_bonus_rate?: string;
   team: {
     name: string;
   };

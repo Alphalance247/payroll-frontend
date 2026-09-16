@@ -3,7 +3,6 @@ import "./globals.css";
 import Notification from "./common/notification";
 import { AuthProvider } from "./context/authContext";
 import SessionConflictMessage from "./common/sessionConflictMessage";
-import TokenExpiredMessage from "./components/TokenExpiredMessage";
 import QueryProviders from "./context/queryContext";
 
 export const metadata: Metadata = {
@@ -22,7 +21,6 @@ export default function RootLayout({
       <body className={`font-Graphik`}>
         <AuthProvider>
           <Notification />
-          <TokenExpiredMessage />
           <SessionConflictMessage />
           <QueryProviders>{children}</QueryProviders>
         </AuthProvider>
