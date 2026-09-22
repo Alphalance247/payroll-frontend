@@ -13,15 +13,45 @@ import VerifyTaxRecordsModal, {
   VerificationToast,
   type VerificationResult,
 } from "./verifyTaxRecordsModal";
+import { useGetTaxDetails } from "@/app/hooks/useQueries/tax/useTaxDetails";
+import { useMarkMultipleTaxPaid } from "@/app/hooks/useQueries/tax/useMarkTaxPaid";
+import { useGetYearTaxRecord } from "@/app/hooks/useQueries/tax/useTaxList";
+import { useGetTaxVerificationsByPeriod } from "@/app/hooks/useQueries/tax/useTaxVerification";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+import MarkTaxPaidModal from "./markTaxPaidModal";
+import UploadReceiptModal from "@/app/components/tax/uploadReceiptModal";
+import ViewReceiptModal from "@/app/components/tax/viewReceiptModal";
+import VerificationHistoryModal from "./verificationHistoryModal";
+import { useReceiptModalStore } from "@/stores/Tax/receiptModalStore";
+
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 const fromSlug = (slug: string) => {
-  const parts = slug.split("-");
-  if (parts.length < 2) return { full: slug, short: slug };
-  const month = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-  const year = parts[1];
+  const [monthNumberRaw, year] = slug.split("-");
+  const monthNumber = Number(monthNumberRaw);
+  const monthName = MONTH_NAMES[monthNumber - 1];
+
+  if (!monthName || !year)
+    return { full: slug, short: slug, monthNumber, year };
   return {
-    full: `${month} ${year}`,
-    short: `${month.slice(0, 3)} ${year}`,
+    full: `${monthName} ${year}`,
+    short: `${monthName.slice(0, 3)} ${year}`,
+    monthNumber,
+    year,
   };
 };
 
@@ -36,20 +66,30 @@ interface SummaryCardConfig {
   verified?: boolean;
 }
 
-const SUMMARY_CARDS: SummaryCardConfig[] = [
-  { label: "Total Tax", type: "currency", value: "1,000,000", prefix: "₦" },
-  { label: "Number of Employee", type: "number", value: 40 },
+const buildSummaryCards = (
+  totalMonthlyTax: number,
+  employeeCount: number,
+  totalGrossSalary: number,
+  isVerified: boolean,
+): SummaryCardConfig[] => [
+  {
+    label: "Total Tax",
+    type: "currency",
+    value: totalMonthlyTax.toLocaleString(),
+    prefix: "₦ ",
+  },
+  { label: "Number of Employee", type: "number", value: employeeCount },
   {
     label: "Total Gross Salary",
     type: "currency",
-    value: "18,430,000",
-    prefix: "₦",
+    value: totalGrossSalary.toLocaleString(),
+    prefix: "₦ ",
   },
   {
     label: "Verification Status",
     type: "verification",
     showInfo: true,
-    verified: false,
+    verified: isVerified,
   },
 ];
 
@@ -98,96 +138,12 @@ const SummaryCard = ({ card }: { card: SummaryCardConfig }) => (
   </div>
 );
 
-const DUMMY_EMPLOYEES: EmployeeTaxRecord[] = [
-  {
-    id: 1,
-    name: "Lanre Ademoye",
-    grossSalary: "200,000",
-    monthlyTax: "40,000",
-    nhis: "160,000",
-    status: "pending_remittance",
-  },
-  {
-    id: 2,
-    name: "Amaka Obi",
-    grossSalary: "200,000",
-    monthlyTax: "40,000",
-    nhis: "160,000",
-    status: "pending_remittance",
-  },
-  {
-    id: 3,
-    name: "Tunde Fashola",
-    grossSalary: "200,000",
-    monthlyTax: "40,000",
-    nhis: "160,000",
-    status: "remitted",
-  },
-  {
-    id: 4,
-    name: "Ngozi Eze",
-    grossSalary: "200,000",
-    monthlyTax: "40,000",
-    nhis: "160,000",
-    status: "pending_remittance",
-  },
-  {
-    id: 5,
-    name: "Bayo Akinlade",
-    grossSalary: "200,000",
-    monthlyTax: "40,000",
-    nhis: "160,000",
-    status: "pending_remittance",
-  },
-  {
-    id: 6,
-    name: "Chisom Nwosu",
-    grossSalary: "200,000",
-    monthlyTax: "40,000",
-    nhis: "160,000",
-    status: "pending_remittance",
-  },
-  {
-    id: 7,
-    name: "Emeka Chukwu",
-    grossSalary: "200,000",
-    monthlyTax: "40,000",
-    nhis: "160,000",
-    status: "remitted",
-  },
-  {
-    id: 8,
-    name: "Funmi Adeyemi",
-    grossSalary: "200,000",
-    monthlyTax: "40,000",
-    nhis: "160,000",
-    status: "pending_remittance",
-  },
-  {
-    id: 9,
-    name: "Ibrahim Musa",
-    grossSalary: "200,000",
-    monthlyTax: "40,000",
-    nhis: "160,000",
-    status: "pending_remittance",
-  },
-  {
-    id: 10,
-    name: "Kemi Olawale",
-    grossSalary: "200,000",
-    monthlyTax: "40,000",
-    nhis: "160,000",
-    status: "pending_remittance",
-  },
-];
+interface MoreActionItem {
+  label: string;
+  onClick: () => void;
+}
 
-const MORE_ACTIONS = [
-  { label: "Mark as Remitted" },
-  { label: "View Receipt" },
-  { label: "Compare History" },
-];
-
-const MoreActionsDropdown = ({ onCompare }: { onCompare: () => void }) => {
+const MoreActionsDropdown = ({ items }: { items: MoreActionItem[] }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -199,11 +155,6 @@ const MoreActionsDropdown = ({ onCompare }: { onCompare: () => void }) => {
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
-
-  const handleClick = (label: string) => {
-    setOpen(false);
-    if (label === "Compare History") onCompare();
-  };
 
   return (
     <div ref={ref} className="relative">
@@ -222,11 +173,14 @@ const MoreActionsDropdown = ({ onCompare }: { onCompare: () => void }) => {
 
       {open && (
         <div className="absolute right-0 top-full mt-1.5 z-50 bg-white border border-[#E3E3E5] rounded-xl shadow-lg py-1 min-w-[180px]">
-          {MORE_ACTIONS.map((item) => (
+          {items.map((item) => (
             <button
               key={item.label}
               type="button"
-              onClick={() => handleClick(item.label)}
+              onClick={() => {
+                setOpen(false);
+                item.onClick();
+              }}
               className="w-full text-left px-4 py-2.5 text-sm text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
             >
               {item.label}
@@ -244,9 +198,90 @@ interface TaxPeriodDetailProps {
 
 const TaxPeriodDetail = ({ periodId }: TaxPeriodDetailProps) => {
   const router = useRouter();
-  const { full, short } = fromSlug(periodId);
+  const { full, short, monthNumber, year } = fromSlug(periodId);
   const [verifyOpen, setVerifyOpen] = useState(false);
-  const [verificationResult, setVerificationResult] = useState<VerificationResult>(null);
+  const [verificationResult, setVerificationResult] =
+    useState<VerificationResult>(null);
+  const [markAllPaidOpen, setMarkAllPaidOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  const uploadReceiptTarget = useReceiptModalStore((s) => s.uploadTarget);
+  const viewReceiptTarget = useReceiptModalStore((s) => s.viewTarget);
+  const openUploadReceipt = useReceiptModalStore((s) => s.openUploadReceipt);
+  const closeUploadReceipt = useReceiptModalStore((s) => s.closeUploadReceipt);
+  const openViewReceipt = useReceiptModalStore((s) => s.openViewReceipt);
+  const closeViewReceipt = useReceiptModalStore((s) => s.closeViewReceipt);
+  const applyReceiptAndView = useReceiptModalStore(
+    (s) => s.applyReceiptAndView,
+  );
+
+  const monthParam = monthNumber
+    ? String(monthNumber).padStart(2, "0")
+    : undefined;
+  const {
+    data: taxDetails,
+    isLoading: isLoadingTaxDetails,
+    isError: isTaxDetailsError,
+  } = useGetTaxDetails(monthParam, year);
+
+  const { data: yearTaxRecords } = useGetYearTaxRecord(year);
+  const periodRecord = yearTaxRecords?.find(
+    (r) => r.month_number === monthNumber,
+  );
+  const hasReceipt = !!periodRecord?.remittance?.receipt?.receipt;
+
+  const {
+    data: verificationHistory,
+    isLoading: isLoadingVerificationHistory,
+    isError: isVerificationHistoryError,
+  } = useGetTaxVerificationsByPeriod(
+    historyOpen ? monthNumber : undefined,
+    historyOpen ? year : undefined,
+  );
+
+  const { mutate: markMultipleTaxPaid, isPending: isMarkingAllPaid } =
+    useMarkMultipleTaxPaid();
+
+  const employeeRecords: EmployeeTaxRecord[] = (taxDetails?.data ?? []).map(
+    (record) => ({
+      id: record.id,
+      name: record.payslip.employee.fullname,
+      grossSalary: record.gross_pay,
+      monthlyTax: (record.tax_amount_monthly ?? 0).toLocaleString(),
+      nhis: record.nhis_relief ?? 0,
+      status: record.remmited,
+    }),
+  );
+
+  const unpaidTaxIds = employeeRecords
+    .filter((r) => !r.status)
+    .map((r) => r.id);
+
+  const handleConfirmMarkAllPaid = () => {
+    if (unpaidTaxIds.length === 0) {
+      setMarkAllPaidOpen(false);
+      return;
+    }
+    markMultipleTaxPaid(unpaidTaxIds, {
+      onSuccess: () => {
+        toast.success(`${unpaidTaxIds.length} tax record(s) marked as paid.`);
+        setMarkAllPaidOpen(false);
+      },
+      onError: (err: AxiosError) => {
+        const message =
+          (err.response?.data as { message?: string })?.message ||
+          "Failed to mark tax records as paid. Please try again.";
+        toast.error(message);
+      },
+    });
+  };
+
+  const summaryCards = buildSummaryCards(
+    taxDetails?.total_monthly_tax ?? 0,
+    taxDetails?.["number_of employee"] ?? 0,
+    taxDetails?.total_gross_pay ?? 0,
+    taxDetails?.verification_status === "verified",
+  );
 
   return (
     <DashboardLayout>
@@ -274,7 +309,37 @@ const TaxPeriodDetail = ({ periodId }: TaxPeriodDetailProps) => {
             </p>
           </div>
           <div className="flex items-center gap-x-2 flex-shrink-0 mt-1">
-            <MoreActionsDropdown onCompare={() => setVerifyOpen(true)} />
+            <MoreActionsDropdown
+              items={[
+                {
+                  label: "Mark as Remitted",
+                  onClick: () => {
+                    if (unpaidTaxIds.length === 0) {
+                      toast.success(
+                        "All employees for this period are already remitted.",
+                      );
+                      return;
+                    }
+                    setMarkAllPaidOpen(true);
+                  },
+                },
+                {
+                  label: hasReceipt ? "View Receipt" : "Upload Receipt",
+                  onClick: () => {
+                    if (!periodRecord) return;
+                    if (hasReceipt) {
+                      openViewReceipt(periodRecord);
+                    } else {
+                      openUploadReceipt(periodRecord);
+                    }
+                  },
+                },
+                {
+                  label: "Compare History",
+                  onClick: () => setHistoryOpen(true),
+                },
+              ]}
+            />
             <Button variant="primary" onButtonClick={() => setVerifyOpen(true)}>
               Verify with Excel
             </Button>
@@ -283,27 +348,98 @@ const TaxPeriodDetail = ({ periodId }: TaxPeriodDetailProps) => {
 
         {/* Summary cards */}
         <div className="flex items-stretch gap-4 mb-6">
-          {SUMMARY_CARDS.map((card) => (
+          {summaryCards.map((card) => (
             <SummaryCard key={card.label} card={card} />
           ))}
         </div>
 
         {/* Employee table */}
-        <PeriodEmployeeTable records={DUMMY_EMPLOYEES} />
+        {isLoadingTaxDetails ? (
+          <div className="flex flex-col items-center justify-center py-20 px-6 gap-3 bg-white rounded-lg border border-[#E3E3E5] mt-6">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#E37915]" />
+            <p className="text-sm text-[#71717A]">
+              Loading employee records...
+            </p>
+          </div>
+        ) : isTaxDetailsError ? (
+          <div className="flex flex-col items-center justify-center py-20 px-6 gap-3 bg-white rounded-lg border border-[#E3E3E5] mt-6">
+            <p className="text-sm font-semibold text-[#2F2F33]">
+              Failed to load employee tax records
+            </p>
+            <p className="text-sm text-[#71717A] text-center max-w-[320px]">
+              Something went wrong while fetching this period&apos;s records.
+              Please try again.
+            </p>
+          </div>
+        ) : (
+          <PeriodEmployeeTable
+            records={employeeRecords}
+            month={monthNumber}
+            year={year}
+          />
+        )}
       </main>
+
+      <MarkTaxPaidModal
+        isOpen={markAllPaidOpen}
+        onClose={() => setMarkAllPaidOpen(false)}
+        onConfirm={handleConfirmMarkAllPaid}
+        isSubmitting={isMarkingAllPaid}
+        count={unpaidTaxIds.length}
+      />
+
+      <UploadReceiptModal
+        isOpen={!!uploadReceiptTarget}
+        onClose={closeUploadReceipt}
+        onSuccess={(receipt) =>
+          uploadReceiptTarget &&
+          applyReceiptAndView(uploadReceiptTarget, receipt)
+        }
+        payrollPeriod={uploadReceiptTarget?.month_name ?? full}
+        month={uploadReceiptTarget?.month_number ?? monthNumber}
+        year={uploadReceiptTarget?.year ?? year}
+      />
+
+      <ViewReceiptModal
+        isOpen={!!viewReceiptTarget}
+        onClose={closeViewReceipt}
+        payrollPeriod={viewReceiptTarget?.month_name ?? full}
+        meta={viewReceiptTarget?.remittance?.receipt}
+      />
 
       <VerifyTaxRecordsModal
         isOpen={verifyOpen}
         onClose={() => setVerifyOpen(false)}
         onComplete={(result) => setVerificationResult(result)}
+        month={monthNumber}
+        year={year}
+        payrollPeriod={full}
+      />
+
+      <VerificationHistoryModal
+        isOpen={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        payrollPeriod={full}
+        entries={verificationHistory?.data}
+        isLoading={isLoadingVerificationHistory}
+        isError={isVerificationHistoryError}
+        onViewReport={(runId) => {
+          setHistoryOpen(false);
+          router.push(
+            `/admin/tax/${periodId}/verification-results?run_id=${runId}`,
+          );
+        }}
       />
 
       <VerificationToast
         result={verificationResult}
         onDismiss={() => setVerificationResult(null)}
         onViewReport={() => {
+          const runId = verificationResult?.runId;
           setVerificationResult(null);
-          router.push(`/admin/tax/${periodId}/verification-results`);
+          router.push(
+            `/admin/tax/${periodId}/verification-results${runId ? `?run_id=${runId}` : ""}`,
+          );
         }}
       />
     </DashboardLayout>

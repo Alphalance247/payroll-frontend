@@ -1,21 +1,30 @@
 "use client";
 import { useState, useRef } from "react";
-import { Search, Upload, Info } from "lucide-react";
+import { Search, Upload, Info, CheckCircle2 } from "lucide-react";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import { FaChevronLeft, FaChevronRight, FaCaretDown } from "react-icons/fa";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
 import CustomDropdown from "@/app/common/customDropdown";
 import TableActionMenu from "@/app/common/tableActionMenu";
-
-export type EmployeeTaxStatus = "pending_remittance" | "remitted";
+import {
+  useMarkTaxPaid,
+  useMarkMultipleTaxPaid,
+} from "@/app/hooks/useQueries/tax/useMarkTaxPaid";
+import { useExportTaxReport } from "@/app/hooks/useQueries/tax/useExportTaxReport";
+import MarkTaxPaidModal from "./markTaxPaidModal";
 
 export interface EmployeeTaxRecord {
-  id: number;
+  id: string;
   name: string;
   grossSalary: string;
   monthlyTax: string;
-  nhis: string;
-  status: EmployeeTaxStatus;
+  nhis: number;
+  status: boolean;
 }
+
+const getErrorMessage = (err: AxiosError, fallback: string) =>
+  (err.response?.data as { message?: string })?.message || fallback;
 
 const AVATAR_COLORS = [
   "#1C3A52",
@@ -45,8 +54,8 @@ const STATUS_OPTIONS = [
   { label: "Pending Remittance", value: "pending_remittance" },
 ];
 
-const StatusBadge = ({ status }: { status: EmployeeTaxStatus }) =>
-  status === "remitted" ? (
+const StatusBadge = ({ status }: { status: boolean }) =>
+  status ? (
     <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#F0FDF4] text-[#15803D]">
       Remitted
     </span>
@@ -58,23 +67,38 @@ const StatusBadge = ({ status }: { status: EmployeeTaxStatus }) =>
 
 interface PeriodEmployeeTableProps {
   records: EmployeeTaxRecord[];
+  month: number | string;
+  year: number | string;
 }
 
-const PeriodEmployeeTable = ({ records }: PeriodEmployeeTableProps) => {
+const PeriodEmployeeTable = ({
+  records,
+  month,
+  year,
+}: PeriodEmployeeTableProps) => {
   const selectAllRef = useRef<HTMLInputElement>(null);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  const { mutate: markTaxPaid, isPending: isMarkingSingle } = useMarkTaxPaid();
+  const { mutate: markMultipleTaxPaid, isPending: isMarkingMultiple } =
+    useMarkMultipleTaxPaid();
+  const { exportTaxReport, isExporting } = useExportTaxReport();
+
+  const [markPaidTarget, setMarkPaidTarget] = useState<{
+    ids: string[];
+    name?: string;
+  } | null>(null);
+
   const filtered = records.filter((r) => {
     const matchesSearch = r.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      selectedStatuses.length === 0 || selectedStatuses.includes(r.status);
-    return matchesSearch && matchesStatus;
+
+    return matchesSearch;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -85,10 +109,43 @@ const PeriodEmployeeTable = ({ records }: PeriodEmployeeTableProps) => {
   const toggleSelectAll = () =>
     setSelectedIds(isAllSelected ? [] : filtered.map((r) => r.id));
 
-  const toggleSelect = (id: number) =>
+  const toggleSelect = (id: string) =>
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
+
+  const isMarkingPaid = isMarkingSingle || isMarkingMultiple;
+
+  const handleConfirmMarkPaid = () => {
+    if (!markPaidTarget) return;
+    const { ids, name } = markPaidTarget;
+
+    if (ids.length === 1) {
+      markTaxPaid(ids[0], {
+        onSuccess: () => {
+          toast.success(`${name ?? "Employee"}'s tax marked as paid.`);
+          setMarkPaidTarget(null);
+        },
+        onError: (err) =>
+          toast.error(getErrorMessage(err, "Failed to mark tax as paid.")),
+      });
+    } else {
+      markMultipleTaxPaid(ids, {
+        onSuccess: () => {
+          toast.success(`${ids.length} tax record(s) marked as paid.`);
+          setSelectedIds([]);
+          setMarkPaidTarget(null);
+        },
+        onError: (err) =>
+          toast.error(
+            getErrorMessage(
+              err,
+              "Failed to mark selected tax records as paid.",
+            ),
+          ),
+      });
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg border border-[#E3E3E5] mt-6">
@@ -106,6 +163,17 @@ const PeriodEmployeeTable = ({ records }: PeriodEmployeeTableProps) => {
         </div>
 
         <div className="flex items-center gap-x-2">
+          {selectedIds.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setMarkPaidTarget({ ids: selectedIds })}
+              disabled={isMarkingPaid}
+              className="flex items-center gap-x-2 px-4 py-[7px] rounded-[8px] border border-[#15803D] bg-[#F0FDF4] text-sm font-medium text-[#15803D] hover:bg-[#DCFCE7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <CheckCircle2 size={14} strokeWidth={2} />
+              {`Mark as Paid (${selectedIds.length})`}
+            </button>
+          )}
           <CustomDropdown
             trigger="Status"
             title="Select a status"
@@ -116,10 +184,12 @@ const PeriodEmployeeTable = ({ records }: PeriodEmployeeTableProps) => {
           />
           <button
             type="button"
-            className="flex items-center gap-x-2 px-4 py-[7px] rounded-[8px] border border-[#D3D3D6] bg-white text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
+            onClick={() => exportTaxReport(month, year)}
+            disabled={isExporting}
+            className="flex items-center gap-x-2 px-4 py-[7px] rounded-[8px] border border-[#D3D3D6] bg-white text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Upload size={14} strokeWidth={2} />
-            Export
+            {isExporting ? "Exporting…" : "Export"}
           </button>
         </div>
       </div>
@@ -136,7 +206,10 @@ const PeriodEmployeeTable = ({ records }: PeriodEmployeeTableProps) => {
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg" style={{ overflowY: "visible" }}>
+        <div
+          className="overflow-x-auto rounded-lg"
+          style={{ overflowY: "visible" }}
+        >
           <table className="w-full min-w-[900px] border-b border-[#E3E3E5]">
             <thead className="bg-[#F7F7F7]">
               <tr>
@@ -165,11 +238,7 @@ const PeriodEmployeeTable = ({ records }: PeriodEmployeeTableProps) => {
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left">
                   <span className="flex items-center gap-x-1">
                     NHIS
-                    <Info
-                      size={13}
-                      className="text-[#71717A]"
-                      title="National Health Insurance Scheme contribution"
-                    />
+                    <Info size={13} className="text-[#71717A]" />
                   </span>
                 </th>
                 <th className="px-6 py-[14px] text-sm font-medium text-[#71717A] text-left">
@@ -215,13 +284,13 @@ const PeriodEmployeeTable = ({ records }: PeriodEmployeeTableProps) => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                      ₦{record.grossSalary}
+                      ₦ {record.grossSalary}
                     </td>
                     <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                      ₦{record.monthlyTax}
+                      ₦ {record.monthlyTax}
                     </td>
                     <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                      ₦{record.nhis}
+                      ₦ {record.nhis}
                     </td>
                     <td className="px-6 py-4">
                       <StatusBadge status={record.status} />
@@ -229,9 +298,18 @@ const PeriodEmployeeTable = ({ records }: PeriodEmployeeTableProps) => {
                     <td className="px-6 py-4">
                       <TableActionMenu
                         items={[
-                          { label: "View Details", onClick: () => {} },
-                          { label: "Mark as Remitted", onClick: () => {} },
-                          { label: "Download Tax Slip", onClick: () => {} },
+                          ...(record.status
+                            ? []
+                            : [
+                                {
+                                  label: "Mark as Remitted",
+                                  onClick: () =>
+                                    setMarkPaidTarget({
+                                      ids: [record.id],
+                                      name: record.name,
+                                    }),
+                                },
+                              ]),
                         ]}
                       />
                     </td>
@@ -302,6 +380,15 @@ const PeriodEmployeeTable = ({ records }: PeriodEmployeeTableProps) => {
           </div>
         </div>
       )}
+
+      <MarkTaxPaidModal
+        isOpen={!!markPaidTarget}
+        onClose={() => setMarkPaidTarget(null)}
+        onConfirm={handleConfirmMarkPaid}
+        isSubmitting={isMarkingPaid}
+        count={markPaidTarget?.ids.length ?? 0}
+        name={markPaidTarget?.name}
+      />
     </div>
   );
 };

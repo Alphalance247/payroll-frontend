@@ -2,22 +2,20 @@
 import { Download, Trash2, FileText } from "lucide-react";
 import ModalOverlay from "@/app/common/modal/modal";
 import Button from "@/app/common/Button";
-
-export interface ReceiptMeta {
-  filename: string;
-  uploadedBy: string;
-  uploadedOn: string;
-  fileType: string;
-  previewUrl?: string;
-}
+import { type TaxReceiptDetail } from "@/app/hooks/useQueries/tax/useTaxList";
 
 interface ViewReceiptModalProps {
   isOpen: boolean;
   onClose: () => void;
   onRemove?: () => void;
   payrollPeriod?: string;
-  meta?: ReceiptMeta;
+  meta?: TaxReceiptDetail;
 }
+
+const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "gif"];
+
+const getFileExtension = (url?: string) =>
+  url?.split(/[?#]/)[0].split(".").pop()?.toLowerCase();
 
 const ViewReceiptModal = ({
   isOpen,
@@ -28,7 +26,9 @@ const ViewReceiptModal = ({
 }: ViewReceiptModalProps) => {
   if (!isOpen) return null;
 
-  const isPdf = !meta?.previewUrl || meta?.fileType?.toUpperCase() === "PDF";
+  const fileExtension = getFileExtension(meta?.receipt);
+  const isImage = !!fileExtension && IMAGE_EXTENSIONS.includes(fileExtension);
+  const fileTypeLabel = fileExtension ? fileExtension.toUpperCase() : "—";
 
   return (
     <ModalOverlay onClose={onClose}>
@@ -44,8 +44,7 @@ const ViewReceiptModal = ({
               <FileText size={16} className="text-[#DC2626]" strokeWidth={2} />
             </div>
             <span className="text-sm font-medium text-[#2F2F33] truncate max-w-[360px]">
-              {meta?.filename ??
-                `${payrollPeriod?.replace(" ", "_")}_Tax_Receipt`}
+              {`${meta?.month_name}_Tax_Receipt`}
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -53,6 +52,16 @@ const ViewReceiptModal = ({
               type="button"
               className="p-2 rounded-lg bg-[#F1F1F2] text-[#71717A] transition-colors"
               aria-label="Download receipt"
+              onClick={() => {
+                if (meta?.receipt) {
+                  const link = document.createElement("a");
+                  link.href = meta.receipt;
+                  link.download = `${meta?.month_name}_Tax_Receipt`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }
+              }}
             >
               <Download size={16} strokeWidth={2} />
             </button>
@@ -87,7 +96,7 @@ const ViewReceiptModal = ({
               Uploaded By
             </p>
             <p className="text-sm font-medium text-[#2F2F33]">
-              {meta?.uploadedBy ?? "—"}
+              {meta?.uploaded_by?.fullname ?? "—"}
             </p>
           </div>
           <div>
@@ -95,7 +104,7 @@ const ViewReceiptModal = ({
               Uploaded On
             </p>
             <p className="text-sm font-medium text-[#2F2F33]">
-              {meta?.uploadedOn ?? "—"}
+              {meta?.created ?? "—"}
             </p>
           </div>
           <div>
@@ -103,16 +112,16 @@ const ViewReceiptModal = ({
               File Type
             </p>
             <p className="text-sm font-medium text-[#2F2F33]">
-              {meta?.fileType ?? "PDF"}
+              {fileTypeLabel}
             </p>
           </div>
         </div>
 
         {/* Preview area */}
         <div className="px-6 py-5">
-          {meta?.previewUrl && !isPdf ? (
+          {meta?.receipt && isImage ? (
             <img
-              src={meta.previewUrl}
+              src={meta.receipt}
               alt="Receipt preview"
               className="w-full rounded-lg border border-[#E3E3E5] object-contain max-h-[360px]"
             />
@@ -125,9 +134,11 @@ const ViewReceiptModal = ({
                   strokeWidth={1.5}
                 />
               </div>
-              <p className="text-sm font-medium text-[#2F2F33]">PDF Document</p>
+              <p className="text-sm font-medium text-[#2F2F33]">
+                {fileExtension ? `${fileTypeLabel} Document` : "Document"}
+              </p>
               <p className="text-xs text-[#71717A]">
-                {meta?.filename ?? "Receipt.pdf"}
+                {meta?.reference ?? "Receipt"}
               </p>
             </div>
           )}

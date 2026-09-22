@@ -1,40 +1,53 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import { X, Upload, CheckCircle, XCircle } from "lucide-react";
+import toast from "react-hot-toast";
 import ModalOverlay from "@/app/common/modal/modal";
 import Button from "@/app/common/Button";
+import {
+  useStartTaxVerification,
+  useTaxVerificationProgress,
+  useTaxVerificationResult,
+} from "@/app/hooks/useQueries/tax/useTaxVerification";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 type ModalStep = "upload" | "comparing";
 
 export type VerificationResult =
-  | { status: "success"; matchedCount: number }
-  | { status: "error"; discrepancyCount: number }
+  | { status: "success"; matchedCount: number; runId: string }
+  | { status: "error"; discrepancyCount: number; runId: string }
   | null;
 
 interface VerifyTaxRecordsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete: (result: VerificationResult) => void;
+  month: number | string;
+  year: number | string;
+  payrollPeriod?: string;
 }
-
-// ─── Comparison steps ────────────────────────────────────────────────────────
-
-const COMPARE_STEPS = [
-  "Reading spreadsheet",
-  "Matching employees",
-  "Comparing tax values",
-  "Generating report",
-];
 
 // ─── File type icon ───────────────────────────────────────────────────────────
 
 const FILE_TYPE_CONFIGS: { exts: string[]; bg: string; label: string }[] = [
   { exts: [".xlsx", ".xls"], bg: "#1D7044", label: "XLS" },
-  { exts: [".csv"],          bg: "#0E7490", label: "CSV" },
-  { exts: [".pdf"],          bg: "#DC2626", label: "PDF" },
-  { exts: [".png", ".jpg", ".jpeg", ".webp"], bg: "#7C3AED", label: "IMG" },
+  { exts: [".csv"], bg: "#0E7490", label: "CSV" },
+  // { exts: [".pdf"], bg: "#DC2626", label: "PDF" },
+  // { exts: [".png", ".jpg", ".jpeg", ".webp"], bg: "#7C3AED", label: "IMG" },
 ];
 
 const FileTypeIcon = ({ name }: { name: string }) => {
@@ -55,89 +68,73 @@ const FileTypeIcon = ({ name }: { name: string }) => {
   );
 };
 
-// ─── Step indicator dot ───────────────────────────────────────────────────────
-
-const StepDot = ({ state }: { state: "done" | "active" | "pending" }) => {
-  if (state === "done")
-    return (
-      <span className="w-4 h-4 rounded-full bg-[#E37915] flex items-center justify-center flex-shrink-0">
-        <span className="w-1.5 h-1.5 rounded-full bg-white" />
-      </span>
-    );
-  if (state === "active")
-    return (
-      <span className="w-4 h-4 rounded-full border-2 border-[#E37915] flex items-center justify-center flex-shrink-0">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#E37915]" />
-      </span>
-    );
-  return (
-    <span className="w-4 h-4 rounded-full border-2 border-[#D3D3D6] flex-shrink-0" />
-  );
-};
-
-// ─── Main modal ──────────────────────────────────────────────────────────────
-
 export default function VerifyTaxRecordsModal({
   isOpen,
   onClose,
   onComplete,
+  month,
+  year,
+  payrollPeriod,
 }: VerifyTaxRecordsModalProps) {
   const [step, setStep] = useState<ModalStep>("upload");
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [activeStep, setActiveStep] = useState(0);
+  const [runId, setRunId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const monthName = MONTH_NAMES[Number(month) - 1];
+  const periodLabel = monthName ? `${monthName} ${year}` : payrollPeriod;
+
+  const { mutate: startVerification, isPending: isStarting } =
+    useStartTaxVerification();
+
+  const { data: progress } = useTaxVerificationProgress(runId);
+  const isTerminal =
+    progress?.status === "completed" || progress?.status === "failed";
+
+  const { data: result } = useTaxVerificationResult(runId, isTerminal);
 
   // Reset when closed
   useEffect(() => {
     if (!isOpen) {
       setStep("upload");
       setFile(null);
-      setActiveStep(0);
       setIsDragging(false);
+      setRunId(null);
     }
   }, [isOpen]);
 
-  // Simulate step-by-step comparison progress
+  // A run that failed outright (bad file, server error) — bounce back to upload
   useEffect(() => {
-    if (step !== "comparing") return;
+    if (progress?.status === "failed") {
+      toast.error("Verification failed. Please try again.");
+      setStep("upload");
+      setRunId(null);
+    }
+  }, [progress?.status]);
 
-    let current = 0;
-    setActiveStep(0);
-
-    const advance = () => {
-      current += 1;
-      if (current < COMPARE_STEPS.length) {
-        setActiveStep(current);
-        timer = setTimeout(advance, 900);
-      } else {
-        // Done — close modal and fire result
-        clearTimeout(timer);
-        setTimeout(() => {
-          onClose();
-          // Simulate: 80% chance success, 20% error
-          const success = Math.random() > 0.2;
-          onComplete(
-            success
-              ? { status: "success", matchedCount: 42 }
-              : { status: "error", discrepancyCount: 3 },
-          );
-        }, 600);
-      }
-    };
-
-    let timer = setTimeout(advance, 900);
-    return () => clearTimeout(timer);
-  }, [step, onClose, onComplete]);
+  // Once the full report is in, hand it off and close
+  useEffect(() => {
+    if (!result) return;
+    onClose();
+    onComplete(
+      result?.status === "completed"
+        ? {
+            status: "success",
+            matchedCount: result?.records_matched ?? 0,
+            runId: result?.id,
+          }
+        : {
+            status: "error",
+            discrepancyCount: result.discrepancy_count ?? 0,
+            runId: result?.id,
+          },
+    );
+  }, [result, onClose, onComplete]);
 
   if (!isOpen) return null;
 
-  // ── File handling ──────────────────────────────────────────────────────────
-
-  const ACCEPTED_EXTENSIONS = [
-    ".xlsx", ".xls", ".csv", ".pdf",
-    ".png", ".jpg", ".jpeg", ".webp",
-  ];
+  const ACCEPTED_EXTENSIONS = [".csv"];
 
   const acceptFile = (f: File) => {
     const lower = f.name.toLowerCase();
@@ -181,7 +178,7 @@ export default function VerifyTaxRecordsModal({
           </h2>
           <p className="text-sm text-[#71717A] mt-1 leading-relaxed">
             {step === "upload"
-              ? "Upload the government tax spreadsheet to compare it with the payroll tax records for July 2026."
+              ? `Upload the government tax spreadsheet to compare it with the payroll tax records${periodLabel ? ` for ${periodLabel}` : ""}.`
               : "Please wait while we compare the uploaded spreadsheet with your payroll tax records."}
           </p>
         </div>
@@ -192,7 +189,10 @@ export default function VerifyTaxRecordsModal({
             <>
               {/* Dropzone */}
               <div
-                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDragging(true);
+                }}
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={onDrop}
                 onClick={() => fileInputRef.current?.click()}
@@ -203,19 +203,23 @@ export default function VerifyTaxRecordsModal({
                 }`}
               >
                 <div className="w-10 h-10 flex items-center justify-center">
-                  <Upload size={28} className="text-[#E37915]" strokeWidth={1.5} />
+                  <Upload
+                    size={28}
+                    className="text-[#E37915]"
+                    strokeWidth={1.5}
+                  />
                 </div>
                 <p className="text-sm text-center text-[#2F2F33]">
-                  <span className="text-[#E37915] font-medium">Click to upload</span>{" "}
+                  <span className="text-[#E37915] font-medium">
+                    Click to upload
+                  </span>{" "}
                   or drag your Excel file here
                 </p>
-                <p className="text-xs text-[#71717A]">
-                  Supports .xlsx, .xls, .csv, .pdf, and images up to 10 MB
-                </p>
+                <p className="text-xs text-[#71717A]">Supports only .csv,</p>
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".xlsx,.xls,.csv,.pdf,.png,.jpg,.jpeg,.webp"
+                  accept=".csv,"
                   className="hidden"
                   onChange={onInputChange}
                 />
@@ -230,11 +234,16 @@ export default function VerifyTaxRecordsModal({
                     <p className="text-sm font-medium text-[#2F2F33] truncate">
                       {file.name}
                     </p>
-                    <p className="text-xs text-[#71717A]">{formatSize(file.size)}</p>
+                    <p className="text-xs text-[#71717A]">
+                      {formatSize(file.size)}
+                    </p>
                   </div>
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); setFile(null); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFile(null);
+                    }}
                     className="text-[#71717A] hover:text-[#2F2F33] transition-colors flex-shrink-0"
                     aria-label="Remove file"
                   >
@@ -250,33 +259,15 @@ export default function VerifyTaxRecordsModal({
               <div className="w-12 h-12 rounded-full border-4 border-[#F0E0CE] border-t-[#E37915] animate-spin" />
 
               <p className="text-sm font-semibold text-[#2F2F33]">
-                Comparing payroll records...
+                {progress?.step ?? "Comparing payroll records..."}
               </p>
 
-              {/* Steps */}
-              <div className="w-full flex flex-col gap-2.5">
-                {COMPARE_STEPS.map((label, i) => {
-                  const state =
-                    i < activeStep
-                      ? "done"
-                      : i === activeStep
-                        ? "active"
-                        : "pending";
-                  return (
-                    <div key={label} className="flex items-center gap-2.5">
-                      <StepDot state={state} />
-                      <span
-                        className={`text-sm ${
-                          state === "pending"
-                            ? "text-[#A1A1AA]"
-                            : "text-[#2F2F33]"
-                        } ${state === "active" ? "font-medium" : ""}`}
-                      >
-                        {label}
-                      </span>
-                    </div>
-                  );
-                })}
+              {/* Progress bar */}
+              <div className="w-full h-2 rounded-full bg-[#F0F0F3] overflow-hidden">
+                <div
+                  className="h-full bg-[#E37915] transition-all duration-300"
+                  style={{ width: `${progress?.percentage ?? 0}%` }}
+                />
               </div>
 
               {/* File chip */}
@@ -284,8 +275,12 @@ export default function VerifyTaxRecordsModal({
                 <div className="w-full flex items-center gap-3 px-4 py-3 border border-[#E3E3E5] rounded-xl bg-[#F7F7F7] opacity-60">
                   <FileTypeIcon name={file.name} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#2F2F33] truncate">{file.name}</p>
-                    <p className="text-xs text-[#71717A]">{formatSize(file.size)}</p>
+                    <p className="text-sm font-medium text-[#2F2F33] truncate">
+                      {file.name}
+                    </p>
+                    <p className="text-xs text-[#71717A]">
+                      {formatSize(file.size)}
+                    </p>
                   </div>
                 </div>
               )}
@@ -305,10 +300,27 @@ export default function VerifyTaxRecordsModal({
           {step === "upload" ? (
             <Button
               variant="primary"
-              onButtonClick={() => { if (file) setStep("comparing"); }}
-              disabled={!file}
+              onButtonClick={() => {
+                if (!file) return;
+                startVerification(
+                  { file, month, year },
+                  {
+                    onSuccess: (data) => {
+                      setRunId(data.run_id);
+                      setStep("comparing");
+                    },
+                    onError: (err) => {
+                      const message =
+                        (err.response?.data as { message?: string })?.message ||
+                        "Failed to start verification. Please try again.";
+                      toast.error(message);
+                    },
+                  },
+                );
+              }}
+              disabled={!file || isStarting}
             >
-              Compare with Excel
+              {isStarting ? "Starting…" : "Compare with Excel"}
             </Button>
           ) : (
             <Button variant="primary" disabled>
@@ -320,8 +332,6 @@ export default function VerifyTaxRecordsModal({
     </ModalOverlay>
   );
 }
-
-// ─── Verification toast ───────────────────────────────────────────────────────
 
 interface VerificationToastProps {
   result: VerificationResult;

@@ -1,267 +1,144 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import Link from "next/link";
 import { Search, Upload, Eye } from "lucide-react";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import { FaChevronLeft, FaChevronRight, FaCaretDown } from "react-icons/fa";
 import toast from "react-hot-toast";
-import DateRangePicker, {
-  type DateRangeValue,
-} from "@/app/common/dateRangePicker";
 import CustomDropdown from "@/app/common/customDropdown";
 import TableActionMenu from "@/app/common/tableActionMenu";
-import MarkAsRemittedModal from "@/app/components/tax/markAsRemittedModal";
 import UploadReceiptModal from "@/app/components/tax/uploadReceiptModal";
-import ViewReceiptModal, {
-  type ReceiptMeta,
-} from "@/app/components/tax/viewReceiptModal";
+import EditReceiptModal from "@/app/components/tax/editReceiptModal";
+import { useGetYearTaxRecord } from "@/app/hooks/useQueries/tax/useTaxList";
 import RemoveReceiptModal from "@/app/components/tax/removeReceiptModal";
+import ViewReceiptModal from "@/app/components/tax/viewReceiptModal";
+import { useDeleteTaxReceipt } from "@/app/hooks/useQueries/tax/useTaxReceipts";
+import { useExportTaxReport } from "@/app/hooks/useQueries/tax/useExportTaxReport";
+import { useReceiptModalStore } from "@/stores/Tax/receiptModalStore";
+import { useRouter } from "next/navigation";
 
-export type VerificationStatus = "pending_remittance" | "remitted";
-export type RemittanceStatus = "pending_remittance" | "remitted";
-export type ReceiptStatus = "upload" | "view";
+const YEAR_RANGE = 6;
+const YEAR_OPTIONS = Array.from({ length: YEAR_RANGE }, (_, i) => {
+  const year = (new Date().getFullYear() - i).toString();
+  return { label: year, value: year };
+});
 
-export interface TaxRecord {
-  id: number;
-  payrollPeriod: string;
-  totalTax: string;
-  employees: number;
-  verification: VerificationStatus;
-  remittance: RemittanceStatus;
-  receipt: ReceiptStatus;
-  receiptMeta?: ReceiptMeta;
-}
+const VERIFICATION_BADGE_CONFIG: Record<
+  string,
+  { label: string; bg: string; text: string }
+> = {
+  verified: { label: "Verified", bg: "#F0FDF4", text: "#15803D" },
+  in_progress: { label: "In Progress", bg: "#EFF6FF", text: "#3B82F6" },
+  failed: { label: "Failed", bg: "#FEF2F2", text: "#DC2626" },
+  not_verified: { label: "Not Verified", bg: "#F3F4F6", text: "#6B7280" },
+};
 
-const STATUS_OPTIONS = [
-  { label: "Remitted", value: "remitted" },
-  { label: "Pending Remittance", value: "pending_remittance" },
-];
+const REMITTANCE_BADGE_CONFIG: Record<
+  string,
+  { label: string; bg: string; text: string }
+> = {
+  remitted: { label: "Remitted", bg: "#F0FDF4", text: "#15803D" },
+  partial: { label: "Partial", bg: "#FFF9F2", text: "#CF6E13" },
+  pending: { label: "Pending", bg: "#F3F4F6", text: "#6B7280" },
+};
 
-const DUMMY_RECORDS: TaxRecord[] = [
-  {
-    id: 1,
-    payrollPeriod: "July 2026",
-    totalTax: "793,670",
-    employees: 42,
-    verification: "pending_remittance",
-    remittance: "pending_remittance",
-    receipt: "upload",
-  },
-  {
-    id: 2,
-    payrollPeriod: "July 2026",
-    totalTax: "793,670",
-    employees: 42,
-    verification: "remitted",
-    remittance: "pending_remittance",
-    receipt: "upload",
-  },
-  {
-    id: 3,
-    payrollPeriod: "July 2026",
-    totalTax: "793,670",
-    employees: 42,
-    verification: "remitted",
-    remittance: "pending_remittance",
-    receipt: "view",
-    receiptMeta: {
-      filename: "July_Tax_Receipt",
-      uploadedBy: "Admin",
-      uploadedOn: "31st Jul 2026",
-      fileType: "PDF",
-    },
-  },
-  {
-    id: 4,
-    payrollPeriod: "July 2026",
-    totalTax: "793,670",
-    employees: 42,
-    verification: "pending_remittance",
-    remittance: "pending_remittance",
-    receipt: "upload",
-  },
-  {
-    id: 5,
-    payrollPeriod: "July 2026",
-    totalTax: "793,670",
-    employees: 42,
-    verification: "pending_remittance",
-    remittance: "pending_remittance",
-    receipt: "upload",
-  },
-  {
-    id: 6,
-    payrollPeriod: "July 2026",
-    totalTax: "793,670",
-    employees: 42,
-    verification: "pending_remittance",
-    remittance: "pending_remittance",
-    receipt: "upload",
-  },
-  {
-    id: 7,
-    payrollPeriod: "July 2026",
-    totalTax: "793,670",
-    employees: 42,
-    verification: "pending_remittance",
-    remittance: "pending_remittance",
-    receipt: "upload",
-  },
-  {
-    id: 8,
-    payrollPeriod: "July 2026",
-    totalTax: "793,670",
-    employees: 42,
-    verification: "pending_remittance",
-    remittance: "pending_remittance",
-    receipt: "upload",
-  },
-  {
-    id: 9,
-    payrollPeriod: "July 2026",
-    totalTax: "793,670",
-    employees: 42,
-    verification: "pending_remittance",
-    remittance: "pending_remittance",
-    receipt: "upload",
-  },
-  {
-    id: 10,
-    payrollPeriod: "July 2026",
-    totalTax: "793,670",
-    employees: 42,
-    verification: "pending_remittance",
-    remittance: "pending_remittance",
-    receipt: "upload",
-  },
-];
-
-const VerificationBadge = ({ status }: { status: VerificationStatus }) =>
-  status === "remitted" ? (
-    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#F0FDF4] text-[#15803D]">
-      Remitted
-    </span>
-  ) : (
-    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#FFF9F2] text-[#CF6E13]">
-      Pending Remittance
+const VerificationBadge = ({ status }: { status?: string }) => {
+  const config =
+    VERIFICATION_BADGE_CONFIG[status ?? ""] ??
+    VERIFICATION_BADGE_CONFIG.not_verified;
+  return (
+    <span
+      className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+      style={{ backgroundColor: config.bg, color: config.text }}
+    >
+      {config.label}
     </span>
   );
+};
 
-const RemittanceBadge = ({ status }: { status: RemittanceStatus }) =>
-  status === "remitted" ? (
-    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#F0FDF4] text-[#15803D]">
-      Remitted
-    </span>
-  ) : (
-    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#FFF9F2] text-[#CF6E13]">
-      Pending Remittance
+const RemittanceBadge = ({ status }: { status?: string }) => {
+  const config =
+    REMITTANCE_BADGE_CONFIG[status ?? ""] ?? REMITTANCE_BADGE_CONFIG.pending;
+  return (
+    <span
+      className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+      style={{ backgroundColor: config.bg, color: config.text }}
+    >
+      {config.label}
     </span>
   );
+};
 
 const TaxTable = () => {
   const selectAllRef = useRef<HTMLInputElement>(null);
-  const [records, setRecords] = useState<TaxRecord[]>(DUMMY_RECORDS);
+  const currentYear = useMemo(() => new Date().getFullYear().toString(), []);
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const {
+    data: yearTaxRecords,
+    isLoading: isLoadingTaxRecords,
+    isError: isTaxRecordsError,
+  } = useGetYearTaxRecord(selectedYear);
+
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateRange, setDateRange] = useState<DateRangeValue>({
-    from: null,
-    to: null,
-  });
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  // const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const [markAsRemittedTarget, setMarkAsRemittedTarget] =
-    useState<TaxRecord | null>(null);
-  const [remittanceModalMode, setRemittanceModalMode] = useState<
-    "mark" | "undo"
-  >("mark");
-  const [isMarkingRemitted, setIsMarkingRemitted] = useState(false);
-  const [uploadReceiptTarget, setUploadReceiptTarget] =
-    useState<TaxRecord | null>(null);
-  const [viewReceiptTarget, setViewReceiptTarget] = useState<TaxRecord | null>(
-    null,
+  const router = useRouter();
+
+  const uploadReceiptTarget = useReceiptModalStore((s) => s.uploadTarget);
+  const editReceiptTarget = useReceiptModalStore((s) => s.editTarget);
+  const viewReceiptTarget = useReceiptModalStore((s) => s.viewTarget);
+  const removeReceiptTarget = useReceiptModalStore((s) => s.removeTarget);
+  const openUploadReceipt = useReceiptModalStore((s) => s.openUploadReceipt);
+  const closeUploadReceipt = useReceiptModalStore(
+    (s) => s.closeUploadReceipt,
   );
-  const [removeReceiptTarget, setRemoveReceiptTarget] =
-    useState<TaxRecord | null>(null);
-  const [isRemovingReceipt, setIsRemovingReceipt] = useState(false);
-
-  const handleConfirmRemoveReceipt = async () => {
-    if (!removeReceiptTarget) return;
-    const { id, payrollPeriod } = removeReceiptTarget;
-    setIsRemovingReceipt(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setRecords((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              receipt: "upload",
-              remittance: "pending_remittance",
-              receiptMeta: undefined,
-            }
-          : r,
-      ),
-    );
-    setIsRemovingReceipt(false);
-    setRemoveReceiptTarget(null);
-    toast.success(`Receipt for ${payrollPeriod} has been removed.`);
-  };
-
-  const openRemittanceModal = (record: TaxRecord, mode: "mark" | "undo") => {
-    setMarkAsRemittedTarget(record);
-    setRemittanceModalMode(mode);
-  };
-
-  const handleConfirmMarkRemitted = async () => {
-    if (!markAsRemittedTarget) return;
-    const { id, payrollPeriod } = markAsRemittedTarget;
-    const isUndo = remittanceModalMode === "undo";
-    setIsMarkingRemitted(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setRecords((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? { ...r, remittance: isUndo ? "pending_remittance" : "remitted" }
-          : r,
-      ),
-    );
-    setIsMarkingRemitted(false);
-    setMarkAsRemittedTarget(null);
-    toast.success(
-      isUndo
-        ? `Remittance for ${payrollPeriod} has been undone.`
-        : `${payrollPeriod} marked as remitted.`,
-    );
-  };
-
-  const handleUploadSuccess = () => {
-    if (!uploadReceiptTarget) return;
-    setRecords((prev) =>
-      prev.map((r) =>
-        r.id === uploadReceiptTarget.id
-          ? { ...r, receipt: "view", remittance: "remitted" }
-          : r,
-      ),
-    );
-  };
-
-  const totalPages = Math.ceil(records.length / pageSize);
-
-  const filtered = records.filter((r) =>
-    r.payrollPeriod.toLowerCase().includes(searchQuery.toLowerCase()),
+  const openEditReceipt = useReceiptModalStore((s) => s.openEditReceipt);
+  const closeEditReceipt = useReceiptModalStore((s) => s.closeEditReceipt);
+  const openViewReceipt = useReceiptModalStore((s) => s.openViewReceipt);
+  const closeViewReceipt = useReceiptModalStore((s) => s.closeViewReceipt);
+  const openRemoveReceipt = useReceiptModalStore((s) => s.openRemoveReceipt);
+  const closeRemoveReceipt = useReceiptModalStore(
+    (s) => s.closeRemoveReceipt,
+  );
+  const applyReceiptAndView = useReceiptModalStore(
+    (s) => s.applyReceiptAndView,
   );
 
-  const isAllSelected =
-    filtered.length > 0 && filtered.every((r) => selectedIds.includes(r.id));
+  const { mutate: deleteReceipt, isPending: isRemovingReceipt } =
+    useDeleteTaxReceipt();
+  const { exportTaxReport } = useExportTaxReport();
 
-  const toggleSelectAll = () =>
-    setSelectedIds(isAllSelected ? [] : filtered.map((r) => r.id));
+  const filtered = yearTaxRecords?.filter((r) =>
+    r?.month_name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   const toggleSelect = (id: number) =>
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
+
+  const handleConfirmRemoveReceipt = () => {
+    const receiptId = removeReceiptTarget?.remittance?.receipt?.id;
+    if (!receiptId) {
+      closeRemoveReceipt();
+      return;
+    }
+    deleteReceipt(receiptId, {
+      onSuccess: () => {
+        toast.success("Receipt removed successfully.");
+        closeRemoveReceipt();
+      },
+      onError: (err) => {
+        const message =
+          (err.response?.data as { message?: string })?.message ||
+          "Failed to remove receipt. Please try again.";
+        toast.error(message);
+      },
+    });
+  };
 
   return (
     <div className="bg-white rounded-lg border border-[#E3E3E5] mt-4">
@@ -281,19 +158,21 @@ const TaxTable = () => {
 
         {/* Filters + Export */}
         <div className="flex items-center gap-x-2">
-          <DateRangePicker
-            value={dateRange}
-            onChange={setDateRange}
-            placeholder="Select date range"
-          />
           <CustomDropdown
+            trigger="Year"
+            title="Select a year"
+            options={YEAR_OPTIONS}
+            selected={[selectedYear]}
+            onChange={(values) => setSelectedYear(values[0] ?? currentYear)}
+          />
+          {/* <CustomDropdown
             trigger="Status"
             title="Select a status"
             options={STATUS_OPTIONS}
             selected={selectedStatuses}
             onChange={setSelectedStatuses}
             multiSelect
-          />
+          /> */}
           <button
             type="button"
             className="flex items-center gap-x-2 px-4 py-[7px] rounded-[8px] border border-[#D3D3D6] bg-white text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
@@ -305,7 +184,21 @@ const TaxTable = () => {
       </div>
 
       {/* Table */}
-      {filtered.length === 0 ? (
+      {isLoadingTaxRecords ? (
+        <div className="flex flex-col items-center justify-center py-20 px-6 gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#E37915]" />
+          <p className="text-sm text-[#71717A]">Loading tax records...</p>
+        </div>
+      ) : isTaxRecordsError ? (
+        <div className="flex flex-col items-center justify-center py-20 px-6 gap-3">
+          <p className="text-sm font-semibold text-[#2F2F33]">
+            Failed to load tax records
+          </p>
+          <p className="text-sm text-[#71717A] text-center max-w-[320px]">
+            Something went wrong while fetching tax records. Please try again.
+          </p>
+        </div>
+      ) : filtered?.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 px-6 gap-3">
           <p className="text-sm font-semibold text-[#2F2F33]">
             No tax records found
@@ -327,8 +220,8 @@ const TaxTable = () => {
                   <input
                     ref={selectAllRef}
                     type="checkbox"
-                    checked={isAllSelected}
-                    onChange={toggleSelectAll}
+                    // checked={isAllSelected}
+                    // onChange={toggleSelectAll}
                     className="rounded border-gray-300 cursor-pointer"
                     aria-label="Select all"
                   />
@@ -358,11 +251,11 @@ const TaxTable = () => {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((record) => {
-                const isSelected = selectedIds.includes(record.id);
+              {filtered?.map((record) => {
+                const isSelected = selectedIds.includes(record.month_number);
                 return (
                   <tr
-                    key={record.id}
+                    key={`${record.year}-${record.month_number}`}
                     className={`border-b border-[#E3E3E5] last:border-b-0 text-[#2F2F33] ${
                       isSelected ? "bg-[#FFF9F2]" : ""
                     }`}
@@ -371,36 +264,38 @@ const TaxTable = () => {
                       <input
                         type="checkbox"
                         checked={isSelected}
-                        onChange={() => toggleSelect(record.id)}
+                        onChange={() => toggleSelect(record.month_number)}
                         className="rounded border-gray-300 cursor-pointer"
-                        aria-label={`Select ${record.payrollPeriod}`}
+                        aria-label={`Select ${record?.month}`}
                       />
                     </td>
                     <td className="px-6 py-4">
                       <Link
-                        href={`/admin/tax/${record.payrollPeriod.toLowerCase().replace(/\s+/g, "-")}`}
+                        href={`/admin/tax/${record.month_number}-${record.year}`}
                         className="text-sm font-medium text-[#E37915] underline"
                       >
-                        {record.payrollPeriod}
+                        {record.month_name}
                       </Link>
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-[#2F2F33]">
-                      ₦{record.totalTax}
+                      ₦{record?.total_tax}
                     </td>
                     <td className="px-6 py-4 text-sm text-[#2F2F33]">
-                      {record.employees}
+                      {record?.num_of_employees}
                     </td>
                     <td className="px-6 py-4">
-                      <VerificationBadge status={record.verification} />
+                      <VerificationBadge
+                        status={record?.verification?.status}
+                      />
                     </td>
                     <td className="px-6 py-4">
-                      <RemittanceBadge status={record.remittance} />
+                      <RemittanceBadge status={record?.remittance?.status} />
                     </td>
                     <td className="px-6 py-4">
-                      {record.receipt === "view" ? (
+                      {record?.remittance?.receipt?.receipt ? (
                         <button
                           type="button"
-                          onClick={() => setViewReceiptTarget(record)}
+                          onClick={() => openViewReceipt(record)}
                           className="inline-flex items-center gap-x-1.5 px-3 py-1.5 rounded-lg border border-[#D3D3D6] text-xs font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
                         >
                           <Eye size={12} strokeWidth={2} />
@@ -409,7 +304,7 @@ const TaxTable = () => {
                       ) : (
                         <button
                           type="button"
-                          onClick={() => setUploadReceiptTarget(record)}
+                          onClick={() => openUploadReceipt(record)}
                           className="inline-flex items-center gap-x-1.5 px-3 py-1.5 rounded-lg border border-[#D3D3D6] text-xs font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
                         >
                           <Upload size={12} strokeWidth={2} />
@@ -420,52 +315,70 @@ const TaxTable = () => {
                     <td className="px-6 py-4">
                       <TableActionMenu
                         items={
-                          record.receipt === "view"
+                          record?.remittance?.receipt?.receipt
                             ? [
                                 {
                                   label: "View Receipt",
-                                  onClick: () => setViewReceiptTarget(record),
+                                  onClick: () => openViewReceipt(record),
                                 },
                                 {
                                   label: "Replace Receipt",
-                                  onClick: () => setUploadReceiptTarget(record),
+                                  onClick: () => openEditReceipt(record),
                                 },
                                 {
                                   label: "Remove Receipt",
-                                  onClick: () => setRemoveReceiptTarget(record),
+                                  onClick: () => openRemoveReceipt(record),
                                 },
                                 {
                                   label: "View Tax Details",
-                                  onClick: () => {},
+                                  onClick: () => {
+                                    router.push(
+                                      `/admin/tax/${record.month_number}-${record.year}`,
+                                    );
+                                  },
                                 },
                                 {
                                   label: "Export Tax Report",
-                                  onClick: () => {},
+                                  onClick: () =>
+                                    exportTaxReport(
+                                      record.month_number,
+                                      record.year,
+                                    ),
                                 },
                               ]
                             : [
-                                record.remittance === "remitted"
-                                  ? {
-                                      label: "Undo Remittance",
-                                      onClick: () =>
-                                        openRemittanceModal(record, "undo"),
-                                    }
-                                  : {
-                                      label: "Mark as Remitted",
-                                      onClick: () =>
-                                        openRemittanceModal(record, "mark"),
-                                    },
+                                // record?.remittance?.status === "remitted"
+                                //   ? {
+                                //       label: "Undo Remittance",
+                                //       onClick: () => {},
+                                //       // onClick: () =>
+                                //       //   openRemittanceModal(record, "undo"),
+                                //     }
+                                //   : {
+                                //       label: "Mark as Remitted",
+                                //       // onClick: () =>
+                                //       //   openRemittanceModal(record, "mark"),
+                                //       onClick: () => {},
+                                //     },
                                 {
                                   label: "Upload Receipt",
-                                  onClick: () => setUploadReceiptTarget(record),
+                                  onClick: () => openUploadReceipt(record),
                                 },
                                 {
                                   label: "View Tax Details",
-                                  onClick: () => {},
+                                  onClick: () => {
+                                    router.push(
+                                      `/admin/tax/${record.month_number}-${record.year}`,
+                                    );
+                                  },
                                 },
                                 {
                                   label: "Export Tax Report",
-                                  onClick: () => {},
+                                  onClick: () =>
+                                    exportTaxReport(
+                                      record.month_number,
+                                      record.year,
+                                    ),
                                 },
                               ]
                         }
@@ -511,7 +424,7 @@ const TaxTable = () => {
                 </span>{" "}
                 of{" "}
                 <span className="text-slate-900 font-semibold">
-                  {totalPages}
+                  {/* {totalPages} */}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -526,7 +439,7 @@ const TaxTable = () => {
                 </button>
                 <button
                   type="button"
-                  disabled={currentPage >= totalPages}
+                  // disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage((p) => p + 1)}
                   aria-label="Next page"
                   className="p-2 bg-white rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none"
@@ -539,36 +452,52 @@ const TaxTable = () => {
         </div>
       )}
 
-      <MarkAsRemittedModal
+      {/* <MarkAsRemittedModal
         isOpen={!!markAsRemittedTarget}
         onClose={() => setMarkAsRemittedTarget(null)}
         onConfirm={handleConfirmMarkRemitted}
-        isSubmitting={isMarkingRemitted}
-        payrollPeriod={markAsRemittedTarget?.payrollPeriod}
-        mode={remittanceModalMode}
-      />
+        // isSubmitting={isMarkingRemitted}
+        payrollPeriod={markAsRemittedTarget?.month_name}
+        // mode={remittanceModalMode}
+      /> */}
 
       <UploadReceiptModal
         isOpen={!!uploadReceiptTarget}
-        onClose={() => setUploadReceiptTarget(null)}
-        onSuccess={handleUploadSuccess}
-        payrollPeriod={uploadReceiptTarget?.payrollPeriod}
+        onClose={closeUploadReceipt}
+        onSuccess={(receipt) =>
+          uploadReceiptTarget &&
+          applyReceiptAndView(uploadReceiptTarget, receipt)
+        }
+        payrollPeriod={uploadReceiptTarget?.month_name}
+        month={uploadReceiptTarget?.month_number}
+        year={uploadReceiptTarget?.year}
+      />
+
+      <EditReceiptModal
+        isOpen={!!editReceiptTarget}
+        onClose={closeEditReceipt}
+        onSuccess={(receipt) =>
+          editReceiptTarget && applyReceiptAndView(editReceiptTarget, receipt)
+        }
+        record={editReceiptTarget}
       />
 
       <ViewReceiptModal
         isOpen={!!viewReceiptTarget}
-        onClose={() => setViewReceiptTarget(null)}
-        onRemove={() => setRemoveReceiptTarget(viewReceiptTarget)}
-        payrollPeriod={viewReceiptTarget?.payrollPeriod}
-        meta={viewReceiptTarget?.receiptMeta}
+        onClose={closeViewReceipt}
+        onRemove={() =>
+          viewReceiptTarget && openRemoveReceipt(viewReceiptTarget)
+        }
+        payrollPeriod={viewReceiptTarget?.month_name}
+        meta={viewReceiptTarget?.remittance?.receipt}
       />
 
       <RemoveReceiptModal
         isOpen={!!removeReceiptTarget}
-        onClose={() => setRemoveReceiptTarget(null)}
+        onClose={closeRemoveReceipt}
         onConfirm={handleConfirmRemoveReceipt}
         isSubmitting={isRemovingReceipt}
-        payrollPeriod={removeReceiptTarget?.payrollPeriod}
+        payrollPeriod={removeReceiptTarget?.month_name}
       />
     </div>
   );
