@@ -14,6 +14,7 @@ type User = {
   fullname: string;
   is_payroll_staff: boolean;
   uid: number;
+  role: string;
 };
 
 type AuthContextType = {

@@ -69,8 +69,6 @@ const formatDate = (dateString: string) => {
   }
 };
 
-const getCurrencySymbol = (payDenoId: number) => (payDenoId === 2 ? "₦" : "$");
-
 const BonusSideDrawer = ({
   data,
   onClose,
@@ -92,7 +90,7 @@ const BonusSideDrawer = ({
 
   return (
     <SideDrawer onClose={onClose}>
-      <div className="relative z-50 w-[520px] h-full bg-white border-l border-[#E3E3E5] flex flex-col">
+      <div className="relative z-50 w-[786px] h-full bg-white border-l border-[#E3E3E5] flex flex-col">
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E3E3E5] flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -151,13 +149,22 @@ const BonusSideDrawer = ({
                   <OverviewRow label="Bonus Type" value={detail.bonus_type} />
                   <OverviewRow
                     label="Amount"
-                    value={`${getCurrencySymbol(detail.pay_deno)} ${detail.amount}`}
+                    value={`${detail?.pay_deno === "naira" ? "₦" : "$"} ${detail.amount}`}
                   />
                   <OverviewRow label="Status" value={detail.approved_state} />
                   <OverviewRow
                     label="Processing"
                     value={detail.processing_status}
                   />
+                  <OverviewRow
+                    label="Client hours"
+                    value={detail.client_hours}
+                  />
+                  <OverviewRow
+                    label="Non client hours"
+                    value={detail.non_client_hours}
+                  />
+                  <OverviewRow label="Total hours" value={detail.total_hours} />
                   <OverviewRow
                     label="Date Paid"
                     value={formatDate(detail.date_paid)}
@@ -168,8 +175,95 @@ const BonusSideDrawer = ({
                       value={detail.review_comment}
                     />
                   ) : null}
+                  <OverviewRow
+                    label="Client Bonus Rate"
+                    value={`$ ${detail?.employee?.rate}/hr`}
+                  />
                 </div>
               </section>
+
+              {/* Project Details */}
+              {detail.hours_by_project !== undefined && (
+                <>
+                  <hr className="border-[#E3E3E5]" />
+                  <section className="flex flex-col gap-4">
+                    <h3 className="text-base font-medium text-[#2F2F33]">
+                      Project details
+                    </h3>
+                    {detail.hours_by_project.length === 0 ? (
+                      <p className="text-sm text-[#71717A] text-center py-6">
+                        No project hours logged for this bonus period.
+                      </p>
+                    ) : (
+                      <div className="rounded-lg border border-[#E3E3E5] overflow-x-auto relative">
+                        <table className="min-w-[640px] w-full text-sm">
+                          <thead className="bg-[#F7F7F7]">
+                            <tr>
+                              <th className="sticky left-0 z-10 bg-[#F7F7F7] px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
+                                Project Key
+                              </th>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
+                                Project Name
+                              </th>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
+                                Account Name
+                              </th>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
+                                Account ID
+                              </th>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
+                                Client Type
+                              </th>
+                              <th className="px-4 py-3 text-xs font-medium text-[#71717A] text-left whitespace-nowrap">
+                                Hours Logged
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {detail.hours_by_project.map((proj) => (
+                              <tr
+                                key={proj.project_id}
+                                className="border-t border-[#E3E3E5]"
+                              >
+                                <td className="sticky left-0 z-10 bg-white px-4 py-3 font-semibold text-[#2F2F33] whitespace-nowrap">
+                                  {proj.project_key || "—"}
+                                </td>
+                                <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">
+                                  {proj.project_name || "—"}
+                                </td>
+                                <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">
+                                  {proj.account_name || "—"}
+                                </td>
+                                <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">
+                                  {proj.account_id || "—"}
+                                </td>
+                                <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">
+                                  {proj.client_type || "—"}
+                                </td>
+                                <td className="px-4 py-3 text-[#2F2F33] whitespace-nowrap">
+                                  {proj.hours || "—"}
+                                </td>
+                              </tr>
+                            ))}
+                            <tr className="border-t border-[#E3E3E5] bg-[#F7F7F7]">
+                              <td className="px-4 py-3 text-xs font-semibold text-[#2F2F33] whitespace-nowrap">
+                                Total
+                              </td>
+                              <td className="px-4 py-3" />
+                              <td className="px-4 py-3" />
+                              <td className="px-4 py-3" />
+                              <td className="px-4 py-3" />
+                              <td className="px-4 py-3 text-xs font-semibold text-[#2F2F33] whitespace-nowrap">
+                                {detail?.total_hours || "—"}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </section>
+                </>
+              )}
 
               {/* Change Requests */}
               {changeRequests.length > 0 && (

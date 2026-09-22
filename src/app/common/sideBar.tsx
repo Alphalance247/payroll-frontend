@@ -25,6 +25,7 @@ import { FaRegUser } from "react-icons/fa6";
 import { HiOutlineClipboardCheck } from "react-icons/hi";
 import { Search } from "lucide-react";
 import { LuGift } from "react-icons/lu";
+import { useAuth } from "../context/authContext";
 
 interface dropDownText {
   link: string;
@@ -50,6 +51,9 @@ const Sidebar = () => {
   const pathname = usePathname();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
+  const { user } = useAuth();
+  console.log("User from Sidebar:", user?.role); // Log the user object to check its structure
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem(SIDEBAR_STORAGE_KEY);
@@ -71,7 +75,9 @@ const Sidebar = () => {
 
   const handleNavClick = useCallback(() => {
     setOpenDropdown(null);
-    try { localStorage.removeItem(SIDEBAR_STORAGE_KEY); } catch {}
+    try {
+      localStorage.removeItem(SIDEBAR_STORAGE_KEY);
+    } catch {}
   }, []);
 
   const sideBarData: sideBarData[] = [
@@ -102,10 +108,10 @@ const Sidebar = () => {
               link: "/admin/payroll-history",
               text: "Payroll History",
             },
-            {
-              link: "/admin/bonus",
-              text: "Bonus",
-            },
+            // {
+            //   link: "/admin/bonus",
+            //   text: "Bonus",
+            // },
           ],
         },
         {
@@ -118,10 +124,14 @@ const Sidebar = () => {
               text: "Active Bonuses",
             },
 
-            {
-              link: "/admin/bonuses/pending-approval",
-              text: "Pending Approval",
-            },
+            ...(user?.role === "super_admin"
+              ? [
+                  {
+                    link: "/admin/bonuses/pending-approval",
+                    text: "Pending Approval",
+                  },
+                ]
+              : []),
             {
               link: "/admin/bonuses",
               text: "Bonus History",
@@ -337,7 +347,8 @@ const Sidebar = () => {
                       {item?.subHeadings &&
                         item?.subHeadings?.map((items, subIdx) => {
                           const isDropdown = !!items?.dropdownText;
-                          const isOpen = openDropdown === `${sectionIdx}-${subIdx}`;
+                          const isOpen =
+                            openDropdown === `${sectionIdx}-${subIdx}`;
                           return (
                             <div key={subIdx}>
                               {items?.link && !isDropdown ? (
@@ -389,7 +400,11 @@ const Sidebar = () => {
                                           >
                                             <li
                                               className={`text-sm font-medium rounded-lg py-[10px] pl-4 ${
-                                                pathname === (item?.link?.replace(/\/+$/, "") ?? "")
+                                                pathname ===
+                                                (item?.link?.replace(
+                                                  /\/+$/,
+                                                  "",
+                                                ) ?? "")
                                                   ? "bg-[#414D57] text-white"
                                                   : "bg-transparent text-[white]"
                                               }`}

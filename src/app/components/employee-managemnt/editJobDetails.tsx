@@ -18,18 +18,34 @@ const EditJobDetails = ({
   onModalClose: () => void;
   employeeInfo: dataDetails;
 }) => {
+  const denominationData = [
+    {
+      id: 1,
+      code: "USD",
+    },
+    {
+      id: 2,
+      code: "NGN",
+    },
+  ];
   const [form, setForm] = useState({
     job_type: employeeInfo?.job_type || "",
     job_role: employeeInfo?.job_role || "",
     start_date: employeeInfo?.start_date || "",
     status: employeeInfo?.status || "",
-    base_pay: employeeInfo?.base_pay || "",
-    pay_deno: employeeInfo?.pay_deno || "",
+    base_pay: employeeInfo?.base_pay
+      ? String(employeeInfo.base_pay).replace(/,/g, "").replace(/\.0+$/, "")
+      : "",
+    pay_deno:
+      employeeInfo?.pay_deno === "Dollars"
+        ? denominationData.find((d) => d.code === "USD")?.id || 1
+        : denominationData.find((d) => d.code === "NGN")?.id || 2,
+    client_bonus_rate: employeeInfo?.client_bonus_rate || "",
   });
   const [editEmployee, setEditEmployee, resetEditEmployee] = useBoolean(false);
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -43,7 +59,7 @@ const EditJobDetails = ({
         `/employees/employee/${employeeInfo?.id}`,
         {
           ...form,
-        }
+        },
       );
 
       if (res.status === 200) {
@@ -65,17 +81,6 @@ const EditJobDetails = ({
       resetEditEmployee();
     }
   };
-
-  const denominationData = [
-    {
-      id: 1,
-      code: "USD",
-    },
-    {
-      id: 2,
-      code: "NGN",
-    },
-  ];
 
   return (
     <ModalOverlay onClose={onModalClose}>
@@ -196,6 +201,21 @@ const EditJobDetails = ({
                   ))}
                 </select>
               </div>
+            </div>
+
+            <div>
+              <Label id="role" className="block mb-1">
+                Client Bonus Rate
+              </Label>
+
+              <Input
+                type="text"
+                id="client-bonus-rate"
+                placeholder="Enter Client Bonus Rate"
+                name="client_bonus_rate"
+                value={form?.client_bonus_rate || ""}
+                onChange={handleChange}
+              />
             </div>
           </div>
 

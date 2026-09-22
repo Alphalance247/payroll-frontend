@@ -18,6 +18,7 @@ interface BonusDonutChartProps {
   totalLabel?: string;
   formatValue?: (v: number) => string;
   formatTotal?: (total: number) => string;
+  totalDisplay?: string;
 }
 
 function defaultFormat(v: number) {
@@ -31,6 +32,7 @@ export default function BonusDonutChart({
   totalLabel = "Total paid out",
   formatValue = (v) => `₦${v.toLocaleString()}`,
   formatTotal = defaultFormat,
+  totalDisplay,
 }: BonusDonutChartProps) {
   const total = useMemo(
     () => data.reduce((acc, d) => acc + d.value, 0),
@@ -46,7 +48,7 @@ export default function BonusDonutChart({
   );
 
   return (
-    <div className="grid grid-cols-[60%_40%] justify-between items-center gap-6 py-6 pr-8 pl-2">
+    <div className="grid grid-cols-[50%_50%] justify-between items-center gap-6 py-6 pr-8 pl-2">
       {/* Donut */}
       <ChartContainer
         config={chartConfig}
@@ -93,7 +95,7 @@ export default function BonusDonutChart({
                       fontSize={18}
                       fontWeight={600}
                     >
-                      {formatTotal(total)}
+                      {totalDisplay ?? formatTotal(total)}
                     </tspan>
                     <tspan
                       x={viewBox.cx}

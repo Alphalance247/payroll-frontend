@@ -19,31 +19,33 @@ interface data {
   employee: {
     id: number;
     fullname: string;
+    rate: string;
   };
   reason: string;
 }
 
 interface dataType {
   data: data[];
+  pagination: {
+    has_next: false;
+    has_previous: false;
+    page: number;
+    page_size: number;
+    total_count: number;
+    total_pages: number;
+  };
   total_amount: string;
 }
 
 const fetchAllBonusRetrieveList = async (
-  month?: string,
-  year?: string,
   bonus_type?: string,
   start_date?: string,
   end_date?: string,
+  page?: number,
+  page_size?: number,
 ) => {
   let url = "/employees/bonuses/pending";
   const params = new URLSearchParams();
-
-  if (month && month !== "") {
-    params.append("month", month);
-  }
-  if (year && year !== "") {
-    params.append("year", year);
-  }
 
   if (bonus_type && bonus_type !== "") {
     params.append("bonus_type", bonus_type);
@@ -57,6 +59,14 @@ const fetchAllBonusRetrieveList = async (
     params.append("end_date", end_date);
   }
 
+  if (page !== undefined) {
+    params.append("page", page.toString());
+  }
+
+  if (page_size !== undefined) {
+    params.append("page_size", page_size.toString());
+  }
+
   if (params.toString()) {
     url += `?${params.toString()}`;
   }
@@ -67,23 +77,29 @@ const fetchAllBonusRetrieveList = async (
 };
 
 export const useAllBonusRetrieveList = (
-  month?: string,
-  year?: string,
   bonus_type?: string,
   start_date?: string,
   end_date?: string,
+  page?: number,
+  page_size?: number,
 ) => {
   return useQuery<dataType | null, AxiosError>({
     queryKey: [
       "all-bonus-retrieve-list",
-      month,
-      year,
       bonus_type,
       start_date,
       end_date,
+      page,
+      page_size,
     ],
     queryFn: () =>
-      fetchAllBonusRetrieveList(month, year, bonus_type, start_date, end_date),
+      fetchAllBonusRetrieveList(
+        bonus_type,
+        start_date,
+        end_date,
+        page,
+        page_size,
+      ),
     staleTime: 1000 * 60 * 5, // data fresh for 5 minutes
     retry: 1,
   });
