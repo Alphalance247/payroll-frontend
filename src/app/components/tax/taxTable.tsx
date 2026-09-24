@@ -31,6 +31,7 @@ const VERIFICATION_BADGE_CONFIG: Record<
   in_progress: { label: "In Progress", bg: "#EFF6FF", text: "#3B82F6" },
   failed: { label: "Failed", bg: "#FEF2F2", text: "#DC2626" },
   not_verified: { label: "Not Verified", bg: "#F3F4F6", text: "#6B7280" },
+  needs_review: { label: "Needs Review", bg: "#FFF9F2", text: "#CF6E13" },
 };
 
 const REMITTANCE_BADGE_CONFIG: Record<
@@ -92,17 +93,13 @@ const TaxTable = () => {
   const viewReceiptTarget = useReceiptModalStore((s) => s.viewTarget);
   const removeReceiptTarget = useReceiptModalStore((s) => s.removeTarget);
   const openUploadReceipt = useReceiptModalStore((s) => s.openUploadReceipt);
-  const closeUploadReceipt = useReceiptModalStore(
-    (s) => s.closeUploadReceipt,
-  );
+  const closeUploadReceipt = useReceiptModalStore((s) => s.closeUploadReceipt);
   const openEditReceipt = useReceiptModalStore((s) => s.openEditReceipt);
   const closeEditReceipt = useReceiptModalStore((s) => s.closeEditReceipt);
   const openViewReceipt = useReceiptModalStore((s) => s.openViewReceipt);
   const closeViewReceipt = useReceiptModalStore((s) => s.closeViewReceipt);
   const openRemoveReceipt = useReceiptModalStore((s) => s.openRemoveReceipt);
-  const closeRemoveReceipt = useReceiptModalStore(
-    (s) => s.closeRemoveReceipt,
-  );
+  const closeRemoveReceipt = useReceiptModalStore((s) => s.closeRemoveReceipt);
   const applyReceiptAndView = useReceiptModalStore(
     (s) => s.applyReceiptAndView,
   );
@@ -173,13 +170,13 @@ const TaxTable = () => {
             onChange={setSelectedStatuses}
             multiSelect
           /> */}
-          <button
+          {/* <button
             type="button"
             className="flex items-center gap-x-2 px-4 py-[7px] rounded-[8px] border border-[#D3D3D6] bg-white text-sm font-medium text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
           >
             <Upload size={14} strokeWidth={2} />
             Export
-          </button>
+          </button> */}
         </div>
       </div>
 

@@ -28,7 +28,7 @@ const ACCEPTED_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   "text/csv",
 ];
-const ACCEPTED_EXTS = ".pdf,.jpg,.jpeg,.png,";
+const ACCEPTED_EXTS = ".pdf,.jpg,.jpeg,.png,.xls,.xlsx,.csv";
 
 const formatFileSize = (bytes: number) =>
   bytes >= 1024 * 1024

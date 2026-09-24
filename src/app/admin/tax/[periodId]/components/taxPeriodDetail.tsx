@@ -2,7 +2,15 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Info, XCircle, CheckCircle } from "lucide-react";
+import {
+  ChevronDown,
+  Info,
+  XCircle,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  AlertTriangle,
+} from "lucide-react";
 import { GoChevronRight } from "react-icons/go";
 import DashboardLayout from "@/app/common/DashBoardLayout";
 import Button from "@/app/common/Button";
@@ -63,14 +71,54 @@ interface SummaryCardConfig {
   value?: string | number;
   prefix?: string;
   showInfo?: boolean;
-  verified?: boolean;
+  verificationStatus?: string;
 }
+
+const VERIFICATION_STATES: Record<
+  string,
+  { icon: React.ReactNode; label: string }
+> = {
+  verified: {
+    icon: (
+      <CheckCircle
+        size={20}
+        className="text-[#15803D] flex-shrink-0"
+        fill="#15803D"
+        color="white"
+      />
+    ),
+    label: "Verified",
+  },
+  in_progress: {
+    icon: <Clock size={20} className="text-[#D97706] flex-shrink-0" />,
+    label: "In Progress",
+  },
+  failed: {
+    icon: (
+      <XCircle
+        size={20}
+        className="text-[#DC2626] flex-shrink-0"
+        fill="#DC2626"
+        color="white"
+      />
+    ),
+    label: "Failed",
+  },
+  not_verified: {
+    icon: <AlertCircle size={20} className="text-[#71717A] flex-shrink-0" />,
+    label: "Not Verified",
+  },
+  needs_review: {
+    icon: <AlertTriangle size={20} className="text-[#CA8A04] flex-shrink-0" />,
+    label: "Needs Review",
+  },
+};
 
 const buildSummaryCards = (
   totalMonthlyTax: number,
   employeeCount: number,
   totalGrossSalary: number,
-  isVerified: boolean,
+  verificationStatus: string,
 ): SummaryCardConfig[] => [
   {
     label: "Total Tax",
@@ -89,54 +137,40 @@ const buildSummaryCards = (
     label: "Verification Status",
     type: "verification",
     showInfo: true,
-    verified: isVerified,
+    verificationStatus,
   },
 ];
 
-const SummaryCard = ({ card }: { card: SummaryCardConfig }) => (
-  <div className="flex-1 bg-white rounded-lg border border-[#E3E3E5] p-4">
-    <p className="flex items-center gap-x-1 text-xs font-medium text-[#71717A] mb-3">
-      {card.label}
-      {card.showInfo && (
-        <Info size={13} className="text-[#71717A] flex-shrink-0" />
-      )}
-    </p>
-    {card.type === "verification" ? (
-      <div className="flex items-center gap-x-2">
-        {card.verified ? (
-          <>
-            <CheckCircle
-              size={20}
-              className="text-[#15803D] flex-shrink-0"
-              fill="#15803D"
-              color="white"
-            />
-            <span className="text-lg font-medium text-[#2F2F33] tracking-tight">
-              Verified
-            </span>
-          </>
-        ) : (
-          <>
-            <XCircle
-              size={20}
-              className="text-[#DC2626] flex-shrink-0"
-              fill="#DC2626"
-              color="white"
-            />
-            <span className="text-lg font-medium text-[#2F2F33] tracking-tight">
-              Not verified
-            </span>
-          </>
+const SummaryCard = ({ card }: { card: SummaryCardConfig }) => {
+  const verificationState = card.verificationStatus
+    ? (VERIFICATION_STATES[card.verificationStatus] ??
+      VERIFICATION_STATES.not_verified)
+    : VERIFICATION_STATES.not_verified;
+
+  return (
+    <div className="flex-1 bg-white rounded-lg border border-[#E3E3E5] p-4">
+      <p className="flex items-center gap-x-1 text-xs font-medium text-[#71717A] mb-3">
+        {card.label}
+        {card.showInfo && (
+          <Info size={13} className="text-[#71717A] flex-shrink-0" />
         )}
-      </div>
-    ) : (
-      <p className="text-lg font-medium text-[#2F2F33] tracking-tight">
-        {card.prefix ?? ""}
-        {card.value}
       </p>
-    )}
-  </div>
-);
+      {card.type === "verification" ? (
+        <div className="flex items-center gap-x-2">
+          {verificationState.icon}
+          <span className="text-lg font-medium text-[#2F2F33] tracking-tight">
+            {verificationState.label}
+          </span>
+        </div>
+      ) : (
+        <p className="text-lg font-medium text-[#2F2F33] tracking-tight">
+          {card.prefix ?? ""}
+          {card.value}
+        </p>
+      )}
+    </div>
+  );
+};
 
 interface MoreActionItem {
   label: string;
@@ -280,7 +314,7 @@ const TaxPeriodDetail = ({ periodId }: TaxPeriodDetailProps) => {
     taxDetails?.total_monthly_tax ?? 0,
     taxDetails?.["number_of employee"] ?? 0,
     taxDetails?.total_gross_pay ?? 0,
-    taxDetails?.verification_status === "verified",
+    taxDetails?.verification_status ?? "not_verified",
   );
 
   return (

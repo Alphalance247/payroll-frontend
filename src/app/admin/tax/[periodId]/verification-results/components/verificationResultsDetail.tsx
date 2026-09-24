@@ -324,7 +324,7 @@ const VerificationResultsDetail = ({
                 <tbody>
                   {filtered.map((record) => (
                     <tr
-                      key={record?.name}
+                      key={record?.email}
                       className="border-b border-[#E3E3E5] last:border-b-0 text-[#2F2F33]"
                     >
                       <td className="px-6 py-[14px] w-[40px]">

@@ -1,6 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import axiosInstance from "@/app/utils/axios";
 import { AxiosError } from "axios";
+import { downloadFile, generateFileName } from "@/app/utils/exportFile";
 
 export type TaxVerificationStatus =
   | "pending"
@@ -174,3 +177,44 @@ export const useGetTaxVerificationsByPeriod = (
     queryFn: () => fetchTaxVerificationsByPeriod(month, year),
     enabled: !!month && !!year,
   });
+
+/**
+ * Triggers a file download from GET /employees/tax-verifications/{id}/download.
+ * Tracks in-flight downloads per-id, so multiple rows in a list can show
+ * their own "downloading" state independently.
+ */
+export const useDownloadTaxVerification = () => {
+  const [downloadingIds, setDownloadingIds] = useState<Set<number | string>>(
+    new Set(),
+  );
+
+  const downloadTaxVerification = async (
+    id: number | string,
+    fileName?: string,
+  ) => {
+    if (downloadingIds.has(id)) return;
+    setDownloadingIds((prev) => new Set(prev).add(id));
+    try {
+      const res = await axiosInstance.get(
+        `/employees/tax-verifications/${id}/download`,
+        { responseType: "blob" },
+      );
+      downloadFile(
+        res.data as Blob,
+        fileName ?? generateFileName(`tax-verification-${id}`),
+      );
+    } catch {
+      toast.error("Failed to download verification report. Please try again.");
+    } finally {
+      setDownloadingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
+
+  const isDownloading = (id: number | string) => downloadingIds.has(id);
+
+  return { downloadTaxVerification, isDownloading };
+};

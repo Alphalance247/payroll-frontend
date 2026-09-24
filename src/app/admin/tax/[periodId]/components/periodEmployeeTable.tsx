@@ -5,7 +5,7 @@ import { RiExpandUpDownFill } from "react-icons/ri";
 import { FaChevronLeft, FaChevronRight, FaCaretDown } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
-import CustomDropdown from "@/app/common/customDropdown";
+// import CustomDropdown from "@/app/common/customDropdown";
 import TableActionMenu from "@/app/common/tableActionMenu";
 import {
   useMarkTaxPaid,
@@ -49,10 +49,10 @@ const getAvatarColor = (name: string) =>
       AVATAR_COLORS.length
   ];
 
-const STATUS_OPTIONS = [
-  { label: "Remitted", value: "remitted" },
-  { label: "Pending Remittance", value: "pending_remittance" },
-];
+// const STATUS_OPTIONS = [
+//   { label: "Remitted", value: "remitted" },
+//   { label: "Pending Remittance", value: "pending_remittance" },
+// ];
 
 const StatusBadge = ({ status }: { status: boolean }) =>
   status ? (
@@ -79,7 +79,7 @@ const PeriodEmployeeTable = ({
   const selectAllRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  // const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -174,14 +174,14 @@ const PeriodEmployeeTable = ({
               {`Mark as Paid (${selectedIds.length})`}
             </button>
           )}
-          <CustomDropdown
+          {/* <CustomDropdown
             trigger="Status"
             title="Select a status"
             options={STATUS_OPTIONS}
             selected={selectedStatuses}
             onChange={setSelectedStatuses}
             multiSelect
-          />
+          /> */}
           <button
             type="button"
             onClick={() => exportTaxReport(month, year)}

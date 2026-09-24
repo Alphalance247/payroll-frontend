@@ -8,7 +8,10 @@ import {
 } from "lucide-react";
 import ModalOverlay from "@/app/common/modal/modal";
 import Button from "@/app/common/Button";
-import { type VerificationHistoryEntry } from "@/app/hooks/useQueries/tax/useTaxVerification";
+import {
+  useDownloadTaxVerification,
+  type VerificationHistoryEntry,
+} from "@/app/hooks/useQueries/tax/useTaxVerification";
 
 type BadgeStatus = "verified" | "needs_review" | "not_verified";
 
@@ -70,6 +73,9 @@ const VerificationHistoryModal = ({
   onViewReport,
   onDownload,
 }: VerificationHistoryModalProps) => {
+  const { downloadTaxVerification, isDownloading } =
+    useDownloadTaxVerification();
+
   if (!isOpen) return null;
 
   return (
@@ -183,15 +189,21 @@ const VerificationHistoryModal = ({
                           </button>
                           <button
                             type="button"
+                            disabled={isDownloading(entry.id)}
                             onClick={() =>
                               onDownload
                                 ? onDownload(entry)
-                                : window.open(entry.download_url, "_blank")
+                                : downloadTaxVerification(
+                                    entry.id,
+                                    entry.file_name,
+                                  )
                             }
-                            className="h-9 inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-[#D3D3D6] text-sm font-medium leading-5 text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors"
+                            className="h-9 inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-[#D3D3D6] text-sm font-medium leading-5 text-[#2F2F33] hover:bg-[#F7F7F7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <Download size={16} strokeWidth={2} />
-                            Download
+                            {isDownloading(entry.id)
+                              ? "Downloading…"
+                              : "Download"}
                           </button>
                         </div>
                       )}

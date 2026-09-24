@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Upload, X, FileText, Loader2, ChevronDown } from "lucide-react";
+import { Upload, X, FileText, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import ModalOverlay from "@/app/common/modal/modal";
@@ -31,83 +31,10 @@ const ACCEPTED_TYPES = [
 ];
 const ACCEPTED_EXTS = ".pdf,.jpg,.jpeg,.png,.xls,.xlsx,.csv";
 
-const MONTH_OPTIONS = [
-  { label: "January", value: "01" },
-  { label: "February", value: "02" },
-  { label: "March", value: "03" },
-  { label: "April", value: "04" },
-  { label: "May", value: "05" },
-  { label: "June", value: "06" },
-  { label: "July", value: "07" },
-  { label: "August", value: "08" },
-  { label: "September", value: "09" },
-  { label: "October", value: "10" },
-  { label: "November", value: "11" },
-  { label: "December", value: "12" },
-];
-
-const YEAR_RANGE = 6;
-const YEAR_OPTIONS = Array.from({ length: YEAR_RANGE }, (_, i) => {
-  const year = (new Date().getFullYear() - i).toString();
-  return { label: year, value: year };
-});
-
 const formatFileSize = (bytes: number) =>
   bytes >= 1024 * 1024
     ? `${(bytes / (1024 * 1024)).toFixed(0)}MB`
     : `${(bytes / 1024).toFixed(0)}KB`;
-
-const RequiredLabel = ({
-  children,
-  htmlFor,
-}: {
-  children: React.ReactNode;
-  htmlFor: string;
-}) => (
-  <label htmlFor={htmlFor} className="text-sm font-medium text-[#2F2F33]">
-    {children} <span className="text-[#DC2626]">*</span>
-  </label>
-);
-
-const SelectField = ({
-  id,
-  value,
-  onChange,
-  placeholder,
-  options,
-  disabled,
-}: {
-  id: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder: string;
-  options: { label: string; value: string }[];
-  disabled?: boolean;
-}) => (
-  <div className="relative">
-    <select
-      id={id}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      disabled={disabled}
-      className="w-full appearance-none border border-[#E3E3E5] rounded-lg px-3 py-2.5 text-sm pr-9 text-[#2F2F33] focus:outline-none focus:ring-1 focus:ring-[#E37915] focus:border-[#E37915] bg-white transition-colors disabled:bg-[#FAFAFA] disabled:cursor-not-allowed"
-    >
-      <option value="" disabled style={{ color: "#BEBEC2" }}>
-        {placeholder}
-      </option>
-      {options.map((opt) => (
-        <option key={opt.value} value={opt.value}>
-          {opt.label}
-        </option>
-      ))}
-    </select>
-    <ChevronDown
-      size={15}
-      strokeWidth={2}
-      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#71717A]"
-    />
-  </div>
-);
 
 const EditReceiptModal = ({
   isOpen,
@@ -120,20 +47,18 @@ const EditReceiptModal = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
   const [referenceId, setReferenceId] = useState("");
   const [note, setNote] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const existingReceipt = record?.remittance?.receipt;
   const payrollPeriod = record?.month_name;
+  const month = record ? String(record.month_number).padStart(2, "0") : "";
+  const year = record?.year ?? "";
 
-  // Pre-fill from the receipt being edited whenever the modal is opened for a new record
+  // Pre-fill editable fields whenever the modal opens for a new record
   useEffect(() => {
     if (!isOpen || !record) return;
-    setMonth(String(record.month_number).padStart(2, "0"));
-    setYear(record.year);
     setReferenceId(existingReceipt?.reference ?? "");
     setNote(existingReceipt?.note ?? "");
     setSelectedFile(null);
@@ -265,32 +190,6 @@ const EditReceiptModal = ({
             )}
             .
           </p>
-        </div>
-
-        {/* Month / Year */}
-        <div className="px-6 pb-4 grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <RequiredLabel htmlFor="edit-receipt-month">Month</RequiredLabel>
-            <SelectField
-              id="edit-receipt-month"
-              value={month}
-              onChange={setMonth}
-              placeholder="Select month"
-              options={MONTH_OPTIONS}
-              disabled={uploadState === "uploading"}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <RequiredLabel htmlFor="edit-receipt-year">Year</RequiredLabel>
-            <SelectField
-              id="edit-receipt-year"
-              value={year}
-              onChange={setYear}
-              placeholder="Select year"
-              options={YEAR_OPTIONS}
-              disabled={uploadState === "uploading"}
-            />
-          </div>
         </div>
 
         {/* Reference ID */}
