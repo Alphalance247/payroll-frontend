@@ -163,7 +163,7 @@ const BonusModal = ({
 
   const isAdd = mode === "add";
 
-const title = isAdd ? "Add Bonus" : "Edit Bonus";
+  const title = isAdd ? "Add Bonus" : "Edit Bonus";
   const submitLabel = isAdd ? "Save Bonus" : "Update Bonus";
 
   const buildPayload = (): AddBonusPayload => ({
@@ -173,6 +173,7 @@ const title = isAdd ? "Add Bonus" : "Edit Bonus";
     review_comment: "",
     paid: false,
     pay_deno: CURRENCIES.find((c) => c.code === form.currency)?.id ?? 0,
+    employee: form?.employeeId,
   });
 
   const handleSubmit = () => {
@@ -186,6 +187,7 @@ const title = isAdd ? "Add Bonus" : "Edit Bonus";
         reason: payload.reason,
         bonus_type: payload.bonus_type,
         pay_deno: payload.pay_deno,
+        employee: form?.employeeId,
       });
     } else {
       onSubmit(form, createAnother);
