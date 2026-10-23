@@ -6,7 +6,7 @@ export function parseAmount(value: string | number | null | undefined): number {
 }
 
 export function formatNaira(value: string | number | null | undefined): string {
-  return `₦${parseAmount(value).toLocaleString(undefined, {
+  return `₦ ${parseAmount(value).toLocaleString(undefined, {
     maximumFractionDigits: 0,
   })}`;
 }
